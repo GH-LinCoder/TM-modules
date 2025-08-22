@@ -1,30 +1,75 @@
-<!-- index.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>T&M Admin</title>
-  <!-- Inter Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <!-- Tailwind CSS CDN -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>14:40-Aug18 Flexload</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- App Logic -->
-  <script type="module" src="/flexmainTm.js" defer></script>
+  <!-- Standard favicon -->
+<link rel="icon" type="image/x-icon"   />
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
 </head>
-<body class="bg-gray-50 min-h-screen flex">
-
-  <!-- Left Menu (10%) -->
-  <nav class="w-1/10 bg-slate-800 text-white p-4 flex flex-col gap-4">
-    <button data-page="howTo" class="p-2 bg-slate-700 hover:bg-slate-600 rounded text-sm text-left">How To</button>
-    <button data-page="dash"  class="p-2 bg-slate-700 hover:bg-slate-600 rounded text-sm text-left">Dash</button>
-    <button data-action="close" class="p-2 bg-red-600 hover:bg-red-700 rounded text-sm text-left">Close</button>
-  </nav>
-
-  <!-- Content Area (90%) -->
-  <main id="content" class="w-9/10 flex">
-    <!-- Admin Dashboard will load here by default -->
-  </main>
-
-</body>
-</html>
+<style>
+  .side-panel {
+    width: 10%;
+  }
+  .main-container {
+    display: flex;
+    width: 90%;
+  }
+  .page-panel {
+    min-width: 45%;
+    transition: all 0.3s ease;
+  }
+  .notes-panel {
+    min-width: 45%;
+    transition: all 0.3s ease;
+  }
+</style>
+  
+<body class="flex h-screen bg-gray-50">
+  <script>console.log("flexload.html");</script>
+  <div id="app" class="flex w-full h-full">
+    <!-- Side Panel (10%) -->
+    <div class="side-panel bg-white border-r border-gray-200 p-6">
+      <h1 class="text-2xl font-bold text-gray-800 mb-8">The Lab</h1>
+      <nav class="space-y-2">
+        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100 active-page" 
+                data-page="notes" title="Where to type & store text without formatting">
+          Notes
+        </button>
+        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
+                data-page="home" title="How to use Notes, the buttons, the purpose">
+          How to
+        </button>
+        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
+                data-page="links" title="Your web links. You can edit them to match your project or interests.">
+          Links
+        </button>
+        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
+                data-page="data" title="Another page of links, probably to information">
+          Data
+        </button>
+        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
+                data-page="scripts" title="More pages of links Probably to your own project">
+          Scripts
+        </button>
+        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
+                data-page="plan" title="What we are aiming to do, heaven helps us">
+          Plan
+        </button>
+      </nav>
+    </div>
+    
+    <!-- Main Panel - Fixed Notes + Dynamic Page -->
+    <div class="main-container" id="main-container">
+      <!-- Notes Panel (always visible with full width) -->
+      <div data-notes-panel= "notes-panel" class="notes-panel bg-amber-50 p-8" id="notes-panel">
+        
+        <!-- Content will be loaded in this div "notes-panel" -->
+      
+      </div>
+    </div>
+  </div>
+<script type="module" src="flexmain.js" defer></script><!-- defer is after parsing HTML but before DOMLoaded   -->
