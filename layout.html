@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Task & Member</title>
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Supabase Client -->
+  <script type="module" src="/db/supabase.js"></script>
+  <!-- Workspace Logic -->
+  <script type="module" src="/workspace.js"></script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+  <!-- Header -->
+  <header class="bg-white border-b border-gray-200 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-xl font-bold">Task & Member</h1>
+      <div class="flex items-center gap-4">
+        <span class="text-sm text-gray-600">User: <span id="user-display">Guest</span></span>
+        <button id="sign-out" class="text-sm text-gray-600 hover:text-gray-800">Sign Out</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container mx-auto px-4 py-8" id="main-content">
+    <!-- Panels will be inserted here -->
+  </main>
+
+  <!-- Modal Overlay -->
+  <div id="modal-overlay" class="fixed inset-0 bg-black/50 hidden z-40"></div>
+  <!-- Modals will be inserted here -->
+
+  <!-- Initialize on load -->
+  <script type="module">
+    import { supabase } from '/lib/supabase.js';
+    import { loadWidget } from '/workspace.js';
+
+    // Set user on load
+    document.addEventListener('DOMContentLoaded', async () => {
+      const { data: { user } } = await supabase.auth.getUser();
+      document.getElementById('user-display').textContent = user?.email || 'Guest';
+
+      // Load dashboard widget
+      if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
+        loadWidget('main-content', '/widgets/dashboard.html', ['view:dashboard']);
+      }
+    });
+
+    // Sign out
+    document.getElementById('sign-out').onclick = async () => {
+      await supabase.auth.signOut();
+      window.location.href = '/';
+    };
+  </script>
+</body>
+</html>

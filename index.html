@@ -1,0 +1,30 @@
+<!-- index.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>T&M Admin</title>
+  <!-- Inter Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- App Logic -->
+  <script type="module" src="/flexmainTm.js" defer></script>
+</head>
+<body class="bg-gray-50 min-h-screen flex">
+
+  <!-- Left Menu (10%) -->
+  <nav class="w-1/10 bg-slate-800 text-white p-4 flex flex-col gap-4">
+    <button data-page="howTo" class="p-2 bg-slate-700 hover:bg-slate-600 rounded text-sm text-left">How To</button>
+    <button data-page="dash"  class="p-2 bg-slate-700 hover:bg-slate-600 rounded text-sm text-left">Dash</button>
+    <button data-action="close" class="p-2 bg-red-600 hover:bg-red-700 rounded text-sm text-left">Close</button>
+  </nav>
+
+  <!-- Content Area (90%) -->
+  <main id="content" class="w-9/10 flex">
+    <!-- Admin Dashboard will load here by default -->
+  </main>
+
+</body>
+</html>
