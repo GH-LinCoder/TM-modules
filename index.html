@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>14:40-Aug18 Flexload</title>
+  <title>18:46-Aug22 Flexload</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Standard favicon -->
 <link rel="icon" type="image/x-icon"   />
@@ -18,14 +18,11 @@
     display: flex;
     width: 90%;
   }
-  .page-panel {
-    min-width: 45%;
+  .page-panel, .notes-panel {
+    flex:1;
     transition: all 0.3s ease;
   }
-  .notes-panel {
-    min-width: 45%;
-    transition: all 0.3s ease;
-  }
+
 </style>
   
 <body class="flex h-screen bg-gray-50">
@@ -33,27 +30,27 @@
   <div id="app" class="flex w-full h-full">
     <!-- Side Panel (10%) -->
     <div class="side-panel bg-white border-r border-gray-200 p-6">
-      <h1 class="text-2xl font-bold text-gray-800 mb-8">The Lab</h1>
+      <h1 class="text-2xl font-bold text-gray-800 mb-8">T&M</h1>
       <nav class="space-y-2">
         <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100 active-page" 
-                data-page="notes" title="Where to type & store text without formatting">
-          Notes
+                data-page="admin" title="Where to type & store text without formatting">
+          Admin
         </button>
         <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
-                data-page="home" title="How to use Notes, the buttons, the purpose">
-          How to
+                data-page="howTo" title="How to use Notes, the buttons, the purpose">
+          How?
         </button>
         <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
-                data-page="links" title="Your web links. You can edit them to match your project or interests.">
-          Links
+                data-page="data" title="Your web links. You can edit them to match your project or interests.">
+          data
         </button>
         <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
                 data-page="data" title="Another page of links, probably to information">
-          Data
+          ???
         </button>
         <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
                 data-page="scripts" title="More pages of links Probably to your own project">
-          Scripts
+          ???
         </button>
         <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
                 data-page="plan" title="What we are aiming to do, heaven helps us">

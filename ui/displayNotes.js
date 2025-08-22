@@ -1,8 +1,8 @@
 // Updated displayNotes.js
 console.log('displayNotes.js');
-import { createSupabaseClient } from '../db/client.js';
-import { fetchNotes } from "../db/notes.js";  
-import { renderNotes } from "../db/notes.js";  
+import { createSupabaseClient } from '../db/supabase.js';
+import { fetchNotes } from "../db/fetchNotes.js";  
+//import { renderNotes } from "../db/notes.js";  
 
 export async function displayNotes(page = 1, totalCount = null) {
   console.log('displayNotes()', { page, totalCount });
@@ -16,10 +16,10 @@ export async function displayNotes(page = 1, totalCount = null) {
     const notes = result.notes;
     const actualTotalCount = totalCount || result.totalCount;
     
-    console.log('displayNotes fetch result:', { notes: notes.length, totalCount: actualTotalCount, page });
+//    console.log('displayNotes fetch result:', { notes: notes.length, totalCount: actualTotalCount, page });
     
     // Render the notes
-    renderNotes(notes, actualTotalCount, page, pageSize);
+//    renderNotes(notes, actualTotalCount, page, pageSize);
     console.log('displayNotes() completed');
     
   } catch (error) {
