@@ -74,6 +74,7 @@ button.addEventListener('click', async function () {
   // Function to load a page
   async function loadPage(pageName, container = notesPanel) {
     try {
+      console.log('pageName:',pageName);
       // Don't reload if it's already the current page
       if (container.dataset.currentPage === pageName) {
         return;

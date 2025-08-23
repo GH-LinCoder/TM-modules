@@ -1,0 +1,383 @@
+ <style>
+    body {
+      font-family: sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.6;
+      color: #222;
+    }
+    h1, h2 {
+      color: #004080;
+    }
+    code {
+      background: #f4f4f4;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+    blockquote {
+      border-left: 3px solid #ccc;
+      padding-left: 1rem;
+      color: #555;
+      margin: 1rem 0;
+    }
+    .section {
+      margin-bottom: 2rem;
+    }
+
+  .relationship-flow {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 2rem auto;
+    gap: 1rem;
+  }
+
+  .flow-box {
+    padding: 0.75rem 1.25rem;
+    background-color: #f0f8ff;
+    border: 2px solid #004080;
+    border-radius: 6px;
+    font-weight: bold;
+    text-align: center;
+    min-width: 120px;
+    color: #004080;
+  }
+
+  .arrow {
+    font-size: 1.5rem;
+    color: #666;
+  }
+
+  .task-container {
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 1rem;
+    border: 2px solid #004080;
+    border-radius: 8px;
+    background-color: #e6f0ff;
+  }
+
+  .task-header {
+    font-weight: bold;
+    color: #004080;
+    font-size: 1.2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .meta-label {
+    font-size: 0.75rem;
+    color: #666;
+    margin-bottom: 0.25rem;
+  }
+
+  .step-group {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .step-box {
+    flex: 1;
+    min-width: 100px;
+    background-color: #f9fcff;
+    border: 1.5px solid #004080;
+    border-radius: 6px;
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  .step-title {
+    font-weight: bold;
+    color: #004080;
+    margin-bottom: 0.25rem;
+  }
+
+  .meta-label-small {
+    font-size: 0.65rem;
+    color: #888;
+  }
+
+  .step-box.ghost {
+    background-color: #f0f0f0;
+    border-style: dashed;
+    color: #999;
+  }
+
+
+
+
+
+</style>
+    
+</head>
+<body>
+  <h1>System Philosophy</h1>
+
+  <div class="section">
+    <h2>From abstract thoughts to data base tables</h2>
+<p>      We have three categories called <i>Persons</i><i>, Tracking</i> and <i>Bridging.</i></p> <p>'Persons' have as their core data structure the 'profile'. 'Tracking' has as its core data structure 'tasks' and the linked sub-structure 'steps'. Bridging has as its core data structure 'task_assignments' . </p>
+    <p>So on one side we have persons, on the other side we have tracking and what links them is bridging. </p>
+        
+<div class="section">
+  <h2>Relationship Flow</h2>
+  <div class="relationship-flow">
+    <div class="flow-box">Persons</div>
+    <div class="arrow">→</div>
+    <div class="flow-box">Bridging</div>
+    <div class="arrow">→</div>
+    <div class="flow-box">Tracking</div>
+  </div>
+
+      
+<p>Persons are represented by profiles. When a person gets bridged to tracking they are linked. This is when a 'profile' is linked via 'task_assignments' to a 'task'.
+    
+      <h2>Relationship Flow</h2>
+  <div class="relationship-flow">
+    <div class="flow-box">Profile</div>
+    <div class="arrow">→</div>
+    <div class="flow-box">Assignment</div>
+    <div class="arrow">→</div>
+    <div class="flow-box">Task</div>
+  </div>
+    
+    
+    In the process of assignment we bring into existence a category 'student' we may also bring into existence the category 'manager'. These are fleeting categories. </p>
+    
+
+    
+        <p>Inside 'tracking' we have two closely related data types 'tasks' and 'steps'. Steps are a sub category of tasks. Steps cannot exist alone. Tasks always have at least 3 steps.</p>
+
+
+<div class="task-container">
+  <div class="task-header">Task</div>
+  <div class="meta-label">name</div>
+  <div class="meta-label">description</div>
+
+  <div class="step-group">
+    <div class="step-box">
+      <div class="step-title">Abandoned</div>
+      <div class="meta-label-small">name</div>
+      <div class="meta-label-small">description</div>
+    </div>
+    <div class="step-box">
+      <div class="step-title">Completed</div>
+      <div class="meta-label-small">name</div>
+      <div class="meta-label-small">description</div>
+    </div>
+    <div class="step-box">
+      <div class="step-title">Step 3</div>
+      <div class="meta-label-small">name</div>
+      <div class="meta-label-small">description</div>
+    </div>
+    <div class="step-box ghost">
+      <div class="step-title">More Steps</div>
+      <div class="meta-label-small">name</div>
+      <div class="meta-label-small">description</div>
+    </div>
+  </div>
+</div>
+
+
+    
+            <p>Profiles can be created by humans signing-up to the system or created by admin. Tasks are created by admin. </p><p>Tasks are normally to track an external process that is repeated many times as independent processes. The task is just a tracking utility it does not perform the task that it tracks. (It is a 'to do' list with progress and built-in detailed instructions) 
+                
+                <p>When a task is created this brings into existence the category of 'author'. An author is a profile associated with the human who created the task. 
+                    </p>
+    <p>
+                    Tasks automatically start with 3 steps. These are subcategory of tasks which as a child inherits the attributes of task plus a step_order which is an integer to enable the steps to be placed in order. </p>
+                    
+                    <p>Therefore on the person side we have 'profiles' which are long term. These can be referred to as authors, students and managers.</p>
+
+
+<div class="task-container">
+  <div class="task-header">Profile</div>
+  <div class="meta-label">name</div>
+  <div class="meta-label">email</div>
+
+  <div class="step-group">
+    <div class="step-box">
+      <div class="step-title">Author</div>
+      <div class="meta-label-small">Created a task</div>
+      <div class="meta-label-small">date done</div>
+    </div>
+    <div class="step-box ghost">
+      <div class="step-title">Student</div>
+      <div class="meta-label-small">name</div>
+      <div class="meta-label-small">Task Name</div>
+<div class="meta-label-small">Step Number</div>        
+    </div>
+          <div class="step-box ghost">
+      <div class="step-title">Manager</div>
+      <div class="meta-label-small">name</div>
+      <div class="meta-label-small"></div>
+              <div class="meta-label-small">Task name</div>
+    </div>
+
+  </div>
+</div>
+
+    
+      
+      <p> Authors depend, currently, on a human having created a task & the task not being deleted. Students depend on a person being assigned a task. Managers depend on a human being defined as the manager of a task in the creation of a task or by being assigned to be the manager when a task is assigned. </p>
+      
+      <p>Without an <i>assignment</i> a task is just words on a list. Tasks do not do anything, they are a method of tracking something that humans do.</p>
+
+
+      
+      <p> A <i>profile</i> is a data structure and data associated with an individual person.</p>
+      
+      <p> A <i>task</i> is a definition of a process that may be carried out. It isn't the process, it tracks the progress of a process. </p>
+
+
+  <div class="relationship-flow">
+    <div class="flow-box">Task tracking within T&M</div>
+    <div> not directly connected to </div>
+    <div class="flow-box">The real task</div>
+  </div>
+<p>      <h2>Recap</h2></p>
+
+    
+          
+    <p><strong>Persons</strong>: Represented by <code>Profile</code> structures. Long-term entities created when a user signs up or admin defines it.</p>
+
+      <p><strong>Tracking</strong>: Encompasses <code>Task</code> and its sub-structure <code>Step</code>. Tasks are tracking devices for real-world processes; steps define actionable units within a task.</p>
+      
+    <p><strong>Bridging</strong>: Powered by <code>TaskAssignment</code> entries which link profiles to tasks. This connection gives rise to contextual roles like <em>Student</em> or <em>Manager</em>.</p>
+  </div>
+
+  <div class="section">
+    <h2>Roles and Context</h2>
+    <ul>
+      <li><strong>Author</strong>: Emerges when a profile creates a task.</li>
+      <li><strong>Student</strong>: Defined by a task assignment.</li>
+      <li><strong>Manager</strong>: Assigned during task creation or via assignment metadata.</li>
+    </ul>
+    <p>Roles are ephemeral and contextual — not inherent to the profile itself.</p>
+  </div>
+
+
+<p> The simplest analogy of <code>profiles-assignment-tasks</code> is a new hire who needs to go through a training course. We can call that person a student during the length of the course, and cease to use the term student when the course is completed. The progress through the training course can be on a to-do list where each unit of the course is ticked off. We can model this with our system. The new hire is represented by a profile, being put on the training course is represented by an assignment and once assigned the person is referred to as a student. When the course is completed (or abandoned) the person is no longer a student. That is an easy concept to grasp, but the system can do more than this... </p> 
+
+      <h2>Abstract Flow</h2>
+
+            <p>Profiles can also be abstract persons. This means the data structure and its data  represents groups, intangible objects, & abstract concepts. This may be harder to grasp<p>
+
+      
+      <p> The pupil on a training course was an easy concept to grasp. But our system can do the same for a webpage that needs to be written & published.</p> 
+      
+      <p>We use an abstract profile to represent the webpage, we have a task that has all the steps for writing and publishing the page. The task has a manager and sticking to the terminology the webpage is now the student. (It's weird to call the potential webpage a 'student', but bear with me). In this way we can use the same methods and data structure (with small changes because webpages don't have email addresses) to manage more than putting a person on a course.</p>
+
+
+<div class="task-container">
+  <div class="task-header">Task</div>
+  <div class="meta-label">Publish new webpage</div>
+  <div class="meta-label">Create a profile for the page, place it on this task & follow the steps towards publication </div>
+
+  <div class="step-group">
+    <div class="step-box">
+      <div class="step-title">Abandoned</div>
+      <div class="meta-label-small">name</div>
+      <div class="meta-label-small">description</div>
+    </div>
+    <div class="step-box">
+      <div class="step-title">Completed</div>
+      <div class="meta-label-small">name</div>
+      <div class="meta-label-small">description</div>
+    </div>
+    <div class="step-box">
+      <div class="step-title">How to create the webpage profile</div>
+      <div class="meta-label-small">Click link for details</div>
+
+    </div>
+    <div class="step-box ghost">
+      <div class="step-title">More Steps</div>
+      <div class="meta-label-small">name</div>
+      <div class="meta-label-small">description</div>
+    </div>
+  </div>
+</div>
+      
+
+  <div class="section">
+    <h2>Abstract Profiles</h2>
+    <p>Abstract profiles represent non-human entities: webpages, organizations, ideas.</p>
+    <p>When assigned to tasks (e.g. writing and publishing a webpage), they temporarily adopt roles like <em>Student</em>. This allows task logic to remain consistent across humans and non-humans.</p>
+    <blockquote>
+      “Even abstract concepts can participate in learning, growth, and guidance — if they’re structurally represented.” -<i>Co-pilot Microsoft</i>
+    </blockquote>
+  </div>
+
+  <div class="section">
+    <h2>Relationships Between Profiles</h2>
+    
+      
+      <p>The original task of the project is self management of voluntary groups. Within a large group there will be special interest groups, perhaps the group has meetings on specific subjects or in specific geographical areas. Or looking at abstract profiles there may be profiles related to webpages and others related to conferences. Imagine how to cope with various relationships between profiles and tasks. Is this profile in a group wth that profile, is this profile connected to that task, is that task connected to this other task?</p>
+
+
+Membership (“Profile A belongs to Group X”)
+</p><p>
+Affiliation (“Profile B is linked to Conference C”)
+</p><p>
+Coordination (“Profile D often works with Profile E”)
+</p><p>
+Hierarchy (“Group X is a sub-group of Network Y”)
+</p>      
+      <p>Profiles can be related to other profiles. Tasks can be related to other tasks, and profiles can be linked to tasks even if not connected as an author, student or manager. </p>
+      
+      <p> Analogous to assignment we have <code>Relationship</code> — which uses a very similar technique to allow profiles to be linked to other profiles (human or abstract), independent of tasks or to be linked to tasks independent of being the author or student or manage.It also allows tasks to be grouped or treated as subsidiaries of other tasks</p>
+      
+    <h2>This is used to represent membership, affinity, collaboration, and hierarchy.</h2>
+
+      <p>Implementation is assumed to be in three<code>Tables</code></p>
+      <p> <code>relationships</code> where we store the recognised ways that one profile can be related to another <i>friend, member of, subordinate</i>  <code>id,type,name,description</code><p>
+          <p><code>relations</code>where we register who is related to whom or what is related to what. <i>John's relation to webpage003, Consuelo's relation to John, webpage003 relation to deadline07</i></p> <code>id,item1(FK),relationship_to(FK),item2(FK), noted_at</code>
+
+</p>
+ 
+     <div class="section">
+  <h2>Example: Publishing a Webpage for a Conference</h2>
+  <p>Let’s say:</p>
+  <ul>
+    <li><strong>Abstract Profile A</strong> = webpage to be published</li>
+    <li><strong>Abstract Profile B</strong> = upcoming conference</li>
+    <li><strong>Relationship</strong>: A <code>showcases</code> B</li>
+    <li><strong>Abstract Profile C</strong> = publishing workflow</li>
+    <li><strong>Assignment</strong>: A is assigned to C</li>
+    <li><strong>Human Profile D</strong> = author, assigned to C</li>
+  </ul>
+  <p>From this minimal setup, the system understands:</p>
+  <ul>
+    <li>A is a <em>“student”</em> — because it is assigned to C</li>
+    <li>A is related to B — meaning its content is relevant to that context</li>
+    <li>D is responsible for <em>publishing A</em></li>
+  </ul>
+</div>
+
+      
+  </div>
+
+  <div class="section">
+    <h2>Database Schema Proposal</h2>
+
+    <p><strong>Table:</strong> <code>relationships</code></p>
+    <ul>
+      <li><code>id</code>: UUID</li>
+      <li><code>relationship_type</code>: e.g. <code>member_of</code>, <code>collaborates_with</code></li>
+      <li><code>name</code>: Human-readable label</li>
+      <li><code>description</code>: Meaning and semantic role</li>
+    </ul>
+
+    <p><strong>Table:</strong> <code>relation</code></p>
+    <ul>
+      <li><code>id</code>: UUID</li>
+      <li><code>item1</code>: UUID of first entity</li>
+      <li><code>relationship_to</code>: FK to <code>relationships.id</code></li>
+    <li><code>item2</code>: UUID of second entity</li>
+        <li><code>noted_at</code>: Timestamp of relationship entry</li>
+    </ul>
+
+    <p>Note: All entity IDs (profile, task, abstract item) should migrate to UUID to enable unified relational logic.</p>
+  </div>
