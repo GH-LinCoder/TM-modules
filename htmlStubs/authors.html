@@ -1,0 +1,24 @@
+<!--  AUTHORS   -->
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="tab-section" data-section="authors-section">
+    <h2  class="text-xl font-bold mb-4" data-title="authors">
+      Authors(<span class="text-sm text-gray-500" data-count="authors">0</span>)
+  
+    </h2>
+
+    <div class="flex space-x-4 mb-4">
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="authorView" value="all" checked data-toggle="authors" />
+        <span>All</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="authorView" value="unique" data-toggle="authors" />
+        <span>Unique</span>
+      </label>
+    </div>
+    <div data-list="authors" class="space-y-2 max-h-96 overflow-y-auto">
+      <!-- Author items will be injected here -->
+    </div>
+  </div>
+  </div>
+</div>

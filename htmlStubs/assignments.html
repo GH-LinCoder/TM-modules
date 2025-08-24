@@ -1,0 +1,25 @@
+<!--  ASSIGNMENTS  -->
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="tab-section" data-section="assignments-section">
+    <h2  class="text-xl font-bold mb-4" data-title="assignments">
+      Assignments (<span class="text-sm text-gray-500" data-count="assignments">0</span>)
+    </h2>
+
+    <!-- View Type Toggle -->
+    <div class="flex space-x-4 mb-4">
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="assignmentView" value="all" checked data-toggle="assignments" />
+        <span>All</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="assignmentView" value="unique" data-toggle="assignments" />
+        <span>Unique</span>
+      </label>
+    </div>
+
+    <!-- Assignment List Placeholder -->
+    <div data-list="assignments" class="space-y-2 max-h-96 overflow-y-auto">
+      <!-- Assignment items will be injected here -->
+    </div>
+  </div>
+</div>

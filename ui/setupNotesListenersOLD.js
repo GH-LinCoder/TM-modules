@@ -1,6 +1,8 @@
 // setupNotesListeners.js
 console.log("setupNotesListeners.js");
 
+export function setupNotesListeners() {}
+/*
 import { reactToClearAllButton } from './reactToClearAllButton.js';
 import { reactToSaveButton } from './reactToSaveNoteButton.js';
 import { reactToPageButton } from './reactToPageButton.js';
@@ -50,3 +52,4 @@ export function setupNotesListeners() {
     }
   });
 }
+  */

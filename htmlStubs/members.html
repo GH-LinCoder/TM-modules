@@ -1,0 +1,19 @@
+<!--   MEMBERS  -->  
+<div class="bg-white rounded-lg shadow p-6" >
+  <div class="tab-section" data-section="members-section"></div>
+  <h2 class="text-xl font-bold mb-4" data-title="members">
+    Members (<span class="text-sm text-gray-500" data-count="members">0</span>)
+  </h2>
+
+  <div class="flex items-center space-x-2 mb-4">
+    <span class="text-sm font-medium">Sort by:</span>
+    <button class="px-3 py-1 border rounded text-sm" data-list="members-desc">Newest</button>
+    <button class="px-3 py-1 border rounded text-sm" data-list="members-asc">Oldest</button>
+    <button class="px-3 py-1 border rounded text-sm" data-list="members-alpha-asc">A-Z</button>
+    <button class="px-3 py-1 border rounded text-sm" data-list="members-alpha-desc">Z-A</button>
+  </div>
+
+  <div class="space-y-2 max-h-96 overflow-y-auto" data-list="members">
+    <!-- Member items will be injected here -->
+  </div>
+</div>

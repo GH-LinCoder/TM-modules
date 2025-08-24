@@ -1,56 +1,88 @@
-import { setupNotesListeners } from "./ui/setupNotesListeners.js";
-import { renderNotes } from "./ui/renderNotes.js";  
-import { displayNotes } from "./ui/displayNotes.js";  
-
+// === GLOBAL STATE ===
 const dynamicPanels = [];
 
-document.addEventListener('DOMContentLoaded', async function() {
+// === ON APP LOAD ===
+document.addEventListener('DOMContentLoaded', onAppLoad);
+
+async function onAppLoad() {
+  // Load the default 'admin' page into the main container
   const notesPanel = document.getElementById('notes-panel');
-  const mainContainer = document.getElementById('main-container');
+   loadPage('admin', notesPanel);
+
+  // Set up click listeners on navigation buttons
+  setupNavigationListeners();
+}
+
+// === NAVIGATION LISTENER SETUP ===
+function setupNavigationListeners() {
   const navButtons = document.querySelectorAll('nav button');
-  
-  // Load the Notes page
-  await loadPage('admin');
-  
-  // Set up the listeners after the page is loaded
-  setupNotesListeners();
 
-  await displayNotes(); //new file 19:15
-  
-  // Set up navigation
-  navButtons.forEach( button => {
-    button.addEventListener('click', async function() {
+  navButtons.forEach(button => {
+    // Prevent duplicate listeners (important if this runs more than once)
+    const cloned = button.cloneNode(true);
+    button.replaceWith(cloned);
+
+    cloned.addEventListener('click', async function () {
       const pageName = this.getAttribute('data-page');
-      
-button.addEventListener('click', async function () {
-  const pageName = this.getAttribute('data-page');
+      await handleNavigation(this, pageName);
+    });
+  });
+}
 
+// === HANDLE NAVIGATION LOGIC ===
+async function handleNavigation(button, pageName) {
+  const navButtons = document.querySelectorAll('nav button');
+  const mainContainer = document.getElementById('main-container');
+
+  // Update active class
   navButtons.forEach(btn => btn.classList.remove('active-page'));
-  this.classList.add('active-page');
+  button.classList.add('active-page');
 
   if (pageName === 'admin') {
-    notesPanel.className = 'notes-panel bg-amber-50 p-8';
-    while (mainContainer.children.length > 1) {
-      mainContainer.removeChild(mainContainer.lastChild);
-    }
-    dynamicPanels.length = 0;
-    await loadPage('admin', notesPanel);
-    return;
+    await handleAdminNavigation();
+  } else {
+    await togglePanel(pageName);
+    resizePanels();
+  }
+}
+
+// === SPECIFIC HANDLERS ===
+
+async function handleAdminNavigation() {
+  const mainContainer = document.getElementById('main-container');
+  const notesPanel = document.getElementById('notes-panel'); 
+
+  // Reset notes panel style
+  notesPanel.className = 'notes-panel bg-amber-50 p-8';
+
+  // Remove all dynamic panels (everything after the first child)
+  while (mainContainer.children.length > 1) {
+    mainContainer.removeChild(mainContainer.lastChild);
   }
 
-  // Check if panel is already open BEFORE doing anything
+  // Clear tracking array
+  dynamicPanels.length = 0;
+
+  // Reload admin content
+  await loadPage('admin', notesPanel);
+
+  // Adjust layout
+  resizePanels();
+}
+
+async function togglePanel(pageName) {
+  const mainContainer = document.getElementById('main-container');
   const panelIndex = dynamicPanels.indexOf(pageName);
+
   if (panelIndex !== -1) {
-    // Panel is open — remove it
-    const panel = Array.from(mainContainer.children).find(
-      el => el.dataset.pageName === pageName
-    );
+    // Panel is open → close it
+    const panel = Array.from(mainContainer.children).find(el => el.dataset.pageName === pageName);
     if (panel) {
       mainContainer.removeChild(panel);
       dynamicPanels.splice(panelIndex, 1);
     }
   } else {
-    // Panel is not open — add it
+    // Panel is closed → open it
     const newPanel = document.createElement('div');
     newPanel.className = 'page-panel bg-amber-50 p-8';
     newPanel.dataset.pageName = pageName;
@@ -58,19 +90,19 @@ button.addEventListener('click', async function () {
     dynamicPanels.push(pageName);
     await loadPage(pageName, newPanel);
   }
+}
 
-  // Recalculate widths
-  const totalPanels = 1 + dynamicPanels.length;
+// === LAYOUT MANAGEMENT ===
+function resizePanels() {
+  const mainContainer = document.getElementById('main-container');
+  const totalPanels = 1 + dynamicPanels.length; // 1 for admin + dynamic panels
   const width = `${Math.floor(90 / totalPanels)}%`;
+
   Array.from(mainContainer.children).forEach(child => {
     child.style.width = width;
   });
-});
+}
 
-    });
-  });
-    
-  
   // Function to load a page
   async function loadPage(pageName, container = notesPanel) {
     try {
@@ -102,4 +134,3 @@ button.addEventListener('click', async function () {
       `;
     }
   }
-});

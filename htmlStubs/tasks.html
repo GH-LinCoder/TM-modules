@@ -1,0 +1,20 @@
+<!--  TASKS  -->
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="tab-section" data-section="tasks-section">
+    <h2  class="text-xl font-bold mb-4" data-title="tasks">
+    Tasks (<span class="text-sm text-gray-500" data-count="tasks">0</span>)
+    </h2>
+
+    <!-- Sort Buttons -->
+    <div class="flex items-center space-x-2 mb-4">
+      <span class="text-sm font-medium">Sort by:</span>
+      <button data-list="tasks-asc" class="px-3 py-1 border rounded text-sm">A-Z</button>
+      <button data-list="tasks-desc" class="px-3 py-1 border rounded text-sm">Z-A</button>
+    </div>
+
+    <!-- Task List Placeholder -->
+    <div  class="space-y-2 max-h-96 overflow-y-auto" data-list="tasks">
+      <!-- Task items will be injected here -->
+    </div>
+  </div>
+</div>

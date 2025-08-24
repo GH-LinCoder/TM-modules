@@ -1,72 +1,113 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>18:46-Aug22 Flexload</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Standard favicon -->
-<link rel="icon" type="image/x-icon"   />
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>T&M Landing</title>
+    <!-- Inter font from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
 </head>
-<style>
-  .side-panel {
-    width: 10%;
-  }
-  .main-container {
-    display: flex;
-    width: 90%;
-  }
-  .page-panel, .notes-panel {
-    flex:1;
-    transition: all 0.3s ease;
-  }
+<body class="bg-black min-h-screen flex items-center justify-center p-4">
 
-</style>
-  
-<body class="flex h-screen bg-gray-50">
-  <script>console.log("flexload.html");</script>
-  <div id="app" class="flex w-full h-full">
-    <!-- Side Panel (10%) -->
-    <div class="side-panel bg-white border-r border-gray-200 p-6">
-      <h1 class="text-2xl font-bold text-gray-800 mb-8">T&M</h1>
-      <nav class="space-y-2">
-        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100 active-page" 
-                data-page="admin" title="Click to extend to full width & close other pages.">
-          Admin
-        </button>
-        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
-                data-page="howTo" title="Double click the buttons to open or close extra windows">
-          How?
-        </button>
-        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
-                data-page="data" title="Data analytics: More detailed views.">
-          data
-        </button>
-        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
-                data-page="analytics" title="Detailed stats">
-          Analytics
-        </button>
-        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
-                data-page="mock" title="More pages for something not yet forseen">
-          ???
-        </button>
-        <button class="w-full text-left px-4 py-3 rounded-lg transition-colors text-gray-700 hover:bg-gray-100" 
-                data-page="plans" title="What we are aiming to do, heaven helps us">
-          Plans
-        </button>
-      </nav>
+    <!-- Splash Screen Modal (Initially invisible) -->
+    <div id="splash-modal" class="absolute transition-opacity duration-2000 ease-in-out opacity-0">
+        <div class="bg-grey p-8 rounded-xl border border-slate-200 shadow-xl flex items-center justify-center w-60 h-60">
+            <span class="text-5xl font-bold text-sky-800 tracking-widest">T&M</span>
+        </div>
+    </div>
+
+    <!-- Login Form Modal (Initially Hidden) -->
+    <div id="login-modal" class="w-full max-w-sm transition-opacity duration-2000 ease-in-out opacity-0 pointer-events-none">
+        
+        <!-- Header -->
+        <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-xl w-full">
+            <div class="text-center mb-6">
+                <h1 class="text-2xl font-semibold text-slate-800">Welcome to your private T&M account</h1>
+                <p class="text-slate-500 mt-1 text-sm">Please sign in</p>
+            </div>
+    
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="mb-4">
+                    <input
+                        type="email"
+                        id="email-input"
+                        placeholder="Email Address"
+                        required
+                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm"
+                    >
+                </div>
+                <div class="mb-4">
+                    <input
+                        type="password"
+                        id="password-input"
+                        placeholder="Password"
+                        required
+                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm"
+                    >
+                </div>
+                <div class="flex justify-end mb-6">
+                    <a href="#" class="text-sm font-medium text-sky-600 hover:text-sky-700">Forgot Password?</a>
+                </div>
+                <button
+                    type="submit"
+                    class="w-full bg-sky-600 hover:bg-sky-700 text-white font-medium py-3 rounded-lg transition-all duration-200 shadow-sm hover:shadow-lg"
+                >
+                    Sign In
+                </button>
+            </form>
+    
+            <div id="login-message" class="mt-4 text-center text-sm text-red-500"></div>
+        </div>
     </div>
     
-    <!-- Main Panel - Fixed Notes + Dynamic Page -->
-    <div class="main-container" id="main-container">
-      <!-- Notes Panel (always visible with full width) -->
-      <div data-notes-panel= "notes-panel" class="notes-panel bg-amber-50 p-8" id="notes-panel">
+    <script>
+        // Get references to the modal elements
+        const splashModal = document.getElementById('splash-modal');
+        const loginModal = document.getElementById('login-modal');
+
+        const startAnimation = () => {
+            // Step 1: Fade in the splash modal over 2 seconds.
+            splashModal.classList.add('opacity-100');
+
+            // Step 2: Wait for 3 seconds (2s for fade-in + 1s for a brief hold).
+            setTimeout(() => {
+                // Fade out the splash modal and fade in the login modal.
+                splashModal.classList.remove('opacity-100');
+                splashModal.classList.add('opacity-0');
+                
+                // After another 2 seconds, remove splash from the document flow and make login interactive.
+                setTimeout(() => {
+                    splashModal.style.display = 'none';
+                    loginModal.classList.remove('opacity-0', 'pointer-events-none');
+                    loginModal.classList.add('opacity-100');
+                }, 2000); // This duration should be equal to the CSS transition duration
+            }, 3000);
+        };
+
+        // Start the animation when the page loads
+        window.addEventListener('load', startAnimation);
+
+
         
-        <!-- Content will be loaded in this div "notes-panel" -->
-      
-      </div>
-    </div>
-  </div>
-<script type="module" src="flexmain.js" defer></script><!-- defer is after parsing HTML but before DOMLoaded   -->
+        // Your login form submission logic would go here
+        const loginForm = document.getElementById('login-form');
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('password-input').value;
+            console.log("Attempting login with:", { email, password });
+              //window.location.href = 'https://preview--stage-master-hub.lovable.app/admin';
+              window.location.href = '/flexload.html';  //calls the script that creates the menus and containers and loads the initial main page
+        });
+    </script>
+
+</body>
+</html>

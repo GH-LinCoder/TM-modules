@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Member Dashboard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lucide/0.372.0/icons/cdn.min.css" />
+</head>
+<body class="min-h-screen bg-background">
+  <!-- Header will be injected by JS -->
+  <div data-component="header" data-user="current"></div>
+
+  <div class="container mx-auto px-4 py-8">
+    <div class="grid lg:grid-cols-4 gap-8">
+      <!-- Left Column - Profile -->
+      <div class="lg:col-span-1">
+        <div class="bg-white rounded-lg shadow p-6" data-component="profile-card">
+          <div class="text-center">
+            <div class="w-20 h-20 mx-auto mb-4 relative" data-component="avatar">
+              <img 
+                src="https://placehold.co/80x80" 
+                alt="User Avatar" 
+                class="w-full h-full rounded-full object-cover"
+                data-user="avatar"
+              />
+              <div class="w-full h-full rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-semibold" data-user="avatar-fallback">
+                U
+              </div>
+            </div>
+            <h3 class="text-xl font-semibold" data-user="name">User Name</h3>
+            <div class="mt-2">
+              <span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm" data-user="role">Member</span>
+            </div>
+          </div>
+
+          <div class="space-y-4 mt-6">
+            <div class="space-y-3 text-sm text-gray-600">
+              <div class="flex items-center gap-2">
+                <svg class="h-4 w-4" data-icon="mail"><use href="#mail"/></svg>
+                <span data-user="email">user@example.com</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="h-4 w-4" data-icon="id-card"><use href="#id-card"/></svg>
+                <span data-user="mid">ID: M12345</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="h-4 w-4" data-icon="calendar"><use href="#calendar"/></svg>
+                <span data-user="join-date">Joined: January 1, 2024</span>
+              </div>
+              <div class="flex items-center gap-2">
+                <svg class="h-4 w-4" data-icon="clock"><use href="#clock"/></svg>
+                <span data-user="last-login">Last login: Feb 10, 2:30 PM</span>
+              </div>
+            </div>
+
+            <div class="pt-4 border-t">
+              <button 
+                class="w-full border border-gray-300 rounded-lg py-2 text-sm font-medium hover:bg-gray-50"
+                data-action="edit-profile"
+              >
+                Edit Profile
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Column - Dashboard Content -->
+      <div class="lg:col-span-3 space-y-8">
+        <!-- Stats Overview -->
+        <div class="grid md:grid-cols-4 gap-4" data-section="stats">
+          <div class="bg-white rounded-lg shadow p-4" data-stat="active-tasks">
+            <div class="flex items-center">
+              <div class="p-2 bg-blue-100 rounded-lg mr-3" data-icon="target">
+                <svg class="h-6 w-6 text-blue-600"><use href="#target"/></svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Active Tasks</p>
+                <p class="text-2xl font-bold" data-value="active-tasks">0</p>
+                <p class="text-xs text-gray-500">Currently in progress</p>
+              </div>
+            </div>
+            <div class="mt-2 text-xs text-green-600" data-trend="active-tasks">
+              <span>+25%</span> from last month
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow p-4" data-stat="completed-tasks">
+            <div class="flex items-center">
+              <div class="p-2 bg-green-100 rounded-lg mr-3" data-icon="check-circle">
+                <svg class="h-6 w-6 text-green-600"><use href="#check-circle"/></svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Completed Tasks</p>
+                <p class="text-2xl font-bold" data-value="completed-tasks">5</p>
+                <p class="text-xs text-gray-500">Successfully finished</p>
+              </div>
+            </div>
+            <div class="mt-2 text-xs text-green-600" data-trend="completed-tasks">
+              <span>+12%</span> from last month
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow p-4" data-stat="learning-hours">
+            <div class="flex items-center">
+              <div class="p-2 bg-yellow-100 rounded-lg mr-3" data-icon="clock">
+                <svg class="h-6 w-6 text-yellow-600"><use href="#clock"/></svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Learning Hours</p>
+                <p class="text-2xl font-bold" data-value="learning-hours">45</p>
+                <p class="text-xs text-gray-500">Total time invested</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow p-4" data-stat="abandoned-tasks">
+            <div class="flex items-center">
+              <div class="p-2 bg-red-100 rounded-lg mr-3" data-icon="check-circle">
+                <svg class="h-6 w-6 text-red-600"><use href="#check-circle"/></svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Abandoned Tasks</p>
+                <p class="text-2xl font-bold" data-value="abandoned-tasks">3</p>
+                <p class="text-xs text-gray-500">Previously stopped</p>
+              </div>
+            </div>
+            <div class="mt-2 text-xs text-red-600" data-trend="abandoned-tasks">
+              <span>-5%</span> from last month
+            </div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow p-4" data-stat="available-tasks">
+            <div class="flex items-center">
+              <div class="p-2 bg-indigo-100 rounded-lg mr-3" data-icon="plus">
+                <svg class="h-6 w-6 text-indigo-600"><use href="#plus"/></svg>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Available Tasks</p>
+                <p class="text-2xl font-bold" data-value="available-tasks">0</p>
+                <p class="text-xs text-gray-500">Ready to join</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Tasks -->
+        <div data-section="my-tasks">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold">My Tasks</h2>
+            <button 
+              class="border border-gray-300 rounded-lg px-3 py-1 text-sm flex items-center gap-2 hover:bg-gray-50"
+              data-action="browse-tasks"
+            >
+              <svg class="h-4 w-4"><use href="#search"/></svg>
+              Browse All Tasks
+            </button>
+          </div>
+
+          <div class="space-y-6" data-list="my-tasks">
+            <!-- Task 1 -->
+            <div class="bg-white rounded-lg shadow p-6" data-task-id="1">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold" data-task="name">Frontend Development Course</h3>
+                  <p class="text-gray-600 text-sm" data-task="description">Complete React and TypeScript fundamentals</p>
+                  <div class="mt-2 text-sm">
+                    <span class="text-gray-500">Manager: </span>
+                    <span data-task="manager">Sarah Wilson</span>
+                    <span class="mx-2">•</span>
+                    <span class="text-gray-500">Author: </span>
+                    <span data-task="author">Mike Johnson</span>
+                    <span class="mx-2">•</span>
+                    <span class="text-gray-500">Assigned: </span>
+                    <span data-task="assigned-date">Feb 1, 2024</span>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="text-blue-600 hover:underline text-sm" data-action="view-details">View Details</button>
+                  <button class="text-blue-600 hover:underline text-sm" data-action="message-manager">Message</button>
+                </div>
+              </div>
+
+              <!-- Current Stage -->
+              <div class="ml-6 border-l-4 border-l-blue-500 bg-gray-50 p-4 mt-4 rounded-r-lg" data-component="current-stage">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="font-medium" data-stage="name">Stage 3: Component Architecture</h4>
+                    <p class="text-sm text-gray-600" data-stage="description">Learn about component composition and state management patterns</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button class="border rounded p-1 hover:bg-gray-200" data-action="prev-stage">
+                      <svg class="h-4 w-4"><use href="#arrow-left"/></svg>
+                    </button>
+                    <span class="text-sm text-gray-500" data-stage="progress">3 of 8</span>
+                    <button class="border rounded p-1 hover:bg-gray-200" data-action="next-stage">
+                      <svg class="h-4 w-4"><use href="#arrow-right"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Task 2 -->
+            <div class="bg-white rounded-lg shadow p-6" data-task-id="2">
+              <div class="flex items-start justify-between">
+                <div class="flex-1">
+                  <h3 class="text-lg font-semibold" data-task="name">Database Design Basics</h3>
+                  <p class="text-gray-600 text-sm" data-task="description">Learn SQL and database normalization</p>
+                  <div class="mt-2 text-sm">
+                    <span class="text-gray-500">Manager: </span>
+                    <span data-task="manager">David Chen</span>
+                    <span class="mx-2">•</span>
+                    <span class="text-gray-500">Author: </span>
+                    <span data-task="author">Lisa Park</span>
+                    <span class="mx-2">•</span>
+                    <span class="text-gray-500">Assigned: </span>
+                    <span data-task="assigned-date">Feb 10, 2024</span>
+                  </div>
+                </div>
+                <div class="flex gap-2">
+                  <button class="text-blue-600 hover:underline text-sm" data-action="view-details">View Details</button>
+                  <button class="text-blue-600 hover:underline text-sm" data-action="message-manager">Message</button>
+                </div>
+              </div>
+
+              <!-- Current Stage -->
+              <div class="ml-6 border-l-4 border-l-blue-500 bg-gray-50 p-4 mt-4 rounded-r-lg" data-component="current-stage">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <h4 class="font-medium" data-stage="name">Stage 1: Introduction to Databases</h4>
+                    <p class="text-sm text-gray-600" data-stage="description">Understanding relational database concepts and ER diagrams</p>
+                  </div>
+                  <div class="flex items-center gap-2">
+                    <button class="border rounded p-1 hover:bg-gray-200" data-action="prev-stage">
+                      <svg class="h-4 w-4"><use href="#arrow-left"/></svg>
+                    </button>
+                    <span class="text-sm text-gray-500" data-stage="progress">1 of 5</span>
+                    <button class="border rounded p-1 hover:bg-gray-200" data-action="next-stage">
+                      <svg class="h-4 w-4"><use href="#arrow-right"/></svg>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Students -->
+        <div data-section="my-students">
+          <div class="flex items-center justify-between mb-6">
+            <h2 class="text-2xl font-bold">My Students</h2>
+            <button 
+              class="border border-gray-300 rounded-lg px-3 py-1 text-sm flex items-center gap-2 hover:bg-gray-50"
+              data-action="view-all-students"
+            >
+              <svg class="h-4 w-4"><use href="#users"/></svg>
+              View All
+            </button>
+          </div>
+
+          <div class="bg-white rounded-lg shadow p-12 text-center" data-placeholder="no-students">
+            <svg class="h-12 w-12 text-gray-400 mx-auto mb-4"><use href="#users"/></svg>
+            <h3 class="text-lg font-semibold mb-2">No Students Assigned</h3>
+            <p class="text-gray-500 mb-4">You haven't been assigned as a manager for any tasks yet.</p>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="bg-white rounded-lg shadow p-6" data-section="quick-actions">
+          <h3 class="text-lg font-semibold mb-2">Quick Actions</h3>
+          <p class="text-gray-500 text-sm mb-4">Common tasks and shortcuts</p>
+          <div class="grid md:grid-cols-2 lg:grid-cols-5 gap-4">
+            <button class="flex flex-col items-center gap-2 p-4 border rounded hover:bg-gray-50" data-action="invite-friend">
+              <svg class="h-6 w-6"><use href="#user-plus"/></svg>
+              <span class="text-sm">Invite a Friend</span>
+            </button>
+            <button class="flex flex-col items-center gap-2 p-4 border rounded hover:bg-gray-50" data-action="copy-recruit-link">
+              <svg class="h-6 w-6"><use href="#link"/></svg>
+              <span class="text-sm">Copy Recruit Link</span>
+            </button>
+            <button class="flex flex-col items-center gap-2 p-4 border rounded hover:bg-gray-50" data-action="check-rewards">
+              <svg class="h-6 w-6"><use href="#gift"/></svg>
+              <span class="text-sm">Check Rewards</span>
+            </button>
+            <button class="flex flex-col items-center gap-2 p-4 border rounded hover:bg-gray-50" data-action="update-profile">
+              <svg class="h-6 w-6"><use href="#user"/></svg>
+              <span class="text-sm">Update Profile</span>
+            </button>
+            <button class="flex flex-col items-center gap-2 p-4 border rounded hover:bg-gray-50" data-action="contact-support">
+              <svg class="h-6 w-6"><use href="#mail"/></svg>
+              <span class="text-sm">Contact Support</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Icon Sprites (simplified) -->
+  <svg class="hidden">
+    <symbol id="target" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></symbol>
+    <symbol id="users" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></symbol>
+    <symbol id="check-circle" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></symbol>
+    <symbol id="user" viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></symbol>
+    <symbol id="calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></symbol>
+    <symbol id="mail" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></symbol>
+    <symbol id="id-card" viewBox="0 0 24 24"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="9" y1="12" x2="15" y2="12"/><line x1="9" y1="16" x2="13" y2="16"/></symbol>
+    <symbol id="plus" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></symbol>
+    <symbol id="arrow-left" viewBox="0 0 24 24"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12,19 5,12 12,5"/></symbol>
+    <symbol id="arrow-right" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></symbol>
+    <symbol id="user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></symbol>
+    <symbol id="link" viewBox="0 0 24 24"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></symbol>
+    <symbol id="gift" viewBox="0 0 24 24"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><line x1="12" y1="22" x2="12" y2="7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></symbol>
+  </svg>
+</body>
+</html>
