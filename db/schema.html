@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Database Schema</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 p-6">
+  <h1 class="text-3xl font-bold text-center mb-8 text-gray-800">Database Schema</h1>
+  
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 max-w-7xl mx-auto">
+    
+    <!-- app_event_labels table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">app_event_labels</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">id</td>
+              <td class="py-2 text-gray-600">bigint</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">code</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">name</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">description</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- app_event_log table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">app_event_log</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">event_label</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">actor_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">affected_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">created_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">sort_int</td>
+              <td class="py-2 text-gray-600">integer</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- app_profiles table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">app_profiles</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">name</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">description</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">external_url</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">avatar_url</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">updated_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">email</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">phone</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">created_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">notes</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">sort_int</td>
+              <td class="py-2 text-gray-600">bigint</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">auth_user_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">task_header_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- auth_deletion_log table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">auth_deletion_log</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">deleted_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">deleted_at</td>
+              <td class="py-2 text-gray-600">timestamp without time zone</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">source</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- comms table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">comms</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">CDate</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">CFrom</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">CTo</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">CReply</td>
+              <td class="py-2 text-gray-600">bigint</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">CText</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">sort_int</td>
+              <td class="py-2 text-gray-600">integer</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- old_app_event_labels table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">old_app_event_labels</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">sort_id</td>
+              <td class="py-2 text-gray-600">integer</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">code</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">name</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">description</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- profiles table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">profiles</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">email</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">username</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">full_name</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">avatar_url</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">website</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">created_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">updated_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- role_permissions table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">role_permissions</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">sort_int</td>
+              <td class="py-2 text-gray-600">integer</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">role</td>
+              <td class="py-2 text-gray-600">USER-DEFINED</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">permission</td>
+              <td class="py-2 text-gray-600">USER-DEFINED</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- task_assignments table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">task_assignments</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">task_header_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">student_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">manager_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">assigned_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">completed_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">abandoned_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">step_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">sort_int</td>
+              <td class="py-2 text-gray-600">integer</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- task_headers table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">task_headers</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">name</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">description</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">external_url</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">created_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">author_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">sort_int</td>
+              <td class="py-2 text-gray-600">integer</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- task_steps table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">task_steps</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">task_header_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">name</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">description</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">step_order</td>
+              <td class="py-2 text-gray-600">integer</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">created_at</td>
+              <td class="py-2 text-gray-600">timestamp with time zone</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">author_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">external_url</td>
+              <td class="py-2 text-gray-600">text</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">sort_int</td>
+              <td class="py-2 text-gray-600">integer</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- user_roles table -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden border border-gray-200">
+      <div class="bg-blue-600 text-white px-4 py-3">
+        <h2 class="text-lg font-semibold">user_roles</h2>
+      </div>
+      <div class="p-4">
+        <table class="w-full text-sm">
+          <tbody>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">sort_int</td>
+              <td class="py-2 text-gray-600">integer</td>
+            </tr>
+            <tr class="border-b border-gray-100">
+              <td class="py-2 font-medium text-gray-900">user_id</td>
+              <td class="py-2 text-gray-600">uuid</td>
+            </tr>
+            <tr>
+              <td class="py-2 font-medium text-gray-900">role</td>
+              <td class="py-2 text-gray-600">USER-DEFINED</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

@@ -1,0 +1,25 @@
+// In your main app file
+document.addEventListener('DOMContentLoaded', () => {
+  // Subscribe to auth changes
+  window.auth.onAuthStateChange(({ user, session, loading }) => {
+    if (loading) return;
+    
+    if (user) {
+      console.log('User is signed in:', user.email);
+      // Show authenticated UI
+    } else {
+      console.log('User is signed out');
+      // Show sign-in UI
+    }
+  });
+});
+
+// Sign out
+document.getElementById('signout-btn').addEventListener('click', async () => {
+  await window.auth.signOut();
+});
+
+// Check auth status
+if (window.auth.isAuthenticated()) {
+  // Show protected content
+}

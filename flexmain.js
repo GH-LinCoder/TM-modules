@@ -1,12 +1,26 @@
+import { createSupabaseClient } from "./db/supabase.js";
+//import * as dataReader from "./db/dataReader.js";
+import { loadAdminDashWithData } from './dash/loadAdminDashWithData.js';
+
+//import { renderAuthors} from "./dash/authors.js";
+
 // === GLOBAL STATE ===
 const dynamicPanels = [];
 const DASHBOARD_PAGES = new Set(['adminDash', 'memberDash']);
+
+//const supabase = createSupabaseClient(); 
 
 // We'll define notesPanel here, but get it when needed
 let notesPanel = null;
 
 // === ON APP LOAD ===
 document.addEventListener('DOMContentLoaded', onAppLoad);
+
+/* I see no point in this function. Can call direct as it is being called from an async function below
+async function injectAdminData(container) {
+  await loadAdminDashWithData();
+}
+*/
 
 async function onAppLoad() {
   // Ensure notesPanel is available
@@ -17,8 +31,13 @@ async function onAppLoad() {
     dynamicPanels[0] = 'adminDash'; // or 'memberDash'
   }
 
+  
+
   // Load the default dashboard
   await loadPage(dynamicPanels[0], notesPanel);
+  
+  await  loadAdminDashWithData();  //12:35 Aug 25 2025. Call direct, not through local function
+  //this function does not take a parameter
 
   // Set up click listeners on navigation buttons
   setupNavigationListeners();

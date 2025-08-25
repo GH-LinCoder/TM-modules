@@ -5,13 +5,30 @@
     Members (<span class="text-sm text-gray-500" data-count="members">0</span>)
   </h2>
 
-  <div class="flex items-center space-x-2 mb-4">
+
+<div class="flex space-x-4 mb-4">
     <span class="text-sm font-medium">Sort by:</span>
-    <button class="px-3 py-1 border rounded text-sm" data-list="members-desc">Newest</button>
-    <button class="px-3 py-1 border rounded text-sm" data-list="members-asc">Oldest</button>
-    <button class="px-3 py-1 border rounded text-sm" data-list="members-alpha-asc">A-Z</button>
-    <button class="px-3 py-1 border rounded text-sm" data-list="members-alpha-desc">Z-A</button>
-  </div>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="memberView" value="members-desc" checked data-toggle="members" />
+        <span>All</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="memberView" value="members-asc" data-toggle="members" />
+        <span>Unique</span>
+      </label>
+            <label class="flex items-center space-x-2">
+        <input type="radio" name="memberView" value="members-alpha-asc" data-toggle="members" />
+        <span>Unique</span>
+      </label>
+            <label class="flex items-center space-x-2">
+        <input type="radio" name="memberView" value="members-alpha-desc" data-toggle="members" />
+        <span>Unique</span>
+      </label>
+    </div>
+
+
+
+
 
   <div class="space-y-2 max-h-96 overflow-y-auto" data-list="members">
     <!-- Member items will be injected here -->

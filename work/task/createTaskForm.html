@@ -1,0 +1,188 @@
+<!-- create-task-dialog.html -->
+<div id="createTaskDialog" class="create-task-dialog hidden fixed inset-0 z-50 flex items-center justify-center">
+  <!-- Backdrop -->
+  <div class="fixed inset-0 bg-black/80" data-action="close-dialog"></div>
+  
+  <!-- Dialog -->
+  <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
+    <div class="p-6 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-xl font-semibold text-gray-900">Create New Task</h3>
+        <button 
+          class="text-gray-500 hover:text-gray-700"
+          data-action="close-dialog"
+          aria-label="Close"
+        >
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+    
+    <div class="p-6 space-y-6">
+      <!-- Task Creation Section -->
+      <div class="bg-white rounded-lg border border-gray-200">
+        <div class="p-6 border-b border-gray-200">
+          <h4 class="text-lg font-semibold text-gray-900 mb-1">Task Details</h4>
+          <p class="text-sm text-gray-600">
+            Name and describe the task. Then click to save it. After that you can add the steps of the task or you can create a new task.
+          </p>
+        </div>
+        
+        <div class="p-6">
+          <div id="taskIdDisplay" class="hidden mb-4 p-2 bg-blue-50 rounded-md"></div>
+          
+          <form id="createTaskForm" class="space-y-4">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Author</label>
+                <p class="text-sm text-gray-600" id="authorName">Loading...</p>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Created on</label>
+                <p class="text-sm text-gray-600" id="creationDate">Loading...</p>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label for="taskName" class="block text-sm font-medium text-gray-700">Task Name *</label>
+              <input 
+                type="text" 
+                id="taskName" 
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Short & unique"
+                maxlength="64"
+                required
+              />
+              <p class="text-xs text-gray-500" id="taskNameCounter">0/64 characters</p>
+            </div>
+
+            <div class="space-y-2">
+              <label for="taskDescription" class="block text-sm font-medium text-gray-700">Task Description *</label>
+              <textarea 
+                id="taskDescription" 
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Be concise"
+                rows="3"
+                maxlength="256"
+                required
+              ></textarea>
+              <p class="text-xs text-gray-500" id="taskDescriptionCounter">0/256 characters</p>
+            </div>
+
+            <div class="space-y-2">
+              <label for="taskUrl" class="block text-sm font-medium text-gray-700">URL (optional)</label>
+              <input 
+                type="url" 
+                id="taskUrl" 
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Link to task instructions"
+              />
+            </div>
+
+            <button 
+              type="submit" 
+              id="saveTaskBtn"
+              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              Save Task
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Step Creation Section -->
+      <div id="stepsSection" class="bg-white rounded-lg border border-gray-200 opacity-50 pointer-events-none">
+        <div class="p-6 border-b border-gray-200">
+          <h4 class="text-lg font-semibold text-gray-900 mb-1">Task Steps</h4>
+          <p class="text-sm text-gray-600">
+            Add steps that guide users through the task completion process.
+          </p>
+        </div>
+        
+        <div class="p-6">
+          <div id="createdSteps" class="hidden mb-4">
+            <label class="block text-sm font-medium text-gray-700 mb-2">Created Steps:</label>
+            <div id="stepsList" class="space-y-1"></div>
+          </div>
+          
+          <form id="createStepForm" class="space-y-4">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="flex-1">
+                <label class="block text-sm font-medium text-gray-700 mb-1">Step Order</label>
+                <input 
+                  type="number" 
+                  id="stepOrder" 
+                  class="w-20 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  value="3"
+                  min="3"
+                />
+              </div>
+              <div class="flex-1">
+                <p class="text-xs text-gray-500">
+                  Abandon = step 1, Complete = step 2, Students start on step 3
+                </p>
+              </div>
+            </div>
+
+            <div class="space-y-2">
+              <label for="stepName" class="block text-sm font-medium text-gray-700">Step Name *</label>
+              <input 
+                type="text" 
+                id="stepName" 
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Short & unique"
+                maxlength="64"
+                required
+              />
+              <p class="text-xs text-gray-500" id="stepNameCounter">0/64 characters</p>
+            </div>
+
+            <div class="space-y-2">
+              <label for="stepDescription" class="block text-sm font-medium text-gray-700">Step Description *</label>
+              <textarea 
+                id="stepDescription" 
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Be concise"
+                rows="3"
+                maxlength="256"
+                required
+              ></textarea>
+              <p class="text-xs text-gray-500" id="stepDescriptionCounter">0/256 characters</p>
+            </div>
+
+            <div class="space-y-2">
+              <label for="stepUrl" class="block text-sm font-medium text-gray-700">URL (optional)</label>
+              <input 
+                type="url" 
+                id="stepUrl" 
+                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Link to task instructions"
+              />
+            </div>
+
+            <div class="flex gap-2">
+              <button 
+                type="submit" 
+                id="saveStepBtn"
+                class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                Save Step
+              </button>
+              <button 
+                type="button" 
+                id="addStepBtn"
+                class="bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300"
+              >
+                <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

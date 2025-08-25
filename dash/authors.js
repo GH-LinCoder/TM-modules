@@ -1,10 +1,10 @@
-import { createSupabaseClient } from './supabase.js';
+import { createSupabaseClient } from '../db/supabase.js';
 
 const supabase = createSupabaseClient();
 
 let authorViewType = 'all';
 
-document.querySelectorAll('input[name="authorView"]').forEach((radio) => {
+document.querySelectorAll('[data-toggle="authors"]').forEach((radio) => {
   radio.addEventListener('change', (e) => {
     authorViewType = e.target.value;
     renderAuthors();
@@ -12,8 +12,8 @@ document.querySelectorAll('input[name="authorView"]').forEach((radio) => {
 });
 
 async function renderAuthors() {
-  const title = document.getElementById('authors-title');
-  const list = document.getElementById('author-list');
+  const title = document.querySelectorAll('[data-title="authors"]');
+  const list = document.querySelectorAll('[data-toggle="author-list"]');
 
   list.innerHTML = '<p>Loading...</p>';
 
