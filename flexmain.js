@@ -113,7 +113,7 @@ console.log('firstChild.nodeName:', firstChild.nodeName);
 }
 
 // === PANEL TOGGLE LOGIC ===    oddly this is where you send a page to be loaded 
-async function togglePanel(pageName) {
+export async function togglePanel(pageName) {
   const mainContainer = document.getElementById('main-container');
 
   // Check if panel is already open

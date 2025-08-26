@@ -1,5 +1,5 @@
 import { openDialogue } from '../work/task/createTask.js';
-import { loadPage} from '../flexmain.js';
+import { togglePanel} from '../flexmain.js';
 /**
  * Sets up event listeners for the admin dashboard
  * @param {Element} container - The container element
@@ -24,7 +24,7 @@ export function setupAdminListeners(container) {
     switch (action) {
       case 'create-task-dialogue':
     console.log('case: (', action, ')');
-  loadPage('createTaskForm');      
+  togglePanel('createTaskForm');      
 //            openDialogue(action);
         break;
 
