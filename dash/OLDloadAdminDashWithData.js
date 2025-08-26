@@ -8,15 +8,19 @@ import {
   readUniqueAuthors,
   readProfilesByIds
 } from '../db/dataReader.js';
-
 console.log('loadAdminDashWithData.js');
-
 /**
  * Loads data and injects it into the admin dashboard
  */
 export async function loadAdminDashWithData() {
   console.log('loadAdminDashWithData()');
   try {
+    // Show loading state
+    const statsCards = document.querySelector('[id="stats-cards"]');
+    if (statsCards) { //the following line is stupid. This deletes all the design of the card
+    //  statsCards.innerHTML = '<p class="text-center py-8 text-gray-500">Loading dashboard data...</p>';
+    }
+
     // Fetch all data concurrently
     const [
       members,
@@ -36,14 +40,33 @@ export async function loadAdminDashWithData() {
 
     // Get profiles for authors
     const authorProfiles = await readProfilesByIds(uniqueAuthors);
+//document.addEventListener('DOMContentLoaded', function() {
+
+
+// Debug: Check if the element exists
+console.log('Looking for data-value="authors-count-unique"');
+
+// Check all elements with data-value
+const allDataValues = document.querySelectorAll('[data-value]');
+console.log('All data-value elements:', Array.from(allDataValues).map(el => el.getAttribute('data-value')));
+
+// Try to find the specific element
+const authorsCount = document.querySelector('[data-value="authors-count-unique"]');
+console.log('authorsCount element:', authorsCount);
+
+if (authorsCount) {
+    console.log('Element found - updating content');
+    authorsCount.textContent = uniqueAuthors.length;
+} else {
+    console.log('Element not found - check HTML and DOM loading timing');
+}
+
 
     // Inject data into DOM
     injectStatsData(members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors);
     injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles);
     injectActivityData(members, tasks, assignments);
-
- updateDeltas(members, assignments, tasks);
-
+//});
     console.log('Admin dashboard data loaded successfully');
   } catch (error) {
     console.error('Error loading admin dashboard data:', error);
@@ -63,48 +86,89 @@ export async function loadAdminDashWithData() {
  * Injects data into the Quick Stats section
  */
 function injectStatsData(members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors) {
-  // Update all instances of each data value
-  updateAll('[data-value="members-count"]', members.length);
-  updateAll('[data-value="assignments-count"]', assignments.length);
-  updateAll('[data-value="tasks-count"]', tasks.length);
-  updateAll('[data-value="authors-count-unique"]', uniqueAuthors.length);
-  updateAll('[data-value="students-count-unique"]', uniqueStudents.length);
-  updateAll('[data-value="managers-count-unique"]', uniqueManagers.length);
-
-  // Debug logging
-  console.log('quickStats:', members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors);
+  // Members
+  const membersCount = document.querySelector('[data-value="members-count"]');
+  if (membersCount) {
+    membersCount.textContent = members.length;
+  }
+console.log('quickStats:',members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors);
+  // Assignments
+  const assignmentsCount = document.querySelector('[data-value="assignments-count"]');
+  if (assignmentsCount) {
+    assignmentsCount.textContent = assignments.length;
+  }
+console.log('quickStats:assign',assignmentsCount.textContent);
+  // Tasks
+  const tasksCount = document.querySelector('[data-value="tasks-count"]');
+  if (tasksCount) {
+    tasksCount.textContent = tasks.length;
+  }
+console.log('quickStats:task',tasksCount.textContent);
   
-  // Verify elements were found and updated
-  const stats = [
-    { selector: '[data-value="members-count"]', value: members.length },
-    { selector: '[data-value="assignments-count"]', value: assignments.length },
-    { selector: '[data-value="tasks-count"]', value: tasks.length },
-    { selector: '[data-value="authors-count-unique"]', value: uniqueAuthors.length },
-    { selector: '[data-value="students-count-unique"]', value: uniqueStudents.length },
-    { selector: '[data-value="managers-count-unique"]', value: uniqueManagers.length }
-  ];
+// these next 3 querySelector cannot find the locations.
+// Authors
+  const authorsCount = document.querySelector('[data-value="authors-count-unique"]');
+  if (authorsCount) {console.log('quickStats: authorsCount found');
+    authorsCount.textContent = uniqueAuthors.length;
+  } else console.log('quickStats:authorsCount not found ');
+//console.log('quickStats:author',authorsCount.textContent);
 
-  stats.forEach(item => {
-    const elements = document.querySelectorAll(item.selector);
-    if (elements.length > 0) {
-      console.log(`Found ${elements.length} element(s) for ${item.selector}, updated to ${item.value}`);
-    } else {
-      console.log(`NOT FOUND: ${item.selector}`);
-    }
-  });
+  // Students
+  const studentsCount = document.querySelector('[data-value="students-count-unique"]');
+  if (studentsCount) { console.log('studentCount found');
+    studentsCount.textContent = uniqueStudents.length;
+  } else console.log('studentCount missing');
+//console.log('quickStats:student',studentsCount.textContent);
+  // Managers
+  const managersCount = document.querySelector('[data-value="managers-count-unique"]');
+  if (managersCount) { console.log('managerCount found');
+    managersCount.textContent = uniqueManagers.length;
+  } else console.log('managerCount missing');
+console.log('quickStats:manager',managersCount.textContent);
+
+  // Update deltas with recent activity calculations
+//  updateDeltas(members, assignments, tasks);
 }  
 
 /**
  * Injects data into the Task & Member Management section
  */
 function injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles) {
-  // Update all instances of each data value
-  updateAll('[data-value="members-count"]', members.length);
-  updateAll('[data-value="assignments-count"]', assignments.length);
-  updateAll('[data-value="tasks-count"]', tasks.length);
-  updateAll('[data-value="authors-count"]', authorProfiles.length);
-  updateAll('[data-value="students-count"]', uniqueStudents.length);
-  updateAll('[data-value="managers-count"]', uniqueManagers.length);
+  // Members count
+  const membersValue = document.querySelector('[data-value="members-count"]');
+  if (membersValue) {
+    membersValue.textContent = members.length;
+  }
+
+  // Assignments count
+  const assignmentsValue = document.querySelector('[data-value="assignments-count"]');
+  if (assignmentsValue) {
+    assignmentsValue.textContent = assignments.length;
+  }
+
+  // Tasks count
+  const tasksValue = document.querySelector('[data-value="tasks-count"]');
+  if (tasksValue) {
+    tasksValue.textContent = tasks.length;
+  }
+
+  // Authors count
+  const authorsValue = document.querySelector('[data-value="authors-count"]');
+  if (authorsValue) {
+    authorsValue.textContent = authorProfiles.length;
+  }
+
+  // Students count
+  const studentsValue = document.querySelector('[data-value="students-count"]');
+  if (studentsValue) {
+    studentsValue.textContent = uniqueStudents.length;
+  }
+
+  // Managers count
+  const managersValue = document.querySelector('[data-value="managers-count"]');
+  if (managersValue) {
+    managersValue.textContent = uniqueManagers.length;
+  }
 }
 
 /**
@@ -164,8 +228,8 @@ function injectActivityData(members, tasks, assignments) {
   while (activities.length < 4) {
     activities.push({
       type: 'placeholder',
-      title: 'System event did not occur',
-      description: 'Been a slow day',
+      title: 'System event occurred',
+      description: 'Additional activity',
       time: `${Math.floor(Math.random() * 6) + 1} hours ago`
     });
   }
@@ -186,18 +250,9 @@ function injectActivityData(members, tasks, assignments) {
   });
 }
 
-// Add this at the top level
-function updateAll(selector, value) {
-  const elements = document.querySelectorAll(selector);
-  if (elements.length === 0) {
-    console.warn(`No elements found for selector: ${selector}`);
-    return;
-  }
-  elements.forEach(el => {
-    el.textContent = value;
-  });
-}
-
+/**
+ * Updates delta values (e.g., "+8 new this month")
+ */
 function updateDeltas(members, assignments, tasks) {
   const now = new Date();
   const oneMonthAgo = new Date(now);
@@ -211,21 +266,30 @@ function updateDeltas(members, assignments, tasks) {
     new Date(member.created_at) > oneMonthAgo
   ).length;
   
-  updateAll('[data-delta="members-month"]', `+${newMembersThisMonth} new this month`);
+  const membersDelta = document.querySelector('[data-delta="members-month"]');
+  if (membersDelta) {
+    membersDelta.textContent = `+${newMembersThisMonth} new this month`;
+  }
 
   // New assignments this week
   const newAssignmentsThisWeek = assignments.filter(assignment => 
     new Date(assignment.assigned_at) > oneWeekAgo
   ).length;
   
-  updateAll('[data-delta="assignments-week"]', `+${newAssignmentsThisWeek} this week`);
+  const assignmentsDelta = document.querySelector('[data-delta="assignments-week"]');
+  if (assignmentsDelta) {
+    assignmentsDelta.textContent = `+${newAssignmentsThisWeek} this week`;
+  }
 
   // New tasks this month
   const newTasksThisMonth = tasks.filter(task => 
     new Date(task.created_at) > oneMonthAgo
   ).length;
   
-  updateAll('[data-delta="tasks-month"]', `+${newTasksThisMonth} added this month`);
+  const tasksDelta = document.querySelector('[data-delta="tasks-month"]');
+  if (tasksDelta) {
+    tasksDelta.textContent = `+${newTasksThisMonth} added this month`;
+  }
 }
 
 /**

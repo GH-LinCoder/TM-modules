@@ -1,8 +1,9 @@
 // ./js/dataReader.js
 
-import{createSupabaseClient, supabase} from './supabase.js';
+import{createSupabaseClient} from './supabase.js';
 
-const supabase = createSupabaseClient();
+//const
+ supabase = createSupabaseClient();
 
 export async function readAllMembers() {
   const { data, error } = await supabase

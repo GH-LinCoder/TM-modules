@@ -204,18 +204,4 @@ class AssignTaskDialog {
   }
 }
 
-// Make available globally
-window.AssignTaskDialog = AssignTaskDialog;
-
-// Usage example:
-/*
-// Open the dialog
-const assignDialog = new AssignTaskDialog();
-assignDialog.open();
-
-// Or attach to a button
-document.getElementById('openAssignDialog').addEventListener('click', () => {
-  const dialog = new AssignTaskDialog();
-  dialog.open();
-});
-*/
+export { AssignTaskDialog };

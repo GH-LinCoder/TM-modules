@@ -1,293 +1,220 @@
-// ./js/forms/createTask.js
+const state = {
+  taskId: null,
+  steps: [],
+  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // MOCK
+};
 
-class CreateTaskDialog {
-  constructor() {
-    this.dialog = document.getElementById('createTaskDialog');
-    this.taskForm = document.getElementById('createTaskForm');
-    this.stepForm = document.getElementById('createStepForm');
-    
-    // Task form elements
-    this.taskName = document.getElementById('taskName');
-    this.taskDescription = document.getElementById('taskDescription');
-    this.taskUrl = document.getElementById('taskUrl');
-    this.saveTaskBtn = document.getElementById('saveTaskBtn');
-    this.taskNameCounter = document.getElementById('taskNameCounter');
-    this.taskDescriptionCounter = document.getElementById('taskDescriptionCounter');
-    
-    // Step form elements
-    this.stepName = document.getElementById('stepName');
-    this.stepDescription = document.getElementById('stepDescription');
-    this.stepUrl = document.getElementById('stepUrl');
-    this.stepOrder = document.getElementById('stepOrder');
-    this.saveStepBtn = document.getElementById('saveStepBtn');
-    this.addStepBtn = document.getElementById('addStepBtn');
-    this.stepsList = document.getElementById('stepsList');
-    this.createdSteps = document.getElementById('createdSteps');
-    this.stepsSection = document.getElementById('stepsSection');
-    
-    // Display elements
-    this.authorName = document.getElementById('authorName');
-    this.creationDate = document.getElementById('creationDate');
-    this.taskIdDisplay = document.getElementById('taskIdDisplay');
-    
-    this.savedTaskId = null;
-    this.steps = [];
-    
-    this.init();
-  }
+// 🧠 Utility
+function showToast(message, type = 'success') {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
 
-  init() {
-    // Set up event listeners
-    this.dialog.querySelectorAll('[data-action="close-dialog"]').forEach(el => {
-      el.addEventListener('click', () => this.close());
-    });
+  const toast = document.createElement('div');
+  toast.className = `toast fixed bottom-4 right-4 px-4 py-3 rounded-lg text-white shadow-lg transition-opacity duration-300 ${
+    type === 'error' ? 'bg-red-600' : 'bg-green-600'
+  }`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
 
-    // Task form
-    this.taskForm.addEventListener('submit', (e) => this.handleSaveTask(e));
-    this.taskName.addEventListener('input', () => {
-      this.taskNameCounter.textContent = `${this.taskName.value.length}/64 characters`;
-    });
-    this.taskDescription.addEventListener('input', () => {
-      this.taskDescriptionCounter.textContent = `${this.taskDescription.value.length}/256 characters`;
-    });
-
-    // Step form
-    this.stepForm.addEventListener('submit', (e) => this.handleSaveStep(e));
-    this.stepName.addEventListener('input', () => {
-      this.stepNameCounter.textContent = `${this.stepName.value.length}/64 characters`;
-    });
-    this.stepDescription.addEventListener('input', () => {
-      this.stepDescriptionCounter.textContent = `${this.stepDescription.value.length}/256 characters`;
-    });
-    this.addStepBtn.addEventListener('click', () => {
-      this.stepOrder.value = parseInt(this.stepOrder.value) + 1;
-    });
-
-    // Set current date
-    this.creationDate.textContent = new Date().toLocaleString();
-  }
-
-  async open() {
-    // Get current user info
-    const {  user, error } = await supabase.auth.getUser();
-    
-    if (error || !user) {
-      this.showError('Authentication required');
-      return;
-    }
-
-    // Set author name
-    const userName = user.user_metadata?.full_name || user.email?.split('@')[0] || 'Unknown';
-    this.authorName.textContent = userName;
-    
-    this.resetForm();
-    this.dialog.classList.remove('hidden');
-    this.dialog.classList.add('flex');
-  }
-
-  close() {
-    this.dialog.classList.add('hidden');
-    this.dialog.classList.remove('flex');
-    this.resetForm();
-  }
-
-  resetForm() {
-    // Reset task form
-    this.taskForm.reset();
-    this.taskNameCounter.textContent = '0/64 characters';
-    this.taskDescriptionCounter.textContent = '0/256 characters';
-    
-    // Reset step form
-    this.stepForm.reset();
-    this.stepOrder.value = 3;
-    this.stepNameCounter.textContent = '0/64 characters';
-    this.stepDescriptionCounter.textContent = '0/256 characters';
-    
-    // Reset state
-    this.savedTaskId = null;
-    this.steps = [];
-    
-    // Hide displays
-    this.taskIdDisplay.classList.add('hidden');
-    this.createdSteps.classList.add('hidden');
-    this.stepsSection.classList.add('opacity-50', 'pointer-events-none');
-  }
-
-  async handleSaveTask(e) {
-    e.preventDefault();
-    
-    const {  user, error: authError } = await supabase.auth.getUser();
-    if (authError || !user) {
-      this.showError('Authentication required');
-      return;
-    }
-
-    this.saveTaskBtn.disabled = true;
-    this.saveTaskBtn.textContent = 'Saving Task...';
-
-    try {
-      const { data, error } = await supabase
-        .from('task_headers')
-        .insert({
-          name: this.taskName.value,
-          description: this.taskDescription.value,
-          external_url: this.taskUrl.value || null,
-          author_id: user.id
-        })
-        .select()
-        .single();
-
-      if (error) {
-        this.showError('Failed to create task: ' + error.message);
-      } else {
-        this.savedTaskId = data.id;
-        this.taskIdDisplay.textContent = `Task ID: ${data.id}`;
-        this.taskIdDisplay.classList.remove('hidden');
-        
-        this.stepsSection.classList.remove('opacity-50', 'pointer-events-none');
-        this.showSuccess('Task created successfully!');
-        
-        // Disable task fields
-        this.taskName.disabled = true;
-        this.taskDescription.disabled = true;
-        this.taskUrl.disabled = true;
-      }
-    } catch (error) {
-      this.showError('An unexpected error occurred');
-    } finally {
-      this.saveTaskBtn.disabled = false;
-      this.saveTaskBtn.textContent = 'Save Task';
-    }
-  }
-
-  async handleSaveStep(e) {
-    e.preventDefault();
-    
-    const {  user, error: authError } = await supabase.auth.getUser();
-    if (authError || !user || !this.savedTaskId) {
-      this.showError('Authentication required or task not saved');
-      return;
-    }
-
-    const order = parseInt(this.stepOrder.value);
-    if (order < 3) {
-      this.showError('Step order must be 3 or higher');
-      return;
-    }
-
-    this.saveStepBtn.disabled = true;
-    this.saveStepBtn.textContent = 'Saving Step...';
-
-    try {
-      let error;
-      
-      if (order === 3) {
-        // Update existing step 3
-        const { error: updateError } = await supabase
-          .from('task_steps')
-          .update({
-            name: this.stepName.value,
-            description: this.stepDescription.value,
-            external_url: this.stepUrl.value || null,
-          })
-          .eq('task_header_id', this.savedTaskId)
-          .eq('step_order', 3);
-        error = updateError;
-      } else {
-        // Insert new step
-        const { error: insertError } = await supabase
-          .from('task_steps')
-          .insert({
-            name: this.stepName.value,
-            description: this.stepDescription.value,
-            external_url: this.stepUrl.value || null,
-            step_order: order,
-            task_header_id: this.savedTaskId,
-            author_id: user.id
-          });
-        error = insertError;
-      }
-
-      if (error) {
-        this.showError('Failed to create step: ' + error.message);
-      } else {
-        // Add to local steps array
-        this.steps.push({
-          name: this.stepName.value,
-          description: this.stepDescription.value,
-          order: order,
-          external_url: this.stepUrl.value
-        });
-        
-        // Update display
-        this.createdSteps.classList.remove('hidden');
-        this.updateStepsList();
-        
-        // Reset form
-        this.stepForm.reset();
-        this.stepOrder.value = order + 1;
-        this.stepNameCounter.textContent = '0/64 characters';
-        this.stepDescriptionCounter.textContent = '0/256 characters';
-        
-        this.showSuccess('Step created successfully!');
-      }
-    } catch (error) {
-      this.showError('An unexpected error occurred');
-    } finally {
-      this.saveStepBtn.disabled = false;
-      this.saveStepBtn.textContent = 'Save Step';
-    }
-  }
-
-  updateStepsList() {
-    this.stepsList.innerHTML = '';
-    this.steps.forEach((step, index) => {
-      const div = document.createElement('div');
-      div.className = 'text-sm p-2 bg-gray-50 rounded';
-      div.textContent = `Step ${step.order}: ${step.name}`;
-      this.stepsList.appendChild(div);
-    });
-  }
-
-  showSuccess(message) {
-    this.showToast(message, 'bg-green-600');
-  }
-
-  showError(message) {
-    this.showToast(message, 'bg-red-600');
-  }
-
-  showToast(message, bgColor) {
-    // Remove any existing toast
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
-
-    const toast = document.createElement('div');
-    toast.className = `toast fixed bottom-4 right-4 px-4 py-3 rounded-lg text-white shadow-lg ${bgColor} transition-opacity duration-300`;
-    toast.textContent = message;
-    
-    document.body.appendChild(toast);
-    
-    // Auto-remove after 3 seconds
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      setTimeout(() => toast.remove(), 300);
-    }, 3000);
-  }
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
 }
 
-// Make available globally
-window.CreateTaskDialog = CreateTaskDialog;
+function resetForm() {
+  document.querySelector('#createTaskForm')?.reset();
+  document.querySelector('#createStepForm')?.reset();
 
-// Usage example:
-/*
-// Open the dialog
-const createDialog = new CreateTaskDialog();
-createDialog.open();
+  document.querySelector('#taskName')?.removeAttribute('disabled');
+  document.querySelector('#taskDescription')?.removeAttribute('disabled');
+  document.querySelector('#taskUrl')?.removeAttribute('disabled');
 
-// Or attach to a button
-document.getElementById('openCreateDialog').addEventListener('click', () => {
-  const dialog = new CreateTaskDialog();
-  dialog.open();
+  document.querySelector('#taskIdDisplay')?.classList.add('hidden');
+  document.querySelector('#stepsSection')?.classList.add('opacity-50', 'pointer-events-none');
+  document.querySelector('#createdSteps')?.classList.add('hidden');
+
+  const stepOrder = document.querySelector('#stepOrder');
+  if (stepOrder) stepOrder.value = 3;    //  why?
+
+  const stepNameCounter = document.querySelector('#stepNameCounter');
+  if (stepNameCounter) stepNameCounter.textContent = '0/64 characters';
+
+  const stepDescriptionCounter = document.querySelector('#stepDescriptionCounter');
+  if (stepDescriptionCounter) stepDescriptionCounter.textContent = '0/256 characters';
+
+  state.taskId = null;
+  state.steps = [];// on reset why null? The start position is that there are 3 steps
+}
+
+export function openDialogue(formName) {
+  const selector =`[data-form="${formName}"]`;
+    const dialogue = document.querySelector(selector);
+
+
+//  const selector = `.${formName}`;
+ // const dialogue = document.querySelector(selector);
+
+  if (!dialogue) {
+    console.warn(`Modal not found for selector: ${selector}`);
+    return;
+  }
+
+  console.log('Opening modal:', selector);
+  dialogue.classList.remove('hidden');
+  dialogue.classList.add('flex');
+
+  const creationDate = dialogue.querySelector('#creationDate'); //what is this???
+  if (creationDate) creationDate.textContent = new Date().toLocaleString(); ///what is this???
+
+  resetForm(dialogue); // optionally pass the modal to reset only its form
+}
+
+
+function closeDialogue() {
+  const dialogue = document.querySelector('.create-task-dialogue');/// .create is probably wrong
+  if (!dialogue) return;   // why is this function looking in the DOM? Why not pass it?
+
+  dialogue.classList.add('hidden');
+  dialogue.classList.remove('flex');
+  resetForm();
+}
+
+// 📝 Task Creation
+async function handleTaskSubmit(e) {
+  e.preventDefault();  //Why prevent default?
+
+  const saveBtn = document.querySelector('#saveTaskBtn');
+  const taskName = document.querySelector('#taskName')?.value;
+  const taskDescription = document.querySelector('#taskDescription')?.value;
+  const taskUrl = document.querySelector('#taskUrl')?.value;
+// this gives no chance to validate anything. This is stupid
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving Task...';
+
+  const { error, data } = await supabase
+    .from('task_headers')
+    .insert({
+      name: taskName,
+      description: taskDescription,
+      external_url: taskUrl || null,
+      author_id: user
+    })
+    .select()
+    .single();
+
+  if (error) {
+    showToast('Failed to create task: ' + error.message, 'error');
+  } else {
+    state.taskId = data.id;
+    document.querySelector('#taskIdDisplay').textContent = `Task ID: ${data.id}`;
+    document.querySelector('#taskIdDisplay')?.classList.remove('hidden');
+    document.querySelector('#stepsSection')?.classList.remove('opacity-50', 'pointer-events-none');
+
+    document.querySelector('#taskName')?.setAttribute('disabled', true);
+    document.querySelector('#taskDescription')?.setAttribute('disabled', true);
+    document.querySelector('#taskUrl')?.setAttribute('disabled', true);
+
+    showToast('Task created successfully!');
+  }
+
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'Save Task';
+}
+
+// 🧩 Step Creation
+async function handleStepSubmit(e) {
+  e.preventDefault();
+
+  const order = parseInt(document.querySelector('#stepOrder')?.value);
+  const stepName = document.querySelector('#stepName')?.value;
+  const stepDescription = document.querySelector('#stepDescription')?.value;
+  const stepUrl = document.querySelector('#stepUrl')?.value;
+  const saveBtn = document.querySelector('#saveStepBtn');
+
+  if (!state.taskId || !state.user) {
+    showToast('Task not saved or user missing', 'error');
+    return;
+  }
+
+  if (order < 3) {
+    showToast('Step order must be 3 or higher', 'error');
+    return;
+  }
+
+  saveBtn.disabled = true;
+  saveBtn.textContent = 'Saving Step...';
+
+  let error;
+  if (order === 3) {
+    const { error: updateError } = await supabase
+      .from('task_steps')
+      .update({
+        name: stepName,
+        description: stepDescription,
+        external_url: stepUrl || null
+      })
+      .eq('task_header_id', state.taskId)
+      .eq('step_order', 3);
+    error = updateError;
+  } else {
+    const { error: insertError } = await supabase
+      .from('task_steps')
+      .insert({
+        name: stepName,
+        description: stepDescription,
+        external_url: stepUrl || null,
+        step_order: order,
+        task_header_id: state.taskId,
+        author_id: state.user.id
+      });
+    error = insertError;
+  }
+
+  if (error) {
+    showToast('Failed to save step: ' + error.message, 'error');
+  } else {
+    state.steps.push({ name: stepName, description: stepDescription, order, external_url: stepUrl });
+    updateStepsList();
+    document.querySelector('#createdSteps')?.classList.remove('hidden');
+    document.querySelector('#createStepForm')?.reset();
+    document.querySelector('#stepOrder').value = order + 1;
+    document.querySelector('#stepNameCounter').textContent = '0/64 characters';
+    document.querySelector('#stepDescriptionCounter').textContent = '0/256 characters';
+    showToast('Step saved!');
+  }
+
+  saveBtn.disabled = false;
+  saveBtn.textContent = 'Save Step';
+}
+
+function updateStepsList() {
+  const list = document.querySelector('#stepsList');
+  if (!list) return;
+  list.innerHTML = '';
+  state.steps.forEach(step => {
+    const div = document.createElement('div');
+    div.className = 'text-sm p-2 bg-gray-50 rounded';
+    div.textContent = `Step ${step.order}: ${step.name}`;
+    list.appendChild(div);
+  });
+}
+
+
+// ✍️ Form Listeners
+document.querySelector('#createTaskForm')?.addEventListener('submit', handleTaskSubmit);
+document.querySelector('#createStepForm')?.addEventListener('submit', handleStepSubmit);
+
+// ✏️ Character Counters
+document.querySelector('#taskName')?.addEventListener('input', (e) => {
+  document.querySelector('#taskNameCounter').textContent = `${e.target.value.length}/64 characters`;
 });
-*/
+document.querySelector('#taskDescription')?.addEventListener('input', (e) => {
+  document.querySelector('#taskDescriptionCounter').textContent = `${e.target.value.length}/256 characters`;
+});
+document.querySelector('#stepName')?.addEventListener('input', (e) => {
+  document.querySelector('#stepNameCounter').textContent = `${e.target.value.length}/64 characters`;
+});
+document.querySelector('#stepDescription')?.addEventListener('input', (e) => {
+  document.querySelector('#stepDescriptionCounter').textContent = `${e.target.value.length}/256 characters`;
+});

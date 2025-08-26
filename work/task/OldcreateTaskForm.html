@@ -1,10 +1,19 @@
+<--!DOCTYPE html>
+<head>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body-->
 <!-- create-task-dialog.html -->
-<div id="createTaskDialog" class="create-task-dialog hidden fixed inset-0 z-50 flex items-center justify-center">
+<div id="createTaskDialog" data-form="create-task"  class="create-task-dialogue  fixed inset-0 z-50 flex items-center justify-center">
+
+<!--div id="createTaskDialog" data-form="create-task"  class="create-task-dialogue hidden fixed inset-0 z-50 flex items-center justify-center"-->
   <!-- Backdrop -->
   <div class="fixed inset-0 bg-black/80" data-action="close-dialog"></div>
   
   <!-- Dialog -->
   <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
+
+    <!--Close-->
     <div class="p-6 border-b border-gray-200">
       <div class="flex items-center justify-between">
         <h3 class="text-xl font-semibold text-gray-900">Create New Task</h3>
@@ -88,18 +97,19 @@
             >
               Save Task
             </button>
-          </form>
-        </div>
-      </div>
+          </form> 
+        </div><!-- end of input of task_header  -->
+      </div> <!-- end of task_header  -->
 
       <!-- Step Creation Section -->
+       <!-- steps head  -->
       <div id="stepsSection" class="bg-white rounded-lg border border-gray-200 opacity-50 pointer-events-none">
         <div class="p-6 border-b border-gray-200">
           <h4 class="text-lg font-semibold text-gray-900 mb-1">Task Steps</h4>
           <p class="text-sm text-gray-600">
             Add steps that guide users through the task completion process.
           </p>
-        </div>
+        </div> <!-- end of steps head  -->
         
         <div class="p-6">
           <div id="createdSteps" class="hidden mb-4">
@@ -180,9 +190,9 @@
                 </svg>
               </button>
             </div>
-          </form>
-        </div>
-      </div>
-    </div>
+          </form> <!-- end of steps input form  -->
+        </div><!-- end of input steps  -->
+      </div><!-- end of steps  -->
+    </div><!-- end of Task (header& steps)  -->
   </div>
 </div>
