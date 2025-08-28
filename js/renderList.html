@@ -1,0 +1,85 @@
+/**
+ * Renders a list of records with pagination controls.
+ * @param {Array<object>} records - An array of record objects to display.
+ * @param {HTMLElement} containerEl - The DOM element where the list will be rendered.
+ * @param {object} metadata - An object containing pagination metadata.
+ * @param {number} metadata.pageNumber - The current page number.
+ * @param {number} metadata.totalPages - The total number of pages.
+ * @param {function} onNavChange - A callback function to handle page changes. It receives the new page number.
+ */
+function renderRecordsAsList(records, containerEl, metadata, onNavChange) {
+    // Clear any existing content in the container
+    containerEl.innerHTML = '';
+
+    // Create a container for the list of records
+    const listContainer = document.createElement('div');
+    listContainer.classList.add('space-y-4');
+
+    // Iterate over the records to create a list item for each
+    records.forEach(record => {
+        const recordItem = document.createElement('div');
+        recordItem.classList.add('bg-white', 'p-6', 'rounded-xl', 'shadow-md', 'border', 'border-gray-200');
+
+        // Iterate over the record's properties to display them
+        for (const key in record) {
+            if (Object.hasOwnProperty.call(record, key)) {
+                const itemWrapper = document.createElement('div');
+                itemWrapper.classList.add('flex', 'flex-col', 'space-y-1', 'py-1');
+
+                const label = document.createElement('span');
+                label.classList.add('text-xs', 'font-semibold', 'text-gray-500', 'uppercase');
+                // Format the key for better readability (e.g., 'firstName' -> 'First Name')
+                label.textContent = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+
+                const value = document.createElement('span');
+                value.classList.add('text-sm', 'text-gray-900', 'truncate');
+                value.textContent = record[key];
+
+                itemWrapper.appendChild(label);
+                itemWrapper.appendChild(value);
+                recordItem.appendChild(itemWrapper);
+            }
+        }
+        listContainer.appendChild(recordItem);
+    });
+
+    // Create the pagination controls
+    const navWrapper = document.createElement('div');
+    navWrapper.classList.add('flex', 'justify-between', 'items-center', 'mt-6', 'py-4');
+
+    // Previous button
+    const prevBtn = document.createElement('button');
+    prevBtn.textContent = 'Previous';
+    prevBtn.classList.add('px-4', 'py-2', 'rounded-lg', 'font-semibold', 'transition');
+    prevBtn.disabled = metadata.pageNumber <= 1;
+    prevBtn.classList.add(prevBtn.disabled ? 'bg-gray-300', 'text-gray-500', 'cursor-not-allowed' : 'bg-blue-600', 'text-white', 'hover:bg-blue-700');
+    prevBtn.addEventListener('click', () => {
+        if (metadata.pageNumber > 1) {
+            onNavChange(metadata.pageNumber - 1);
+        }
+    });
+
+    // Page number display
+    const pageDisplay = document.createElement('span');
+    pageDisplay.classList.add('text-md', 'font-medium', 'text-gray-700');
+    pageDisplay.textContent = `Page ${metadata.pageNumber} of ${metadata.totalPages}`;
+
+    // Next button
+    const nextBtn = document.createElement('button');
+    nextBtn.textContent = 'Next';
+    nextBtn.classList.add('px-4', 'py-2', 'rounded-lg', 'font-semibold', 'transition');
+    nextBtn.disabled = metadata.pageNumber >= metadata.totalPages;
+    nextBtn.classList.add(nextBtn.disabled ? 'bg-gray-300', 'text-gray-500', 'cursor-not-allowed' : 'bg-blue-600', 'text-white', 'hover:bg-blue-700');
+    nextBtn.addEventListener('click', () => {
+        if (metadata.pageNumber < metadata.totalPages) {
+            onNavChange(metadata.pageNumber + 1);
+        }
+    });
+
+    navWrapper.appendChild(prevBtn);
+    navWrapper.appendChild(pageDisplay);
+    navWrapper.appendChild(nextBtn);
+
+    containerEl.appendChild(listContainer);
+    containerEl.appendChild(navWrapper);
+}
