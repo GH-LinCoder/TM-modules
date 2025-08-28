@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Table Renderer</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+
+        /* Custom styles for the table */
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #4b5563;
+        }
+        
+        tr:hover {
+            background-color: #f3f4f6;
+        }
+
+        /* Responsive table behavior for smaller screens */
+        @media (max-width: 640px) {
+            table, thead, tbody, th, td, tr {
+                display: block;
+            }
+
+            thead tr {
+                position: absolute;
+                top: -9999px;
+                left: -9999px;
+            }
+
+            tr {
+                border: 1px solid #ccc;
+                margin-bottom: 16px;
+                border-radius: 8px;
+                overflow: hidden;
+            }
+            
+            td {
+                border-bottom: 1px solid #ddd;
+                position: relative;
+                padding-left: 50%;
+                text-align: right;
+            }
+
+            td:before {
+                position: absolute;
+                top: 0;
+                left: 6px;
+                width: 45%;
+                padding-right: 10px;
+                white-space: nowrap;
+                text-align: left;
+                font-weight: bold;
+                content: attr(data-label);
+            }
+        }
+    </style>
+</head>
+<body class="p-8">
+
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">Dynamic Table</h1>
+        <p class="text-gray-600 mb-6">This example demonstrates a flexible renderer that creates a table from any given data and pagination info.</p>
+
+        <!-- Container for the table and controls -->
+        <div id="table-output" class="space-y-6">
+            <!-- Table will be inserted here dynamically -->
+        </div>
+    </div>
+
+    <script>
+        // A helper function to create HTML elements more cleanly
+        const createEl = (tag, classes = [], content = '') => {
+            const el = document.createElement(tag);
+            if (classes.length) {
+                el.classList.add(...classes);
+            }
+            el.innerHTML = content;
+            return el;
+        };
+
+        /**
+         * Renders a table with pagination controls and returns it as a string.
+         * This function is a "dumb" renderer; it does not fetch data itself.
+         * @param {Array<object>} records - The array of records to display on the current page.
+         * @param {number} pageNumber - The current page number.
+         * @param {number} totalPages - The total number of pages.
+         * @param {function} onPageChange - The callback function for page navigation.
+         * @returns {HTMLElement} The complete table element with navigation controls.
+         */
+        function renderTable(records, pageNumber, totalPages, onPageChange) {
+            // Main wrapper for the table and navigation
+            const wrapper = createEl('div', ['bg-white', 'p-6', 'rounded-xl', 'shadow-md', 'space-y-6']);
+
+            // Create the table element
+            const table = createEl('table', ['min-w-full', 'divide-y', 'divide-gray-200']);
+            const thead = createEl('thead');
+            const tbody = createEl('tbody', ['bg-white', 'divide-y', 'divide-gray-200']);
+
+            // Generate table headers based on the keys of the first record
+            if (records.length > 0) {
+                const headerRow = createEl('tr');
+                Object.keys(records[0]).forEach(key => {
+                    const th = createEl('th', ['px-6', 'py-3', 'text-xs', 'font-medium', 'text-gray-500', 'uppercase', 'tracking-wider'], key.charAt(0).toUpperCase() + key.slice(1));
+                    headerRow.appendChild(th);
+                });
+                thead.appendChild(headerRow);
+            }
+            table.appendChild(thead);
+
+            // Populate table body with rows and cells
+            records.forEach(record => {
+                const row = createEl('tr', ['hover:bg-gray-50']);
+                Object.keys(record).forEach(key => {
+                    const cell = createEl('td', ['px-6', 'py-4', 'whitespace-nowrap', 'text-sm', 'text-gray-900']);
+                    // Add a data-label for responsive design on mobile
+                    cell.setAttribute('data-label', key.charAt(0).toUpperCase() + key.slice(1) + ':');
+                    cell.textContent = record[key];
+                    row.appendChild(cell);
+                });
+                tbody.appendChild(row);
+            });
+            table.appendChild(tbody);
+
+            // Create the pagination controls
+            const navWrapper = createEl('div', ['flex', 'justify-between', 'items-center', 'mt-4', 'py-4']);
+
+            const prevBtn = createEl('button', ['px-4', 'py-2', 'rounded-lg', 'font-semibold', 'transition', 'duration-300']);
+            prevBtn.textContent = 'Previous';
+            if (pageNumber <= 1) {
+                prevBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                prevBtn.disabled = true;
+            } else {
+                prevBtn.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                prevBtn.addEventListener('click', () => onPageChange(pageNumber - 1));
+            }
+
+            const pageDisplay = createEl('span', ['text-md', 'font-medium', 'text-gray-700']);
+            pageDisplay.textContent = `Page ${pageNumber} of ${totalPages}`;
+
+            const nextBtn = createEl('button', ['px-4', 'py-2', 'rounded-lg', 'font-semibold', 'transition', 'duration-300']);
+            nextBtn.textContent = 'Next';
+            if (pageNumber >= totalPages) {
+                nextBtn.classList.add('bg-gray-300', 'text-gray-500', 'cursor-not-allowed');
+                nextBtn.disabled = true;
+            } else {
+                nextBtn.classList.add('bg-blue-600', 'text-white', 'hover:bg-blue-700');
+                nextBtn.addEventListener('click', () => onPageChange(pageNumber + 1));
+            }
+
+            navWrapper.appendChild(prevBtn);
+            navWrapper.appendChild(pageDisplay);
+            navWrapper.appendChild(nextBtn);
+
+            wrapper.appendChild(table);
+            wrapper.appendChild(navWrapper);
+
+            return wrapper;
+        }
+
+        // --- Example of how a calling function would use the renderer ---
+
+        // Assume this data is received from your database
+        const dbRecords = [
+            { id: 1, name: 'Apple', type: 'Fruit', price: 0.50, stock: 120, organic: true },
+            { id: 2, name: 'Carrot', type: 'Vegetable', price: 0.25, stock: 80, organic: false },
+            { id: 3, name: 'Potato', type: 'Vegetable', price: 0.35, stock: 200, organic: true },
+            { id: 4, name: 'Banana', type: 'Fruit', price: 0.60, stock: 150, organic: false },
+            { id: 5, name: 'Strawberry', type: 'Fruit', price: 1.20, stock: 75, organic: true },
+            { id: 6, name: 'Broccoli', type: 'Vegetable', price: 0.75, stock: 90, organic: true },
+            { id: 7, name: 'Grapes', type: 'Fruit', price: 1.50, stock: 110, organic: false },
+            { id: 8, name: 'Onion', type: 'Vegetable', price: 0.40, stock: 130, organic: false },
+            { id: 9, name: 'Orange', type: 'Fruit', price: 0.85, stock: 140, organic: true },
+            { id: 10, name: 'Lettuce', type: 'Vegetable', price: 0.90, stock: 60, organic: false }
+        ];
+
+        // These values would also be passed from your main application's state
+        const currentPage = 1;
+        const totalPages = 8;
+        const mainContainer = document.getElementById('table-output');
+
+        // This is the function that your application would use to fetch data and render
+        const fetchAndRenderPage = (pageNumber) => {
+            // In a real application, you would make an API call here
+            // to fetch the specific 10 records for 'pageNumber'.
+            // For this example, we just use the pre-defined data and parameters.
+            
+            // Assume the API returns the 10 records for the requested page.
+            const recordsToRender = dbRecords; 
+
+            // The 'onPageChange' callback is the function itself, allowing for a recursive call
+            const tableElement = renderTable(recordsToRender, pageNumber, totalPages, fetchAndRenderPage);
+            
+            // Insert the new table and controls into the DOM
+            mainContainer.innerHTML = ''; // Clear existing content
+            mainContainer.appendChild(tableElement);
+        };
+
+        // Initial render on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchAndRenderPage(currentPage);
+        });
+
+    </script>
+</body>
+</html>
