@@ -19,25 +19,37 @@ export function setupAdminListeners(container) {
   
     const action = target.dataset.action;
 
-    console.log('setupAdminListeners (', action, ')');
+    console.log('setupAdminListeners (',action,')');
 
     switch (action) {
       case 'create-task-dialogue':
-    console.log('case: (', action, ')');
-  togglePanel('createTaskForm');      
-//            openDialogue(action);
+        console.log('case: (', action, ')');
+        togglePanel('createTaskForm');      
         break;
 
       case 'assign-task-dialogue':
-        //showForm('assign-task-dialogue');
+        console.log('case: (', action, ')');
+        togglePanel('assignTaskForm');      
         break;
 
-      case 'close-modal':
-//        hideAllForms();
+        /*
+      case 'move-student-dialogue':
+        console.log('case: (', action, ')');
+        togglePanel('moveStudentForm');      
         break;
+       */
 
-      case 'navigate':
- //       navigateTo(target.dataset.page);
+        case 'move-student-dialogue':
+          console.log('case: (', action, ')');
+          togglePanel('moveStudentForm');
+          waitForDialogAndInit();
+          break;
+
+
+
+      case 'relate-approfile-dialogue':
+        console.log('case: (', action, ')');
+        togglePanel('realateApprofilesForm');      
         break;
 
       case 'sign-out':
@@ -49,4 +61,42 @@ export function setupAdminListeners(container) {
     }
   });
 
+}
+
+function waitForDialogAndInit() {  // for the advance student Class 
+  const observer = new MutationObserver((mutations, obs) => {
+    const dialogEl = document.getElementById('advanceTaskDialog');
+    if (dialogEl) {
+      obs.disconnect(); // Stop observing once found
+
+      const dialog = new AdvanceTaskDialog({
+        onAdvance: () => {
+          console.log('Advance confirmed');
+          updateTaskSteps('advance'); //<<<<<<<<<<<<<<<<<<<<need to code this
+        },
+        onReverse: () => {
+          console.log('Advance reversed');
+          updateTaskSteps('reverse');  //<<<<<<<<<<<<<<<<<<<<need to code this
+        },
+        onClose: () => {
+          console.log('Dialog closed');
+        },
+        onAction: (action) => {
+          console.log(`Action triggered: ${action}`);
+        }
+      });
+
+      dialog.show(); // Optional: show the dialog immediately  ???????????
+    }
+  });
+
+  observer.observe(document.getElementById('main-container'), {
+    childList: true,
+    subtree: true
+  });
+}
+
+function updateTaskSteps(actionType) {
+  // Fill in your DB logic here
+  console.log(`Updating task steps for: ${actionType}`);
 }
