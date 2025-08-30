@@ -1,62 +1,16 @@
-import { createSupabaseClient } from "./db/supabase.js";
-//import * as dataReader from "./db/dataReader.js";
-import { loadAdminDashWithData } from './dash/loadAdminDashWithData.js';
-import { setupAdminListeners } from './ui/adminListeners.js';
-import { setupNavigationListeners} from "./ui/navListeners.js";
-
+//reactToPageButtons.js
+import { loadAdminDashWithData } from '../dash/loadAdminDashWithData.js';
 // === GLOBAL STATE ===
 const dynamicPanels = [];
 const DASHBOARD_PAGES = new Set(['adminDash', 'memberDash']);
 
-supabase = createSupabaseClient(); 
 
-// We'll define notesPanel here, but get it when needed
-let notesPanel = null;
+console.log('ui/reactToPageButtons.js');
+//import { loadPage } from './.js';
 
-// === ON APP LOAD ===
-document.addEventListener('DOMContentLoaded', onAppLoad);
-
-
-async function onAppLoad() {
-  // Ensure notesPanel is available
-  notesPanel = document.getElementById('notes-panel');
-  
-  // Initialize with default dashboard
-  if (dynamicPanels.length === 0) {
-    dynamicPanels[0] = 'adminDash'; // or 'memberDash'
-  }
-
-  // Load the default dashboard
-  await loadPage(dynamicPanels[0], notesPanel);
-  
-  await  loadAdminDashWithData();  //12:35 Aug 25 2025. Call direct, not through local function
-  
-  // Set up click listeners on navigation buttons
-  setupNavigationListeners();
-  setupAdminListeners(notesPanel);
-
-}
-
-/*
-// === NAVIGATION LISTENER SETUP ===
-function setupNavigationListeners() {
-  const navButtons = document.querySelectorAll('nav button');
-
-  navButtons.forEach(button => {
-    // Prevent duplicate listeners
-    const cloned = button.cloneNode(true);
-    button.replaceWith(cloned);
-
-    cloned.addEventListener('click', async function () {
-      const pageName = this.getAttribute('data-page');
-      await handleNavigation(this, pageName);
-    });
-  });
-}
-*/
-/*
 // === HANDLE NAVIGATION LOGIC ===
-async function handleNavigation(button, pageName) {
+export async function handleNavigation(button, pageName) {
+    console.log('handleNavigation()', { button, pageName });
   const navButtons = document.querySelectorAll('nav button');
   const mainContainer = document.getElementById('main-container');
 
@@ -67,14 +21,17 @@ async function handleNavigation(button, pageName) {
   // Check if it's a dashboard switch
   if (DASHBOARD_PAGES.has(pageName)) {
     await switchDashboard(pageName);
+    if(pageName==='adminDash'){
+      await  loadAdminDashWithData();  //12:35 Aug 25 2025. Call direct, not through local function
+    }
   } else {
     await togglePanel(pageName);
     resizePanels();
   }
 }
-*/
-/*
+
 async function switchDashboard(dashboardName) {
+    console.log('switchDashboard()', dashboardName);
   const mainContainer = document.getElementById('main-container');
   if (!mainContainer) {
     console.error('Element #main-container not found in DOM');
@@ -91,9 +48,9 @@ async function switchDashboard(dashboardName) {
 
 //  let firstChild = mainContainer.firstChild;
     let firstChild = mainContainer.firstElementChild;
-console.log('firstChild:', firstChild);
-console.log('firstChild.nodeType:', firstChild.nodeType);
-console.log('firstChild.nodeName:', firstChild.nodeName);
+//console.log('firstChild:', firstChild);
+//console.log('firstChild.nodeType:', firstChild.nodeType);
+//console.log('firstChild.nodeName:', firstChild.nodeName);
 
 
   // If no child exists, create one
@@ -114,11 +71,12 @@ console.log('firstChild.nodeName:', firstChild.nodeName);
 
   resizePanels();
 }
-*/
-/*
+
 // === PANEL TOGGLE LOGIC ===    oddly this is where you send a page to be loaded 
 export async function togglePanel(pageName) {
-  const mainContainer = document.getElementById('main-container');
+  console.log('togglePanel()', pageName);
+
+    const mainContainer = document.getElementById('main-container');
 
   // Check if panel is already open
   const panelIndex = dynamicPanels.findIndex(p => 
@@ -151,9 +109,10 @@ export async function togglePanel(pageName) {
 
   resizePanels();
 }
-*/
+
 // === LAYOUT MANAGEMENT ===
 function resizePanels() {
+    console.log('resizePanels()');
   const mainContainer = document.getElementById('main-container');
   const totalPanels = 1 + dynamicPanels.length - 1; // 1 for dashboard + others
   const width = `${Math.floor(90 / totalPanels)}%`;
@@ -211,4 +170,4 @@ console.log('pageUrl:',pageUrl);
       </div>
     `;
   }
-} 
+}

@@ -1,5 +1,13 @@
 import { openDialogue } from '../work/task/createTask.js';
-import { togglePanel} from '../flexmain.js';
+import { togglePanel} from './reactToPageButtons.js';
+
+
+import { AdvanceTaskDialog } from '../components/AdvanceTaskDialog.js';
+//import { signOut } from '../auth/auth.js';
+
+console.log('ui/adminListeners.js');
+
+
 /**
  * Sets up event listeners for the admin dashboard
  * @param {Element} container - The container element
@@ -64,6 +72,9 @@ export function setupAdminListeners(container) {
 }
 
 function waitForDialogAndInit() {  // for the advance student Class 
+console.log('waitForDialogAndInit()');
+
+  // Use MutationObserver to watch for the dialog element
   const observer = new MutationObserver((mutations, obs) => {
     const dialogEl = document.getElementById('advanceTaskDialog');
     if (dialogEl) {
@@ -98,5 +109,5 @@ function waitForDialogAndInit() {  // for the advance student Class
 
 function updateTaskSteps(actionType) {
   // Fill in your DB logic here
-  console.log(`Updating task steps for: ${actionType}`);
+  console.log(`Updating (needed) task steps for: ${actionType}`);
 }

@@ -39,7 +39,7 @@ export async function loadAdminDashWithData() {
 
     // Inject data into DOM
     injectStatsData(members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors);
-    injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles);
+    injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles); //authorProfiles?
     injectActivityData(members, tasks, assignments);
 
  updateDeltas(members, assignments, tasks);
@@ -103,8 +103,8 @@ function injectManagementData(members, tasks, assignments, uniqueStudents, uniqu
   updateAll('[data-value="assignments-count"]', assignments.length);
   updateAll('[data-value="tasks-count"]', tasks.length);
   updateAll('[data-value="authors-count"]', authorProfiles.length);
-  updateAll('[data-value="students-count"]', uniqueStudents.length);
-  updateAll('[data-value="managers-count"]', uniqueManagers.length);
+  updateAll('[data-value="students-count"]', uniqueStudents.length); //need hange html students-count-unique
+  updateAll('[data-value="managers-count"]', uniqueManagers.length); //need hange html managers-count-unique
 }
 
 /**
