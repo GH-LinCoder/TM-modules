@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Script Loading</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+
+    <div id="app-container" class="w-full max-w-lg bg-white p-8 rounded-xl shadow-lg">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-6">Dynamic Form Loader</h1>
+        <p class="text-center text-gray-600 mb-8">Click a button below to load a different form and its associated JavaScript handler.</p>
+
+        <!-- The main buttons to "load" different forms -->
+        <div class="flex justify-center space-x-4 mb-8">
+            <button id="load-profile" class="px-6 py-3 bg-blue-500 text-white rounded-full font-semibold shadow-md hover:bg-blue-600 transition-colors">Load Profile Form</button>
+            <button id="load-contact" class="px-6 py-3 bg-indigo-500 text-white rounded-full font-semibold shadow-md hover:bg-indigo-600 transition-colors">Load Contact Form</button>
+        </div>
+
+        <!-- This is where the dynamic HTML content will be injected -->
+        <div id="dynamic-content" class="w-full bg-gray-50 p-6 rounded-lg border border-gray-200">
+            <p class="text-center text-gray-500">Form will appear here...</p>
+        </div>
+    </div>
+
+    <!-- The central application logic -->
+    <script type="module">
+        // --- Simulated dynamic script files for demonstration ---
+        // In a real app, these would be separate files on your server.
+        // We put them here for a single-file, runnable example.
+
+        const profileHandlerScript = `
+            export function handleForm(form) {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                console.log('Profile form submitted. Data:', data);
+                // Add your profile-specific logic here, e.g., API call to save user profile.
+                alert('Profile saved! Check the console for data.');
+            }
+        `;
+
+        const contactHandlerScript = `
+            export function handleForm(form) {
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData.entries());
+                console.log('Contact form submitted. Data:', data);
+                // Add your contact-specific logic here, e.g., API call to send a message.
+                alert('Contact form submitted! Check the console for data.');
+            }
+        `;
+
+        // The in-memory URL for our simulated scripts.
+        const scriptUrls = {
+            profile: URL.createObjectURL(new Blob([profileHandlerScript], { type: 'application/javascript' })),
+            contact: URL.createObjectURL(new Blob([contactHandlerScript], { type: 'application/javascript' })),
+        };
+        // ------------------------------------------------------------------
+
+        // Your central, delegated listener and loading logic
+        document.getElementById('app-container').addEventListener('click', async (event) => {
+            const dynamicContentDiv = document.getElementById('dynamic-content');
+
+            // Handle the "load form" buttons
+            const loadButton = event.target;
+            if (loadButton.id === 'load-profile') {
+                dynamicContentDiv.innerHTML = `
+                    <form data-form-name="profile" class="p-4 bg-white rounded-lg shadow">
+                        <h2 class="text-2xl font-semibold mb-4 text-gray-700">Profile Form</h2>
+                        <input type="text" name="username" placeholder="Username" class="w-full px-4 py-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <input type="email" name="email" placeholder="Email" class="w-full px-4 py-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                        <button type="submit" class="w-full px-4 py-2 bg-blue-500 text-white rounded-md font-semibold hover:bg-blue-600 transition-colors">Submit Profile</button>
+                    </form>
+                `;
+            } else if (loadButton.id === 'load-contact') {
+                dynamicContentDiv.innerHTML = `
+                    <form data-form-name="contact" class="p-4 bg-white rounded-lg shadow">
+                        <h2 class="text-2xl font-semibold mb-4 text-gray-700">Contact Form</h2>
+                        <input type="text" name="subject" placeholder="Subject" class="w-full px-4 py-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <textarea name="message" placeholder="Your Message" class="w-full px-4 py-2 border rounded-md mb-4 focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+                        <button type="submit" class="w-full px-4 py-2 bg-indigo-500 text-white rounded-md font-semibold hover:bg-indigo-600 transition-colors">Submit Contact</button>
+                    </form>
+                `;
+            }
+        });
+
+        // The core delegated listener for form submission
+        document.getElementById('app-container').addEventListener('submit', async (event) => {
+            const form = event.target;
+            if (form.tagName.toLowerCase() !== 'form') {
+                return; // Ensure it's a form submission
+            }
+
+            event.preventDefault(); // Prevent page reload
+
+            // Use a switch to read the data-name attribute
+            const formName = form.dataset.formName;
+
+            try {
+                // Construct the file path dynamically based on the form name
+                const moduleUrl = scriptUrls[formName];
+
+                if (!moduleUrl) {
+                    throw new Error(`No handler script found for form: ${formName}`);
+                }
+                
+                // Dynamically import the specific handler module
+                const handlerModule = await import(moduleUrl);
+                
+                // Call the specific handler function within the module
+                // We assume the exported function is named `handleForm` for consistency.
+                handlerModule.handleForm(form);
+
+            } catch (error) {
+                console.error("Error loading or executing form handler:", error);
+            }
+        });
+
+        // This replaces the alert() function with a custom modal for better user experience.
+        window.alert = function(message) {
+            const modal = document.createElement('div');
+            modal.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:white;padding:24px;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15);z-index:9999;max-width:300px;text-align:center;';
+            modal.innerHTML = `
+                <p class="text-lg font-semibold mb-4">${message}</p>
+                <button onclick="this.parentNode.remove()" class="px-4 py-2 bg-blue-500 text-white rounded-full">OK</button>
+            `;
+            document.body.appendChild(modal);
+        };
+    </script>
+</body>
+</html>
