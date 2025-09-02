@@ -1,0 +1,430 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advance Task Dialog</title>
+  <style>
+    /* Dialog styles */
+    #advanceTaskDialog {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .dialog-content {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .dialog-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+    
+    .close-button:hover {
+      color: #374151;
+    }
+    
+    .student-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    
+    .student-name {
+      font-weight: 500;
+      color: #1f2937;
+    }
+    
+    .checkmark {
+      margin-left: 8px;
+      color: #10b981;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .scale-110 {
+      transform: scale(1.1);
+      transition: transform 0.2s ease;
+    }
+    
+    .action-button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.2s;
+    }
+    
+    .action-button:hover:not(:disabled) {
+      background-color: #2563eb;
+    }
+    
+    .action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .arrow-icon {
+      margin-left: 8px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    .button-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    
+    .secondary-button {
+      background-color: #e5e7eb;
+      color: #374151;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    .secondary-button:hover {
+      background-color: #d1d5db;
+    }
+    
+    .primary-button {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    .primary-button:hover {
+      background-color: #059669;
+    }
+  </style>
+</head>
+<body>
+  <!-- The dialog will be injected here dynamically -->
+  
+  <script>
+    class AdvanceTaskDialog {
+      constructor({ onAdvance, onReverse, onClose, onAction } = {}) {
+        // Callback functions with defaults
+        this.onAdvance = onAdvance || (() => {});
+        this.onReverse = onReverse || (() => {});
+        this.onClose = onClose || (() => {});
+        this.onAction = onAction || (() => {});
+
+        // DOM references - will be set when show is called
+        this.dialog = null;
+        this.advanceButton = null;
+        this.closeButtons = null;
+        this.actionButtons = null;
+        this.currentStudentName = null;
+        this.nextStudentName = null;
+        this.currentStepCheckmark = null;
+        this.forwardArrow = null;
+        this.backwardArrow = null;
+
+        // State
+        this.commitTimeout = null;
+        this.pendingAdvance = false;
+        this.advanceConfirmed = false;
+        this.resolvePromise = null;
+        this.rejectPromise = null;
+        this.promise = null;
+        this.controller = null;
+      }
+
+      /**
+       * Creates the dialog element and injects it into the DOM
+       * @returns {Promise<boolean>} Resolves with true if student was moved, false otherwise
+       */
+      async show(container = document.body) {
+        // Create the dialog if it doesn't exist
+        if (!document.getElementById('advanceTaskDialog')) {
+          await this.createDialogElement(container);
+        }
+        
+        // Get DOM references
+        this.dialog = document.getElementById('advanceTaskDialog');
+        this.advanceButton = this.dialog.querySelector('#advanceButton');
+        this.closeButtons = this.dialog.querySelectorAll('[data-action="close-dialog"]');
+        this.actionButtons = this.dialog.querySelectorAll('[data-button]');
+        this.currentStudentName = this.dialog.querySelector('#currentStudentName');
+        this.nextStudentName = this.dialog.querySelector('#nextStudentName');
+        this.currentStepCheckmark = this.dialog.querySelector('#currentStepCheckmark');
+        this.forwardArrow = this.dialog.querySelector('#forwardArrow');
+        this.backwardArrow = this.dialog.querySelector('#backwardArrow');
+
+        // Create promise for the result
+        this.promise = new Promise((resolve, reject) => {
+          this.resolvePromise = resolve;
+          this.rejectPromise = reject;
+        });
+
+        // Reset state
+        this.pendingAdvance = false;
+        this.advanceConfirmed = false;
+        
+        // Show the dialog
+        this.dialog.style.display = 'flex';
+        
+        // Initialize event listeners
+        this.initEventListeners();
+        
+        return this.promise;
+      }
+
+      async createDialogElement(container) {
+        const dialogHtml = `
+          <div id="advanceTaskDialog">
+            <div class="dialog-content">
+              <div class="dialog-header">
+                <h3 class="dialog-title">Advance Student</h3>
+                <button data-action="close-dialog" class="close-button">&times;</button>
+              </div>
+              
+              <div class="student-container">
+                <div class="student-info">
+                  <span id="currentStudentName" class="student-name">John Doe</span>
+                  <svg id="currentStepCheckmark" class="checkmark hidden" fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                  </svg>
+                </div>
+                <div class="student-info">
+                  <span id="nextStudentName" class="student-name hidden">Jane Smith</span>
+                </div>
+              </div>
+              
+              <div style="display: flex; justify-content: center; margin-bottom: 24px;">
+                <button id="advanceButton" data-action="advance" class="action-button">
+                  <span>Advance</span>
+                  <svg id="forwardArrow" class="arrow-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                  <svg id="backwardArrow" class="arrow-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div class="button-container">
+                <button data-button="cancel" class="secondary-button">Cancel</button>
+                <button data-button="confirm" class="primary-button">Confirm</button>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = dialogHtml.trim();
+        const dialogElement = tempDiv.firstElementChild;
+        
+        container.appendChild(dialogElement);
+        
+        // Wait for DOM to update
+        await new Promise(resolve => setTimeout(resolve, 0));
+      }
+
+      initEventListeners() {
+        // Remove existing listeners
+        if (this.controller) {
+          this.controller.abort();
+        }
+        
+        this.controller = new AbortController();
+
+        // Close buttons
+        this.closeButtons.forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.hide();
+            this.onClose();
+            
+            // Resolve with false when closed
+            if (this.resolvePromise) {
+              this.resolvePromise(false);
+              this.resolvePromise = null;
+              this.rejectPromise = null;
+            }
+          }, { signal: this.controller.signal });
+        });
+
+        // Advance/reverse button
+        this.advanceButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          const action = this.advanceButton.getAttribute('data-action');
+          if (action === 'advance') {
+            this.handleAdvance();
+          } else if (action === 'reverse') {
+            this.handleReverse();
+          }
+        }, { signal: this.controller.signal });
+
+        // Action buttons
+        this.actionButtons.forEach(button => {
+          button.addEventListener('click', (e) => {
+            e.preventDefault();
+            const action = e.target.getAttribute('data-button');
+            this.onAction(action);
+          }, { signal: this.controller.signal });
+        });
+      }
+
+      handleAdvance() {
+        this.pendingAdvance = true;
+
+        // Visual feedback
+        this.currentStudentName.classList.add('scale-110');
+        setTimeout(() => {
+          this.currentStudentName.classList.remove('scale-110');
+        }, 200);
+
+        this.currentStudentName.classList.add('hidden');
+        this.nextStudentName.classList.remove('hidden');
+        this.currentStepCheckmark.classList.remove('hidden');
+
+        this.advanceButton.setAttribute('data-action', 'reverse');
+        this.forwardArrow.classList.add('hidden');
+        this.backwardArrow.classList.remove('hidden');
+
+        // Set timeout to commit the advance
+        this.commitTimeout = setTimeout(() => {
+          this.pendingAdvance = false;
+          this.advanceConfirmed = true;
+          
+          // Disable the button
+          this.advanceButton.disabled = true;
+          this.advanceButton.style.opacity = '0.5';
+          this.advanceButton.style.cursor = 'not-allowed';
+          
+          // Trigger callback and resolve promise
+          this.onAdvance();
+          if (this.resolvePromise) {
+            this.resolvePromise(true);
+            this.resolvePromise = null;
+            this.rejectPromise = null;
+          }
+        }, 2000);
+      }
+
+      handleReverse() {
+        if (this.pendingAdvance) {
+          clearTimeout(this.commitTimeout);
+          this.pendingAdvance = false;
+          this.revertVisuals();
+          
+          // Enable the button
+          this.advanceButton.disabled = false;
+          this.advanceButton.style.opacity = '1';
+          this.advanceButton.style.cursor = 'pointer';
+          
+          return;
+        }
+
+        if (this.advanceConfirmed) {
+          this.advanceConfirmed = false;
+          this.revertVisuals();
+          
+          // Enable the button
+          this.advanceButton.disabled = false;
+          this.advanceButton.style.opacity = '1';
+          this.advanceButton.style.cursor = 'pointer';
+          
+          // Resolve with false
+          if (this.resolvePromise) {
+            this.resolvePromise(false);
+            this.resolvePromise = null;
+            this.rejectPromise = null;
+          }
+          
+          this.onReverse();
+        }
+      }
+
+      revertVisuals() {
+        this.currentStudentName.classList.remove('hidden');
+        this.nextStudentName.classList.add('hidden');
+        this.currentStepCheckmark.classList.add('hidden');
+
+        this.advanceButton.setAttribute('data-action', 'advance');
+        this.forwardArrow.classList.remove('hidden');
+        this.backwardArrow.classList.add('hidden');
+      }
+
+      hide() {
+        if (this.dialog) {
+          this.dialog.style.display = 'none';
+        }
+        this.onClose();
+      }
+
+      destroy() {
+        clearTimeout(this.commitTimeout);
+        
+        if (this.controller) {
+          this.controller.abort();
+        }
+        
+        // Remove dialog from DOM
+        if (this.dialog && this.dialog.parentElement) {
+          this.dialog.parentElement.removeChild(this.dialog);
+        }
+        
+        // Reject promise if it exists
+        if (this.rejectPromise) {
+          this.rejectPromise(new Error('Dialog destroyed'));
+          this.resolvePromise = null;
+          this.rejectPromise = null;
+        }
+      }
+    }
+
+    // Export the class for module usage
+    if (typeof module !== 'undefined' && module.exports) {
+      module.exports = AdvanceTaskDialog;
+    } else if (typeof window !== 'undefined') {
+      window.AdvanceTaskDialog = AdvanceTaskDialog;
+    }
+  </script>
+</body>
+</html>
+```
