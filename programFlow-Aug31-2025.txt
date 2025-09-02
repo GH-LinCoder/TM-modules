@@ -1,0 +1,154 @@
+supabase.js supabase.js:3:9
+🎉 Supabase client created successfully! supabase.js:28:11
+loadAdminDashWithData.js loadAdminDashWithData.js:12:9
+ui/adminListeners.js adminListeners.js:14:9
+App loaded, initializing... flexmain.js:81:13
+Getting display area flexmain.js:9:9
+Rendering panel for: adminDash.html flexmain.js:104:11
+Getting display area flexmain.js:9:9
+Fetching stub content for: adminDash.html flexmain.js:170:13
+Fetching: htmlStubs/adminDash.html flexmain.js:172:11
+Setting up adminDash.html panel flexmain.js:184:11
+Updating panel layout. Panels on display: 1 flexmain.js:153:13
+Calling loadadminDashWithData() flexmain.js:88:11
+Loading page with data: adminDash flexmain.js:64:13
+loadAdminDashWithData() loadAdminDashWithData.js:25:11
+readUniqueStudents dataReader.js:127:11
+readUniqueManagers dataReader.js:132:11
+readUniqueAuthors dataReader.js:137:11
+quickStats: 
+Array(23) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, … ]
+ 
+Array(10) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+ 
+Array(9) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+ 
+Array(6) [ "8649715c-bf84-429f-9f00-7ce8324d2625", "e9b82fd0-067e-43f1-b514-c2dbbfd10cba", "ca1e9188-b3d6-4752-a4ed-d0cbdd62c044", "a42c8756-a0ef-41e6-b073-bf20fbd8b7fb", "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df", "6518fbf6-bf22-436b-8960-8af94edecb83" ]
+ 
+Array(4) [ "9066554d-1476-4655-9305-f997bff43cbb", "ca1e9188-b3d6-4752-a4ed-d0cbdd62c044", "51cf02e4-a69c-41f3-bcff-52d0208df529", null ]
+ 
+Array(5) [ "9066554d-1476-4655-9305-f997bff43cbb", "e9b82fd0-067e-43f1-b514-c2dbbfd10cba", "1c8557ab-12a5-4199-81b2-12aa26a61ec5", "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df", "6518fbf6-bf22-436b-8960-8af94edecb83" ]
+loadAdminDashWithData.js:85:11
+Found 2 element(s) for [data-value="members-count"], updated to 23 loadAdminDashWithData.js:100:15
+Found 2 element(s) for [data-value="assignments-count"], updated to 9 loadAdminDashWithData.js:100:15
+Found 2 element(s) for [data-value="tasks-count"], updated to 10 loadAdminDashWithData.js:100:15
+Found 2 element(s) for [data-value="authors-count-unique"], updated to 5 loadAdminDashWithData.js:100:15
+Found 1 element(s) for [data-value="students-count-unique"], updated to 6 loadAdminDashWithData.js:100:15
+Found 1 element(s) for [data-value="managers-count-unique"], updated to 4 loadAdminDashWithData.js:100:15
+No elements found for selector: [data-value="authors-count"] loadAdminDashWithData.js:203:13
+Admin dashboard data fetched loadAdminDashWithData.js:54:13
+Setting up navigation listeners flexmain.js:189:13
+adminListeners ( 
+<main id="main-container" class="flex-1 overflow-hidden" data-panel="the-frame-around-the-pages">
+ ) adminListeners.js:34:12
+Initialization complete.
+
+[Member] CLICK!
+
+Closing all panels flexmain.js:247:13
+Closing panel for: adminDash.html flexmain.js:142:13
+Updating panel layout. Panels on display: 0 flexmain.js:153:13
+Rendering panel for: memberDash.html flexmain.js:104:11
+Getting display area flexmain.js:9:9
+Fetching stub content for: memberDash.html flexmain.js:170:13
+Fetching: htmlStubs/memberDash.html flexmain.js:172:11
+Setting up memberDash.html panel flexmain.js:184:11
+Updating panel layout. Panels on display: 1 flexmain.js:153:13
+Loading page with data: memberDash flexmain.js:64:13
+loadMemberDashWithData() not implemented yet
+
+
+[Admin] CLICK!
+
+Closing all panels flexmain.js:247:13
+Closing panel for: memberDash.html flexmain.js:142:13
+Updating panel layout. Panels on display: 0 flexmain.js:153:13
+Rendering panel for: adminDash.html flexmain.js:104:11
+Getting display area flexmain.js:9:9
+Fetching stub content for: adminDash.html flexmain.js:170:13
+Fetching: htmlStubs/adminDash.html flexmain.js:172:11
+Setting up adminDash.html panel flexmain.js:184:11
+Updating panel layout. Panels on display: 1 flexmain.js:153:13
+Loading page with data: adminDash flexmain.js:64:13
+loadAdminDashWithData() loadAdminDashWithData.js:25:11
+readUniqueStudents dataReader.js:127:11
+readUniqueManagers dataReader.js:132:11
+readUniqueAuthors dataReader.js:137:11
+quickStats: 
+Array(23) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, … ]
+ 
+Array(10) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+ 
+Array(9) [ {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…}, {…} ]
+ 
+Array(6) [ "8649715c-bf84-429f-9f00-7ce8324d2625", "e9b82fd0-067e-43f1-b514-c2dbbfd10cba", "ca1e9188-b3d6-4752-a4ed-d0cbdd62c044", "a42c8756-a0ef-41e6-b073-bf20fbd8b7fb", "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df", "6518fbf6-bf22-436b-8960-8af94edecb83" ]
+ 
+Array(4) [ "9066554d-1476-4655-9305-f997bff43cbb", "ca1e9188-b3d6-4752-a4ed-d0cbdd62c044", "51cf02e4-a69c-41f3-bcff-52d0208df529", null ]
+ 
+Array(5) [ "9066554d-1476-4655-9305-f997bff43cbb", "e9b82fd0-067e-43f1-b514-c2dbbfd10cba", "1c8557ab-12a5-4199-81b2-12aa26a61ec5", "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df", "6518fbf6-bf22-436b-8960-8af94edecb83" ]
+loadAdminDashWithData.js:85:11
+Found 2 element(s) for [data-value="members-count"], updated to 23 loadAdminDashWithData.js:100:15
+Found 2 element(s) for [data-value="assignments-count"], updated to 9 loadAdminDashWithData.js:100:15
+Found 2 element(s) for [data-value="tasks-count"], updated to 10 loadAdminDashWithData.js:100:15
+Found 2 element(s) for [data-value="authors-count-unique"], updated to 5 loadAdminDashWithData.js:100:15
+Found 1 element(s) for [data-value="students-count-unique"], updated to 6 loadAdminDashWithData.js:100:15
+Found 1 element(s) for [data-value="managers-count-unique"], updated to 4 loadAdminDashWithData.js:100:15
+No elements found for selector: [data-value="authors-count"] loadAdminDashWithData.js:203:13
+Admin dashboard data fetched loadAdminDashWithData.js:54:13
+
+​[How?] CLICK!
+
+Rendering panel for: howTo.html flexmain.js:104:11
+Getting display area flexmain.js:9:9
+Fetching stub content for: howTo.html flexmain.js:170:13
+Fetching: htmlStubs/howTo.html flexmain.js:172:11
+Setting up howTo.html panel flexmain.js:184:11
+Updating panel layout. Panels on display: 2 flexmain.js:153:13
+Loading page with data: howTo flexmain.js:64:13
+No data loader defined for howTo
+
+[How?] 2nd CLICK!
+
+Closing panel for: howTo.html flexmain.js:142:13
+Updating panel layout. Panels on display: 1 flexmain.js:153:13
+
+RELOAD fresh 
+admin Initialization complete
+
+[Create Task]  CLICK!
+
+adminListeners ( 
+<div class="bg-yellow-50 border bord…pointer hover:shadow-md" data-action="create-task-dialogue">
+ ) adminListeners.js:39:13
+after !target ( 
+<div class="bg-yellow-50 border bord…pointer hover:shadow-md" data-action="create-task-dialogue">
+ ) adminListeners.js:43:13
+adminListeners ( create-task-dialogue ) adminListeners.js:47:13
+case: ( create-task-dialogue ) adminListeners.js:51:17
+handleCardClick ( createTaskForm.html ) adminListeners.js:19:11
+State change event: QUERY_UPDATE 
+Object { userId: null, stubName: "createTaskForm.html", recordId: null, READ_request: false, INSERT_request: false, DELETE_request: false, UPDATE_request: false, callerContext: null, purpose: null, payload: {}, … }
+flexmain.js:37:13
+Rendering panel for: createTaskForm.html flexmain.js:104:11
+Getting display area flexmain.js:9:9
+Fetching stub content for: createTaskForm.html flexmain.js:170:13
+Fetching: htmlStubs/createTaskForm.html flexmain.js:172:11
+Setting up createTaskForm.html panel flexmain.js:184:11
+Updating panel layout. Panels on display: 2 flexmain.js:153:13
+
+​[Create Task] 2nd CLICK!
+(No effect on display)
+adminListeners ( 
+<div class="bg-yellow-50 border bord…pointer hover:shadow-md" data-action="create-task-dialogue">
+ ) adminListeners.js:39:13
+after !target ( 
+<div class="bg-yellow-50 border bord…pointer hover:shadow-md" data-action="create-task-dialogue">
+ ) adminListeners.js:43:13
+adminListeners ( create-task-dialogue ) adminListeners.js:47:13
+case: ( create-task-dialogue ) adminListeners.js:51:17
+handleCardClick ( createTaskForm.html ) adminListeners.js:19:11
+State change event: QUERY_UPDATE 
+Object { userId: null, stubName: "createTaskForm.html", recordId: null, READ_request: false, INSERT_request: false, DELETE_request: false, UPDATE_request: false, callerContext: "createTaskForm.html", purpose: null, payload: {}, … }
+flexmain.js:37:13
+Rendering panel for: createTaskForm.html flexmain.js:104:11
+Getting display area

@@ -1,25 +1,42 @@
-import { openDialogue } from '../work/task/createTask.js';
-import { togglePanel} from './reactToPageButtons.js';
+//import { openDialogue } from '../work/task/createTask.js';
 
+//import { togglePanel} from './reactToPageButtons.js';
 
-import { AdvanceTaskDialog } from '../components/AdvanceTaskDialog.js';
+import { query } from '../flexmain.js';
+import {renderPanel} from '../flexmain.js';
+
+// In adminListeners.js
+import { appState } from '../state/appState.js';
+
+//import { AdvanceTaskDialog } from '../components/AdvanceTaskDialog.js';
 //import { signOut } from '../auth/auth.js';
 
 console.log('ui/adminListeners.js');
+
+
+function handleCardClick(action, stubName) {
+  // Just update state - don't call renderPanel directly
+  console.log('handleCardClick (',action,', ', stubName, ')');
+  appState.setQuery({ 
+    stubName: stubName,
+//    READ_request: true,
+    callerContext: action//
+  });
+}
 
 
 /**
  * Sets up event listeners for the admin dashboard
  * @param {Element} container - The container element
  */
-export function setupAdminListeners(container) {
+export function adminListeners(container) {
   // Listen for clicks on the container
-   console.log('setupAdminListeners (', container, ')');//this is the entire html div being passed !
+   console.log('adminListeners (', container, ')');//this is the entire html div being passed !
  
    container.addEventListener('click', (e) => {
    const target = e.target.closest('[data-action]');
 
-    console.log('setupAdminListeners (', target, ')');  //
+    console.log('adminListeners (', target, ')');  //
     
     if (!target) {    console.log('fails !target (', target, ')');  return;}
 
@@ -27,41 +44,51 @@ export function setupAdminListeners(container) {
   
     const action = target.dataset.action;
 
-    console.log('setupAdminListeners (',action,')');
+    console.log('adminListeners (',action,')');
 
     switch (action) {
       case 'create-task-dialogue':
         console.log('case: (', action, ')');
-        togglePanel('createTaskForm');      
-        break;
+//        query.stubName = ('createTaskForm.html');   
+//        renderPanel(query);   
+        handleCardClick(action, 'createTaskForm.html');
+
+      break;
 
       case 'assign-task-dialogue':
         console.log('case: (', action, ')');
-        togglePanel('assignTaskForm');      
-        break;
+//               query.stubName ='assignTaskForm.html';      
+//               renderPanel(query);
+        handleCardClick(action,'assignTaskForm.html');
+      break;
 
-        /*
-      case 'move-student-dialogue':
-        console.log('case: (', action, ')');
-        togglePanel('moveStudentForm');      
-        break;
-       */
 
         case 'move-student-dialogue':
           console.log('case: (', action, ')');
-          togglePanel('moveStudentForm');
-          waitForDialogAndInit();
-          break;
+//          query.stubName ='moveStudentForm.html';
+//          renderPanel(query);   
+
+         handleCardClick(action, 'moveStudentForm.html');
+       //  waitForDialogAndInit();
+        break;
 
 
 
       case 'relate-approfile-dialogue':
         console.log('case: (', action, ')');
-        togglePanel('realateApprofilesForm');      
-        break;
+//        query.stubName ='relateApprofilesForm.html';      
+//        renderPanel(query);  
+        handleCardClick(action, 'relateApprofilesForm.html');
+      break;
 
       case 'sign-out':
-   //     signOut();
+        signOut();
+
+
+
+
+
+
         break;
 
       default:
@@ -70,6 +97,16 @@ export function setupAdminListeners(container) {
   });
 
 }
+
+// === ADMIN LISTENERS ===
+function signOut() {
+  console.log('signOut()');
+
+  // Implement sign-out logic here
+  //signOutUser(); // Example function to sign out user
+//  window.location.href = '/login'; // Redirect to login page after sign-out ?
+  
+} 
 
 function waitForDialogAndInit() {  // for the advance student Class 
 console.log('waitForDialogAndInit()');

@@ -11,6 +11,13 @@ import {
 
 console.log('loadAdminDashWithData.js');
 
+function updateStat(key, value) {
+  const selector = `[data-stat="${key}"]`;
+  updateAll(selector, value);
+}
+
+
+
 /**
  * Loads data and injects it into the admin dashboard
  */
@@ -42,18 +49,21 @@ export async function loadAdminDashWithData() {
     injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles); //authorProfiles?
     injectActivityData(members, tasks, assignments);
 
- updateDeltas(members, assignments, tasks);
+    updateDeltas(members, assignments, tasks);
 
-    console.log('Admin dashboard data loaded successfully');
+    console.log('Admin dashboard data fetched');
   } catch (error) {
-    console.error('Error loading admin dashboard data:', error);
+    console.error('Error fetching admin dashboard data:', error);
     
     // Show error message
-    const container = document.querySelector('.container');
+    const container = document.querySelector('#main-container') || 
+    document.querySelector('#primary-panel') ||
+    document.querySelector('[data-panel="inject-here"]')
+    ;
     if (container) {
       const errorDiv = document.createElement('div');
       errorDiv.className = 'bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4';
-      errorDiv.innerHTML = '<strong>Error:</strong> Failed to load dashboard data. Please try again.';
+      errorDiv.innerHTML = '<strong>Error:</strong> loadAdminDashWithData() Failed.';
       container.insertBefore(errorDiv, container.firstChild);
     }
   }

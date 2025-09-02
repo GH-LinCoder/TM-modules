@@ -62,9 +62,9 @@ async function switchDashboard(dashboardName) {
 
   // ✅ Now it's safe to set dataset
   firstChild.dataset.pageName = dashboardName;
-
+dynamicPanels[0] = dashboardName; // Ensure the state is updated
   // Load the content
-  await loadPage(dashboardName, firstChild);
+  await loadPage(dynamicPanels,0, firstChild);
 
   // Ensure only the dashboard is tracked
   dynamicPanels.length = 1;
@@ -100,7 +100,7 @@ export async function togglePanel(pageName) {
     // Store with metadata (future-proofing)
     dynamicPanels.push({
       pageName,
-      source: 'nav-button',  // should we have more?  subject='members' || 'tasks' || 'relations' ??
+      source: 'nav-button',  // should we have more?  subject='members' || 'tasks' || 'relations' ??  arbitrary & not related
       triggerElement: null // can be set if needed
     });
 
@@ -127,10 +127,11 @@ function resizePanels() {
 
 
 
-export async function loadPage(pageName, container=document.getElementById('notes-panel')
-) {
+export async function loadPage(dynamicPanels,index, container=document.getElementById('notes-panel')) {
+
+const pageName = dynamicPanels[index];
   console.log('Load page:',pageName);
-  console.log('dynamic[]:',dynamicPanels); //how are we updating dynamicPanels? 
+  console.log('dynamicPanels[]:',dynamicPanels); //how are we updating dynamicPanels? 
   
   try {
     if (!container) {

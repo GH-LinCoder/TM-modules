@@ -29,7 +29,7 @@
 
 /**
  * Valid table names for queries
- * @typedef {'task_assignments' | 'task_headers'} QueryTable
+ * @typedef {'task_assignments' | 'task_headers' |'task_steps'|'app_profiles'|'profiles' |'app_event_log' |'app_event_labels'|'approfile_relations'|'relationships'} QueryTable
  */
 
 /**
@@ -37,14 +37,54 @@
  * @typedef {'student_id' | 'manager_id' | 'author_id'} IdColumnName
  */
 
+
 /**
- * A member of the system (from profiles table)
+ * A Profile which is a READ ONLY local copy of auth()
+ * Do not write here. Use app_profiles for local data
  * @typedef {Object} Member
  * @property {string} id - UUID
  * @property {string} username - Login/display name
  * @property {string} email - Email address
  * @property {string} created_at - ISO timestamp
  */
+
+/**
+ * An app_profile record
+ * @typedef {Object} approfile
+ * @property {string} id - UUID
+ * @property {string} name - Approfile name
+ * @property {string} description - Approfile description
+ * @property {string} external_url - Optional external link
+ * @property {string} email - Contact email
+ * @property {string} phone - Contact phone
+ * @property {string} notes - Future expansion
+ * @property {string} Updated_at - ISO timestamp
+ * @property {string} created_at - ISO timestamp
+ * @property {string} author_user_id - UUID of creator
+ * @property {string} task_header_id - UUID of creator
+ */
+
+/**
+ * An appprofile_relation record
+ * @typedef {Object} appprofile_relation
+ * @property {string} id - UUID
+ * @property {string} approfile_is - UUID of the approfile before the relation
+ * @property {string} relation_type (FK to relationships table) - Type of relation, e.g. 'parent', 'boss', 'member', 'associate'
+ * @property {string} of_approfile - UUID of the approfile after the relation
+* @property {string} created_at - ISO timestamp
+
+ */
+
+/**
+ * A realtionships record
+ * @typedef {Object} relationships
+ * @property {string} id - UUID
+ * @property {string} name - of kind of relationship  e.g. 'parent', 'boss', 'member', 'associate'
+ * @property {string} description - More detailed explanation (if needed) of this type of relation
+*  @property {string} created_at - ISO timestamp
+ */
+
+
 
 /**
  * A task definition
@@ -81,6 +121,52 @@
  * @property {string|null} external_url - Optional external link
  * @property {string} author_id - UUID of step creator
  */
+
+
+/**
+ * A event log definition. Either auto db trigger or app logic creates these. Cannot all be null
+ * @typedef {Object} app_event_log
+ * @property {string} id - UUID  //or is it int8 ?
+ * @property {string|null} event_i_u_d - Type of event INSERT, UPDATE, DELETE. Used by auto db trigger
+ * @property {string|null} source_table_name - Table that changed. Used by auto db trigger
+ * @property {string|null} event_name - Task title (FK to app_event_labels)
+ * @property {string|null} source_table_name - Text name of table that changed. Used by auto db trigger
+ * @property {string|null} description - Human & app use this description
+ * @property {string|null} name - - Human & app use this description
+* @property {string} created_at - ISO timestamp
+*/
+
+/**
+ * A event log label definition
+ * @typedef {Object} app_event_label
+ * @property {string} id - UUID 
+ * @property {string} code - Text with underscores, no spaces. Used by app logic
+ * @property {string} name -  Title may be same as code but with spaces
+ * @property {string} description - Human & app use this description
+ * @property {string} created_at - ISO timestamp
+ * @property {int} sort_int - order for display
+*/
+
+/**
+ * A dialogue query definition — standard object used when opening a form and exchanging data
+ * @typedef {Object} dialogue_query
+ * @property {string} userId - UUID of the person making the query (used for permission checking)
+ * @property {string} formName - Unique identifier for the form being opened
+ * @property {string|null} recordId - UUID of the record being viewed or edited; null if creating new
+ * @property {boolean|null} READ_request - Whether the form is requesting read access
+ * @property {boolean|null} INSERT_request - Whether the form is requesting insert/create access
+ * @property {boolean|null} UPDATE_request - Whether the form is requesting update access
+ * @property {boolean|null} DELETE_request - Whether the form is requesting delete access
+ * @property {string|null} permission - Explicit permission level if known (e.g. 'admin', 'owner', 'viewer')
+ * @property {string|null} callerContext - Optional: where this form was triggered from (e.g. 'adminDash', 'analyticsPanel')
+ * @property {string|null} purpose - Optional: reason for opening the form (e.g. 'editStudent', 'reviewTask', 'assignRole')
+ * @property {object|null} payload - Optional: data passed into the form (e.g. preloaded values, filters)
+ * @property {object|null} response - Optional: data returned from the form after interaction
+ */
+
+
+
+
 
 /**
  * Example usage in JSDoc:

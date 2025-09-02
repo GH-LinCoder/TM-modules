@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>18:46-Aug22 Flexload</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <!-- Standard favicon -->
-<!--link rel="icon" type="image/x-icon"   />
+  
+<link rel="icon" type="image/x-icon"   />
 </head-->
 
 
@@ -50,7 +50,8 @@
         <div class="p-6">
           <div id="taskIdDisplay" data-form="taskIdDisplay" class="mb-4 p-2 bg-blue-50 rounded-md"></div>
 
-          <form id="createTaskForm" data-form="createTaskForm" class="space-y-4">
+          <!-- form id="createTaskForm" data-form="createTaskForm" class="space-y-4" -->
+            <div id="createTaskForm" data-form="createTaskForm" class="space-y-4">
             <div class="grid grid-cols-2 gap-4 mb-4">
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Author</label>
@@ -109,7 +110,7 @@
             >
               Save Task
             </button>
-          </form> 
+          <!--/form--> 
         </div>
       </div>
 
@@ -189,14 +190,6 @@
 
             <div class="flex gap-2">
               <button 
-                type="submit" 
-                id="saveStepBtn"
-                data-form="saveStepBtn"
-                class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Save Step
-              </button>
-              <button 
                 type="button" 
                 id="addStepBtn"
                 data-form="addStepBtn"
@@ -204,6 +197,7 @@
               >
                 Save Step
               </button>
+
               <button 
                 type="button" 
                 id="addStepBtn"
