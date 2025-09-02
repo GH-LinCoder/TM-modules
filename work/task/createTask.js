@@ -1,3 +1,9 @@
+//  ./work/task/createTask.js
+import { supabase } from '../../supabaseClient.js';
+console.log('createTask.js loaded');
+
+
+
 const state = {
   taskId: null,
   steps: [],
@@ -22,7 +28,8 @@ function showToast(message, type = 'success') {
   }, 3000);
 }
 
-function resetForm() {
+function resetFormAndState() {
+  console.log('ResetFormAndState()');
   document.querySelector('#createTaskForm')?.reset();
   document.querySelector('#createStepForm')?.reset();
 
@@ -48,6 +55,7 @@ function resetForm() {
 }
 
 export function openDialogue(formName) {
+  console.log('openDialogue(', formName, ')');
   const selector =`[data-form="${formName}"]`;
     const dialogue = document.querySelector(selector);
 
@@ -67,21 +75,24 @@ export function openDialogue(formName) {
   const creationDate = dialogue.querySelector('#creationDate'); //what is this???
   if (creationDate) creationDate.textContent = new Date().toLocaleString(); ///what is this???
 
-  resetForm(dialogue); // optionally pass the modal to reset only its form
+  resetFormAndState(dialogue); // optionally pass the modal to reset only its form
 }
 
 
 function closeDialogue() {
+  console.log('closeDialogue()');
   const dialogue = document.querySelector('.create-task-dialogue');/// .create is probably wrong
   if (!dialogue) return;   // why is this function looking in the DOM? Why not pass it?
 
   dialogue.classList.add('hidden');
   dialogue.classList.remove('flex');
-  resetForm();
+  resetFormAndState();
 }
 
 // 📝 Task Creation
 async function handleTaskSubmit(e) {
+  console.log('handleTaskSubmit()');
+  
   e.preventDefault();  //Why prevent default?
 
   const saveBtn = document.querySelector('#saveTaskBtn');
@@ -125,7 +136,7 @@ async function handleTaskSubmit(e) {
 // 🧩 Step Creation
 async function handleStepSubmit(e) {
   e.preventDefault();
-
+console.log('handleStepSubmit()');
   const order = parseInt(document.querySelector('#stepOrder')?.value);
   const stepName = document.querySelector('#stepName')?.value;
   const stepDescription = document.querySelector('#stepDescription')?.value;
@@ -189,6 +200,7 @@ async function handleStepSubmit(e) {
 }
 
 function updateStepsList() {
+  console.log('updateStepsList()');
   const list = document.querySelector('#stepsList');
   if (!list) return;
   list.innerHTML = '';

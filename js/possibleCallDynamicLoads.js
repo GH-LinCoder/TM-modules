@@ -1,24 +1,14 @@
 // Example of how to use the AdvanceTaskDialog class with dynamic loading
 
-// Function to load the HTML template
-async function loadHTMLTemplate() {
-  // If you have the HTML as a string or need to fetch it
-  const response = await fetch('/path/to/advance-task-dialog.html');
-  const html = await response.text();
-  
-  // Create a temporary element to parse the HTML
-  const tempDiv = document.createElement('div');
-  tempDiv.innerHTML = html;
-  
-  // Append to DOM
-  document.body.appendChild(tempDiv.firstElementChild);
-}
+
 
 // Function to load the script dynamically
-async function loadScript() {
+export async function loadScript(stubName) {
+stubName = stubName.replace('html','js');
+console.log('LoadScript(', stubName,')');
   try {
     // Dynamically import the module
-    const module = await import('/path/to/AdvanceTaskDialog.js');
+    const module = await import(`./${stubName}`);
     return module.default; // Return the default export (the class)
   } catch (error) {
     console.error('Failed to load script:', error);
@@ -68,3 +58,17 @@ document.getElementById('triggerButton').addEventListener('click', async () => {
     console.error('Failed to show dialog:', error);
   }
 });
+
+// Function to load the HTML template
+async function loadHTMLTemplate() {
+  // If you have the HTML as a string or need to fetch it
+  const response = await fetch('/path/to/advance-task-dialog.html');
+  const html = await response.text();
+  
+  // Create a temporary element to parse the HTML
+  const tempDiv = document.createElement('div');
+  tempDiv.innerHTML = html;
+  
+  // Append to DOM
+  document.body.appendChild(tempDiv.firstElementChild);
+}

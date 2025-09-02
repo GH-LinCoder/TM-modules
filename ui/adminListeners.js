@@ -20,7 +20,7 @@ function handleCardClick(action, stubName) {
   appState.setQuery({ 
     stubName: stubName,
 //    READ_request: true,
-    callerContext: action//
+    callerContext: action//putting 'create-task-dialogue' or 'assign-task-dialogue' etc in the object that triggers event in other modules
   });
 }
 

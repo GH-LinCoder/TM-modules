@@ -6,7 +6,7 @@ import { appState } from './state/appState.js';
 
 // === UTILITY: Get main display area ===
 function getDisplayArea() {
-console.log('Getting display area');
+console.log('GetDisplayArea()');
     return document.querySelector('[data-panel="inject-here"]');
 }
 
@@ -44,12 +44,15 @@ export const query = {
 
 window.addEventListener('state-change', async (e) => {
     const { type, payload } = e.detail;
-    console.log('State change event:', type, payload);
+    console.log('State change event at window.addEventListener:', type, payload);
     switch (type) {
       case 'QUERY_UPDATE':
         if ( payload.stubName) {
-            await openClosePanelsByRule(payload.stubName);
-//          await renderPanel(payload);
+           
+            query.stubName = payload.stubName; //sync local query with global appState.query.  Need to solve this sometime
+            console.log('before openClosePanelsByRule in state-change.payload:', payload, 'query.stubName:', query.stubName);
+            //error that some functions are using the local query object and some are using the appState.query object. Here the local =admin.html, but global is createTaskForm.html
+            await openClosePanelsByRule(payload.stubName); 
         }
         break;
         
@@ -74,8 +77,28 @@ query.userId = '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df'; // MOCK but in db
 document.addEventListener('DOMContentLoaded', onAppLoad);
 
 
+
+//  === CONNECT FORMS TO DATABASE ===
+async function connectFormsToDatabase(stubName) {
+  console.log(`connectFormsToDatabase ${stubName} `);
+  // Placeholder for actual form-to-database connection logic
+  // This would involve querying the panel for forms and setting up event listeners
+  //or every form has a class and we need to just recognise it is a form and have a standard loading function
+  stubName = stubName + '.js';
+  console.log(`connectFormsToDatabase ${stubName} `);
+  
+  const module = await import(stubName); // Dynamic import
+  if (module && typeof module.setupForm === 'function') {
+    module.setupForm(); // Call the setup function from the module
+  }
+
+}
+
+
+
+// === LOAD PAGE WITH DATA ===
 async function loadPageWithData(pageName) { // pageName without .html
-    console.log('Loading page with data:', pageName);
+    console.log('LoadPageWithData(', pageName,')');
     switch(pageName) {
         case 'adminDash':
             await loadAdminDashWithData();
@@ -85,6 +108,11 @@ async function loadPageWithData(pageName) { // pageName without .html
             // await loadMemberDashWithData(); // Implement this function similarly
             console.warn('loadMemberDashWithData() not implemented yet');
             break;
+        case 'createTaskForm':
+
+            await connectFormsToDatabase(pageName); //need to load script not data
+            //console.warn('loadCreateTaskFormWithData() not implemented yet');
+            break;    
         default:
             console.warn(`No data loader defined for ${pageName}`);
     }
@@ -115,7 +143,7 @@ async function onAppLoad() {
 
 // === PANEL RENDERING ===
 export async function renderPanel(query) {
-  console.log('Rendering panel for:', query.stubName);
+  console.log('RenderPanel(', query, ')');
     const stubName = query.stubName;
   const displayArea = getDisplayArea();
   
@@ -138,8 +166,8 @@ export async function renderPanel(query) {
 
     panelsOnDisplay.push({ stubName, panel, query });
 
-    // Simulate any page-specific setup
-    simulatePageSetup(stubName, panel);
+    // Simulate any page-specific setup  - I have commentedout 15:37 Sep 2 2025
+    //simulatePageSetup(stubName, panel);
 
     // Update layout based on number of panels
     updatePanelLayout();
@@ -155,7 +183,7 @@ export async function renderPanel(query) {
 
 // === CLOSE PANEL ===
 function closePanel(stubName) {
-    console.log('Closing panel for:', stubName);
+    console.log('ClosePanel(', stubName, ')');
   const entry = panelsOnDisplay.find(p => p.stubName === stubName);
   if (entry && entry.panel) {
     entry.panel.remove();
@@ -168,7 +196,7 @@ function closePanel(stubName) {
 
 // === UPDATE PANEL LAYOUT ===
 function updatePanelLayout() {
-    console.log('Updating panel layout. Panels on display:', panelsOnDisplay.length);
+    console.log('UpdatePanelLayout(), Panels on display:', panelsOnDisplay.length);
   if (panelsOnDisplay.length === 0) {
     return;
   } else if (panelsOnDisplay.length === 1) {
@@ -187,9 +215,9 @@ function updatePanelLayout() {
 
 // === FETCH STUB CONTENT ===
 async function getStubContent(stubName) {
-    console.log('Fetching stub content for:', stubName);
+
   const pageUrl = `htmlStubs/${stubName}`;
-  console.log('Fetching:', pageUrl);
+  console.log('getStubContent(', stubName, ') from:', pageUrl);
 
   const response = await fetch(pageUrl);
   if (!response.ok) {
@@ -200,15 +228,9 @@ async function getStubContent(stubName) {
 }
 
 
-
-// Simulate page-specific setup functions
-function simulatePageSetup(stubName, panel) {
-  console.log(`Setting up ${stubName} panel`);
-}
-
-
+// === OPEN/CLOSE PANELS BY RULE ===
 export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
-
+console.log('openClosePanelsByRule(', stubName, 'fromButtonClick:', fromButtonClick,')');
 if(fromButtonClick)
     {document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));}
 
@@ -217,10 +239,12 @@ if(fromButtonClick)
 
     // Special case: admin and member are toggleable
     const isSpecialToggle =stubName === 'adminDash.html' || stubName === 'memberDash.html';
+    
 
     if (isSpecialToggle && isAlreadyOpen) {
       // Clicking on already open admin or member - close all other panels
       closeAllOtherPanels(stubName);
+      await loadPageWithData(query.stubName.replace('.html','')); //this refreshes data on already open panel
       btn.classList.add('active');
     } else if (isSpecialToggle && !isAlreadyOpen) {
       // Switching between admin and member - replace current with new one
@@ -234,9 +258,10 @@ if(fromButtonClick)
         // If already open, close it
         closePanel(stubName);
       } else {
-        // Open new panel
+        // Open new panel - this is to display a new side page that is not admin or member & not already open
         await renderPanel({...query, stubName: stubName});
         await loadPageWithData(query.stubName.replace('.html',''));
+       // where do we check and connect input forms to the database? Here or in loadPageWithData? 17:10 Sept 2 2025
       }
       // Always keep admin or member active when opening other panels
       const activePanel = panelsOnDisplay.find(p => 
@@ -248,7 +273,7 @@ if(fromButtonClick)
       }
     }
 
-
+// could move loadPageWithData outside the if/else as they all call it 17:05 Sept 2 2025
 }
 
 
