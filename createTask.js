@@ -201,8 +201,15 @@ async function handleStepSubmit(e) {
 }
 
 function updateStepsList() {
+  console.log('updateStepsList()');
   const list = document.querySelector('#stepsList');
   if (!list) return;
+
   list.innerHTML = '';
   state.steps.forEach(step => {
-    const div = document.create
+    const div = document.createElement('div');
+    div.className = 'text-sm p-2 bg-gray-50 rounded';
+    div.textContent = `Step ${step.order}: ${step.name}`;
+    list.appendChild(div);
+  });
+}
