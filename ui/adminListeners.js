@@ -2,7 +2,7 @@
 
 //import { togglePanel} from './reactToPageButtons.js';
 
-import { query } from '../flexmain.js';
+//import { query } from '../flexmain.js';
 import {renderPanel} from '../flexmain.js';
 
 // In adminListeners.js
@@ -40,12 +40,12 @@ export function adminListeners(container) {
     
     if (!target) {    console.log('fails !target (', target, ')');  return;}
 
-    console.log('after !target (', target, ')');  //
+//    console.log('after !target (', target, ')');  //
   
     const action = target.dataset.action;
 
     console.log('adminListeners (',action,')');
-
+///////////////////////////////////////////////////////  Switch Action  ///////////////////////////////////////////////////////
     switch (action) {
       case 'create-task-dialogue':
         console.log('case: (', action, ')');

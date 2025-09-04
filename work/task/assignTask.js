@@ -1,21 +1,37 @@
 // assignTask.js
 
+export function render(panel, query = {}) {
+  console.log('assignTask.js render() called');
+  const dialog = new AssignTaskDialog();
+  dialog.render(panel, query);
+}
+console.log('🔥 assignTask.js: START');
 class AssignTaskDialog {
-  constructor() {
-    this.dialog = document.getElementById('assignTaskDialog');
-    this.form = document.getElementById('assignTaskForm');
-    this.taskSelect = document.getElementById('taskSelect');
-    this.studentSelect = document.getElementById('studentSelect');
-    this.managerSelect = document.getElementById('managerSelect');
-    this.assignBtn = document.getElementById('assignTaskBtn');
-    
+ /* constructor() {
+    // ✅ Remove DOM references from constructor
     this.taskHeaders = [];
     this.users = [];
-    
-    this.init();
+    // No DOM elements here
   }
 
+  render(panel, query = {}) {
+    console.log('AssignTaskDialog.render()');
+    // ✅ Now the panel exists — inject HTML
+    panel.innerHTML = this.getTemplateHTML();
+
+    // ✅ Now select elements from the injected DOM
+    this.dialog = panel.querySelector('[data-form="assignTaskDialog"]');
+    this.form = panel.querySelector('[data-form="assignTaskForm"]');
+    this.taskSelect = panel.querySelector('[data-form="taskSelect"]');
+    this.studentSelect = panel.querySelector('[data-form="studentSelect"]');
+    this.managerSelect = panel.querySelector('[data-form="managerSelect"]');
+    this.assignBtn = panel.querySelector('[data-form="assignTaskBtn"]');
+
+    // ✅ Now initialize event listeners
+    this.init();
+  }
   init() {
+    console.log('AssignTaskDialog.init()');
     // Set up event listeners
     this.dialog.querySelectorAll('[data-action="close-dialog"]').forEach(el => {
       el.addEventListener('click', () => this.close());
@@ -30,7 +46,9 @@ class AssignTaskDialog {
     });
   }
 
+
   open() {
+    console.log('AssignTaskDialog.open()');
     this.dialog.classList.remove('hidden');
     this.dialog.classList.add('flex');
     
@@ -39,6 +57,7 @@ class AssignTaskDialog {
   }
 
   close() {
+    console.log('AssignTaskDialog.close()');
     this.dialog.classList.add('hidden');
     this.dialog.classList.remove('flex');
     
@@ -47,7 +66,117 @@ class AssignTaskDialog {
     this.assignBtn.disabled = true;
   }
 
+/*
+  render(panel, query = {}) { //query is not currently used, but may be important for permissions
+  console.log('Render(', panel, query,')');
+//  panel.innerHTML = "TEST TEST TEST";// test in case html has error
+panel.innerHTML = getTemplateHTML();
+  attachListeners(panel);
+  //updatePanelLayout();
+}
+*/
+
+
+
+  getTemplateHTML() { console.log('getTemplateHTML()');
+    return `
+  <!-- assign-task-dialog.html -->
+
+<div id="assignTaskDialog" data-form="assignTaskDialog" class="assign-task-dialog  flex items-center justify-center">
+<!--div id="assignTaskDialog" data-form="assignTaskDialog" class="assign-task-dialog  flex items-center justify-center"-->
+
+
+  <!-- Dialog -->
+  <div class="bg-white rounded-lg shadow-lg w-auto max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
+
+     <div class="p-6 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900">Assign Task</h3>
+      <p class="text-sm text-gray-600">Assign a task to a student and manager</p>
+
+        <button 
+        class="text-gray-500 hover:text-gray-700"
+        data-action="close-dialog"
+        aria-label="Close"
+        >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+</div>
+    <div class="p-6 space-y-6">
+  <div>
+        <div class="space-y-2">
+          <label for="taskSelect" class="block text-sm font-medium text-gray-700" data-form="title">Assign Task</label>
+          <select 
+            id="taskSelect" 
+            data-form="taskSelect"
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option value="">Select a task</option>
+          </select>
+        </div>
+
+        <div class="space-y-2">
+      <form id="assignTaskForm" data-form="assignTaskForm" class="space-y-4">
+
+          <label for="studentSelect" class="block text-sm font-medium text-gray-700" data-form="dropdown-01">Select Student</label>
+          <select 
+            id="studentSelect" 
+            data-form="studentSelect"
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option value="">Select a student</option>
+          </select>
+        </div>
+
+        <div class="space-y-2">
+          <label for="managerSelect" class="block text-sm font-medium text-gray-700" data-form="dropdown-02">Select Manager</label>
+          <select 
+            id="managerSelect" 
+            data-form="managerSelect"
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">Select a manager (optional)</option>
+          </select>
+        </div>
+
+        <div class="text-sm text-gray-500 space-y-2 p-3 bg-gray-50 rounded-lg">
+          <p>
+            You can assign any member as a Student to any task and select any member to manage that process. 
+            Use the dropdowns to select each one and then click to assign it.
+          </p>
+          <p>
+            Currently using username from profiles table. Drop down will not scale. 
+            Later will need search. Drop down populated from profiles for people and task_headers. 
+            Written to task_assignments.
+          </p>
+        </div>
+
+        <button 
+          type="submit" 
+          id="assignTaskBtn"
+          data-form="assignTaskBtn"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled
+        >
+          Assign Task
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+`;
+
+  }
+  
+  
   async loadTaskHeaders() {
+    console.log('AssignTaskDialog.loadTaskHeaders()');
     try {
       const { data, error } = await supabase
         .from('task_headers')
@@ -69,6 +198,7 @@ class AssignTaskDialog {
   }
 
   async loadUsers() {
+    console.log('AssignTaskDialog.loadUsers()');
     try {
       const { data, error } = await supabase
         .from('profiles')
@@ -90,6 +220,7 @@ class AssignTaskDialog {
   }
 
   populateTaskDropdown() {
+    console.log('AssignTaskDialog.populateTaskDropdown()');
     this.taskSelect.innerHTML = '<option value="">Select a task</option>';
     
     this.taskHeaders.forEach(task => {
@@ -101,6 +232,7 @@ class AssignTaskDialog {
   }
 
   populateUserDropdowns() {
+    console.log('AssignTaskDialog.populateUserDropdowns()');
     // Clear existing options (except placeholders)
     this.studentSelect.innerHTML = '<option value="">Select a student</option>';
     this.managerSelect.innerHTML = '<option value="">Select a manager (optional)</option>';
@@ -120,7 +252,7 @@ class AssignTaskDialog {
 
   async handleAssignTask(e) {
     e.preventDefault();
-    
+    console.log('AssignTaskDialog.handleAssignTask(e)');
     const selectedTask = this.taskSelect.value;
     const selectedStudent = this.studentSelect.value;
     const selectedManager = this.managerSelect.value;
@@ -204,4 +336,22 @@ class AssignTaskDialog {
   }
 }
 
-export { AssignTaskDialog };
+//export { AssignTaskDialog };
+/*
+export function render(panel, query = {}) {
+  const dialog = new AssignTaskDialog();
+  dialog.render(panel, query);
+}
+
+export function render(panel, query = {}) {
+  console.log('assignTask.js render() called');
+  const dialog = new AssignTaskDialog();
+  dialog.render(panel, query);
+
+  }*/
+
+  
+
+  console.log('✅ assignTask.js: END - About to export render');
+
+
