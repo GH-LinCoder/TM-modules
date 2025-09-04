@@ -1,9 +1,10 @@
-        case 'open-create-task-dialogue':
+   /*
+   case 'open-create-task-dialogue':
             // Use the new function to load the JavaScript module.
             // The rest of your old logic (like renderPanel) is no longer needed here.
             loadModule(action);
             break;
-
+*/
 // Define the listener as a named function outside the methods.
 // This is the single, reusable function reference.
 function handleClick(event) {
@@ -11,14 +12,14 @@ function handleClick(event) {
 }
 
 export default {
-    render(targetElement) {
+    loadAdminDashWithData(targetElement) {
         // Find the button and attach the listener
         const myButton = targetElement.querySelector('.my-button');
         if (myButton) {
             myButton.addEventListener('click', handleClick);
         }
     },
-    destroy(targetElement) {
+    remove(targetElement) {
         // Find the button again and remove the listener using the same function reference
         const myButton = targetElement.querySelector('.my-button');
         if (myButton) {
@@ -29,11 +30,12 @@ export default {
 
 
 
+import { loadAdminDashWithData } from '../dash/loadAdminDashWithData.js';
 // Inside your main application script
 import TaskForm from './createTaskForm.js';
 
 // Now you can use the toolbox's tools
-TaskForm.render(someElement); // to add event listener
+TaskForm.add(someElement); // to add event listener
 
 
 
@@ -43,7 +45,7 @@ TaskForm.render(someElement); // to add event listener
 // A lookup table for your new JavaScript-based modules.
 // This is where you will add new entries as you convert more forms.
 const dialogModules = {
-    'open-create-task-dialogue': () => import('./forms/taskForm.js')
+    'createTask': () => import('./createTask.js')
 };
 
 // This function handles the entire process of loading a module and rendering its content.

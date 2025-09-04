@@ -1,9 +1,15 @@
 // Import the Supabase client. This is now a local dependency of the module.
-import { supabase } from '../../supabaseClient.js';
+
+
+//import { supabase } from '../../supabaseClient.js';
 console.log('taskForm.js module loaded');
 
 // HTML for the form, stored as a template literal.
 // This is the combined content of your original HTML stub.
+
+
+
+function createTaskHTML() {
 const htmlTemplate = `
 <div id="createTaskDialog" data-form="createTaskDialog" class="create-task-dialogue relative z-10 flex flex-col h-full">
     <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
@@ -183,7 +189,11 @@ const htmlTemplate = `
     </div>
 </div>
 `;
+return htmlTemplate;
+}
 
+
+function setState() {
 // --- Module State and Functions ---
 // All the code from your original createTask.js is now contained within this module.
 const state = {
@@ -191,6 +201,7 @@ const state = {
     steps: [],
     user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // MOCK
 };
+}
 
 // Functions to store listener references for proper cleanup.
 const listeners = {};
@@ -212,6 +223,7 @@ function showToast(message, type = 'success') {
     }, 3000);
 }
 
+ /*
 function resetFormAndState(targetElement) {
     const dialogue = targetElement.querySelector('[data-form="createTaskDialog"]');
     if (!dialogue) {
@@ -239,7 +251,7 @@ function resetFormAndState(targetElement) {
     state.taskId = null;
     state.steps = [];
 }
-
+//*/
 
 async function handleTaskSubmit(e) {
     e.preventDefault();
@@ -460,7 +472,7 @@ export default {
         const creationDate = dialogue?.querySelector('#creationDate');
         if (creationDate) creationDate.textContent = new Date().toLocaleString();
 
-        resetFormAndState(targetElement);
+      //  resetFormAndState(targetElement);
         attachListeners(targetElement);
     },
     destroy(targetElement) {

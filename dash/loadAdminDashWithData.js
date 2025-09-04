@@ -112,9 +112,9 @@ function injectManagementData(members, tasks, assignments, uniqueStudents, uniqu
   updateAll('[data-value="members-count"]', members.length);
   updateAll('[data-value="assignments-count"]', assignments.length);
   updateAll('[data-value="tasks-count"]', tasks.length);
-  updateAll('[data-value="authors-count"]', authorProfiles.length);
-  updateAll('[data-value="students-count"]', uniqueStudents.length); //need hange html students-count-unique
-  updateAll('[data-value="managers-count"]', uniqueManagers.length); //need hange html managers-count-unique
+  updateAll('[data-value="authors-count"]', authorProfiles.length);//doesn't find this one but does find next 2
+  updateAll('[data-value="students-count"]', uniqueStudents.length); //need change html students-count-unique
+  updateAll('[data-value="managers-count"]', uniqueManagers.length); //need change html managers-count-unique
 }
 
 /**

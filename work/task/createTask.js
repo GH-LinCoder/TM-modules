@@ -1,105 +1,120 @@
-//  ./work/task/createTask.js
-import { supabase } from '../../supabaseClient.js';
-console.log('createTask.js loaded');
 
+import{createSupabaseClient} from '../../db/supabase.js';
 
+console.log('createTaskForm.js loaded');
 
 const state = {
   taskId: null,
   steps: [],
-  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // MOCK
+  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // Replace with dynamic user ID
 };
 
-// 🧠 Utility
-function showToast(message, type = 'success') {
-  const existing = document.querySelector('.toast');
-  if (existing) existing.remove();
-
-  const toast = document.createElement('div');
-  toast.className = `toast fixed bottom-4 right-4 px-4 py-3 rounded-lg text-white shadow-lg transition-opacity duration-300 ${
-    type === 'error' ? 'bg-red-600' : 'bg-green-600'
-  }`;
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
+export function render(panel, query = {}) { //query is not currently used, but may be important for permissions
+  console.log('Render(', panel, query,')');
+//  panel.innerHTML = "TEST TEST TEST";//working 16:05 3 sept 2025
+  panel.innerHTML = getTemplateHTML();
+  attachListeners(panel);
+  //updatePanelLayout();
 }
 
-function resetFormAndState() {
-  console.log('ResetFormAndState()');
-  document.querySelector('#createTaskForm')?.reset();
-  document.querySelector('#createStepForm')?.reset();
+function getTemplateHTML() { console.log('getTemplateHTML()');
+  return `
+    <div id="createTaskDialog" class="create-task-dialogue relative z-10 flex flex-col h-full">
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="text-xl font-semibold text-gray-900">Create New Task</h3>
+          <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
 
-  document.querySelector('#taskName')?.removeAttribute('disabled');
-  document.querySelector('#taskDescription')?.removeAttribute('disabled');
-  document.querySelector('#taskUrl')?.removeAttribute('disabled');
+        <div class="p-6 space-y-6">
+          <div class="space-y-4" id="createTaskForm">
+            <input id="taskName" placeholder="Task name" maxlength="64" required class="w-full p-2 border rounded" />
+            <p id="taskNameCounter" class="text-xs text-gray-500">0/64 characters</p>
 
-  document.querySelector('#taskIdDisplay')?.classList.add('hidden');
-  document.querySelector('#stepsSection')?.classList.add('opacity-50', 'pointer-events-none');
-  document.querySelector('#createdSteps')?.classList.add('hidden');
+            <textarea id="taskDescription" placeholder="Task description" rows="3" maxlength="256" required class="w-full p-2 border rounded"></textarea>
+            <p id="taskDescriptionCounter" class="text-xs text-gray-500">0/256 characters</p>
 
-  const stepOrder = document.querySelector('#stepOrder');
-  if (stepOrder) stepOrder.value = 3;    //  why?
+            <input id="taskUrl" type="url" placeholder="Optional URL" class="w-full p-2 border rounded" />
 
-  const stepNameCounter = document.querySelector('#stepNameCounter');
-  if (stepNameCounter) stepNameCounter.textContent = '0/64 characters';
+            <button id="saveTaskBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Save Task</button>
+          </div>
 
-  const stepDescriptionCounter = document.querySelector('#stepDescriptionCounter');
-  if (stepDescriptionCounter) stepDescriptionCounter.textContent = '0/256 characters';
+          <div id="stepsSection" class="opacity-50 pointer-events-none">
+            <form id="createStepForm" class="space-y-4">
+              <input id="stepOrder" type="number" value="3" min="3" class="w-20 p-2 border rounded" />
+              <input id="stepName" maxlength="64" placeholder="Step name" required class="w-full p-2 border rounded" />
+              <p id="stepNameCounter" class="text-xs text-gray-500">0/64 characters</p>
 
-  state.taskId = null;
-  state.steps = [];// on reset why null? The start position is that there are 3 steps
+              <textarea id="stepDescription" maxlength="256" placeholder="Step description" rows="3" required class="w-full p-2 border rounded"></textarea>
+              <p id="stepDescriptionCounter" class="text-xs text-gray-500">0/256 characters</p>
+
+              <input id="stepUrl" type="url" placeholder="Optional URL" class="w-full p-2 border rounded" />
+
+              <button id="saveStepBtn" class="bg-gray-200 py-2 px-4 rounded hover:bg-gray-300">Save Step</button>
+            </form>
+
+            <div id="createdSteps" class="hidden mt-4">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Created Steps:</label>
+              <div id="stepsList" class="space-y-1"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
 }
 
-export function openDialogue(formName) {
-  console.log('openDialogue(', formName, ')');
-  const selector =`[data-form="${formName}"]`;
-    const dialogue = document.querySelector(selector);
+function attachListeners(panel) {
+  console.log('attachListeners()', panel);
+    panel.querySelector('#taskName')?.addEventListener('input', e => {
+    panel.querySelector('#taskNameCounter').textContent = `${e.target.value.length}/64 characters`;
+  });
 
+  panel.querySelector('#taskDescription')?.addEventListener('input', e => {
+    panel.querySelector('#taskDescriptionCounter').textContent = `${e.target.value.length}/256 characters`;
+  });
 
-//  const selector = `.${formName}`;
- // const dialogue = document.querySelector(selector);
+  panel.querySelector('#stepName')?.addEventListener('input', e => {
+    panel.querySelector('#stepNameCounter').textContent = `${e.target.value.length}/64 characters`;
+  });
 
-  if (!dialogue) {
-    console.warn(`Modal not found for selector: ${selector}`);
+  panel.querySelector('#stepDescription')?.addEventListener('input', e => {
+    panel.querySelector('#stepDescriptionCounter').textContent = `${e.target.value.length}/256 characters`;
+  });
+
+  panel.querySelector('#saveTaskBtn')?.addEventListener('click', handleTaskSubmit);
+  panel.querySelector('#saveStepBtn')?.addEventListener('click', handleStepSubmit);
+  panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
+}
+
+async function handleTaskSubmit(e) {
+  e.preventDefault();
+console.log('handleTaskSubmit(e)');
+  const taskName = document.querySelector('#taskName')?.value.trim();
+  const taskDescription = document.querySelector('#taskDescription')?.value.trim();
+  const taskUrl = document.querySelector('#taskUrl')?.value.trim();
+  const saveBtn = document.querySelector('#saveTaskBtn');
+
+  if (!taskName || !taskDescription) {
+    showToast('Task name and description are required', 'error');
+    return;
+  }
+  const supabase = createSupabaseClient();
+  const { data: existingTask, error: fetchError } = await supabase
+    .from('task_headers')
+    .select('id')
+    .eq('name', taskName)
+    .single();
+
+  if (existingTask) {
+    showToast('That name has already been used. Please choose a different one.', 'error');
     return;
   }
 
-  console.log('Opening modal:', selector);
-  dialogue.classList.remove('hidden');
-  dialogue.classList.add('flex');
-
-  const creationDate = dialogue.querySelector('#creationDate'); //what is this???
-  if (creationDate) creationDate.textContent = new Date().toLocaleString(); ///what is this???
-
-  resetFormAndState(dialogue); // optionally pass the modal to reset only its form
-}
-
-
-function closeDialogue() {
-  console.log('closeDialogue()');
-  const dialogue = document.querySelector('.create-task-dialogue');/// .create is probably wrong
-  if (!dialogue) return;   // why is this function looking in the DOM? Why not pass it?
-
-  dialogue.classList.add('hidden');
-  dialogue.classList.remove('flex');
-  resetFormAndState();
-}
-
-// 📝 Task Creation
-async function handleTaskSubmit(e) {
-  console.log('handleTaskSubmit()');
-  
-  e.preventDefault();  //Why prevent default?
-
-  const saveBtn = document.querySelector('#saveTaskBtn');
-  const taskName = document.querySelector('#taskName')?.value;
-  const taskDescription = document.querySelector('#taskDescription')?.value;
-  const taskUrl = document.querySelector('#taskUrl')?.value;
-// this gives no chance to validate anything. This is stupid
   saveBtn.disabled = true;
   saveBtn.textContent = 'Saving Task...';
 
@@ -109,7 +124,7 @@ async function handleTaskSubmit(e) {
       name: taskName,
       description: taskDescription,
       external_url: taskUrl || null,
-      author_id: user
+      author_id: state.user
     })
     .select()
     .single();
@@ -118,14 +133,7 @@ async function handleTaskSubmit(e) {
     showToast('Failed to create task: ' + error.message, 'error');
   } else {
     state.taskId = data.id;
-    document.querySelector('#taskIdDisplay').textContent = `Task ID: ${data.id}`;
-    document.querySelector('#taskIdDisplay')?.classList.remove('hidden');
     document.querySelector('#stepsSection')?.classList.remove('opacity-50', 'pointer-events-none');
-
-    document.querySelector('#taskName')?.setAttribute('disabled', true);
-    document.querySelector('#taskDescription')?.setAttribute('disabled', true);
-    document.querySelector('#taskUrl')?.setAttribute('disabled', true);
-
     showToast('Task created successfully!');
   }
 
@@ -133,14 +141,13 @@ async function handleTaskSubmit(e) {
   saveBtn.textContent = 'Save Task';
 }
 
-// 🧩 Step Creation
 async function handleStepSubmit(e) {
   e.preventDefault();
-console.log('handleStepSubmit()');
+console.log('handleStepSubmit(e)');
   const order = parseInt(document.querySelector('#stepOrder')?.value);
-  const stepName = document.querySelector('#stepName')?.value;
-  const stepDescription = document.querySelector('#stepDescription')?.value;
-  const stepUrl = document.querySelector('#stepUrl')?.value;
+  const stepName = document.querySelector('#stepName')?.value.trim();
+  const stepDescription = document.querySelector('#stepDescription')?.value.trim();
+  const stepUrl = document.querySelector('#stepUrl')?.value.trim();
   const saveBtn = document.querySelector('#saveStepBtn');
 
   if (!state.taskId || !state.user) {
@@ -155,7 +162,7 @@ console.log('handleStepSubmit()');
 
   saveBtn.disabled = true;
   saveBtn.textContent = 'Saving Step...';
-
+  const supabase = createSupabaseClient();
   let error;
   if (order === 3) {
     const { error: updateError } = await supabase
@@ -177,7 +184,7 @@ console.log('handleStepSubmit()');
         external_url: stepUrl || null,
         step_order: order,
         task_header_id: state.taskId,
-        author_id: state.user.id
+        author_id: state.user
       });
     error = insertError;
   }
@@ -190,8 +197,6 @@ console.log('handleStepSubmit()');
     document.querySelector('#createdSteps')?.classList.remove('hidden');
     document.querySelector('#createStepForm')?.reset();
     document.querySelector('#stepOrder').value = order + 1;
-    document.querySelector('#stepNameCounter').textContent = '0/64 characters';
-    document.querySelector('#stepDescriptionCounter').textContent = '0/256 characters';
     showToast('Step saved!');
   }
 
@@ -200,9 +205,11 @@ console.log('handleStepSubmit()');
 }
 
 function updateStepsList() {
+
   console.log('updateStepsList()');
   const list = document.querySelector('#stepsList');
   if (!list) return;
+
   list.innerHTML = '';
   state.steps.forEach(step => {
     const div = document.createElement('div');
@@ -211,22 +218,3 @@ function updateStepsList() {
     list.appendChild(div);
   });
 }
-
-
-// ✍️ Form Listeners
-document.querySelector('#createTaskForm')?.addEventListener('submit', handleTaskSubmit);
-document.querySelector('#createStepForm')?.addEventListener('submit', handleStepSubmit);
-
-// ✏️ Character Counters
-document.querySelector('#taskName')?.addEventListener('input', (e) => {
-  document.querySelector('#taskNameCounter').textContent = `${e.target.value.length}/64 characters`;
-});
-document.querySelector('#taskDescription')?.addEventListener('input', (e) => {
-  document.querySelector('#taskDescriptionCounter').textContent = `${e.target.value.length}/256 characters`;
-});
-document.querySelector('#stepName')?.addEventListener('input', (e) => {
-  document.querySelector('#stepNameCounter').textContent = `${e.target.value.length}/64 characters`;
-});
-document.querySelector('#stepDescription')?.addEventListener('input', (e) => {
-  document.querySelector('#stepDescriptionCounter').textContent = `${e.target.value.length}/256 characters`;
-});

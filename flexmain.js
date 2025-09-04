@@ -1,8 +1,11 @@
 //flexmain.js
 
+
 import { loadAdminDashWithData } from './dash/loadAdminDashWithData.js';
 import { adminListeners } from './ui/adminListeners.js';
 import { appState } from './state/appState.js';
+import  * as createTask  from './work/task/createTask.js';
+import { registry } from './registry/registry.js';
 
 // === UTILITY: Get main display area ===
 function getDisplayArea() {
@@ -18,7 +21,9 @@ function getFrameAroundThePages() {
 const panelsOnDisplay = [];
 
 // === QUERY OBJECT ===
-export const query = {
+
+//export   //if delete this crashed because imported by adminListeners at first load of flexmain without any log
+const Xquery = {  //local
   userId: null,
   stubName: null,
   recordId: null,
@@ -35,12 +40,35 @@ export const query = {
 
 //the above, I think is a local object, but we are supposed to use the appState.query object
 
-//but the below does not work. The app freezes 
+try {
+  if (appState) {
+    console.log('appState has been successfully loaded:', appState);
+    // You can now safely use appState here
 
-//setQuery(stubName = 'adminDash.html', INSERT_request = true, userId='06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df');
+
+//                          === DEV MODE: Load adminDash.html stub ===   <------ !!!!!!!
+
+    appState.setQuery({ //global
+      stubName: 'adminDash.html',  //For dev concentrating on the adminDash
+      INSERT_request: true,    //probably not relevant
+      userId: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // MOCK but in db
+    });
 
 
-//console.log('query2 in flexmain:', query2);
+
+ console.log('appState.query in flexmain after setQuery:', appState.query); //global
+ console.log('local query in flexmain after appState.setQuery:', query); //local
+  } else {
+    console.error('appState is undefined or not properly exported.');
+  }
+} catch (error) {
+  console.error('Error while accessing appState:', error);
+}
+
+
+
+
+// === STATE CHANGE HANDLER ===
 
 window.addEventListener('state-change', async (e) => {
     const { type, payload } = e.detail;
@@ -48,9 +76,9 @@ window.addEventListener('state-change', async (e) => {
     switch (type) {
       case 'QUERY_UPDATE':
         if ( payload.stubName) {
-           
-            query.stubName = payload.stubName; //sync local query with global appState.query.  Need to solve this sometime
-            console.log('before openClosePanelsByRule in state-change.payload:', payload, 'query.stubName:', query.stubName);
+           //commented out this local query. Froze here because definition removed
+           // query.stubName = payload.stubName; //sync local query with global appState.query.  Need to solve this sometime
+//            console.log('before openClosePanelsByRule in state-change.payload:', payload, 'query.stubName:', query.stubName);
             //error that some functions are using the local query object and some are using the appState.query object. Here the local =admin.html, but global is createTaskForm.html
             await openClosePanelsByRule(payload.stubName); 
         }
@@ -65,10 +93,17 @@ window.addEventListener('state-change', async (e) => {
 
 
 
-// === DEV MODE: Load adminDash.html stub ===
-query.stubName = 'adminDash.html';
-query.READ_request = true;
-query.userId = '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df'; // MOCK but in db
+
+
+
+
+
+
+
+// === DEV MODE: Load adminDash.html stub ===  local
+//query.stubName = 'adminDash.html';
+//query.READ_request = true;
+//query.userId = '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df'; // MOCK but in db
 
 
 
@@ -81,6 +116,7 @@ document.addEventListener('DOMContentLoaded', onAppLoad);
 //  === CONNECT FORMS TO DATABASE ===
 async function connectFormsToDatabase(stubName) {
   console.log(`connectFormsToDatabase ${stubName} `);
+  // possibly redundant function now that we have loading of js modules
   // Placeholder for actual form-to-database connection logic
   // This would involve querying the panel for forms and setting up event listeners
   //or every form has a class and we need to just recognise it is a form and have a standard loading function
@@ -123,7 +159,7 @@ async function onAppLoad() {
     console.log('App loaded, initializing...');
   // Ensure display area is available
   const displayArea = getDisplayArea();
-  
+  let query=appState.query; //now global
   // Load admin page initially (full width)
   if (panelsOnDisplay.length === 0) {
     await renderPanel(query);
@@ -157,17 +193,45 @@ export async function renderPanel(query) {
   const panel = document.createElement('div');
   panel.className = 'page-panel';
   panel.dataset.pageName = stubName;
+//////////////////////////////////////////// is this where load module takes place?? 
 
-  try {
-    // Load content from actual file
+
+console.log('about to check registry(',stubName,')',stubName.length);
+/*
+let registryEntry = await registry[stubName.replace('.html','')];
+console.log('registryEntry is ex html:', registryEntry);
+*/
+let registryEntry = await registry[stubName];
+console.log('registryEntry with html:', registryEntry);
+
+//if (stubName === 'createTaskForm.html') { console.log('here');  //getting to here in console
+
+if(registryEntry) { console.log('Registry recognises', stubName, 'append panel, push details in array');
+
+displayArea.appendChild(panel);
+panelsOnDisplay.push({ stubName, panel, query });
+
+const selectedModule = await registryEntry(); // Get the module path from the registry
+//console.log('Panel is in DOM?', document.body.contains(panel));
+console.log('Loaded module:', selectedModule);
+//selectedModule = './work/task/createTask.js'; // Adjust path as needed
+
+try {
+
+  selectedModule.render(panel); // 
+} catch (error) {
+  console.error('Failed to load module:', error);
+  console.log('Available exports:', Object.keys(selectedModule));
+}
+
+
+}else  try {
+    // Load html content from a file
+console.log('Registry does not recognise', stubName, 'append panel, push details in array, then load html content instead');
+    displayArea.appendChild(panel);
+    panelsOnDisplay.push({ stubName, panel, query });
     const html = await getStubContent(stubName);
     panel.innerHTML = html;
-    displayArea.appendChild(panel);
-
-    panelsOnDisplay.push({ stubName, panel, query });
-
-    // Simulate any page-specific setup  - I have commentedout 15:37 Sep 2 2025
-    //simulatePageSetup(stubName, panel);
 
     // Update layout based on number of panels
     updatePanelLayout();
@@ -243,14 +307,14 @@ if(fromButtonClick)
 
     if (isSpecialToggle && isAlreadyOpen) {
       // Clicking on already open admin or member - close all other panels
-      closeAllOtherPanels(stubName);
-      await loadPageWithData(query.stubName.replace('.html','')); //this refreshes data on already open panel
+      closeAllOtherPanels(stubName);  // next lines are using 'query' instead of the pass param 'stubName'  !!! <<<<<<
+      await loadPageWithData(stubName.replace('.html','')); //this refreshes data on already open panel
       btn.classList.add('active');
     } else if (isSpecialToggle && !isAlreadyOpen) {
       // Switching between admin and member - replace current with new one
       closeAllPanels();
-      await renderPanel({...query, stubName: stubName});
-      await loadPageWithData(query.stubName.replace('.html','')); 
+      await renderPanel({...appState.query, stubName: stubName});
+      await loadPageWithData(appState.query.stubName.replace('.html','')); 
       btn.classList.add('active');
     } else if (!isSpecialToggle) {
       // Regular page - open alongside existing panels
@@ -259,8 +323,8 @@ if(fromButtonClick)
         closePanel(stubName);
       } else {
         // Open new panel - this is to display a new side page that is not admin or member & not already open
-        await renderPanel({...query, stubName: stubName});
-        await loadPageWithData(query.stubName.replace('.html',''));
+        await renderPanel({...appState.query, stubName: stubName});
+        await loadPageWithData(appState.query.stubName.replace('.html',''));
        // where do we check and connect input forms to the database? Here or in loadPageWithData? 17:10 Sept 2 2025
       }
       // Always keep admin or member active when opening other panels
@@ -290,7 +354,7 @@ function setupNavigationListeners() {
     e.stopPropagation();
 
     const pageName = btn.dataset.page;
-    query.stubName = pageName + '.html';
+    appState.query.stubName = pageName + '.html';
     const stubName = pageName + '.html';
 
 

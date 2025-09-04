@@ -17,6 +17,8 @@ export const appState = {
     
     // Methods to update state
     setQuery(updates) {
+      console.log('appState.setQuery updates:', updates);
+      // Merge updates into the existing query object
       Object.assign(this.query, updates);
       // Dispatch event for subscribers
       window.dispatchEvent(new CustomEvent('state-change', { 
@@ -26,6 +28,7 @@ export const appState = {
     
     // Reset to initial state
     resetQuery() {
+      console.log('appState.resetQuery');
       this.query = {
         userId: this.query.userId, // preserve userId
         stubName: null,
@@ -44,5 +47,6 @@ export const appState = {
   
   // Export a function to initialize with user ID
   export function initializeState(userId) {
+console.log('initializeState with userId:', userId);
     appState.query.userId = userId;
   }

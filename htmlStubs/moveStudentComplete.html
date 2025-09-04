@@ -1,13 +1,12 @@
-```html
-<!DOCTYPE html>
+<--!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Advance Task Dialog</title>
+  <title>Advance Task Dialog</title -->
   <style>
     /* Dialog styles */
-    #advanceTaskDialog {
+    #moveStudentStep {
       display: none;
       position: fixed;
       inset: 0;
@@ -139,12 +138,12 @@
       background-color: #059669;
     }
   </style>
-</head>
-<body>
+<!--/head>
+<body-->
   <!-- The dialog will be injected here dynamically -->
   
   <script>
-    class AdvanceTaskDialog {
+    class moveStudentStep {
       constructor({ onAdvance, onReverse, onClose, onAction } = {}) {
         // Callback functions with defaults
         this.onAdvance = onAdvance || (() => {});
@@ -177,14 +176,14 @@
        * Creates the dialog element and injects it into the DOM
        * @returns {Promise<boolean>} Resolves with true if student was moved, false otherwise
        */
-      async show(container = document.body) {
+      async show(panel) {
         // Create the dialog if it doesn't exist
-        if (!document.getElementById('advanceTaskDialog')) {
-          await this.createDialogElement(container);
+        if (!document.getElementById('moveStudentStep')) {
+          await this.createDialogElement(panel);
         }
         
         // Get DOM references
-        this.dialog = document.getElementById('advanceTaskDialog');
+        this.dialog = document.getElementById('moveStudentStep');
         this.advanceButton = this.dialog.querySelector('#advanceButton');
         this.closeButtons = this.dialog.querySelectorAll('[data-action="close-dialog"]');
         this.actionButtons = this.dialog.querySelectorAll('[data-button]');
@@ -193,6 +192,8 @@
         this.currentStepCheckmark = this.dialog.querySelector('#currentStepCheckmark');
         this.forwardArrow = this.dialog.querySelector('#forwardArrow');
         this.backwardArrow = this.dialog.querySelector('#backwardArrow');
+
+        //need the three other buttons
 
         // Create promise for the result
         this.promise = new Promise((resolve, reject) => {
@@ -213,9 +214,9 @@
         return this.promise;
       }
 
-      async createDialogElement(container) {
+      async createDialogElement(panel) {
         const dialogHtml = `
-          <div id="advanceTaskDialog">
+          <div id="moveStudentStep">
             <div class="dialog-content">
               <div class="dialog-header">
                 <h3 class="dialog-title">Advance Student</h3>
@@ -246,6 +247,19 @@
                 </button>
               </div>
               
+        <!-- Action Buttons -->
+        <div "button-container">>
+          <button data-button='message-student' class="action-button">
+            Message Student
+          </button>
+          <button data-button='abandoned' class="action-button">
+            Abandoned
+          </button>
+          <button data-button='message-admin' class="action-button">
+            Message Admin
+          </button>
+        </div>
+              
               <div class="button-container">
                 <button data-button="cancel" class="secondary-button">Cancel</button>
                 <button data-button="confirm" class="primary-button">Confirm</button>
@@ -254,11 +268,18 @@
           </div>
         `;
         
+
+
+  
+
+
+
+
         const tempDiv = document.createElement('div');
         tempDiv.innerHTML = dialogHtml.trim();
         const dialogElement = tempDiv.firstElementChild;
         
-        container.appendChild(dialogElement);
+        panel.appendChild(dialogElement);
         
         // Wait for DOM to update
         await new Promise(resolve => setTimeout(resolve, 0));
@@ -418,13 +439,18 @@
       }
     }
 
+
+    export class moveStudentStep {
+
+}
+
+/*
     // Export the class for module usage
     if (typeof module !== 'undefined' && module.exports) {
-      module.exports = AdvanceTaskDialog;
+      module.exports = moveStudentStep;
     } else if (typeof window !== 'undefined') {
-      window.AdvanceTaskDialog = AdvanceTaskDialog;
-    }
+      window.moveStudentStep = moveStudentStep;
+    } */
   </script>
-</body>
-</html>
-```
+<!--/body>
+</html-->
