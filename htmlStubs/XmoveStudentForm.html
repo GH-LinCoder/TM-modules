@@ -1,3 +1,144 @@
+<DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advance Task Dialog</title -->
+  <style>
+    /* Dialog styles */
+    #moveStudentStep {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .dialog-content {
+      background: white;
+      border-radius: 8px;
+      padding: 24px;
+      max-width: 400px;
+      width: 100%;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+    
+    .dialog-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    
+    .dialog-title {
+      font-size: 1.125rem;
+      font-weight: 600;
+    }
+    
+    .close-button {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      cursor: pointer;
+      color: #6b7280;
+    }
+    
+    .close-button:hover {
+      color: #374151;
+    }
+    
+    .student-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    
+    .student-name {
+      font-weight: 500;
+      color: #1f2937;
+    }
+    
+    .checkmark {
+      margin-left: 8px;
+      color: #10b981;
+    }
+    
+    .hidden {
+      display: none;
+    }
+    
+    .scale-110 {
+      transform: scale(1.1);
+      transition: transform 0.2s ease;
+    }
+    
+    .action-button {
+      background-color: #3b82f6;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      transition: background-color 0.2s;
+    }
+    
+    .action-button:hover:not(:disabled) {
+      background-color: #2563eb;
+    }
+    
+    .action-button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .arrow-icon {
+      margin-left: 8px;
+      width: 20px;
+      height: 20px;
+    }
+    
+    .button-container {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    
+    .secondary-button {
+      background-color: #e5e7eb;
+      color: #374151;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    .secondary-button:hover {
+      background-color: #d1d5db;
+    }
+    
+    .primary-button {
+      background-color: #10b981;
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+    
+    .primary-button:hover {
+      background-color: #059669;
+    }
+  </style>
+</head> <body>
 <div id="advanceTaskDialog" data-form="advanceTaskDialog" class="relative z-10 w-full">
 
     <!-- No backdrop since it's not a modal anymore -->
@@ -139,3 +280,6 @@
       </svg>
     </button>
 -->
+
+</body>
+</html>

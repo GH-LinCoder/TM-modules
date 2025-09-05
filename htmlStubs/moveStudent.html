@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Advance Task Dialogue</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* Custom style for the arrow button */
+    .advance-button {
+      background-color: #3b82f6; /* Blue-600 */
+      color: white;
+      transition: background-color 0.2s ease-in-out;
+      border-radius: 9999px; /* Full rounded */
+      padding: 0.75rem;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      flex-shrink: 0;
+    }
+    .advance-button:hover {
+      background-color: #2563eb; /* Blue-700 */
+    }
+  </style>
+</head>
+<body class="bg-gray-100 font-sans">
+
+  <!-- Example button to trigger the dialogue for testing -->
+  <!--div class="p-8 text-center">
+    <button id="showDialogButton" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition">
+      Show Task Dialogue
+    </button>
+  </div-->
+
+  <!-- Advance Task Dialogue -->
+  <div id="advanceTaskDialog" data-form="advanceTaskDialog" class=" fixed inset-0 z-50 flex items-center justify-center">
+    <!--div id="advanceTaskDialog" data-form="advanceTaskDialog" class="relative z-10 w-full"-->
+    <!-- Backdrop -->
+    <!--div class="fixed inset-0 bg-black/80" data-action="close-dialog"></div-->
+
+    <!-- Dialog Container -->
+    <!--div class="bg-white rounded-lg shadow-lg w-full max-w-5xl mx-4 z-10 max-h-[90vh] overflow-y-auto"-->
+    <div class="bg-white rounded-lg shadow-lg w-full mx-0 z-10">
+      
+      <!-- Close Button and Title -->
+      <div class="p-6 border-b border-gray-200">
+        <div class="flex items-center justify-between">
+          <h3 class="text-xl font-semibold text-gray-900" data-form="title">Advance Task Step</h3>
+          <button
+            class="text-gray-500 hover:text-gray-700"
+            data-action="close-dialog"
+            aria-label="Close"
+          >
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Main Content and Cards -->
+      <div class="p-6 space-y-8">
+        
+        <!-- Step Cards and Advance Button -->
+        <div class="flex flex-row items-center justify-center gap-6">
+
+          <!-- Previous Step Card -->
+          <div class="w-1/3 bg-gray-50 rounded-lg p-6 shadow-md border border-gray-200 relative" data-step='previous'>
+            <div class="text-sm font-semibold text-gray-600 mb-2">Previous Step</div>
+            <h4 class="text-lg font-bold" data-previous-title>Step 1: Introduction</h4>
+            <p class="text-sm text-gray-500 mt-1" data-previous-description>
+              Brief description of the previous task step.
+            </p>
+            <!-- Checkmark for previous step (always visible) -->
+            <div class="absolute top-2 right-2 text-green-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2l4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Current Step Card -->
+          <div class="w-1/3 bg-blue-50 rounded-lg p-6 shadow-md border border-blue-200 relative" data-step='current'>
+            <div class="text-sm font-semibold text-blue-600 mb-2">Current Step</div>
+            <h4 class="text-lg font-bold" data-current-title>Step 2: Component Architecture</h4>
+            <p class="text-sm text-gray-600 mt-1" data-current-description>
+              Learn about component composition and state management patterns.
+            </p>
+            <!-- Student card inside the current step -->
+            <div id="currentStudentName" data-student='name' class="absolute -top-4 -left-4 bg-white rounded-full p-2 text-xs font-medium text-gray-700 shadow border border-gray-200">
+              Student: Jane Doe
+            </div>
+            <!-- Checkmark for current step (initially hidden) -->
+            <div id="currentStepCheckmark" class="hidden absolute top-2 right-2 text-green-500">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2l4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Advance/Reverse Button Container -->
+          <div class="relative">
+            <button id="advanceButton" class="advance-button" data-action="advance" aria-label="Advance task to next step">
+              <svg id="forwardArrow" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M13 5l7 7-7 7M5 12h14" />
+              </svg>
+              <svg id="backwardArrow" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 hidden" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M11 19l-7-7 7-7M19 12h-14" />
+              </svg>
+              
+            </button>
+          </div>
+
+          <!-- Next Step Card -->
+          <div class="w-1/3 bg-green-50 rounded-lg p-6 shadow-md border border-green-200 relative" data-step='next'>
+            <div class="text-sm font-semibold text-green-600 mb-2">Next Step</div>
+            <h4 class="text-lg font-bold" data-next-title>Step 3: State Management</h4>
+            <p class="text-sm text-gray-600 mt-1" data-next-description>
+              Implement state management solutions with React Context or Redux.
+            </p>
+            <!-- Student card inside the next step -->
+            <div id="nextStudentName" data-student='name' class="hidden absolute -top-4 -right-4 bg-white rounded-full p-2 text-xs font-medium text-gray-700 shadow border border-gray-200">
+              Student: Jane Doe
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
+          <button data-button='message-student' class="flex-1 py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+            Message Student
+          </button>
+          <button data-button='abandoned' class="flex-1 py-3 px-6 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+            Abandoned
+          </button>
+          <button data-button='message-admin' class="flex-1 py-3 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+            Message Admin
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Get references to the dialog and buttons
+    const dialog = document.getElementById('advanceTaskDialog');
+    const closeButtons = document.querySelectorAll('[data-action="close-dialog"]');
+    const showDialogButton = document.getElementById('showDialogButton');
+    const advanceButton = document.getElementById('advanceButton');
+
+    // Get references to the student name and checkmark elements
+    const currentStudentName = document.getElementById('currentStudentName');
+    const nextStudentName = document.getElementById('nextStudentName');
+    const currentStepCheckmark = document.getElementById('currentStepCheckmark');
+
+    // Get references to the arrow icons
+    const forwardArrow = document.getElementById('forwardArrow');
+    const backwardArrow = document.getElementById('backwardArrow');
+
+    // A variable to hold the timeout ID for the delayed "commit"
+    let commitTimeout;
+
+    // Function to show the dialogue
+    function showAdvanceTaskDialog() {
+      dialog.classList.remove('hidden');
+      dialog.classList.add('flex');
+    }
+
+    // Function to hide the dialogue
+    function hideAdvanceTaskDialog() {
+      dialog.classList.add('hidden');
+      dialog.classList.remove('flex');
+    }
+
+    // Function to handle the task advancement
+    function advanceTask() {
+      // Perform the immediate visual changes
+      currentStudentName.classList.add('hidden');
+      nextStudentName.classList.remove('hidden');
+      currentStepCheckmark.classList.remove('hidden');
+
+      // Change the button state to "reverse"
+      advanceButton.setAttribute('data-action', 'reverse');
+      forwardArrow.classList.add('hidden');
+      backwardArrow.classList.remove('hidden');
+
+      console.log('Task advancement started. Changes are pending for 2 seconds...');
+
+      // Set a timeout to "commit" the change after 2 seconds
+      commitTimeout = setTimeout(() => {
+        console.log('Task change committed to the database after 2 seconds.');
+        // At this point, you would make your database write call
+        // For example: writeToDatabase(taskId, 'advanced');
+        
+        // Reset the button state and visual elements after committing
+        advanceButton.setAttribute('data-action', 'advance');
+        forwardArrow.classList.remove('hidden');
+        backwardArrow.classList.add('hidden');
+      }, 2000); // 2000 milliseconds = 2 seconds
+    }
+
+    // Function to handle reversing the task
+    function reverseTask() {
+      // Clear the pending timeout to prevent the "commit" from happening
+      clearTimeout(commitTimeout);
+
+      // Revert the visual changes immediately
+      currentStudentName.classList.remove('hidden');
+      nextStudentName.classList.add('hidden');
+      currentStepCheckmark.classList.add('hidden');
+
+      // Change the button state back to "advance"
+      advanceButton.setAttribute('data-action', 'advance');
+      forwardArrow.classList.remove('hidden');
+      backwardArrow.classList.add('hidden');
+      
+      console.log('Task advancement reversed. The change was canceled.');
+    }
+/*
+    // Add event listeners to show and hide the dialogue
+    showDialogButton.addEventListener('click', showAdvanceTaskDialog);
+    closeButtons.forEach(button => {
+      button.addEventListener('click', hideAdvanceTaskDialog);
+    });
+*/
+    // Add a single event listener to the button that handles both actions
+    advanceButton.addEventListener('click', () => {
+      const action = advanceButton.getAttribute('data-action');
+      if (action === 'advance') {
+        advanceTask();
+      } else if (action === 'reverse') {
+        reverseTask();
+      }
+    });
+    
+  </script>
+
+</body>
+</html>

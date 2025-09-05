@@ -5,7 +5,7 @@ export function permitted(query) {
     console.log('permitted(', query,')');
     
     // placeholder. Eventually the permission logic will read the database & have rules, then check if db permits & flag if differenc of opinion
-
+//need parse the query object to determine what is being requested, by whom, and for what purpose.
     if (query ) {
         console.log("Access permitted");
         return true;

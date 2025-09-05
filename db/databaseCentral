@@ -1,0 +1,96 @@
+//databaseCentral.js
+console.log("databaseCentral.js loaded");
+
+/*
+All access to the database is done through this module.
+    
+DC receives requests from the independent js modules
+        The request is inside the query object (part of AppState).
+DC extracts the 'payload' from the query
+    The query contains a clear instruction(request) of what to do with the payload
+DC checks with isPermitted to see if the request is allowed according to javascript rules
+DC then asks for the database's opinion of whether it is permiitted according to supabase functions and RLS
+If both checks are passed, then...
+DC determines the actual API call to make based on the request
+    Sends the call and places the result in Query
+
+If either check fails (db and isPermitted), DC panics. 
+
+    {Not yet decided what to do in this condition. 
+    It may mean that the db rules or js rules are too permissive or too restrictive.
+
+    It may mean that the request is invalid, malicious or a typo.
+
+     If the db says yes, is it safe to continue if the js says no? - perhaps the db rules were not applied correctly.
+     If the db says no, nothing can happen, but the discrpancy must be flagged.}
+
+    I think the default behaviour should be it needs two yeses to proceed.
+     If db says no the action is impossible and needs a loud flag
+     If db says yes and js says no, we have the option of going ahead, but I think we should not or at least flag the problem
+
+
+*/
+import {createSupabaseClient} from'supabase.js';
+import { appState } from './state/appState.js';
+import { permitted } from './Permitted.js';
+
+
+const supabase = createSupabaseClient();
+
+export async function databaseCentral() {
+    console.log("databaseCentral() called");
+    //get the query from appState
+    const query = appState.getQuery();
+    console.log("databaseCentral() appState.query:", query);
+    if (!query) {
+        console.log("databaseCentral() no query found, exiting");
+        return;
+    }
+    const { petitioner, requestedAction, payload } = query;
+    console.log("databaseCentral() petitioner:", petitioner);
+    console.log("databaseCentral() requestedAction:", requestedAction);
+    console.log("databaseCentral() payload:", payload);
+
+    //check if the request is permitted by javascript rules   
+    const jsPermitted = permitted(query);
+    console.log("databaseCentral() jsPermitted:", jsPermitted);
+    if (!jsPermitted) {
+        console.error("databaseCentral() request not permitted by javascript rules:", requestedAction);
+        appState.setQueryResult({ error: "Request not permitted by javascript rules" });
+        return;
+    }
+
+    //check if the request is permitted by supabase and RLS & functions //Where do this? here or in permitted.js?
+    const dbPermitted = await permitted(query);
+    console.log("databaseCentral() dbPermitted:", dbPermitted);
+    if (!dbPermitted) {
+        console.error("databaseCentral() request not permitted by database rules:", request);
+        appState.setQueryResult({ error: "Request not permitted by database rules" });
+        return;
+    }
+
+    //both checks passed, have to parse the requestedAction and extarct the payload and call the appropriate function
+    let result;
+    switch (requestedAction) {
+        case 'getUser':
+            result = await getUser(payload);
+            break;
+        case 'addUser':
+            result = await addUser(payload);
+            break;
+        case 'updateUser':
+            result = await updateUser(payload);
+            break;
+        case 'deleteUser':
+            result = await deleteUser(payload);
+            break;
+        default:
+            console.error("databaseCentral() unknown request:", request);
+            appState.setQueryResult({ error: "Unknown request" });
+            return;
+    }
+
+    //set the result in appState  // needs some work
+    console.log("databaseCentral() result:", result);
+    appState.setQueryResult(result);
+}

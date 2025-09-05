@@ -1,19 +1,32 @@
 // Single source of truth for application state
 export const appState = {
-    // Your query object structure
+    // the query object structure (attached to appState) passed to functions & interigated & used at databaseCnetral
+
+/**
+ * @type {{ action: string, payload: Array<{approfile_is: string, relationship: string, of_approfile: string}>, 
+ * 
+ */
+
     query: {
       userId: null,
-      stubName: null,
-      recordId: null,
+      stubName: null,//obsolescent - phasing-out
+      recordId: null, //not sure if needed
+      
+      // simple description of the request
       READ_request: false,
       INSERT_request: false,
       DELETE_request: false,
       UPDATE_request: false,
-      callerContext: null,
-      purpose: null,
-      payload: {},
-      response: null
+      
+      petitioner:[],  // moduleName, sectionName, element (card or button) data-* attribute
+      //purpose: null, //not needed? next item covers this
+      requestedAction: 'Dont-Panic',   //such as: 'UPDATE_TASK_STEP', <--- standardized actions
+
+      payload: [], //varies depending on the module. approfile-is/relationship/of_approfile  or task_id/step_id/ordinal
+      
+      response: [], //contains read from DB & status of permission & other response of query DB
     },
+    
     
     // Methods to update state
     setQuery(updates) {

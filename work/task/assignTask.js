@@ -1,13 +1,10 @@
 // assignTask.js
 
-export function render(panel, query = {}) {
-  console.log('assignTask.js render() called');
-  const dialog = new AssignTaskDialog();
-  dialog.render(panel, query);
+export function render(panel, query = {}) {console.log('assignTask.js render() called');const dialog = new AssignTaskDialog();dialog.render(panel, query);
 }
 console.log('🔥 assignTask.js: START');
 class AssignTaskDialog {
- /* constructor() {
+ constructor() {
     // ✅ Remove DOM references from constructor
     this.taskHeaders = [];
     this.users = [];
@@ -336,22 +333,16 @@ panel.innerHTML = getTemplateHTML();
   }
 }
 
-//export { AssignTaskDialog };
-/*
-export function render(panel, query = {}) {
-  const dialog = new AssignTaskDialog();
-  dialog.render(panel, query);
-}
 
-export function render(panel, query = {}) {
-  console.log('assignTask.js render() called');
-  const dialog = new AssignTaskDialog();
-  dialog.render(panel, query);
-
-  }*/
 
   
 
   console.log('✅ assignTask.js: END - About to export render');
 
-
+  //export { render, AssignTaskDialog };
+ 
+//duplicate export error in parser
+//but commented out error failed to load module 
+// dialog.render is not a function
+//try this:
+export {AssignTaskDialog};
