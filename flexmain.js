@@ -76,7 +76,7 @@ try {
   if (appState) {
   //  console.log('appState has been successfully loaded:', appState);
 
-    const petition = {'Module':'adminDash.html','Section': 'jsDevMock','Action': 'adminDash.html'};
+    const petition = {'Module':'adminDash','Section': 'jsDevMock','Action': 'adminDash'};
     appState.setPetitioner(petition); //dev set-up of petitioner object 14:39 7 Sept 2025
 
   //  console.log('appState.query in flexmain after setQuery:', appState.query); //global
@@ -179,12 +179,12 @@ const stubName = appState.query.petitioner.Action; //legacy html to be phased-ou
   const panel = document.createElement('div');
   panel.className = 'page-panel';
 
-  panel.dataset.pageName = stubName;
+  panel.dataset.pageName = stubName; //what is this?
  
 console.log('about to check registry(',stubName,')',stubName.length);
 
 let registryEntry = await registry[stubName];
-console.log('registryEntry with html:', registryEntry);
+console.log('registryEntry is:', registryEntry);
 
 
 if(registryEntry) { console.log('Registry recognises', stubName, 'append panel, push details in array');
@@ -280,10 +280,10 @@ async function getStubContent(stubName) {
      // console.log('   All stubNames:', panelsOnDisplay.map(p => ` "${p.stubName}" `));
 
 
-
 // === OPEN/CLOSE PANELS BY RULE ===
 export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
 console.log('openClosePanelsByRule(', stubName, 'fromButtonClick:', fromButtonClick,')');
+
 if(fromButtonClick)
     {document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));}
 
@@ -291,7 +291,7 @@ if(fromButtonClick)
     const isAlreadyOpen = panelsOnDisplay.some(p => p.stubName === stubName);
 console.log('isAlreadyOpen:', isAlreadyOpen);
     // Special case: admin and member are toggleable
-    const isSpecialToggle =stubName === 'adminDash.html' || stubName === 'memberDash.html';
+    const isSpecialToggle =stubName === 'adminDash.html' || stubName === 'memberDash.html'|| stubName === 'adminDash' || stubName === 'memberDash';
 console.log('isSpecialToggle:', isSpecialToggle);    
 
     if (isSpecialToggle && isAlreadyOpen) {
@@ -303,8 +303,8 @@ console.log('isSpecialToggle:', isSpecialToggle);
     if (isSpecialToggle && !isAlreadyOpen) {
       // Switching between admin and member - replace current with new one
       closeAllPanels();
-      await renderPanel({...appState.query.petitioner, 'Action': stubName});
-//      await renderPanel({...appState.query, stubName: stubName});
+      await renderPanel({...appState.query.petitioner, 'Action': stubName});//puts the name of the desired module in petitioner
+//     
       await loadPageWithData(appState.query.petitioner.Action.replace('.html','')); 
     //  if(fromButtonClick) {btn.classList.add('active');}
     } 

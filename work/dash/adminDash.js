@@ -32,7 +32,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
 
     <!-- Members -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-stat="members">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="members-stats">
       <h3 class="text-sm font-medium text-blue-700 mb-1">Members</h3>
       <p class="text-2xl font-bold text-blue-900" data-value="members-count">?</p>
       <p class="text-xs text-blue-600">Registered users</p>
@@ -40,7 +40,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </div>
 
         <!-- Assignments -->
-    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-stat="assignments">
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assignments-stats">
       <h3 class="text-sm font-medium text-red-700 mb-1">Assignments</h3>
       <p class="text-2xl font-bold text-red-900" data-value="assignments-count">?</p>
       <p class="text-xs text-red-600">Students, managers & assigned tasks</p>
@@ -48,7 +48,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </div>
 
     <!-- Tasks -->
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-stat="tasks">
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-action="tasks-stats">
       <h3 class="text-sm font-medium text-yellow-700 mb-1">Tasks</h3>
       <p class="text-2xl font-bold text-yellow-900" data-value="tasks-count">?</p>
       <p class="text-xs text-yellow-600">Available tasks</p>
@@ -56,21 +56,21 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </div>
 
     <!-- Authors -->
-    <div class="bg-yellow-50 border border-purple-200 rounded-lg p-4" data-stat="authors">
+    <div class="bg-yellow-50 border border-purple-200 rounded-lg p-4" data-action="authors-stats">
       <h3 class="text-sm font-medium text-purple-700 mb-1">Authors</h3>
       <p class="text-2xl font-bold text-purple-900" data-value="authors-count-unique">?</p>
       <p class="text-xs text-purple-600">Task creators</p>
     </div>
 
     <!-- Students -->
-    <div class="bg-red-50 border border-green-200 rounded-lg p-4" data-stat="students">
+    <div class="bg-red-50 border border-green-200 rounded-lg p-4" data-action="students-stats">
       <h3 class="text-sm font-medium text-green-700 mb-1">Students</h3>
       <p class="text-2xl font-bold text-green-900" data-value="students-count-unique">?</p>
       <p class="text-xs text-green-600">Members on tasks</p>
     </div>
 
     <!-- Managers -->
-    <div class="bg-red-50 border border-indigo-200 rounded-lg p-4" data-stat="managers">
+    <div class="bg-red-50 border border-indigo-200 rounded-lg p-4" data-action="managers-stats">
       <h3 class="text-sm font-medium text-indigo-700 mb-1">Managers</h3>
       <p class="text-2xl font-bold text-indigo-900" data-value="managers-count-unique">?</p>
       <p class="text-xs text-indigo-600">Task supervisors</p>
@@ -178,7 +178,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- AUTHORS -->    
     <div class="bg-yellow-50 border border-purple-200 rounded-lg p-4" data-section="authors">
-      <p class="text-3xl font-bold text-purple-900" data-value="authors-count">?</p>
+      <p class="text-3xl font-bold text-purple-900" data-value="authors-count-unique">?</p>
       <h3 class="text-sm font-medium text-purple-700">Authors</h3>
       <p class="text-xs text-purple-500">View and manage task authors</p>
     </div>    

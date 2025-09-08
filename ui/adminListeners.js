@@ -79,7 +79,7 @@ export function adminListeners(container) {
 
    const action = petition.Action;
    console.log('adminListeners (',action,')');
-///////////////////////////////////////////////////////  Switch Action  ///////////////////////////////////////////////////////
+///////////////////////////////////////////////////////  Switch Action  (legacy) ///////////////////////////////////////////////////////
     switch (action) {
       case 'create-task-dialogue':
         console.log('case: (', action, ') changing name to createTaskForm.html Then call handleCardClick()');
@@ -109,7 +109,8 @@ export function adminListeners(container) {
         break;
 
       default:
-        console.warn('Unknown action:', action);
+        handleCardClick(action, action );
+//        console.warn('Unknown action:', action);
     }
   });
 
