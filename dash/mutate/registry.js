@@ -1,6 +1,9 @@
 // ./dash/mutate/registry.js
 console.log('mutate/registry.js');
 
+//interogate it by first selecting the SECTION , check that exists and then by SECTION
+
+
 const MutateRegistry = {
   'task-&-member': {
     'member-management': {
