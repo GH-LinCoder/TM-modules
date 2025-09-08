@@ -26,7 +26,11 @@ export const registry = {
 'tasks' :() => import('../work/task/tasks.js'),
 'steps' :() => import('../work/task/steps.js'),
 
-// 'login'
+'adminDash':()=>import('../work/dash/adminDash.js'),
+'memberDash':()=>import('../work/dash/memberDash.js'),
+
+'login':()=>import('../auth/login.js'),
+
 // sort buttons?  statsCard? 
 // old html stub versions for admin dashboard
 //'assignTaskForm.html': () => import('../work/task/assignTask.js'),
@@ -56,8 +60,10 @@ export const registry = {
 'tasks.html' :() => import('../work/task/tasks.js'),
 'steps.html' :() => import('../work/task/steps.js'),
 
+'adminDash.html':()=>import('../work/dash/adminDash.js'),
+'memberDash.html':()=>import('../work/dash/memberDash.js'),
 
-
+'login.html':()=>import('../auth/login.js'),
 
 'assignTaskForm': () => import('../work/task/assignTask.js'),
 'createTaskForm': () => import('../work/task/createTask.js'),

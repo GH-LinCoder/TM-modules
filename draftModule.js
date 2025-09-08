@@ -39,7 +39,4 @@ export function render(panel, petition = {}) {
 //we can do this in the dashboardListeners.js file
 //we can also add a default value of 'unknown' if it is not passed
 
-
-
 }
-  

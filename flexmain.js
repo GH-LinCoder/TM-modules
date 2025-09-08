@@ -128,7 +128,7 @@ async function onAppLoad() {
   let query=appState.query; //now global
   // Load a page initially (full width)
   if (panelsOnDisplay.length === 0) {
-    await renderPanel(query);
+    await renderPanel(query.petitioner);
     const name=query.petitioner.Action;//changed 16:46 7 Sept 2025
   console.log('Calling loadPageWithData(',name,')');
   await loadPageWithData(name.replace('.html','')); //changed 14:49 7 Sept 2025
