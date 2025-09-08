@@ -1,4 +1,5 @@
 // Single source of truth for application state
+console.log('Imported appState.js');
 export const appState = {
     // the query object structure (attached to appState) passed to functions & interigated & used at databaseCnetral
 
@@ -18,7 +19,7 @@ export const appState = {
       DELETE_request: false,
       UPDATE_request: false,
       
-      petitioner:[],  // moduleName, sectionName, element (card or button) data-* attribute
+      petitioner:{},  // moduleName, sectionName, element (card or button) data-* attribute
       //purpose: null, //not needed? next item covers this
       requestedAction: 'Dont-Panic',   //such as: 'UPDATE_TASK_STEP', <--- standardized actions
 
@@ -27,7 +28,18 @@ export const appState = {
       response: [], //contains read from DB & status of permission & other response of query DB
     },
     
-    
+    setPetitioner(petition) {
+      console.log('appState.setPetitioner:', petition);
+      Object.assign(this.query.petitioner, petition);
+      this.query.requestedAction = this.query.petitioner.Action;
+
+      window.dispatchEvent(new CustomEvent('state-change', { 
+        detail: { type: 'QUERY_UPDATE', payload: this.query }
+      }));
+    },
+
+
+
     // Methods to update state
     setQuery(updates) {
       console.log('appState.setQuery updates:', updates);

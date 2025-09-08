@@ -1,0 +1,40 @@
+<!-- ./htmlStubs/404.html -->
+
+
+<body class="min-h-screen flex items-center justify-center bg-gray-100">
+  <div class="text-center p-8">
+    <h1 class="text-6xl font-bold text-gray-800 mb-4">Default page</h1>
+    <p class="text-2xl text-gray-600 mb-6">Click the menu to select a page.</p>
+    <p class="text-gray-500 mb-8" id="attempted-path">This default page shows if the app isn't told which page to begin with. Dev can set the initial page in flexmain.js. In production the initial page would be determined at app load by permissions. If that fails then this default page would display</p>
+    
+    <a 
+      href="/" 
+      class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+      id="home-link"
+    >
+      See splash screen / login
+    </a>
+  </div>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    // Log the attempted path
+    console.error('404 Error: User attempted to access non-existent route:', window.location.pathname);
+    
+    // Display the attempted path
+    const pathElement = document.getElementById('attempted-path');
+    if (window.location.pathname !== '/404.html') {
+      pathElement.textContent = `You tried to access: ${window.location.pathname}`;
+    }
+    
+    // Add hover effect to home link
+    const homeLink = document.getElementById('home-link');
+    homeLink.addEventListener('mouseenter', () => {
+      homeLink.style.transform = 'translateY(-2px)';
+    });
+    
+    homeLink.addEventListener('mouseleave', () => {
+      homeLink.style.transform = 'translateY(0)';
+    });
+  </script>

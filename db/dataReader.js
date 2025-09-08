@@ -1,11 +1,12 @@
 // ./js/dataReader.js
-
+console.log('Imported: dataReader.js');
 import{createSupabaseClient} from './supabase.js';
 
 //const
  supabase = createSupabaseClient();
 
 export async function readAllMembers() {
+  console.log('readAllMembers()');
   const { data, error } = await supabase
     .from('profiles')
     .select('id, username, email, created_at')
@@ -20,6 +21,7 @@ export async function readAllMembers() {
 }
 
 export async function readAllTasks() {
+  console.log('readAllTasks()');
   const { data, error } = await supabase
     .from('task_headers')
     .select('id, name, author_id, created_at, description, external_url')
@@ -34,6 +36,7 @@ export async function readAllTasks() {
 }
 
 export async function readAllAssignments() {
+  console.log('readAllAssignments()');
   const { data, error } = await supabase
     .from('task_assignments')
     .select('id, student_id, manager_id, task_header_id, assigned_at, completed_at, abandoned_at')
@@ -48,6 +51,7 @@ export async function readAllAssignments() {
 }
 
 export async function readAllSteps() {
+  console.log('readAllSteps()');
   const { data, error } = await supabase
     .from('task_steps')
     .select('id, task_header_id, name, step_order, created_at, description, external_url, author_id')
@@ -62,6 +66,7 @@ export async function readAllSteps() {
 }
 
 export async function readAllRelatedIds(tableName, idColumnName) {
+  console.log(`readAllRelatedIds from ${tableName}.${idColumnName}`);
   const { data, error } = await supabase
     .from(tableName)
     .select(idColumnName);
@@ -75,6 +80,7 @@ export async function readAllRelatedIds(tableName, idColumnName) {
 }
 
 export async function readUniqueRelatedIds(tableName, idColumnName) {
+  console.log(`readUniqueRelatedIds from ${tableName}.${idColumnName}`);
   const allIdRecords = await readAllRelatedIds(tableName, idColumnName);
 
   if (allIdRecords.length === 0) {
@@ -87,6 +93,7 @@ export async function readUniqueRelatedIds(tableName, idColumnName) {
 }
 
 export async function readProfilesByIds(ids) {
+  console.log('readProfilesByIds');
   if (ids.length === 0) {
     return [];
   }

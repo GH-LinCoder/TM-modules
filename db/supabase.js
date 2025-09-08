@@ -1,6 +1,6 @@
 //supabase.js
 
-console.log('supabase.js');
+console.log('Imported: supabase.js');
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 const supabaseUrl = 'https://kxdplsvojxgdskbbfonp.supabase.co'

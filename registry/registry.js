@@ -1,5 +1,5 @@
 //  ./registry/registry.js
-console.log('Loaded: registry.js');
+console.log('Imported: registry.js');
 
 // A lookup table for your new JavaScript-based modules.
 // This is where you will add new entries as you convert more forms.
@@ -11,7 +11,8 @@ export const registry = {
 'assign-task-dialogue': () => import('../work/task/assignTask.js'),
 'create-task-dialogue': () => import('../work/task/createTask.js'),
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),
-'relate-approfile-dialogue': () => import('../work/approfiles/relateApprofile.js'),
+'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
+'howTo': () => import('../work/how/howTo.js'),
 
 // old html stub versions for admin dashboard
 //'assignTaskForm.html': () => import('../work/task/assignTask.js'),
@@ -28,6 +29,7 @@ export const registry = {
 //'createTaskForm.html': () => import('../work/task/createTask.js'),
 'moveStudentForm.html': () => import('../work/student/moveStudent.js'),
 'relateApprofileForm.html': () => import('../work/approfiles/relateApprofile.js'),
+'howTo.html': () => import('../work/how/howTo.js'),
 
 
 'assignTaskForm': () => import('../work/task/assignTask.js'),

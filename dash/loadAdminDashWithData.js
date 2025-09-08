@@ -9,7 +9,7 @@ import {
   readProfilesByIds
 } from '../db/dataReader.js';
 
-console.log('loadAdminDashWithData.js');
+console.log('Imported: loadAdminDashWithData.js');
 
 function updateStat(key, value) {
   const selector = `[data-stat="${key}"]`;
@@ -82,7 +82,7 @@ function injectStatsData(members, tasks, assignments, uniqueStudents, uniqueMana
   updateAll('[data-value="managers-count-unique"]', uniqueManagers.length);
 
   // Debug logging
-  console.log('quickStats:', members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors);
+  //console.log('quickStats:', members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors);
   
   // Verify elements were found and updated
   const stats = [
@@ -97,7 +97,7 @@ function injectStatsData(members, tasks, assignments, uniqueStudents, uniqueMana
   stats.forEach(item => {
     const elements = document.querySelectorAll(item.selector);
     if (elements.length > 0) {
-      console.log(`Found ${elements.length} element(s) for ${item.selector}, updated to ${item.value}`);
+  //    console.log(`Found ${elements.length} element(s) for ${item.selector}, updated to ${item.value}`);
     } else {
       console.log(`NOT FOUND: ${item.selector}`);
     }

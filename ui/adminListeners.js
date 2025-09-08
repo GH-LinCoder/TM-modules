@@ -1,94 +1,111 @@
-//import { openDialogue } from '../work/task/createTask.js';
+// ./ui/adminListeners.js
+console.log('Imported: ui/adminListeners.js');
 
-//import { togglePanel} from './reactToPageButtons.js';
-
-//import { query } from '../flexmain.js';
-import {renderPanel} from '../flexmain.js';
-
-// In adminListeners.js
 import { appState } from '../state/appState.js';
 
-//import { AdvanceTaskDialog } from '../components/AdvanceTaskDialog.js';
-//import { signOut } from '../auth/auth.js';
 
-console.log('ui/adminListeners.js');
-
-
-function handleCardClick(action, stubName) {
+function handleCardClick(action, moduleName) {
   // Just update state - don't call renderPanel directly
-  console.log('handleCardClick (',action,', ', stubName, ')');
-  appState.setQuery({ 
-    stubName: stubName,
-//    READ_request: true,
-    callerContext: action//putting 'create-task-dialogue' or 'assign-task-dialogue' etc in the object that triggers event in other modules
-  });
+  console.log('handleCardClick action:(',action,', name:', moduleName, ')');
+
+/*the panel may already have been closed by the event listener in flexmain.js, 
+  but adminListeners.js does not know that & will react to the same click & reopen the module
+  therefore to prevent that we can check if the module name is in the query. It would only be there
+  if the app had already been asked to load that module
+*/
+
+ //if query{} already has the name of the current panel open, do not open again
+   const isAlreadyOpen = moduleName===appState.query.petitioner.Module; // 
+ 
+  if (isAlreadyOpen) {
+    console.log('Panel already open:', moduleName);
+    return; // Prevent opening the same panel multiple times // fails, panel already been closed
+  } 
+  /*
+  else
+  // Update the appState to trigger panel rendering
+ 
+appState.setQuery({    stubName: stubName,
+                  //    READ_request: true,
+  callerContext: action//putting 'create-task-dialogue' or 'assign-task-dialogue' etc in the object that triggers event in other modules
+  });*/ 
+//console.log(action, stubName);
+  // appState.query.petitioner = {Module:stubName, Section:'click', Action:action} //adding petitioner object to query
+ 
 }
+
+// Reads the information from the clicked element, its section and the full page
+// so that we know which module (page), which section of that module and the specific action that has been clicked
+//All of this is called the 'petition' and it will be stored in appState.query.petitioner{}
+function readPetition(e){
+  console.log('readPetition (', e, ')');  //
+
+  const actionEl = e.target.closest('[data-action]');
+  if (!actionEl) {    console.log('fails !target (', actionEl, ')');  return;}
+   const action = actionEl.dataset.action;
+
+   const sectionEl = e.target.closest('[data-section]');
+    if (!sectionEl) {    console.log('fails !target (', sectionEl, ')');  return;}
+    const section = sectionEl.dataset.section;
+
+
+    const moduleEl = e.target.closest('[data-module]');
+    if (!moduleEl) {    console.log('fails !target (', moduleEl, ')');  return;}
+    const module = moduleEl.dataset.module;
+
+    console.log('readPetition(','= Module:',module,' Section:', section,' Action:', action,')');
+    const petition = {'Module':module,'Section': section,'Action': action};
+    //console.log('petition (', petition, ')');
+return petition;
+}
+
+
 
 
 /**
  * Sets up event listeners for the admin dashboard
- * @param {Element} container - The container element
+ * @param {Element} container - The container element of the admin dashboard
  */
 export function adminListeners(container) {
   // Listen for clicks on the container
-   console.log('adminListeners (', container, ')');//this is the entire html div being passed !
+   console.log('adminListeners add Listeners or respond');//this is the entire html div being passed !
  
    container.addEventListener('click', (e) => {
-   const target = e.target.closest('[data-action]');
 
-    console.log('adminListeners (', target, ')');  //
-    
-    if (!target) {    console.log('fails !target (', target, ')');  return;}
+   const petition  = readPetition(e); // Finds the module, section & action to be loaded in query{} 
+   console.log('petition (', petition, ')');
+    if (!petition) { console.log('No petition found, exiting listener'); return; } // Exit if no valid petition
+   appState.setPetitioner(petition); // petitioner is a part of appState.query{}
 
-//    console.log('after !target (', target, ')');  //
-  
-    const action = target.dataset.action;
-
-    console.log('adminListeners (',action,')');
+   const action = petition.Action;
+   console.log('adminListeners (',action,')');
 ///////////////////////////////////////////////////////  Switch Action  ///////////////////////////////////////////////////////
     switch (action) {
       case 'create-task-dialogue':
-        console.log('case: (', action, ')');
-//        query.stubName = ('createTaskForm.html');   
-//        renderPanel(query);   
-        handleCardClick(action, 'createTaskForm.html');
-
-      break;
+        console.log('case: (', action, ') changing name to createTaskForm.html Then call handleCardClick()');
+        handleCardClick(action, 'createTaskForm.html');//redundant ?
+        break;
 
       case 'assign-task-dialogue':
-        console.log('case: (', action, ')');
-//               query.stubName ='assignTaskForm.html';      
-//               renderPanel(query);
+        console.log('case: (', action, ') changing name to asignTaskForm.html Then call handleCardClick()');
         handleCardClick(action,'assignTaskForm.html');
-      break;
+        break;
 
 
         case 'move-student-dialogue':
-          console.log('case: (', action, ')');
-//          query.stubName ='moveStudentForm.html';
-//          renderPanel(query);   
-
+          console.log('case: (', action, ')changing name to moveStudentForm.html Then call handleCardClick()');
          handleCardClick(action, 'moveStudentForm.html');
-       //  waitForDialogAndInit();
         break;
 
 
 
-      case 'relate-approfile-dialogue':
-        console.log('case: (', action, ')');
-//        query.stubName ='relateApprofilesForm.html';      
-//        renderPanel(query);  
+      case 'relate-approfiles-dialogue':
+        console.log('case: (', action, ') changing name to relateApprofilesForm.html Then call handleCardClick()');
         handleCardClick(action, 'relateApprofilesForm.html');
-      break;
+        break;
 
       case 'sign-out':
         signOut();
-
-
-
-
-
-
         break;
 
       default:
@@ -97,6 +114,7 @@ export function adminListeners(container) {
   });
 
 }
+
 
 // === ADMIN LISTENERS ===
 function signOut() {
@@ -107,6 +125,7 @@ function signOut() {
 //  window.location.href = '/login'; // Redirect to login page after sign-out ?
   
 } 
+
 
 function waitForDialogAndInit() {  // for the advance student Class 
 console.log('waitForDialogAndInit()');
