@@ -1,11 +1,15 @@
 // ./dash/mutate/registry.js
 console.log('mutate/registry.js');
 
-//interogate it by first selecting the SECTION , check that exists and then by SECTION
+/*interogate it by first selecting the SECTION , check that exists and then by SECTION
 //  const mutation = MutateRegistry[section]?.[action];
-//
+//----------------------  
+  mutation.cards.forEach(cardData => {
+  const card = generateCard(cardData);
+  sectionContainer.appendChild(card);
+});
 
-
+*/
 const MutateRegistry = {
   'task-&-member': {
     'member-management': {
