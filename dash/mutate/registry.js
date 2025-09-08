@@ -2,6 +2,8 @@
 console.log('mutate/registry.js');
 
 //interogate it by first selecting the SECTION , check that exists and then by SECTION
+//  const mutation = MutateRegistry[section]?.[action];
+//
 
 
 const MutateRegistry = {
