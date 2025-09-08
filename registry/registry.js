@@ -12,8 +12,22 @@ export const registry = {
 'create-task-dialogue': () => import('../work/task/createTask.js'),
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),
 'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
+
 'howTo': () => import('../work/how/howTo.js'),
 
+'data': () => import('../work/data/dataTables.js'),
+'analytics': () => import('../work/data/analytics.js'),
+'managers':() => import('../work/data/managers.js'),
+'authors':() => import('../work/data/authors.js'),
+'students' :() => import('../work/students/students.js'),
+'assignments':() => import('../work/data/assignments.js'),
+'members' :() => import('../work/data/members.js'),
+'plans' :() => import('../plans.js'),
+'tasks' :() => import('../work/task/tasks.js'),
+'steps' :() => import('../work/task/steps.js'),
+
+// 'login'
+// sort buttons?  statsCard? 
 // old html stub versions for admin dashboard
 //'assignTaskForm.html': () => import('../work/task/assignTask.js'),
 'assignTaskForm.html': () => {
@@ -29,7 +43,20 @@ export const registry = {
 //'createTaskForm.html': () => import('../work/task/createTask.js'),
 'moveStudentForm.html': () => import('../work/student/moveStudent.js'),
 'relateApprofileForm.html': () => import('../work/approfiles/relateApprofile.js'),
+
 'howTo.html': () => import('../work/how/howTo.js'),
+
+'data.html': () => import('../work/data/dataTables.js'),
+'analytics.html': () => import('../work/data/analytics.js'),
+'managers.html':() => import('../work/data/managers.js'),
+'authors.html':() => import('../work/data/authors.js'),
+'assignments.html':() => import('../work/data/assignments.js'),
+'members.html' :() => import('../work/data/memberss.js'),
+'plans.html' :() => import('../plans.js'),
+'tasks.html' :() => import('../work/task/tasks.js'),
+'steps.html' :() => import('../work/task/steps.js'),
+
+
 
 
 'assignTaskForm': () => import('../work/task/assignTask.js'),

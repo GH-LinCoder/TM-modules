@@ -1,0 +1,192 @@
+console.log('data.js loaded');
+
+
+function getTemplateHTML() { console.log('getTemplateHTML()');
+  return `<!--   MEMBERS  -->  
+<div class="bg-white rounded-lg shadow p-6" >
+  <div class="tab-section" data-section="members-section"></div>
+  <h2 class="text-xl font-bold mb-4" data-title="members">
+    Members (<span class="text-sm text-gray-500" data-count="members">0</span>)
+  </h2>
+
+  <div class="flex items-center space-x-2 mb-4">
+    <span class="text-sm font-medium">Sort by:</span>
+    <button class="px-3 py-1 border rounded text-sm" data-list="members-desc">Newest</button>
+    <button class="px-3 py-1 border rounded text-sm" data-list="members-asc">Oldest</button>
+    <button class="px-3 py-1 border rounded text-sm" data-list="members-alpha-asc">A-Z</button>
+    <button class="px-3 py-1 border rounded text-sm" data-list="members-alpha-desc">Z-A</button>
+  </div>
+
+  <div class="space-y-2 max-h-96 overflow-y-auto" data-list="members">
+    <!-- Member items will be injected here -->
+  </div>
+</div>
+
+
+<!-- STUDENTS  -->
+
+<div class="bg-white rounded-lg shadow p-6" >
+  <div class="tab-section" data-section="students-section"></div>
+  <h2 class="text-xl font-bold mb-4" data-title="students">
+    Students (<span class= "text-sm text-gray-500" data-count="students">0</span>)
+  </h2>
+
+  <div class="flex space-x-4 mb-4">
+    <label class="flex items-center space-x-2">
+      <input type="radio" name="studentView" value="all" data-toggle="students" />
+      <span>All</span>
+    </label>
+    <label class="flex items-center space-x-2">
+      <input type="radio" name="studentView" value="unique" checked data-toggle="students" />
+      <span>Unique</span>
+    </label>
+  </div>
+
+  <div class="space-y-2 max-h-96 overflow-y-auto" data-list="students">
+    <!-- Student items will be injected here -->
+  </div>
+</div>
+
+
+<!-- MANAGERS -->
+<div class="bg-white rounded-lg shadow p-6" >
+    <div class="tab-section" data-section="managers-section"></div>
+  <h2 class="text-xl font-bold mb-4" data-title="managers">
+    Managers (<span class="text-sm text-gray-500" data-count="managers">0</span>)
+  </h2>
+
+  <div class="flex space-x-4 mb-4">
+    <label class="flex items-center space-x-2">
+      <input type="radio" name="managerView" value="all" data-toggle="managers" />
+      <span>All</span>
+    </label>
+    <label class="flex items-center space-x-2">
+      <input type="radio" name="managerView" value="unique" checked data-toggle="managers" />
+      <span>Unique</span>
+    </label>
+  </div>
+
+  <div class="space-y-2 max-h-96 overflow-y-auto" data-list="managers">
+    <!-- Manager items will be injected here -->
+  </div>
+</div>
+
+
+
+<!--  AUTHORS   -->
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="tab-section" data-section="authors-section">
+    <h2  class="text-xl font-bold mb-4" data-title="authors">
+      Authors(<span class="text-sm text-gray-500" data-count="authors">0</span>)
+  
+    </h2>
+
+    <div class="flex space-x-4 mb-4">
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="authorView" value="all" checked data-toggle="authors" />
+        <span>All</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="authorView" value="unique" data-toggle="authors" />
+        <span>Unique</span>
+      </label>
+    </div>
+    <div data-list="authors" class="space-y-2 max-h-96 overflow-y-auto">
+      <!-- Author items will be injected here -->
+    </div>
+  </div>
+  </div>
+</div>
+
+<!--  ASSIGNMENTS  -->
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="tab-section" data-section="assignments-section">
+    <h2  class="text-xl font-bold mb-4" data-title="assignments">
+      Assignments (<span class="text-sm text-gray-500" data-count="assignments">0</span>)
+    </h2>
+
+    <!-- View Type Toggle -->
+    <div class="flex space-x-4 mb-4">
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="assignmentView" value="all" checked data-toggle="assignments" />
+        <span>All</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="assignmentView" value="unique" data-toggle="assignments" />
+        <span>Unique</span>
+      </label>
+    </div>
+
+    <!-- Assignment List Placeholder -->
+    <div data-list="assignments" class="space-y-2 max-h-96 overflow-y-auto">
+      <!-- Assignment items will be injected here -->
+    </div>
+  </div>
+</div>
+
+<!--  TASKS  -->
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="tab-section" data-section="tasks-section">
+    <h2  class="text-xl font-bold mb-4" data-title="tasks">
+    Tasks (<span class="text-sm text-gray-500" data-count="tasks">0</span>)
+    </h2>
+
+    <!-- Sort Buttons -->
+    <div class="flex items-center space-x-2 mb-4">
+      <span class="text-sm font-medium">Sort by:</span>
+      <button data-list="tasks-asc" class="px-3 py-1 border rounded text-sm">A-Z</button>
+      <button data-list="tasks-desc" class="px-3 py-1 border rounded text-sm">Z-A</button>
+    </div>
+
+    <!-- Task List Placeholder -->
+    <div  class="space-y-2 max-h-96 overflow-y-auto" data-list="tasks">
+      <!-- Task items will be injected here -->
+    </div>
+  </div>
+</div>
+
+
+<!-- STEPS   -->
+
+<div class="bg-white rounded-lg shadow p-6">
+  <div class="tab-section" data-section="steps-section">
+    <h2  class="text-xl font-bold mb-4" data-title="steps">
+      Steps (<span class="text-sm text-gray-500" data-count="steps">0</span>)
+    </h2>
+
+    <!-- Sort Buttons -->
+    <div class="flex items-center space-x-2 mb-4">
+      <span class="text-sm font-medium">Sort by:</span>
+      <button data-list="steps-asc" class="px-3 py-1 border rounded text-sm">A-Z</button>
+      <button data-list="steps-desc" class="px-3 py-1 border rounded text-sm">Z-A</button>
+    </div>
+
+    <!-- Step List Placeholder -->
+    <div data-list="steps" class="space-y-2 max-h-96 overflow-y-auto">
+      <!-- Step items will be injected here -->
+    </div>
+  </div>
+</div>`}
+
+export function render(panel, petition = {}) {
+    console.log('data Render(', panel, petition, ')');
+    panel.innerHTML = getTemplateHTML();
+
+     //? query.petitioner : 'unknown';
+    console.log('Petition:', petition);
+    panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
+}
+
+//petitioner
+
+// is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
+//it has to be called prior to passing it in the query{} object when we call this module
+//in adminListeners.js, when we call appState.setQuery(), we need to have added petitioner: petition
+//then we can access it here in the render() function
+//we can also add a default value of 'unknown' if it is not passed
+//so we can see where we are when we open the a new page
+
+//the call here isn't from adminListeners it is from the menu button in the dashboard
+//so we need to also assign petitioner: {Module:'dashboard', Section:'menu', Action:'howTo'} when we call this module from the menu button
+//we can do this in the dashboardListeners.js file
+//we can also add a default value of 'unknown' if it is not passed
