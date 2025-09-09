@@ -20,7 +20,7 @@
 </head>
 
 <body class="flex flex-col h-screen bg-gray-50">
-  <div id="tm-app" class="flex flex-col w-full h-full" data-app="tm-app">
+  <div id="tm-app" class="flex flex-col w-full h-full" data-app="tm-app" data-module="flexload"><!-- module here as default. If a new module opens in a panel the 'petition' reading needs to find a module somewhere. -->
 
     <!-- Top Navigation -->
     <header class="bg-blue-100 border-b border-gray-200 p-4" data-panel="nav-header">
@@ -36,6 +36,8 @@
           <button class="nav-btn" data-page="analytics">Analytics</button>
           <button class="nav-btn" data-page="plans">Plans</button>
           <button class="nav-btn" data-page="login">Login/out</button>
+          <button class="nav-btn" data-page="quick-stats-section">test-quickStats</button>
+          <button class="nav-btn" data-page="member-management-section">test-memberMutate</button>
 
         </nav>
         <!--button class="text-sm px-8 py-1.5 text-blue-600 hover:underline" data-action="sign-out">Sign out</button-->

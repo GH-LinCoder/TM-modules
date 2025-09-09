@@ -7,7 +7,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <section data-page-type="dashboard" data-permission="admin" data-module="adminDash">
  
   <!-- dashboard content -->
-<div class="min-h-screen bg-gray-50 text-gray-900">
+<div class="min-h-screen bg-gray-200 text-gray-900">
   <!-- Header -->
 <!-- DASHBOARD TOGGLE-->   
   <div class="px-6 py-4 border-b bg-blue-200 flex justify-between items-center">
@@ -26,7 +26,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <div class="container mx-auto px-4 py-8 space-y-8">
     
   <!-- Quick Stats -->
-  <div class="bg-white rounded-lg shadow p-6" data-section="quick-stats">
+  <div class="bg-blue-200 rounded-lg shadow p-6" data-section="quick-stats">
     <h2 class="text-lg font-semibold mb-2">Quick Stats</h2>
     <p class="text-sm text-gray-500 mb-4">Summaries: Click for details</p>
   <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
@@ -81,7 +81,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
   <!-- Quick Actions -->
-  <div class="bg-white rounded-lg shadow p-6" data-section="quick-acts">
+  <div class="bg-red-100 rounded-lg shadow p-6" data-section="quick-acts">
     <h2 class="text-lg font-semibold mb-2">Quick Acts</h2>
     <p class="text-sm text-gray-500 mb-4">Fast access to common admin tasks</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" >
@@ -150,48 +150,48 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- Task & Member Management -->
-<div class="bg-white rounded-lg shadow p-6">
+<div class="bg-green-100 rounded-lg shadow p-6" data-section='t&m-management'>
   <h2 class="text-lg font-semibold mb-2">Task & Member Management</h2>
   <p class="text-sm text-gray-500 mb-4">Everything you can do, you probably do it here</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
 <!-- MEMBER -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="members">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action='member-management-section'>
       <p class="text-3xl font-bold text-blue-900" data-value="members-count">?</p>
       <h3 class="text-sm font-medium text-blue-700">Members</h3>
       <p class="text-xs text-gray-500">View, edit, and manage members</p>
     </div>
 
 <!-- ASSIGNMENT -->
-    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="assignments">
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action='assignment-management-section'>
       <p class="text-3xl font-bold text-red-900" data-value="assignments-count">?</p>
       <h3 class="text-sm font-medium text-red-700">Assignments</h3>
       <p class="text-xs text-gray-500">Track and manage task assignments</p>
     </div>
 
 <!-- TASK -->    
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="tasks">
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-action='task-management-section'>
       <p class="text-3xl font-bold text-yellow-900" data-value="tasks-count">?</p>
       <h3 class="text-sm font-medium text-yellow-700">Tasks</h3>
       <p class="text-xs text-gray-500">Create, edit, and organize tasks</p>
     </div>
 
 <!-- AUTHORS -->    
-    <div class="bg-yellow-50 border border-purple-200 rounded-lg p-4" data-section="authors">
+    <div class="bg-yellow-50 border border-purple-200 rounded-lg p-4" data-action='author-management-section'>
       <p class="text-3xl font-bold text-purple-900" data-value="authors-count-unique">?</p>
       <h3 class="text-sm font-medium text-purple-700">Authors</h3>
       <p class="text-xs text-purple-500">View and manage task authors</p>
     </div>    
 
 <!-- STUDENT -->
-    <div class="bg-red-50 border border-green-200 rounded-lg p-4" data-section="students">
+    <div class="bg-red-50 border border-green-200 rounded-lg p-4" data-action='student-management-section'>
       <p class="text-3xl font-bold text-green-900" data-value="students-count">?</p>
       <h3 class="text-sm font-medium text-green-700">Students</h3>
       <p class="text-xs text-green-500">View and manage students assigned to tasks</p>
     </div>
 
 <!-- MANAGERS -->    
-    <div class="bg-red-50 border border-indigo-200 rounded-lg p-4" data-section="managers">
+    <div class="bg-red-50 border border-indigo-200 rounded-lg p-4" data-action='manager-management-section'>
       <p class="text-3xl font-bold text-indigo-900" data-value="managers-count">?</p>
       <h3 class="text-sm font-medium text-indigo-700">Managers</h3>
       <p class="text-xs text-indigo-500">View and manage task managers</p>
@@ -202,7 +202,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- Relationship & hierarchy Management -->
-  <div class="bg-white rounded-lg shadow p-6">
+  <div class="bg-orange-100 rounded-lg shadow p-6">
     <h2 class="text-lg font-semibold mb-2">Relationship & hierarchy Management</h2>
     <p class="text-sm text-gray-500 mb-4">Everything you can do, you probably do it here</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -261,7 +261,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- KNOWLEDGE MANAGEMENT -->
-  <div class="bg-white rounded-lg shadow p-6">
+  <div class="bg-indigo-200 rounded-lg shadow p-6">
     <h2 class="text-lg font-semibold mb-2">Knowledge Management</h2>
     <p class="text-sm text-gray-500 mb-4">Everything you can do, you probably do it here</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -321,7 +321,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- Settings -->
-<div class="bg-white rounded-lg shadow p-6">
+<div class="bg-gray-100 rounded-lg shadow p-6">
   <h2 class="text-lg font-semibold mb-2">Settings</h2>
   <p class="text-sm text-gray-500 mb-4">System configuration and administrative settings</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -349,282 +349,9 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   </div>
 </div>
 
+<!-- deleted old hidden forms.  15:52 Sept 9 2025 -->
 
-
-  </div>
-</div>
-
-
-<!-- assign-task-dialog.html -->
-<div id="assignTaskDialog" data-form="assign-task-dialogue" class="assign-task-dialog hidden fixed inset-0 z-50 flex items-center justify-center">
-  <!-- Backdrop -->
-  <div class="fixed inset-0 bg-black/80" data-action="close-dialog"></div>
-  
-  <!-- Dialog -->
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 z-10">
-    <div class="p-6 border-b border-gray-200 flex items-center justify-between">
-      <div>
-        <h3 class="text-lg font-semibold text-gray-900">Assign Task</h3>
-        <p class="text-sm text-gray-600">Assign a task to a student and manager</p>
-      </div>
-      <button 
-        class="text-gray-500 hover:text-gray-700"
-        data-action="close-dialog"
-        aria-label="Close"
-      >
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-        </svg>
-      </button>
-    </div>
-    
-    <div class="p-6">
-      <form id="assignTaskForm" class="space-y-4">
-        <div class="space-y-2">
-          <label for="taskSelect" class="block text-sm font-medium text-gray-700">Assign Task</label>
-          <select 
-            id="taskSelect" 
-            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-          >
-            <option value="">Select a task</option>
-          </select>
-        </div>
-
-        <div class="space-y-2">
-          <label for="studentSelect" class="block text-sm font-medium text-gray-700">Select Student</label>
-          <select 
-            id="studentSelect" 
-            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-            required
-          >
-            <option value="">Select a student</option>
-          </select>
-        </div>
-
-        <div class="space-y-2">
-          <label for="managerSelect" class="block text-sm font-medium text-gray-700">Select Manager</label>
-          <select 
-            id="managerSelect" 
-            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          >
-            <option value="">Select a manager (optional)</option>
-          </select>
-        </div>
-
-        <div class="text-sm text-gray-500 space-y-2 p-3 bg-gray-50 rounded-lg">
-          <p>
-            You can assign any member as a Student to any task and select any member to manage that process. 
-            Use the dropdowns to select each one and then click to assign it.
-          </p>
-          <p>
-            Currently using username from approfiles table. Drop down will not scale. 
-            Later will need search. Drop down populated from approfiles for people and task_headers. 
-            Written to task_assignments.
-          </p>
-        </div>
-
-        <button 
-          type="submit" 
-          id="assignTaskBtn"
-          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-          disabled
-        >
-          Assign Task
-        </button>
-      </form>
-    </div>
-  </div>
-</div>
-
-<!-- create-task-dialog.html -->
-<div id="createTaskDialog" data-form="create-task-dialogue"  class="create-task-dialog hidden fixed inset-0 z-50 flex items-center justify-center">
-  <!-- Backdrop -->
-  <div class="fixed inset-0 bg-black/80" data-action="close-dialog"></div>
-  
-  <!-- Dialog -->
-  <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
-    <div class="p-6 border-b border-gray-200">
-      <div class="flex items-center justify-between">
-        <h3 class="text-xl font-semibold text-gray-900">Create New Task</h3>
-        <button 
-          class="text-gray-500 hover:text-gray-700"
-          data-action="close-dialog"
-          aria-label="Close"
-        >
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-    
-    <div class="p-6 space-y-6">
-      <!-- Task Creation Section -->
-      <div class="bg-white rounded-lg border border-gray-200">
-        <div class="p-6 border-b border-gray-200">
-          <h4 class="text-lg font-semibold text-gray-900 mb-1">Task Details</h4>
-          <p class="text-sm text-gray-600">
-            Name and describe the task. Then click to save it. After that you can add the steps of the task or you can create a new task.
-          </p>
-        </div>
-        
-        <div class="p-6">
-          <div id="taskIdDisplay" class="hidden mb-4 p-2 bg-blue-50 rounded-md"></div>
-          
-          <form id="createTaskForm" class="space-y-4">
-            <div class="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Author</label>
-                <p class="text-sm text-gray-600" id="authorName">Loading...</p>
-              </div>
-              <div>
-                <label class="block text-sm font-medium text-gray-700 mb-1">Created on</label>
-                <p class="text-sm text-gray-600" id="creationDate">Loading...</p>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <label for="taskName" class="block text-sm font-medium text-gray-700">Task Name *</label>
-              <input 
-                type="text" 
-                id="taskName" 
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Short & unique"
-                maxlength="64"
-                required
-              />
-              <p class="text-xs text-gray-500" id="taskNameCounter">0/64 characters</p>
-            </div>
-
-            <div class="space-y-2">
-              <label for="taskDescription" class="block text-sm font-medium text-gray-700">Task Description *</label>
-              <textarea 
-                id="taskDescription" 
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Be concise"
-                rows="3"
-                maxlength="256"
-                required
-              ></textarea>
-              <p class="text-xs text-gray-500" id="taskDescriptionCounter">0/256 characters</p>
-            </div>
-
-            <div class="space-y-2">
-              <label for="taskUrl" class="block text-sm font-medium text-gray-700">URL (optional)</label>
-              <input 
-                type="url" 
-                id="taskUrl" 
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Link to task instructions"
-              />
-            </div>
-
-            <button 
-              type="submit" 
-              id="saveTaskBtn"
-              class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              Save Task
-            </button>
-          </form>
-        </div>
-      </div>
-
-      <!-- Step Creation Section -->
-      <div id="stepsSection" class="bg-white rounded-lg border border-gray-200 opacity-50 pointer-events-none">
-        <div class="p-6 border-b border-gray-200">
-          <h4 class="text-lg font-semibold text-gray-900 mb-1">Task Steps</h4>
-          <p class="text-sm text-gray-600">
-            Add steps that guide users through the task completion process.
-          </p>
-        </div>
-        
-        <div class="p-6">
-          <div id="createdSteps" class="hidden mb-4">
-            <label class="block text-sm font-medium text-gray-700 mb-2">Created Steps:</label>
-            <div id="stepsList" class="space-y-1"></div>
-          </div>
-          
-          <form id="createStepForm" class="space-y-4">
-            <div class="flex items-center gap-4 mb-4">
-              <div class="flex-1">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Step Order</label>
-                <input 
-                  type="number" 
-                  id="stepOrder" 
-                  class="w-20 p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                  value="3"
-                  min="3"
-                />
-              </div>
-              <div class="flex-1">
-                <p class="text-xs text-gray-500">
-                  Abandon = step 1, Complete = step 2, Students start on step 3
-                </p>
-              </div>
-            </div>
-
-            <div class="space-y-2">
-              <label for="stepName" class="block text-sm font-medium text-gray-700">Step Name *</label>
-              <input 
-                type="text" 
-                id="stepName" 
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Short & unique"
-                maxlength="64"
-                required
-              />
-              <p class="text-xs text-gray-500" id="stepNameCounter">0/64 characters</p>
-            </div>
-
-            <div class="space-y-2">
-              <label for="stepDescription" class="block text-sm font-medium text-gray-700">Step Description *</label>
-              <textarea 
-                id="stepDescription" 
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Be concise"
-                rows="3"
-                maxlength="256"
-                required
-              ></textarea>
-              <p class="text-xs text-gray-500" id="stepDescriptionCounter">0/256 characters</p>
-            </div>
-
-            <div class="space-y-2">
-              <label for="stepUrl" class="block text-sm font-medium text-gray-700">URL (optional)</label>
-              <input 
-                type="url" 
-                id="stepUrl" 
-                class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="Link to task instructions"
-              />
-            </div>
-
-            <div class="flex gap-2">
-              <button 
-                type="submit" 
-                id="saveStepBtn"
-                class="bg-green-600 text-white py-2 px-4 rounded-md hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                Save Step
-              </button>
-              <button 
-                type="button" 
-                id="addStepBtn"
-                class="bg-gray-200 text-gray-800 py-2 px-4 rounded-md hover:bg-gray-300"
-              >
-                <svg class="w-4 h-4 inline" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-                </svg>
-              </button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+   
 </section>
 
 `}

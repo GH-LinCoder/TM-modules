@@ -5,9 +5,22 @@ console.log('Imported: registry.js');
 // This is where you will add new entries as you convert more forms.
 
 
-export const registry = {
+export const registry = { // this registry is for loading a new page to the right of the dashboard. 
 
-    // data-action values for admin dashboard
+// test modules
+'quick-stats-section.html': ()=> import('../work/dash/quickStatsSection.js'),
+'member-management-section.html': ()=> import('../work/dash/memberManagementSection.js'),// from button has .html
+'member-management-section': ()=> import('../work/dash/memberManagementSection.js'), //from card
+'assignment-management-section': ()=> import('../work/dash/assignmentManagementSection.js'),
+'task-management-section': ()=> import('../work/dash/taskManagementSection.js'),
+'author-management-section': ()=> import('../work/dash/authorManagementSection.js'),
+'student-management-section': ()=> import('../work/dash/studentManagementSection.js'),
+'manager-management-section': ()=> import('../work/dash/managerManagementSection.js'),
+'task&member-management-section': ()=> import('../work/dash/task&memberManagementSection.js'),
+//'-management-section': ()=> import('../work/dash/ManagementSection.js'),
+
+
+// data-action values for admin dashboard
 'assign-task-dialogue': () => import('../work/task/assignTask.js'),
 'create-task-dialogue': () => import('../work/task/createTask.js'),
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),

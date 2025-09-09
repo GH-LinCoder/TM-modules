@@ -5,22 +5,38 @@
 
 //   currently using   handleCardClick(action, moduleName)
 
+
+
+function handleDashboardClick(query) {
+  const { section, action } = query;
+  const mutation = MutateRegistry[section]?.[action];
+
+  if (mutation) {
+    mutateDashboardSection(section, mutation);
+  } else {
+    openClosePanelsByRule(stubName, fromButtonClick = false);// this needs to be as is
+  }
+}
+
+
+
+
 // === OPEN/CLOSE PANELS BY RULE ===
 export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
 console.log('openClosePanelsByRule(', stubName, 'fromButtonClick:', fromButtonClick,')');
 
 if(fromButtonClick){document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));}
 
-    // Check if this is a click on an already active button
-    const isAlreadyOpen = panelsOnDisplay.some(p => p.stubName === stubName);
-    console.log('isAlreadyOpen:', isAlreadyOpen);
+    // Check if this is a 2nd click for an already open page
+    const isPageOpen = panelsOnDisplay.some(p => p.stubName === stubName);
+    console.log('isPageOpen:', isPageOpen);
 
-    // Special case: admin and member are toggleable
-    const isSpecialToggle =stubName === 'adminDash.html' || stubName === 'memberDash.html'|| stubName === 'adminDash' || stubName === 'memberDash';
-    console.log('isSpecialToggle:', isSpecialToggle);    
+    // Special case: dashboards
+    const isDashboard =stubName === 'adminDash.html' || stubName === 'memberDash.html'|| stubName === 'adminDash' || stubName === 'memberDash';
+    console.log('isDashboard:', isDashboard);    
 
     // 2nd Click on open dashboard
-    if (isSpecialToggle && isAlreadyOpen) {
+    if (isDashboard && isPageOpen) {
       // Clicking on already open admin or member - close all other panels
       closeAllOtherPanels(stubName);  // next lines are using 'query' instead of the pass param 'stubName'  !!! <<<<<<
       await loadPageWithData(stubName.replace('.html','')); //this refreshes data on already open panel
@@ -28,7 +44,7 @@ if(fromButtonClick){document.querySelectorAll('.nav-btn').forEach(b => b.classLi
     } else 
     
     // 1st Click to open a dashboard
-    if (isSpecialToggle && !isAlreadyOpen) {
+    if (isDashboard && !isPageOpen) {
       // Switching between admin and member - replace current with new one
       closeAllPanels();
       await renderPanel({...appState.query.petitioner, 'Action': stubName});//puts the name of the desired module in petitioner   
@@ -37,10 +53,10 @@ if(fromButtonClick){document.querySelectorAll('.nav-btn').forEach(b => b.classLi
     } 
     
     // Clicked on other menu buttons 
-    else if (!isSpecialToggle) {
+    else if (!isDashboard) {
 
       // 2nd Click on an open page
-      if (isAlreadyOpen) {
+      if (isPageOpen) {
         // If already open, close it
         console.log('Panel already open, closing it:', stubName);
         closePanel(stubName);
@@ -73,7 +89,7 @@ function handleDashboardClick(query) {
   if (mutation) {
     mutateDashboardSection(section, mutation);
   } else {
-    loadModuleFromRegistry(action);// this needs to be as is
+    openClosePanelsByRule(stubName, fromButtonClick = false);// this needs to be as is
   }
 }
 
