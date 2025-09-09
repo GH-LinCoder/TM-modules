@@ -84,3 +84,15 @@ const MutateRegistry = {
     }
   }
 };
+
+// OR 
+
+{
+  name: '← Back to Members',
+  description: 'Return to member management',
+  action: 'go-back',
+  backTarget: 'member-management',
+  icon: '🔙',
+  style: { backgroundColor: '#eee', color: '#333' }
+}
+
