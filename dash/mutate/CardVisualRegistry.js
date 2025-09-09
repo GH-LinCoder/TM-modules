@@ -38,3 +38,27 @@ const const CardVisualRegistry = {
     'authors': { fontColor: '#7e22ce' }
   }
 };
+
+// OR
+
+const CardStyleRegistry = {
+  'assign-task-dialogue': {
+    type: 'work',
+    bgColor: '#fffbe6',
+    border: '2px solid #facc15',
+    fontColor: '#92400e'
+  },
+  'view-member-history': {
+    type: 'display',
+    bgColor: '#e0f2fe',
+    border: '1px dashed #38bdf8',
+    fontColor: '#0369a1'
+  },
+  'go-back': {
+    type: 'nav',
+    bgColor: '#f3f4f6',
+    border: '1px solid #9ca3af',
+    fontColor: '#374151'
+  }
+};
+
