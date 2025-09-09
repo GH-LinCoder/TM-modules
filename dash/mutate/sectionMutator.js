@@ -17,3 +17,29 @@ function generateCard({ name, description, action }) {
   `;
   return card;
 }
+
+
+//  OR
+
+function generateCard({ name, description, action, icon, style, backTarget }) {
+  const card = document.createElement('div');
+  card.classList.add('dashboard-card');
+  card.dataset.action = action;
+
+  if (backTarget) {
+    card.dataset.backTarget = backTarget;
+    card.classList.add('back-card'); // optional styling hook
+  }
+
+  if (style) {
+    Object.assign(card.style, style); // inline styles from registry
+  }
+
+  card.innerHTML = `
+    ${icon ? `<div class="card-icon">${icon}</div>` : ''}
+    <h3>${name}</h3>
+    <p>${description}</p>
+  `;
+
+  return card;
+}
