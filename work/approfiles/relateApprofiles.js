@@ -10,9 +10,9 @@ export function render(panel, query = {}) { //query is not currently used, but m
 */
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
-<div class="bg-gray-100 font-sans p-8 flex items-center justify-center min-h-screen">
-
-  <div class="bg-white rounded-xl shadow-lg p-8 w-full max-w-4xl">
+<!--div class="bg-gray-100 font-sans p-8 flex items-center justify-center "-->
+<div class="bg-gray-200 font-sans">
+  <div class="bg-white rounded-xl shadow-lg     relative w-full h-full  items-center justify-center">
     <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Establish a New Relationship</h1>
     
     <!-- Main Relationship Cards Container -->

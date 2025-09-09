@@ -21,16 +21,7 @@ function handleCardClick(action, moduleName) {
     console.log('Panel already open:', moduleName);
     return; // Prevent opening the same panel multiple times // fails, panel already been closed
   } 
-  /*
-  else
-  // Update the appState to trigger panel rendering
- 
-appState.setQuery({    stubName: stubName,
-                  //    READ_request: true,
-  callerContext: action//putting 'create-task-dialogue' or 'assign-task-dialogue' etc in the object that triggers event in other modules
-  });*/ 
-//console.log(action, stubName);
-  // appState.query.petitioner = {Module:stubName, Section:'click', Action:action} //adding petitioner object to query
+  
  
 }
 

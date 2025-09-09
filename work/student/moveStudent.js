@@ -95,12 +95,6 @@ export function render(panel, query = {}) {console.log('moveStudentStep.js rende
 
 <div class="bg-gray-100 font-sans">
 
-  <!-- Example button to trigger the dialogue for testing -->
-  <!--div class="p-8 text-center">
-    <button id="showDialogButton" class="px-6 py-3 bg-blue-600 text-white rounded-lg shadow-md hover:bg-blue-700 transition">
-      Show Task Dialogue
-    </button>
-  </div-->
 
   <!-- Advance Task Dialogue -->
   <div id="moveStudentStep" data-form="moveStudentStep" class=" relative w-full h-full flex items-center justify-center">
