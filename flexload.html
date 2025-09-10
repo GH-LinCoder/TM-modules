@@ -20,24 +20,24 @@
 </head>
 
 <body class="flex flex-col h-screen bg-gray-50">
-  <div id="tm-app" class="flex flex-col w-full h-full" data-app="tm-app" data-module="flexload"><!-- module here as default. If a new module opens in a panel the 'petition' reading needs to find a module somewhere. -->
+  <div id="tm-app" class="flex flex-col w-full h-full" data-app="tm-app" data-module="flexload"  data-destination="new-panel"><!-- module here as default. If a new module opens in a panel the 'petition' reading needs to find a module somewhere. -->
 
     <!-- Top Navigation -->
     <header class="bg-blue-100 border-b border-gray-200 p-4" data-panel="nav-header">
-      <div class="flex flex-wrap items-center gap-4">
+      <div class="flex flex-wrap items-center gap-4" data-section='menu'>
         <h1 class="text-2xl font-bold text-gray-800">
           <img src="./favicon.ico" alt="T&M logo" class="h-10 w-auto" />
         </h1>
         <nav class="flex gap-2 flex-wrap" data-nav="main-nav">
           <button class="nav-btn active" data-page="adminDash">Admin</button>
-          <button class="nav-btn" data-page="memberDash">Member</button>
-          <button class="nav-btn" data-page="howTo">How?</button>
-          <button class="nav-btn" data-page="data">Data</button>
-          <button class="nav-btn" data-page="analytics">Analytics</button>
-          <button class="nav-btn" data-page="plans">Plans</button>
-          <button class="nav-btn" data-page="login">Login/out</button>
-          <button class="nav-btn" data-page="quick-stats-section">test-quickStats</button>
-          <button class="nav-btn" data-page="member-management-section">test-memberMutate</button>
+          <button class="nav-btn" data-page="memberDash" data-action="memberDash">Member</button>
+          <button class="nav-btn" data-page="howTo" data-action="howTo">How?</button>
+          <button class="nav-btn" data-page="data" data-action="data">Data</button>
+          <button class="nav-btn" data-page="analytics" data-action="analytics">Analytics</button>
+          <button class="nav-btn" data-page="plans" data-action="plans">Plans</button>
+          <button class="nav-btn" data-page="login" data-action="login">Login/out</button>
+          <!--button class="nav-btn" data-page="quick-stats-section">test-quickStats</button>
+          <button class="nav-btn" data-page="member-management-section">test-memberMutate</button-->
 
         </nav>
         <!--button class="text-sm px-8 py-1.5 text-blue-600 hover:underline" data-action="sign-out">Sign out</button-->

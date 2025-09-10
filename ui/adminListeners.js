@@ -32,20 +32,24 @@ function readPetition(e){
   console.log('readPetition (', e, ')');  //
 
   const actionEl = e.target.closest('[data-action]');
-  if (!actionEl) {    console.log('fails !target (', actionEl, ')');  return;}
-   const action = actionEl.dataset.action;
+    if (!actionEl) {    console.log('fails !target (', actionEl, ')');  return;}
+    const action = actionEl.dataset.action;
 
-   const sectionEl = e.target.closest('[data-section]');
+  const sectionEl = e.target.closest('[data-section]');
     if (!sectionEl) {    console.log('fails !target (', sectionEl, ')');  return;}
     const section = sectionEl.dataset.section;
 
-
-    const moduleEl = e.target.closest('[data-module]');
+  const moduleEl = e.target.closest('[data-module]');
     if (!moduleEl) {    console.log('fails !target (', moduleEl, ')');  return;}
     const module = moduleEl.dataset.module;
 
-    console.log('readPetition(','= Module:',module,' Section:', section,' Action:', action,')');
-    const petition = {'Module':module,'Section': section,'Action': action};
+  const destinationEl = e.target.closest('[data-destination]');
+    if (!destinationEl) {    console.log('fails !target (', actionEl, ')');  return;}
+    const destination = destinationEl.dataset.destination;
+//13:32 10 sept  destination showing wrong address. It is showing destination = action, but should be =section
+
+    console.log('readPetition(','= Module:',module,' Section:', section,' Action:', action,' Destination:', destination,')');
+    const petition = {'Module':module,'Section': section,'Action': action, 'Destination':destination};
     //console.log('petition (', petition, ')');
 return petition;
 }

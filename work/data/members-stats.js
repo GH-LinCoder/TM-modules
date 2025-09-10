@@ -39,7 +39,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 `}
 
 export function render(panel, petition = {}) {
-    console.log('HowTo Render(', panel, petition, ')');
+    console.log('MemberStats Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
 
      //? query.petitioner : 'unknown';

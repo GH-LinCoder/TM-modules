@@ -1,6 +1,6 @@
 //  ./work/dash/memberDash.js
 console.log('memberDash.js loaded');
-
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
@@ -239,9 +239,10 @@ export function render(panel, petition = {}) {
 
      //? query.petitioner : 'unknown';
     console.log('Petition:', petition);
-    panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
-}
-//petitioner
+   // panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;}
+   panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+  }
+   //petitioner
 
 // is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
 //it has to be called prior to passing it in the query{} object when we call this module

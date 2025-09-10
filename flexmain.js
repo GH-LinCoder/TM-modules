@@ -34,7 +34,15 @@ import { loadAdminDashWithData } from './dash/loadAdminDashWithData.js';
 // === UTILITY: Get main display area ===
 function getDisplayArea() {
 console.log('GetDisplayArea()');
-    return document.querySelector('[data-panel="inject-here"]');
+
+const destination=appState.query.petitioner.Destination;
+console.log('destination:',destination);
+if(destination==='new-panel') return document.querySelector('[data-panel="inject-here"]');
+else {const displayArea = document.querySelector(`[data-section="${destination}"]`);
+  console.log('displayArea:',displayArea );
+  return  displayArea;
+}
+
 }
 
 function getFrameAroundThePages() {
@@ -76,7 +84,7 @@ try {
   if (appState) {
   //  console.log('appState has been successfully loaded:', appState);
 
-    const petition = {'Module':'adminDash','Section': 'jsDevMock','Action': 'adminDash'};
+    const petition = {'Module':'adminDash','Section': 'jsDevMock','Action': 'adminDash', 'Destination':'new-panel'};
     appState.setPetitioner(petition); //dev set-up of petitioner object 14:39 7 Sept 2025
 
   //  console.log('appState.query in flexmain after setQuery:', appState.query); //global
@@ -96,7 +104,7 @@ try {
 window.addEventListener('state-change', async (e) => {
     const { type, payload } = e.detail;
     console.log('State change event at window.addEventListener:', type, payload);
-    console.log('Action:',payload.petitioner.Action);
+    console.log('Action:',payload.petitioner.Action,' to ', payload.petitioner.Destination);
  //   console.log('appState.query in state-change event:', appState.query.pr); //global
     switch (type) {
       case 'QUERY_UPDATE':
@@ -162,42 +170,25 @@ async function loadPageWithData(pageName) { // pageName without .html
 
 
 // === PANEL RENDERING ===
-export async function renderPanel(query) {
-  console.log('RenderPanel(', query, ')');
-const stubName = appState.query.petitioner.Action; //legacy html to be phased-out FAILS - no effect of nav buttons
 
-    const displayArea = getDisplayArea();
-  console.log('petitioner .Module:', appState.query.petitioner.Module, '.Action:', appState.query.petitioner.Action);
-  // Check if panel is already open
-  const alreadyOpen = panelsOnDisplay.some(p => p.stubName === stubName);
-  console.log(panelsOnDisplay);//why does panelsOnDisplay have a 'stubName' ?
-  if (alreadyOpen) {
-    // If it's already open, just focus it (don't open again)
-    return;
-  }
+async function renderNewPanel(stubName, query, registryEntry,selectedModule, displayArea){// new 10:35 sept 10 2025 Moved from renderPanels- which needs a name change
+  console.log('renderNewPanel(',displayArea,')');
+  if(registryEntry) { 
+///below conditional on 'new-panel
 
-  const panel = document.createElement('div');
-  panel.className = 'page-panel';
+//moved here 9.44 Sep 10
+const panel = document.createElement('div');
+panel.className = 'page-panel';
+panel.dataset.pageName = stubName; //what is this?
+//
 
-  panel.dataset.pageName = stubName; //what is this?
- 
-console.log('about to check registry(',stubName,')',stubName.length);
-
-let registryEntry = await registry[stubName];
-console.log('registryEntry is:', registryEntry);
-
-
-if(registryEntry) { console.log('Registry recognises', stubName, 'append panel, push details in array');
-
+//moved here  9.42 sep 10
 displayArea.appendChild(panel);
-panelsOnDisplay.push({ stubName, panel, query });
-
-const selectedModule = await registryEntry(); // Get the module path from the registry
-//console.log('Panel is in DOM?', document.body.contains(panel));
-console.log('Loaded module:', selectedModule);
+panelsOnDisplay.push({ stubName, panel, query });// why using stubName?? legacy - should use .petitioner.Module
+//
 
 try {
-  selectedModule.render(panel,query); // //set Module?
+selectedModule.render(panel,query); // use the function that was obtained from the registry
 } catch (error) {
   console.error('Failed to load module:', error);
   console.log('Available exports:', Object.keys(selectedModule));
@@ -220,6 +211,101 @@ try {
     displayArea.appendChild(panel);
     updatePanelLayout();
   }
+  ///end of conditional on 'new-panel'
+
+}
+
+function renderSection(query, selectedModule,displayArea){// new 10:41 sept 10 2025
+  
+  displayArea = document.querySelector('[data-section="t&m-management"]');
+  console.log('renderSection(',displayArea,')');
+  
+  displayArea.innerHTML+='TO BE DELETED';
+  /*
+  try {
+    selectedModule.render(displayArea,query); // use the function that was obtained from the registry
+    } catch (error) {
+      console.error('Failed to load module:', error);
+      console.log('Available exports:', Object.keys(selectedModule));
+    }
+      */
+
+}
+
+export async function renderPanel(query) {// need change name from renderPanel to renderSomewhere ?
+  console.log('RenderPanel(', query, ')');
+const stubName = appState.query.petitioner.Action; //legacy html to be phased-out FAILS - no effect of nav buttons
+
+    const displayArea = getDisplayArea();
+  console.log('petitioner .Module:', appState.query.petitioner.Module, '.Action:', appState.query.petitioner.Action, '.Destination:', appState.query.petitioner.Destination);
+  // Check if panel is already open
+  const alreadyOpen = panelsOnDisplay.some(p => p.stubName === stubName);
+  console.log(panelsOnDisplay);//why does panelsOnDisplay have a 'stubName' ?
+  if (alreadyOpen) {
+    // If it's already open, just focus it (don't open again)
+    return;
+  }
+/////move to getDisplayArea // move lower 9:44 sep 10
+//  const panel = document.createElement('div');
+//  panel.className = 'page-panel';
+
+//  panel.dataset.pageName = stubName; //what is this?
+////// move the above 
+
+
+console.log('about to check registry(',stubName,')',stubName.length);
+
+let registryEntry = await registry[stubName]; //send string to lookup object, get a pointer to a function (don't need await)
+
+if(registryEntry) { console.log('Registry recognises', stubName, 'push details in array');
+  console.log('registryEntry is:', registryEntry);
+
+const selectedModule = await registryEntry(); // Use the pointer to get the function
+console.log('Loaded module functions:', selectedModule);
+
+if(true) renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea);
+else renderSection(query, selectedModule,displayArea);
+///below conditional on 'new-panel
+/*
+//moved here 9.44 Sep 10
+const panel = document.createElement('div');
+panel.className = 'page-panel';
+panel.dataset.pageName = stubName; //what is this?
+//
+
+//moved here  9.42 sep 10
+displayArea.appendChild(panel);
+panelsOnDisplay.push({ stubName, panel, query });
+//
+
+try {
+selectedModule.render(panel,query); // use the function that was obtained from the registry
+} catch (error) {
+  console.error('Failed to load module:', error);
+  console.log('Available exports:', Object.keys(selectedModule));
+}
+
+}else  try {
+    // Load html content from a file
+    console.log('Registry does not recognise', stubName, 'append panel, push details in array, then load html content instead');
+    displayArea.appendChild(panel);
+    panelsOnDisplay.push({ stubName, panel, query });
+    const html = await getStubContent(stubName);
+    panel.innerHTML = html;
+    //set Module?
+
+    // Update layout based on number of panels
+    updatePanelLayout();
+  } catch (error) {
+    console.error(`Error loading ${stubName}:`, error);
+    panel.innerHTML = `<div class="text-red-700 p-4">Error loading ${stubName}</div>`;
+    displayArea.appendChild(panel);
+    updatePanelLayout();
+    */
+  ///end of conditional on 'new-panel'
+
+    }
+
 }
 
 
@@ -355,7 +441,7 @@ export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
 
 
 // === NAVIGATION HANDLING ===
-function setupNavigationListeners() {
+function setupNavigationListeners() {//unlike admiListeners navListeners have not been loading petition by reading html
     console.log('Setting up navigation listeners');
 
     document.addEventListener('click', async (e) => {
@@ -367,13 +453,19 @@ function setupNavigationListeners() {
     e.preventDefault();
     e.stopPropagation();
 
-    const pageName = btn.dataset.page;
+    const pageName = btn.dataset.page; //pageName is set in flexload.html Nothing else set there
+
+    if(pageName === 'howTo'){ // store the existing petition for later use to give context related howTo
+const howToContext = appState.query.petitioner;
+console.log('howToContext:',howToContext);
+    }
+
     console.log('Navigation button clicked for page:', );
-    const petition={'Section':'menu','Action':pageName+'.html'}; //new petitioner object 23:22 7 Sept 2025
+    const petition={'Section':'menu','Action':pageName+'.html', 'Destination':'new-panel'}; //new petitioner object 23:22 7 Sept 2025
     //appState.query.petitioner.Action = pageName + '.html'; //keeping petitioner in sync with stubName
     appState.setPetitioner(petition); //keeping petitioner in sync with stubName
 
-    const stubName = pageName + '.html';
+    const stubName = pageName + '.html'; //????????????????
 
 // Call the extracted function. true indicates it's from button click
 //await openClosePanelsByRule(stubName, true); 
@@ -407,6 +499,10 @@ function closeAllOtherPanels(keepStubName) {
   });
 }
 
+
+
+
+
 /*
 // === ADMIN LISTENERS ===
  function adminListeners() {
@@ -422,3 +518,54 @@ function closeAllOtherPanels(keepStubName) {
     });
   }
  } */
+/*
+  export function showToast(message, options = {}) {
+    const {
+      duration = 3000,
+      background = '#333',
+      color = '#fff',
+      position = 'bottom-right'
+    } = options;
+  
+    // Remove any existing toast
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+  
+    // Create toast element
+    const toast = document.createElement('div');
+    toast.className = 'toast';
+    toast.textContent = message;
+    toast.style.position = 'fixed';
+    toast.style.zIndex = '9999';
+    toast.style.padding = '0.75rem 1.25rem';
+    toast.style.borderRadius = '0.5rem';
+    toast.style.background = background;
+    toast.style.color = color;
+    toast.style.fontSize = '0.875rem';
+    toast.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
+    toast.style.transition = 'opacity 0.3s ease';
+  
+    // Positioning
+    if (position === 'bottom-right') {
+      toast.style.bottom = '1rem';
+      toast.style.right = '1rem';
+    } else if (position === 'top-right') {
+      toast.style.top = '1rem';
+      toast.style.right = '1rem';
+    } else if (position === 'bottom-left') {
+      toast.style.bottom = '1rem';
+      toast.style.left = '1rem';
+    } else if (position === 'top-left') {
+      toast.style.top = '1rem';
+      toast.style.left = '1rem';
+    }
+  
+    document.body.appendChild(toast);
+  
+    // Auto-dismiss
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
+  }
+  */

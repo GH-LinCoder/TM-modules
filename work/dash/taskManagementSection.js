@@ -1,6 +1,6 @@
 //  ./mutate/taskManagementSection.js
 console.log('taskManagementSection.js loaded');
-
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
@@ -13,7 +13,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <!-- tasks -->
   
       <!-- Return -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="task&member-management-section">
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="task-management-section">
     <h3 class="text-sm font-medium text-blue-700 mb-1">Return to previous section</h3>
     
     <p class="text-xs text-blue-600">Click here as a back button to return the section to its previous contents.</p>
@@ -70,8 +70,9 @@ export function render(panel, petition = {}) {
 
      //? query.petitioner : 'unknown';
     console.log('Petition:', petition);
-    panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
-}
+    // panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;}
+    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+  }
 //petitioner
 
 // is passed when the adminListeners() function calls appState.setQuery({callerContext: action});

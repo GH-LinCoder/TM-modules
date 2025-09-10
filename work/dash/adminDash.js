@@ -1,10 +1,11 @@
-//  ./work/stask/tasks.js
+//  ./work/dash/adminDash.js
 console.log('adminDash.js loaded');
-
+//import { showToast } from '../../flexmain.js';
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
-<section data-page-type="dashboard" data-permission="admin" data-module="adminDash">
+<section data-page-type="dashboard" data-permission="admin" data-module="adminDash" data-destination='new-panel'>
  
   <!-- dashboard content -->
 <div class="min-h-screen bg-gray-200 text-gray-900">
@@ -26,7 +27,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <div class="container mx-auto px-4 py-8 space-y-8">
     
   <!-- Quick Stats -->
-  <div class="bg-blue-200 rounded-lg shadow p-6" data-section="quick-stats">
+  <div class="bg-blue-200 rounded-lg shadow p-6" data-section="quick-stats" data-destination='new-panel'>
     <h2 class="text-lg font-semibold mb-2">Quick Stats</h2>
     <p class="text-sm text-gray-500 mb-4">Summaries: Click for details</p>
   <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
@@ -81,7 +82,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
   <!-- Quick Actions -->
-  <div class="bg-red-100 rounded-lg shadow p-6" data-section="quick-acts">
+  <div class="bg-red-100 rounded-lg shadow p-6" data-section="quick-acts" data-destination='new-panel'>
     <h2 class="text-lg font-semibold mb-2">Quick Acts</h2>
     <p class="text-sm text-gray-500 mb-4">Fast access to common admin tasks</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" >
@@ -116,7 +117,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- Recent Activity -->
-<div class="bg-white rounded-lg shadow p-6">
+<div class="bg-white rounded-lg shadow p-6" data-destination='new-panel'>
   <h2 class="text-lg font-semibold mb-2">Recent Activity</h2>
   <p class="text-sm text-gray-500 mb-4">Latest system events and user actions</p>
   <div class="space-y-4" id="activity-list">
@@ -150,7 +151,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- Task & Member Management -->
-<div class="bg-green-100 rounded-lg shadow p-6" data-section='t&m-management'>
+<div class="bg-green-100 rounded-lg shadow p-6" data-section='t&m-management' data-destination='t&m-management'>
   <h2 class="text-lg font-semibold mb-2">Task & Member Management</h2>
   <p class="text-sm text-gray-500 mb-4">Everything you can do, you probably do it here</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -202,7 +203,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- Relationship & hierarchy Management -->
-  <div class="bg-orange-100 rounded-lg shadow p-6">
+  <div class="bg-orange-100 rounded-lg shadow p-6" data-section='r&h-management' data-destination='r&h-management'>
     <h2 class="text-lg font-semibold mb-2">Relationship & hierarchy Management</h2>
     <p class="text-sm text-gray-500 mb-4">Everything you can do, you probably do it here</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -261,7 +262,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- KNOWLEDGE MANAGEMENT -->
-  <div class="bg-indigo-200 rounded-lg shadow p-6">
+  <div class="bg-indigo-200 rounded-lg shadow p-6" data-section='knowledge-management' data-destination='knowledge-management'>
     <h2 class="text-lg font-semibold mb-2">Knowledge Management</h2>
     <p class="text-sm text-gray-500 mb-4">Everything you can do, you probably do it here</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -321,7 +322,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- Settings -->
-<div class="bg-gray-100 rounded-lg shadow p-6">
+<div class="bg-gray-100 rounded-lg shadow p-6" data-section='settings' data-destination='settings'>
   <h2 class="text-lg font-semibold mb-2">Settings</h2>
   <p class="text-sm text-gray-500 mb-4">System configuration and administrative settings</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -362,8 +363,9 @@ export function render(panel, petition = {}) {
 
      //? query.petitioner : 'unknown';
     console.log('Petition:', petition);
-    panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
-}
+  //  panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;
+    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+  }
 //petitioner
 
 // is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
