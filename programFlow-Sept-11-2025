@@ -1,0 +1,376 @@
+Imported appState.js appState.js:2:9
+Imported: ui/adminListeners.js adminListeners.js:2:9
+Imported: registry.js registry.js:2:9
+Imported: supabase.js supabase.js:3:9
+Imported: dataReader.js dataReader.js:2:9
+🎉 Supabase client created successfully! supabase.js:28:11
+Imported: loadAdminDashWithData.js loadAdminDashWithData.js:12:9
+Imported: flexmain.js flexmain.js:27:9
+
+setPetitioner( 
+Object { Module: "adminDash", Section: "jsDevMock", Action: "adminDash", Destination: "new-panel" }
+ ) appState.js:34:15
+setPetionioer() History: 
+Array [ {} ]
+appState.js:43:17
+
+onAppLoad(), initializing... flexmain.js:133:13
+
+RenderPanel( 
+Object { Module: "adminDash", Section: "jsDevMock", Action: "adminDash", Destination: "new-panel" }
+ ) flexmain.js:236:11
+GetDisplayArea() flexmain.js:36:9
+petitioner .Module: adminDash .Action: adminDash .Destination: new-panel flexmain.js:240:11
+Array []
+flexmain.js:243:11
+Registry recognises adminDash push details in array flexmain.js:260:29
+adminDash.js loaded adminDash.js:2:9
+adminDash Render( 
+<div class="page-panel" data-page-name="adminDash"> 
+Object { Module: "adminDash", Section: "jsDevMock", Action: "adminDash", Destination: "new-panel" }
+ ) adminDash.js:361:13
+getTemplateHTML() adminDash.js:6:38
+petition: 
+Object { Module: "adminDash", Section: "jsDevMock", Action: "adminDash", Destination: "new-panel" }
+breadcrumb.js:7:9
+
+Calling loadPageWithData( adminDash ) flexmain.js:141:11
+LoadPageWithData( adminDash ) flexmain.js:156:11
+loadAdminDashWithData() loadAdminDashWithData.js:25:11
+readAllMembers() dataReader.js:9:11
+readAllTasks() dataReader.js:24:11
+readAllAssignments() dataReader.js:39:11
+readUniqueStudents dataReader.js:141:11
+readUniqueRelatedIds from task_assignments.student_id dataReader.js:128:11
+readAllRelatedIds from task_assignments.student_id dataReader.js:95:11
+readUniqueManagers dataReader.js:146:11
+readUniqueRelatedIds from task_assignments.manager_id dataReader.js:128:11
+readAllRelatedIds from task_assignments.manager_id dataReader.js:95:11
+readUniqueAuthors dataReader.js:151:11
+readUniqueRelatedIds from task_headers.author_id dataReader.js:128:11
+readAllRelatedIds from task_headers.author_id dataReader.js:95:11
+readProfilesByIds dataReader.js:69:11
+No elements found for selector: [data-value="authors-count"] loadAdminDashWithData.js:203:13
+No elements found for selector: [data-value="students-count"] loadAdminDashWithData.js:203:13
+No elements found for selector: [data-value="managers-count"] loadAdminDashWithData.js:203:13
+Admin dashboard data fetched loadAdminDashWithData.js:54:13
+Setting up navigation listeners flexmain.js:445:13
+adminListeners add Listeners or respond adminListeners.js:66:12
+-----------Initialization COMPLETED ------------. flexmain.js:151:11
+
+CLICK [Member]
+
+Navigation click event: 
+<button class="nav-btn" data-page="memberDash" data-action="memberDash">
+flexmain.js:448:13
+Navigation button clicked for page: flexmain.js:463:13
+setPetitioner( 
+Object { Section: "menu", Action: "memberDash.html", Destination: "new-panel" }
+ ) appState.js:34:15
+setPetionioer() History: 
+Array [ {}, {…} ]
+appState.js:43:17
+
+State change event at window.addEventListener: QUERY_UPDATE 
+Object { userId: null, stubName: null, recordId: null, READ_request: false, INSERT_request: false, DELETE_request: false, UPDATE_request: false, petitioner: {…}, petitionHistory: (2) […], requestedAction: "Dont-Panic", … }
+flexmain.js:106:13
+Action: memberDash.html  to  new-panel flexmain.js:107:13
+openClosePanelsByRule( memberDash.html fromButtonClick: false ) flexmain.js:384:11
+isPageOpen: false flexmain.js:390:15
+isDashboard: true flexmain.js:394:15
+Closing all panels flexmain.js:486:13
+ClosePanel( adminDash ) flexmain.js:315:11
+UpdatePanelLayout(), Panels on display: 0 flexmain.js:329:11
+RenderPanel( 
+Object { Module: "adminDash", Section: "menu", Action: "memberDash.html", Destination: "new-panel" }
+ ) flexmain.js:236:11
+GetDisplayArea() flexmain.js:36:9
+petitioner .Module: adminDash .Action: memberDash.html .Destination: new-panel flexmain.js:240:11
+Array []
+0: Object { stubName: "memberDash.html", panel: div.page-panel
+, query: {…} }
+length: 1
+<prototype>: Array []
+flexmain.js:243:11
+Registry recognises memberDash.html push details in array flexmain.js:260:29
+memberDash.js loaded memberDash.js:2:9
+memberDash Render( 
+<div class="page-panel" data-page-name="memberDash.html"> 
+Object { Module: "adminDash", Section: "menu", Action: "memberDash.html", Destination: "new-panel" }
+ ) memberDash.js:237:13
+getTemplateHTML() memberDash.js:5:38
+Petition: 
+Object { Module: "adminDash", Section: "menu", Action: "memberDash.html", Destination: "new-panel" }
+memberDash.js:241:13
+petition: 
+Object { Module: "adminDash", Section: "menu", Action: "memberDash.html", Destination: "new-panel" }
+breadcrumb.js:7:9
+LoadPageWithData( memberDash ) flexmain.js:156:11
+loadMemberDashWithData() not implemented yet flexmain.js:164:19
+
+return to ----------Initialization COMPLETED ------------. flexmain.js:151:11
+​
+CLICK [how]
+
+Navigation click event: 
+<button class="nav-btn" data-page="howTo" data-action="howTo">
+flexmain.js:448:13
+howToContext: 
+Object { Module: "adminDash", Section: "jsDevMock", Action: "adminDash", Destination: "new-panel" }
+flexmain.js:460:9
+Navigation button clicked for page: flexmain.js:463:13
+
+setPetitioner( 
+Object { Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+ ) appState.js:34:15
+setPetionioer() History: 
+Array [ {}, {…} ]
+appState.js:43:17
+
+State change event at window.addEventListener: QUERY_UPDATE 
+Object { userId: null, stubName: null, recordId: null, READ_request: false, INSERT_request: false, DELETE_request: false, UPDATE_request: false, petitioner: {…}, petitionHistory: (2) […], requestedAction: "Dont-Panic", … }
+flexmain.js:106:13
+Action: howTo.html  to  new-panel flexmain.js:107:13
+openClosePanelsByRule( howTo.html fromButtonClick: false ) flexmain.js:384:11
+isPageOpen: false flexmain.js:390:15
+isDashboard: false flexmain.js:394:15
+RenderPanel( 
+Object { Module: "adminDash", Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+ ) flexmain.js:236:11
+GetDisplayArea() flexmain.js:36:9
+petitioner .Module: adminDash .Action: howTo.html .Destination: new-panel flexmain.js:240:11
+Array [ {…} ]
+flexmain.js:243:11
+Registry recognises howTo.html push details in array flexmain.js:260:29
+
+howTo.js loaded howTo.js:2:9
+HowTo Render( 
+<div class="page-panel" data-page-name="howTo.html"> 
+Object { Module: "adminDash", Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+ ) howTo.js:52:13
+getTemplateHTML() howTo.js:6:38
+Petition: 
+Object { Module: "adminDash", Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+howTo.js:56:13
+petition: 
+
+Object { Module: "adminDash", Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+breadcrumb.js:7:9
+LoadPageWithData( howTo ) flexmain.js:156:11
+No data loader defined for howTo flexmain.js:167:19
+
+
+CLICK [how] 2nd time
+
+Navigation click event: 
+<button class="nav-btn" data-page="howTo" data-action="howTo">
+flexmain.js:448:13
+howToContext: 
+Object { Module: "adminDash", Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+flexmain.js:460:9
+Navigation button clicked for page: flexmain.js:463:13
+setPetitioner( 
+Object { Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+ ) appState.js:34:15
+State change event at window.addEventListener: QUERY_UPDATE 
+Object { userId: null, stubName: null, recordId: null, READ_request: false, INSERT_request: false, DELETE_request: false, UPDATE_request: false, petitioner: {…}, petitionHistory: (2) […], requestedAction: "Dont-Panic", … }
+flexmain.js:106:13
+Action: howTo.html  to  new-panel flexmain.js:107:13
+openClosePanelsByRule( howTo.html fromButtonClick: false ) flexmain.js:384:11
+isPageOpen: true flexmain.js:390:15
+isDashboard: false flexmain.js:394:15
+Panel already open, closing it: howTo.html flexmain.js:419:19
+ClosePanel( howTo.html ) flexmain.js:315:11
+UpdatePanelLayout(), Panels on display: 1 flexmain.js:329:11
+howToEventListener howTo.js:63:13
+getContextHTML() howTo.js:25:45
+
+​return to ----------Initialization COMPLETED ------------. flexmain.js:151:11
+
+CLICK [Create Task]
+
+readPetition ( 
+click { target: p.text-xs.text-gray-500
+, buttons: 0, clientX: 285, clientY: 750, layerX: 269, layerY: 1251 }
+ ) adminListeners.js:32:11
+readPetition( = Module: adminDash  Section: quick-acts  Action: create-task-dialogue  Destination: new-panel ) adminListeners.js:51:13
+petition ( 
+Object { Module: "adminDash", Section: "quick-acts", Action: "create-task-dialogue", Destination: "new-panel" }
+ ) adminListeners.js:71:12
+setPetitioner( 
+Object { Module: "adminDash", Section: "quick-acts", Action: "create-task-dialogue", Destination: "new-panel" }
+ ) appState.js:34:15
+setPetionioer() History: 
+Array [ {}, {…} ]
+appState.js:43:17
+State change event at window.addEventListener: QUERY_UPDATE 
+Object { userId: null, stubName: null, recordId: null, READ_request: false, INSERT_request: false, DELETE_request: false, UPDATE_request: false, petitioner: {…}, petitionHistory: (2) […], requestedAction: "Dont-Panic", … }
+flexmain.js:106:13
+Action: create-task-dialogue  to  new-panel flexmain.js:107:13
+openClosePanelsByRule( create-task-dialogue fromButtonClick: false ) flexmain.js:384:11
+isPageOpen: false flexmain.js:390:15
+isDashboard: false flexmain.js:394:15
+RenderPanel( 
+Object { Module: "adminDash", Section: "quick-acts", Action: "create-task-dialogue", Destination: "new-panel" }
+ ) flexmain.js:236:11
+GetDisplayArea() flexmain.js:36:9
+petitioner .Module: adminDash .Action: create-task-dialogue .Destination: new-panel flexmain.js:240:11
+Array [ {…} ]
+flexmain.js:243:11
+adminListeners ( create-task-dialogue ) adminListeners.js:76:12
+case: ( create-task-dialogue ) changing name to createTaskForm.html Then call handleCardClick() adminListeners.js:80:17
+handleCardClick action:( create-task-dialogue , name: createTaskForm.html ) adminListeners.js:9:11
+Registry recognises create-task-dialogue push details in array flexmain.js:260:29
+Navigation click event: 
+<p class="text-xs text-gray-500">
+flexmain.js:448:13
+createTaskForm.js loaded createTask.js:4:9
+Render( 
+<div class="page-panel" data-page-name="create-task-dialogue"> 
+Object { Module: "adminDash", Section: "quick-acts", Action: "create-task-dialogue", Destination: "new-panel" }
+ ) createTask.js:13:11
+getTemplateHTML() createTask.js:20:38
+attachListeners() 
+<div class="page-panel" data-page-name="create-task-dialogue">
+createTask.js:72:11
+LoadPageWithData( create-task-dialogue ) flexmain.js:156:11
+No data loader defined for create-task-dialogue flexmain.js:167:19
+
+2nd click [Create Task]
+
+eadPetition ( 
+click { target: p.text-xs.text-gray-500
+, buttons: 0, clientX: 170, clientY: 750, layerX: 154, layerY: 1271 }
+ ) adminListeners.js:32:11
+readPetition( = Module: adminDash  Section: quick-acts  Action: create-task-dialogue  Destination: new-panel ) adminListeners.js:51:13
+petition ( 
+Object { Module: "adminDash", Section: "quick-acts", Action: "create-task-dialogue", Destination: "new-panel" }
+ ) adminListeners.js:71:12
+setPetitioner( 
+Object { Module: "adminDash", Section: "quick-acts", Action: "create-task-dialogue", Destination: "new-panel" }
+ ) appState.js:34:15
+State change event at window.addEventListener: QUERY_UPDATE 
+Object { userId: null, stubName: null, recordId: null, READ_request: false, INSERT_request: false, DELETE_request: false, UPDATE_request: false, petitioner: {…}, petitionHistory: (2) […], requestedAction: "Dont-Panic", … }
+flexmain.js:106:13
+Action: create-task-dialogue  to  new-panel flexmain.js:107:13
+openClosePanelsByRule( create-task-dialogue fromButtonClick: false ) flexmain.js:384:11
+isPageOpen: true flexmain.js:390:15
+isDashboard: false flexmain.js:394:15
+Panel already open, closing it: create-task-dialogue flexmain.js:419:19
+ClosePanel( create-task-dialogue ) flexmain.js:315:11
+UpdatePanelLayout(), Panels on display: 1 flexmain.js:329:11
+adminListeners ( create-task-dialogue ) adminListeners.js:76:12
+case: ( create-task-dialogue ) changing name to createTaskForm.html Then call handleCardClick() adminListeners.js:80:17
+handleCardClick action:( create-task-dialogue , name: createTaskForm.html ) adminListeners.js:9:11
+Navigation click event: 
+<p class="text-xs text-gray-500">flexmain.js:448:13
+
+Click [How] // which is buggy
+
+Navigation click event: 
+<button class="nav-btn" data-page="howTo" data-action="howTo">
+flexmain.js:448:13
+howToContext: 
+Object { Module: "adminDash", Section: "quick-acts", Action: "create-task-dialogue", Destination: "new-panel" }
+flexmain.js:460:9
+Navigation button clicked for page: flexmain.js:463:13
+setPetitioner( 
+Object { Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+ ) appState.js:34:15
+setPetionioer() History: 
+Array(3) [ {}, {…}, {…} ]
+0: Object {  } // the initial creation of the array is here
+1: Object { Module: "adminDash", Section: "jsDevMock", Action: "adminDash", … } //dev entry to start process with admin dashboard
+2: Object { Module: "adminDash", Section: "quick-acts", Action: "create-task-dialogue", … }  // someone clicked 'create task' in 'quick acts' section of the admin das module
+length: 3
+appState.js:43:17
+
+
+State change event at window.addEventListener: QUERY_UPDATE 
+Object { userId: null, stubName: null, recordId: null, READ_request: false, INSERT_request: false, DELETE_request: false, UPDATE_request: false, petitioner: {…}, petitionHistory: (3) […], requestedAction: "Dont-Panic", … }
+flexmain.js:106:13
+Action: howTo.html  to  new-panel flexmain.js:107:13
+openClosePanelsByRule( howTo.html fromButtonClick: false ) flexmain.js:384:11
+isPageOpen: false flexmain.js:390:15
+isDashboard: false flexmain.js:394:15
+RenderPanel( 
+Object { Module: "adminDash", Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+ ) flexmain.js:236:11
+GetDisplayArea() flexmain.js:36:9
+petitioner .Module: adminDash .Action: howTo.html .Destination: new-panel flexmain.js:240:11
+Array [ {…} ]
+flexmain.js:243:11
+Registry recognises howTo.html push details in array flexmain.js:260:29
+howTo.js loaded howTo.js:2:9
+HowTo Render( 
+<div class="page-panel" data-page-name="howTo.html"> 
+Object { Module: "adminDash", Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+ ) howTo.js:52:13
+getTemplateHTML() howTo.js:6:38
+Petition: 
+Object { Module: "adminDash", Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+howTo.js:56:13
+petition: 
+Object { Module: "adminDash", Section: "menu", Action: "howTo.html", Destination: "new-panel" }
+breadcrumb.js:7:9
+LoadPageWithData( howTo ) flexmain.js:156:11
+No data loader defined for howTo flexmain.js:167:19
+
+
+CLICK [Members Card]
+
+​readPetition ( 
+click { target: p.text-3xl.font-bold.text-blue-900
+, buttons: 0, clientX: 158, clientY: 560, layerX: 142, layerY: 2357 }
+ ) adminListeners.js:32:11
+readPetition( = Module: adminDash  Section: t&m-management  Action: member-management-section  Destination: t&m-management ) adminListeners.js:51:13
+petition ( 
+Object { Module: "adminDash", Section: "t&m-management", Action: "member-management-section", Destination: "t&m-management" }
+ ) adminListeners.js:71:12
+setPetitioner( 
+Object { Module: "adminDash", Section: "t&m-management", Action: "member-management-section", Destination: "t&m-management" }
+ ) appState.js:34:15
+setPetionioer() History: 
+Array(4) [ {}, {…}, {…}, {…} ]
+appState.js:43:17
+State change event at window.addEventListener: QUERY_UPDATE 
+Object { userId: null, stubName: null, recordId: null, READ_request: false, INSERT_request: false, DELETE_request: false, UPDATE_request: false, petitioner: {…}, petitionHistory: (4) […], requestedAction: "Dont-Panic", … }
+flexmain.js:106:13
+Action: member-management-section  to  t&m-management flexmain.js:107:13
+openClosePanelsByRule( member-management-section fromButtonClick: false ) flexmain.js:384:11
+isPageOpen: false flexmain.js:390:15
+isDashboard: false flexmain.js:394:15
+RenderPanel( 
+Object { Module: "adminDash", Section: "t&m-management", Action: "member-management-section", Destination: "t&m-management" }
+ ) flexmain.js:236:11
+GetDisplayArea() flexmain.js:36:9
+displayArea: 
+<div class="bg-green-100 rounded-lg shadow p-6" data-section="t&m-management" data-destination="t&m-management">
+flexmain.js:42:11
+petitioner .Module: adminDash .Action: member-management-section .Destination: t&m-management flexmain.js:240:11
+Array [ {…}, {…} ]
+flexmain.js:243:11
+howToEventListener howTo.js:63:13
+getContextHTML() howTo.js:25:45
+adminListeners ( member-management-section ) adminListeners.js:76:12
+handleCardClick action:( member-management-section , name: member-management-section ) adminListeners.js:9:11
+Registry recognises member-management-section push details in array flexmain.js:260:29
+Navigation click event: 
+<p class="text-3xl font-bold text-blue-900" data-value="members-count">
+flexmain.js:448:13
+memberManagementSection.js loaded memberManagementSection.js:2:9
+MemberManagement Render( 
+<div class="page-panel" data-page-name="member-management-section"> 
+Object { Module: "adminDash", Section: "t&m-management", Action: "member-management-section", Destination: "t&m-management" }
+ ) memberManagementSection.js:69:13
+getTemplateHTML() memberManagementSection.js:5:38
+Petition: 
+Object { Module: "adminDash", Section: "t&m-management", Action: "member-management-section", Destination: "t&m-management" }
+memberManagementSection.js:73:13
+petition: 
+Object { Module: "adminDash", Section: "t&m-management", Action: "member-management-section", Destination: "t&m-management" }
+breadcrumb.js:7:9
+LoadPageWithData( member-management-section ) flexmain.js:156:11
+No data loader defined for member-management-section flexmain.js:167:19
+
+​

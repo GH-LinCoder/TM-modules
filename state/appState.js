@@ -31,11 +31,12 @@ export const appState = {
     
 
     setPetitioner(petition) {
-      console.log('appState.setPetitioner:', petition);
-    
+      console.log('setPetitioner(',petition,')' );
+     // console.log('this.query.petitioner:',this.query.petitioner );//the log shows all the values even at appOnLoad - browser doesn't take the values at this moment, but may fill them in later
+    //  console.log('this.query.petitioner.Action',this.query.petitioner.Action)// the log says undefined at appOnLoad - this is weird browser behaviour as it does take this value at the moment
       // 👇 SAVE TO HISTORY if action is meaningfully different
       const currentAction = this.query.petitioner.Action;
-      console.log('currentAction:',currentAction);
+    //  console.log('petition.Action:',petition.Action);
       if (petition.Action !== currentAction) {
         // Clone current petitioner and push to history
         this.query.petitionHistory.push({ ...this.query.petitioner });

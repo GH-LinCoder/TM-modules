@@ -65,33 +65,6 @@ export async function readAllSteps() {
   return data || [];
 }
 
-export async function readAllRelatedIds(tableName, idColumnName) {
-  console.log(`readAllRelatedIds from ${tableName}.${idColumnName}`);
-  const { data, error } = await supabase
-    .from(tableName)
-    .select(idColumnName);
-
-  if (error) {
-    console.error(`Error fetching all IDs from ${tableName}.${idColumnName}:`, error.message);
-    throw new Error(`Failed to fetch IDs from ${tableName}.${idColumnName}.`);
-  }
-
-  return data || [];
-}
-
-export async function readUniqueRelatedIds(tableName, idColumnName) {
-  console.log(`readUniqueRelatedIds from ${tableName}.${idColumnName}`);
-  const allIdRecords = await readAllRelatedIds(tableName, idColumnName);
-
-  if (allIdRecords.length === 0) {
-    return [];
-  }
-
-  const uniqueIds = [...new Set(allIdRecords.map(record => record[idColumnName]))];
-
-  return uniqueIds;
-}
-
 export async function readProfilesByIds(ids) {
   console.log('readProfilesByIds');
   if (ids.length === 0) {
@@ -114,7 +87,24 @@ export async function readProfilesByIds(ids) {
   })).sort((a, b) => a.name.localeCompare(b.name));
 }
 
-// Convenience wrappers
+
+
+
+                // -------------all----------- //
+export async function readAllRelatedIds(tableName, idColumnName) {
+  console.log(`readAllRelatedIds from ${tableName}.${idColumnName}`);
+  const { data, error } = await supabase
+    .from(tableName)
+    .select(idColumnName);
+
+  if (error) {
+    console.error(`Error fetching all IDs from ${tableName}.${idColumnName}:`, error.message);
+    throw new Error(`Failed to fetch IDs from ${tableName}.${idColumnName}.`);
+  }
+
+  return data || [];
+}
+                
 export async function readAllStudentEntries() {
   console.log('readAllStudentEntries');
   return await readAllRelatedIds('task_assignments', 'student_id');
@@ -125,9 +115,26 @@ export async function readAllManagerEntries() {
   return await readAllRelatedIds('task_assignments', 'manager_id');
 }
 
-export async function readAllAuthorEntries() {
+export async function readAllAuthorEntries() { // this produces wrong number (23) when real number is about (5) It can't be more than tasks (10)
   console.log('readAllAuthorEntries');
   return await readAllRelatedIds('task_headers', 'author_id');
+}
+
+
+
+
+                // ----------- unique ----------- //
+export async function readUniqueRelatedIds(tableName, idColumnName) {
+  console.log(`readUniqueRelatedIds from ${tableName}.${idColumnName}`);
+  const allIdRecords = await readAllRelatedIds(tableName, idColumnName);
+
+  if (allIdRecords.length === 0) {
+    return [];
+  }
+
+  const uniqueIds = [...new Set(allIdRecords.map(record => record[idColumnName]))];
+
+  return uniqueIds;
 }
 
 export async function readUniqueStudents() {
@@ -145,7 +152,7 @@ export async function readUniqueAuthors() {
   try {
     return await readUniqueRelatedIds('task_headers', 'author_id');
   } catch (error) {
-    console.error('Error in getStudentIDs (from new function call):', error);
+    console.error('Error in authorIDs (from new function call):', error);
     throw error;
   }
 }

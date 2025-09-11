@@ -45,29 +45,42 @@ function getContextHTML(petition) { console.log('getContextHTML()');
   </ul>
 </div>`}
 
+function decideContext(petition){
+  console.log('decideContext the petition says:(',petition.Action,')');
 
+  if(petition.Action==='howTo' || petition.Action==='howTo.html') {
+  const { petitionHistory } = appState.query;
+  
+  if (petitionHistory.length>1){
+    petition = petitionHistory[petitionHistory.length-1];};
+    console.log('change to petitionHistory-1:',petition,')');
+  } else console.log('there is no history');
+  let action = petition.Action ;
+  console.log('decideContext decision is this action:', action);
+
+//  console.log('but action to be recommended is:', action);
+return petition;  
+
+}
 
 
 export function render(panel, petition = {}) {
-    console.log('HowTo Render(', panel, petition, ')');
-    panel.innerHTML = getTemplateHTML();
+petition = decideContext(petition);
+console.log('action:',petition.Action);
+const action = petition.Action;
+if(action === 'adminDash' || action === 'adminDash.html') {console.log('rednering generic menu howto');panel.innerHTML = getTemplateHTML();}// generic menu instructions
+else {console.log('rendering context howto');  panel.innerHTML = getContextHTML(petition);}
+panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 
-     //? query.petitioner : 'unknown';
-    console.log('Petition:', petition);
-      // panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;}
-      panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
-  //  }
-
-    window.addEventListener('state-change', (e) => {
-      const { petitioner, petitionHistory } = appState.query;
-    console.log('howToEventListener');
-      if (petitioner.Module === 'howTo' || petitioner.Module === 'howTo.html') {
-        const previous = petitionHistory[petitionHistory.length - 1];
-        panel.innerHTML = getContextHTML(previous);
-        //updateInstructionsBasedOn(previous);
-      } else panel.innerHTML = getContextHTML(petitioner); //panel is defined inside render. it is sent to render(panel, petition)
-    }); }
-    
+window.addEventListener('state-change', (e) => {
+  const action = decideContext(appState.query.petitioner);
+if(action === 'adminDash' || action === 'adminDash.html')  panel.innerHTML = getTemplateHTML(); // generic menu instructions
+else  panel.innerHTML = getContextHTML(appState.query.petitioner);
+panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+  
+  
+  });
+}   
 
 
 

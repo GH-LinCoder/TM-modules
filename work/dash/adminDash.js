@@ -186,14 +186,14 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- STUDENT -->
     <div class="bg-red-50 border border-green-200 rounded-lg p-4" data-action='student-management-section'>
-      <p class="text-3xl font-bold text-green-900" data-value="students-count">?</p>
+      <p class="text-3xl font-bold text-green-900" data-value="students-count-unique">?</p>
       <h3 class="text-sm font-medium text-green-700">Students</h3>
       <p class="text-xs text-green-500">View and manage students assigned to tasks</p>
     </div>
 
 <!-- MANAGERS -->    
     <div class="bg-red-50 border border-indigo-200 rounded-lg p-4" data-action='manager-management-section'>
-      <p class="text-3xl font-bold text-indigo-900" data-value="managers-count">?</p>
+      <p class="text-3xl font-bold text-indigo-900" data-value="managers-count-unique">?</p>
       <h3 class="text-sm font-medium text-indigo-700">Managers</h3>
       <p class="text-xs text-indigo-500">View and manage task managers</p>
     </div>
@@ -362,7 +362,7 @@ export function render(panel, petition = {}) {
     panel.innerHTML = getTemplateHTML();
 
      //? query.petitioner : 'unknown';
-    console.log('Petition:', petition);
+ //   console.log('Petition:', petition);
   //  panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;
     panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
   }

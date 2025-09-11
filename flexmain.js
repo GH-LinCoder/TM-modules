@@ -36,7 +36,7 @@ function getDisplayArea() {
 console.log('GetDisplayArea()');
 
 const destination=appState.query.petitioner.Destination;
-console.log('destination:',destination);
+//console.log('destination:',destination);
 if(destination==='new-panel') return document.querySelector('[data-panel="inject-here"]');
 else {const displayArea = document.querySelector(`[data-section="${destination}"]`);
   console.log('displayArea:',displayArea );
@@ -172,7 +172,7 @@ async function loadPageWithData(pageName) { // pageName without .html
 // === PANEL RENDERING ===
 
 async function renderNewPanel(stubName, query, registryEntry,selectedModule, displayArea){// new 10:35 sept 10 2025 Moved from renderPanels- which needs a name change
-  console.log('renderNewPanel(',displayArea,')');
+ // console.log('renderNewPanel(',displayArea,')');
   if(registryEntry) { 
 ///below conditional on 'new-panel
 
@@ -253,15 +253,15 @@ const stubName = appState.query.petitioner.Action; //legacy html to be phased-ou
 ////// move the above 
 
 
-console.log('about to check registry(',stubName,')',stubName.length);
+//console.log('about to check registry(',stubName,')',stubName.length);
 
 let registryEntry = await registry[stubName]; //send string to lookup object, get a pointer to a function (don't need await)
 
 if(registryEntry) { console.log('Registry recognises', stubName, 'push details in array');
-  console.log('registryEntry is:', registryEntry);
+ // console.log('registryEntry is:', registryEntry);
 
 const selectedModule = await registryEntry(); // Use the pointer to get the function
-console.log('Loaded module functions:', selectedModule);
+//console.log('Loaded module functions:', selectedModule);
 
 if(true) renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea);
 else renderSection(query, selectedModule,displayArea);

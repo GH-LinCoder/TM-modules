@@ -19,11 +19,11 @@ async function renderAuthors() {
 
   let data;
   if (authorViewType === 'unique') {
-    const res = await supabase.from('authors').select('*');
+    const res = await supabase.from('authors').select('*'); //there is no 'authors' table. Is there a view?
     data = res.data || [];
     title.textContent = `Authors (${data.length})`;
   } else {
-    const res = await supabase.from('author_entries').select('*');
+    const res = await supabase.from('author_entries').select('*'); //this results in wrong number of 23
     data = res.data || [];
     title.textContent = `All Authored Tasks (${data.length})`;
   }
