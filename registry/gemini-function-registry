@@ -3,7 +3,7 @@
  * A central registry that maps function names to their metadata and
  * a reference to the actual function.
  */
-const functionRegistry = {
+export const functionRegistry = {
   // Function to insert a new task header
   insertTask: {
     // Metadata for the permissions system
