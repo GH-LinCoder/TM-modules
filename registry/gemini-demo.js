@@ -5,7 +5,7 @@ import {executeIfpermitted} from './gemini-executeIfPermitted.js';
 
 supabase = createSupabaseClient();
 
-async function runDemo() {
+async function runDemo() { 
   try {
     // 1. Demonstrate an insert operation
    // const newRecord = await execute('insertTask', 'New Task from Demo', 'This is a task created by the registry.');
@@ -13,7 +13,7 @@ async function runDemo() {
 
     const userId='87a90183-88b6-450a-94d2-7838ffbbf61b'; //real id that is in db but DEV only const.
 
-const metadata = {
+const metadata = { // dev data for demo
       tables: ['task_headers'],
       columns: ['name', 'description'],
       type: 'INSERT',
