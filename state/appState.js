@@ -19,7 +19,9 @@ export const appState = {
       DELETE_request: false,
       UPDATE_request: false,
       
-      petitioner:{},  // moduleName, sectionName, element (card or button) data-* attribute, destination 'a section' || 'new-panel'
+      petitioner:{},  // moduleName, sectionName, element (card or button) data-* attribute, 
+      // destination 'a section' || 'new-panel' , 
+      // key word: if action begins with 'data' it is treated differently as a db request instead of a module load
       petitionHistory: [], // so howTo can offer context related instructions. The current petition will be dash-menu-howto-new-panel
       //purpose: null, //not needed? next item covers this
       requestedAction: 'Dont-Panic',   //such as: 'UPDATE_TASK_STEP', <--- standardized actions LEGACY 
@@ -50,10 +52,34 @@ export const appState = {
       // 👇 UPDATE current petitioner
       Object.assign(this.query.petitioner, petition);
     
-    
+//Parse the .Action to see if it is a request for data. 
+//Assumes all such petitions have Action='data-*'
+// 'data' is now a key word in a petition.Action
+//petitionAction.slice(0,4));
+
+const requestType ='QUERY_UPDATE'; // added 18:54 Sept 12 2025
+//console.log('Parse of first 5 chars of petition.Action:', petition.Action.slice(0,5));// added 19:00 Sept 12 2025
+
+
+if (typeof petition.Action === 'string' && petition.Action.startsWith('data-')) {
+  requestType = 'DATA_REQUEST';
+  console.log(`[DATA] Recognized data request: ${petition.Action}`);
+} else {
+  console.log(`[MODULE] Recognized module request: ${petition.Action}`);
+}
+
+/*
+if(petition.Action.slice(0,5)==='data-' )
+  { requestType = 'DATA_REQUEST'; console.log('Data request recognised');} //added 18:54 Sept 12 2025
+   else console.log('Load request recognised');
+*/
+//can use if(petition.Action.startsWith('data-') )
+
       // 👇 Dispatch state change
       window.dispatchEvent(new CustomEvent('state-change', { 
-        detail: { type: 'QUERY_UPDATE', payload: this.query }
+//        detail: { type: 'QUERY_UPDATE', payload: this.query } // changed 
+          detail: { type: requestType, payload: this.query }// added 18:54 Sept 12 2025
+
       }));
     },
 

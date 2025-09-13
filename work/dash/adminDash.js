@@ -19,7 +19,8 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <!-- DASHBOARD TITLE + DESCRIPTION-->   
    <div>
       <h1 class="text-2xl font-bold" data-dash-title="admin">Admin Dashboard</h1>
-      <p class="text-sm text-gray-500" data-dash-sub_title="admin">Manage members, tasks, and monitor system performance</p>
+      <p class="text-sm text-gray-500" data-dash-sub_title="admin">See data, manage members, tasks, relationships & knowledge.</p>
+      <p class="text-sm text-gray-500" data-dash-sub_title="admin">Click the menu <em>How?</em> button for help</p>
     </div>
     <!-- button class="text-sm text-blue-600 hover:underline" data-action="sign-out">Sign out</button -->
   </div>
@@ -29,7 +30,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <!-- Quick Stats -->
   <div class="bg-blue-200 rounded-lg shadow p-6" data-section="quick-stats" data-destination='new-panel'>
     <h2 class="text-lg font-semibold mb-2">Quick Stats</h2>
-    <p class="text-sm text-gray-500 mb-4">Summaries: Click for details</p>
+    <p class="text-sm text-gray-500 mb-4">Summaries: Click for details. They open in a new panel to the right. Click card again to close.</p>
   <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
 
     <!-- Members -->
@@ -84,7 +85,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <!-- Quick Actions -->
   <div class="bg-red-100 rounded-lg shadow p-6" data-section="quick-acts" data-destination='new-panel'>
     <h2 class="text-lg font-semibold mb-2">Quick Acts</h2>
-    <p class="text-sm text-gray-500 mb-4">Fast access to common admin tasks</p>
+    <p class="text-sm text-gray-500 mb-4">Fast access to common admin tasks. They open in a new panel to the right. (Click the card again to close)</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" >
 
 
@@ -153,7 +154,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <!-- Task & Member Management -->
 <div class="bg-green-100 rounded-lg shadow p-6" data-section='t&m-management' data-destination='t&m-management'>
   <h2 class="text-lg font-semibold mb-2">Task & Member Management</h2>
-  <p class="text-sm text-gray-500 mb-4">Everything you can do, you probably do it here</p>
+  <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
 <!-- MEMBER -->
@@ -205,7 +206,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <!-- Relationship & hierarchy Management -->
   <div class="bg-orange-100 rounded-lg shadow p-6" data-section='r&h-management' data-destination='r&h-management'>
     <h2 class="text-lg font-semibold mb-2">Relationship & hierarchy Management</h2>
-    <p class="text-sm text-gray-500 mb-4">Everything you can do, you probably do it here</p>
+    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
 <!-- ALL APPPROFILES-->         
@@ -264,7 +265,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <!-- KNOWLEDGE MANAGEMENT -->
   <div class="bg-indigo-200 rounded-lg shadow p-6" data-section='knowledge-management' data-destination='knowledge-management'>
     <h2 class="text-lg font-semibold mb-2">Knowledge Management</h2>
-    <p class="text-sm text-gray-500 mb-4">Everything you can do, you probably do it here</p>
+    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
 <!-- ALL HOWTOS-->         
