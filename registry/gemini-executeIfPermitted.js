@@ -15,7 +15,7 @@ execute (functionName, userId){
   
 }
 
-async function executeIfPermitted(functionName, userId) {
+export async function executeIfPermitted(functionName, userId) {
   const funcEntry = functionRegistry[functionName];
 
   if (!funcEntry) {
