@@ -1,4 +1,4 @@
-import {*} from './gemini-function-registry'
+import {functionRegistry} from './gemini-function-registry'
 import{createSupabaseClient} from './supabase.js';
 // --- DEMONSTRATION OF USAGE ---
 
