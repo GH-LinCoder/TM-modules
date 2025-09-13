@@ -6,7 +6,7 @@
  * @param {object} metadata The metadata of the function being called.
  * @returns {boolean} True if the user has permission, false otherwise.
  */
-export function permissions(userId, metadata) {
+export function permissions(userId, metadata) {// when is the relevant metadata discovered? which function does this?
   // In a real application, we would implement complex logic here
   // based on user roles, permissions from a "temporary permissions" table,
   // and the function's metadata (tables, columns, type).
