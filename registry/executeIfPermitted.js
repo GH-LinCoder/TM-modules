@@ -1,6 +1,9 @@
-import { functionRegistry } from './gemini-function-registry.js';
-import { checkPermissions } from './gemini-permissions.js';
-import { createSupabaseClient } from './supabase.js';
+console.log('executIfPermitted.js');
+
+
+import { functionRegistry } from './function-registry.js';
+import { permissions } from './permissions.js';
+import { createSupabaseClient } from '../db/supabase.js';
 
 // The Supabase client is created once and passed to the functions.
 const supabase = createSupabaseClient();
@@ -13,12 +16,27 @@ const supabase = createSupabaseClient();
  * @param {...any} args The arguments to pass to the handler function.
  * @returns {Promise<any>} The result of the database operation.
  */
-async function execute(functionName, ...args) {
-  const funcEntry = functionRegistry[functionName];
-  console.log(`[Executor] Executing '${functionName}'...`);
-  // The handler receives the Supabase client as its first argument.
-  return await funcEntry.handler(supabase, ...args);
+
+
+
+async function execute(userId, action, rowId) {
+  const funcEntry = functionRegistry[action];
+  console.log(`[Executor] Executing '${action}'...`);
+  let result;
+
+  try {
+    result = await funcEntry.handler(supabase, userId, rowId);
+  } catch (error) {
+    console.error(`funcEntry.handler:`, error);
+    throw error; // optional: rethrow to bubble up
+  }
+
+  console.log('result:', result);
+  return result || [];
 }
+
+
+
 
 /**
  * The public-facing function that serves as the secure entry point for all
@@ -30,22 +48,31 @@ async function execute(functionName, ...args) {
  * @param {...any} args The arguments to pass to the handler function.
  * @returns {Promise<any>} The result of the database operation.
  */
-export async function executeIfPermitted(userId, functionName, ...args) {
-  const funcEntry = functionRegistry[functionName];
+
+
+
+
+
+
+
+export async function executeIfPermitted(userId, action, rowId=null) {
+  console.log('executIfPermitted()');
+
+  const funcEntry = functionRegistry[action];
 
   if (!funcEntry) {
-    throw new Error(`Function '${functionName}' not found in the registry.`);
+    throw new Error(`Function '${action}' not found in the registry.`);
   }
 
   // Perform the critical security check.
-  const hasPermission = checkPermissions(userId, functionName);
-  if (!hasPermission) {
+  const hasPermission = permissions(userId, action, rowId);
+  if (!hasPermission) {// one of many possible problems
     throw new Error(`Permission denied: User '${userId}' does not have access to function '${functionName}'.`);
   }
 
   // If the check passes, call the private execute function with all arguments.
   // We return the result of this call directly.
-  return await execute(functionName, ...args);
+  return await execute(userId, action, rowId);
 }
 
 

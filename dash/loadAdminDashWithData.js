@@ -9,6 +9,11 @@ import {
   readProfilesByIds
 } from '../db/dataReader.js';
 
+import {executeIfPermitted} from '../registry/executeIfPermitted.js';
+
+
+
+
 console.log('Imported: loadAdminDashWithData.js');
 
 function updateStat(key, value) {
@@ -108,14 +113,36 @@ function injectStatsData(members, tasks, assignments, uniqueStudents, uniqueMana
 /**
  * Injects data into the Task & Member Management section
  */
-function injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles) {
+async function injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles) {
   // Update all instances of each data value
-  updateAll('[data-value="members-count"]', members.length);
-  updateAll('[data-value="assignments-count"]', assignments.length);
-  updateAll('[data-value="tasks-count"]', tasks.length);
-  updateAll('[data-value="authors-count"]', authorProfiles.length);//doesn't find this one but does find next 2  if the html has authors-count the js says '23' but if authors-count-unique it gets it right
-  updateAll('[data-value="students-count"]', uniqueStudents.length); //need change html students-count-unique
-  updateAll('[data-value="managers-count"]', uniqueManagers.length); //need change html managers-count-unique
+
+    //change 20:09 sept 13   trying to replace with the new memberCount()
+    // completed 21:19  took 70 mins
+  let length; // this was done line by line to test each one. Could be done in a loop
+  length = await executeIfPermitted(null, 'membersCount', null); 
+  updateAll('[data-value="members-count"]', length);
+  
+  length = await executeIfPermitted(null, 'assignmentsCount', null); 
+  updateAll('[data-value="assignments-count"]', length);
+
+ length = await executeIfPermitted(null, 'assignmentsCount', null); 
+  updateAll('[data-value="assignments-count"]', length);
+
+  length = await executeIfPermitted(null, 'authorsCount', null);
+  updateAll('[data-value="authors-count"]', length);//doesn't find this one but does find next 2  if the html has authors-count the js says '23' but if authors-count-unique it gets it right
+
+
+  length = await executeIfPermitted(null, 'studentsCount', null);
+  updateAll('[data-value="students-count"]', length); //need change html students-count-unique
+ 
+  length = await executeIfPermitted(null, 'managersCount', null); 
+  updateAll('[data-value="managers-count"]', length); //need change html managers-count-unique
+
+//replaced the length measurement of the array
+//  updateAll('[data-value="assignments-count"]', assignments.length);
+//  updateAll('[data-value="authors-count"]', authorProfiles.length);//doesn't find this one but does find next 2  if the html has authors-count the js says '23' but if authors-count-unique it gets it right
+
+
 }
 
 /**

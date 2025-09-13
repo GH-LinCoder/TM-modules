@@ -40,6 +40,39 @@ If either check fails (db and isPermitted), DC panics.
 there is a callback to tell the petitioning module that the response is available
 
 */
+
+import {executeIfPermitted} from '../registry/executeIfPermitted.js';
+
+
+export async function databaseCentral(userId, action, rowId=null){
+
+  try {
+
+//at this point only know userId and the data-action. 
+    // example 
+    const userId='87a90183-88b6-450a-94d2-7838ffbbf61b'; //real id that is in db but DEV only const.
+    const action = 'readTaskWithSteps';
+    const taskId =  '1a22f8ac-ccaf-4662-856d-3338784ed8da'     //newRecord.id;
+ //we don't know anything else. No metaData no functionName    
+    
+//when would the relevant metadata be discovered? Not here surely.
+    // 2. Demonstrate a read operation
+    const taskData = await executeIfPermitted(userId, 'readTaskWithSteps', taskId);
+    console.log('Result of readTaskWithSteps:', taskData);
+}
+catch(error){console.error('something went wrong', error)}
+}
+
+
+
+
+
+
+
+
+
+
+/*
 import {createSupabaseClient} from'supabase.js';
 import { appState } from './state/appState.js';
 import { permitted } from './Permitted.js';
@@ -233,6 +266,7 @@ const dbRequest = buildDbRequest(requestSpec, petition);
    console.debug(`[TRIGGERS] ${action} on ${table} will activate:`, triggers.map(t => t.name));
  } */
 
+   /*
  // Execute via Supabase
    result = await executeSupabaseQuery(not,sure,what, to,Send);
  
@@ -298,7 +332,7 @@ function  logAccess(user, table, action) {
     }
 
 
-
+*/
   //////////////////////////////////  code for functions that call DBC ///////////////////////////////////
 
 /* code for module request
@@ -405,7 +439,7 @@ requestData(
 
 
 
-    
+    /*
 
     //both checks passed, have to parse the requestedAction and extarct the payload and call the appropriate function
     let result;
@@ -430,3 +464,4 @@ requestData(
 
  
 }
+    */

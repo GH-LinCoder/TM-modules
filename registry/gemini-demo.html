@@ -1,6 +1,16 @@
-//import {functionRegistry} from './gemini-function-registry'
+<!DOCTYPE html>
+<body>
+<h1>Demo of database scripts</h1>
+
+</body>
+
+<script type="module">
+//import {functionRegistry} from './function-registry'
 //import{createSupabaseClient} from './supabase.js';
-import {executeIfpermitted} from './gemini-executeIfPermitted.js';
+//import {executeIfPermitted} from './executeIfPermitted.js';
+import {databaseCentral} from '../db/databaseCentral.js';
+
+
 // --- DEMONSTRATION OF USAGE ---
 
 //supabase = createSupabaseClient();
@@ -14,14 +24,19 @@ async function runDemo() {
     // example 
     const userId='87a90183-88b6-450a-94d2-7838ffbbf61b'; //real id that is in db but DEV only const.
     const action = 'readTaskWithSteps';
-    const taskId =  'bd603a0c-6b69-42e6-b6d6-9a7d2df05ca1'     //newRecord.id;
+    const taskId =  '1a22f8ac-ccaf-4662-856d-3338784ed8da'     //newRecord.id;
  //we don't know anything else. No metaData no functionName    
     
 //when would the relevant metadata be discovered? Not here surely.
     // 2. Demonstrate a read operation
-    const taskData = await executeIfPermitted(userId, 'readTaskWithSteps', taskId);
+
+    const taskData = await databaseCentral(userId, 'readTaskWithSteps', taskId);
     console.log('Result of readTaskWithSteps:', taskData);
+}
+catch(error){console.error('something went wrong', error)}
 }
 
 // Run the demonstration
 runDemo();
+</script>
+</html>

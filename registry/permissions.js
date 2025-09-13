@@ -7,7 +7,7 @@
  * @returns {boolean} True if the user has permission, false otherwise.
  */
 
-import {functionRegistry} from 'gemini-function-registry';
+import {functionRegistry} from './function-registry.js';
 
 export function permissions(userId, functionName, rowId) {// when is the relevant metadata discovered? which function does this?
   // In a real application, we would implement complex logic here
@@ -22,13 +22,43 @@ readTaskWithSteps: {
       type: 'SELECT',
     },
 */
-  const metadata= functionRegistry.readTaskWithSteps.metadata;
-  if(!metadata) new throw.error(`No metadata found - check ${functionName} in registry`);  
+
+if (!functionRegistry[functionName]) {
+  throw new Error(`Function '${functionName}' not found in registry.`);
+}
+const metadata = functionRegistry[functionName]?.metadata;
+  if(!metadata)  throw new Error(`No metadata found - check ${functionName} in registry`);  
   console.log('metaData:',metadata);
   // do something with metadata and user id, to determine if permitted
+//const args = ({supabase,userId,taskId});
+
+
+
+
+
   console.log(`[Security] Checking if user '${userId}' can perform a '${metadata.type}' operation on tables: ${metadata.tables.join(', ')}...`);
 //this also will check permissions by column not just by table.
   
   // placeholder response:
   return true;
 }
+
+  
+// This function would make sense one stage earlier in executIfPermitted
+//because another basic test is done in that file
+//but the metadata is loaded here in permissions
+
+//Needs the parameters to be in an object 'args'not separate.
+
+//but here we don't have the args
+/*
+const args = { supabase, userId, taskId };
+validateArgs(funcEntry.metadata, Object.keys(args));
+const result = funcEntry.handler(args);+
+
+function validateArgs(metadata, args) {
+  const expected = metadata.requiredArgs || [];
+  if (args.length !== expected.length) {
+    throw new Error(`Argument mismatch: expected ${expected.length} (${expected.join(',')}), received ${args.length}`);
+  }
+} */

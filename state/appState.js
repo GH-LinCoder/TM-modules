@@ -57,7 +57,7 @@ export const appState = {
 // 'data' is now a key word in a petition.Action
 //petitionAction.slice(0,4));
 
-const requestType ='QUERY_UPDATE'; // added 18:54 Sept 12 2025
+let requestType ='QUERY_UPDATE'; // added 18:54 Sept 12 2025
 //console.log('Parse of first 5 chars of petition.Action:', petition.Action.slice(0,5));// added 19:00 Sept 12 2025
 
 

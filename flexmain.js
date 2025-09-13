@@ -115,6 +115,15 @@ window.addEventListener('state-change', async (e) => {
        }
         break;
 
+        case 'DATA_REQUEST':
+
+        //if ( payload.stubName) {
+          if ( payload.petitioner.Action) {  
+          await openClosePanelsByRule(payload.petitioner.Action); //<----------------------------need import to use await executeIfPermitted(payload.petitioner.Action); 
+       }
+        break;
+   
+
       case 'DATA_LOADED':
         updateUI(payload.data); //what is this?
         break;
