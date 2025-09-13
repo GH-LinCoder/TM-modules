@@ -7,6 +7,9 @@
  * @returns {Promise<any>} The result of the database operation.
  */
 import {permissions} from './gemini-permissions.js';
+import{createSupabaseClient} from './supabase.js';
+
+supabase = createSupabaseClient();
 
 execute (functionName, userId){
 //only ever called from the permission checked function below
