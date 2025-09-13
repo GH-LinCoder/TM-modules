@@ -1,4 +1,3 @@
-
 /**
  * A central registry that maps function names to their metadata and
  * a reference to the actual function.
@@ -14,7 +13,7 @@ export const functionRegistry = {
       // This could also hold other data like required user roles or permissions
     },
     // The actual function that interacts with the database
-    handler: async (taskName, taskDescription) => {
+    handler: async (supabase, taskName, taskDescription) => {
       const { data, error } = await supabase
         .from('task_headers')
         .insert([{
@@ -34,7 +33,7 @@ export const functionRegistry = {
       columns: ['id', 'name', 'description'],
       type: 'SELECT',
     },
-    handler: async (taskId) => {
+    handler: async (supabase, taskId) => {
       const { data, error } = await supabase
         .from('task_headers')
         .select('id, name, description, task_steps(*)')
