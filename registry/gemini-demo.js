@@ -20,10 +20,10 @@ const metadata = { // dev data for demo
       // This could also hold other data like required user roles or permissions
     };
     
-
+//when would the relevant metadata be discovered. Not here surely.
     // 2. Demonstrate a read operation
     const taskIdToRead =  'bd603a0c-6b69-42e6-b6d6-9a7d2df05ca1'     //newRecord.id;
-    const taskData = await executeIfPermitted(userId, 'readTaskWithSteps', taskIdToRead);
+    const taskData = await executeIfPermitted(userId, 'readTaskWithSteps', taskIdToRead, metadata);
     console.log('Result of readTaskWithSteps:', taskData);
 }
 
