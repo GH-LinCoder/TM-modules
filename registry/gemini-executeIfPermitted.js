@@ -14,11 +14,11 @@ supabase = createSupabaseClient();
 execute (functionName, userId){
 //only ever called from the permission checked function below
     console.log(`[Executor] Executing '${functionName}'...`);
-  return await funcEntry.handler(...args);
+  return await funcEntry.handler();
   
 }
 
-export async function executeIfPermitted(functionName, userId) {
+export async function executeIfPermitted(userId, functionName,  ) {
   const funcEntry = functionRegistry[functionName];
 
   if (!funcEntry) {
