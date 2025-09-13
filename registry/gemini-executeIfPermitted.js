@@ -11,7 +11,7 @@ import{createSupabaseClient} from './supabase.js';
 
 supabase = createSupabaseClient();
 
-execute (functionName, userId){
+function execute (functionName, userId){
 //only ever called from the permission checked function below
     console.log(`[Executor] Executing '${functionName}'...`);
   return await funcEntry.handler();
