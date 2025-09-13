@@ -1,9 +1,9 @@
-import {functionRegistry} from './gemini-function-registry'
-import{createSupabaseClient} from './supabase.js';
+//import {functionRegistry} from './gemini-function-registry'
+//import{createSupabaseClient} from './supabase.js';
 import {executeIfpermitted} from './gemini-executeIfPermitted.js';
 // --- DEMONSTRATION OF USAGE ---
 
-supabase = createSupabaseClient();
+//supabase = createSupabaseClient();
 
 async function runDemo() { 
   try {
