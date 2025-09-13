@@ -6,6 +6,9 @@
  * @param {...any} args The arguments to pass to the handler function.
  * @returns {Promise<any>} The result of the database operation.
  */
+import {permissions} from './gemini-permissions.js';
+
+
 async function execute(functionName, ...args) {
   const funcEntry = functionRegistry[functionName];
   const currentUserId = 'user_123'; // In a real app, you'd get this from your auth state.
@@ -15,7 +18,7 @@ async function execute(functionName, ...args) {
   }
 
   // Perform the critical security check
-  const hasPermission = canUserAccess(currentUserId, funcEntry.metadata);
+  const hasPermission = permissions(currentUserId, funcEntry.metadata);
   if (!hasPermission) {
     throw new Error(`Permission denied: User '${currentUserId}' does not have access to function '${functionName}'.`);
   }
