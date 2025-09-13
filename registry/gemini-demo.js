@@ -1,6 +1,9 @@
 import {*} from './gemini-function-registry'
-import{supabase} from '../db/superbase.js';
+import{createSupabaseClient} from './supabase.js';
 // --- DEMONSTRATION OF USAGE ---
+
+const supabase = createSupabaseClient();
+
 async function runDemo() {
   try {
     // 1. Demonstrate an insert operation
