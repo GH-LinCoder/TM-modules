@@ -1,5 +1,5 @@
 import {*} from './gemini-function-registry'
-
+import{supabase} from '../db/superbase.js';
 // --- DEMONSTRATION OF USAGE ---
 async function runDemo() {
   try {
