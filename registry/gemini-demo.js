@@ -11,7 +11,15 @@ async function runDemo() {
    // const newRecord = await execute('insertTask', 'New Task from Demo', 'This is a task created by the registry.');
    // console.log('Result of insertTask:', newRecord);
 
-    const userId='87a90183-88b6-450a-94d2-7838ffbbf61b', metadata ='';
+    const userId='87a90183-88b6-450a-94d2-7838ffbbf61b';
+
+const metadata = {
+      tables: ['task_headers'],
+      columns: ['name', 'description'],
+      type: 'INSERT',
+      // This could also hold other data like required user roles or permissions
+    };
+    
 const isPermitted = permissions(userId, metadata);
     // 2. Demonstrate a read operation
     const taskIdToRead =  'bd603a0c-6b69-42e6-b6d6-9a7d2df05ca1'     //newRecord.id;
