@@ -18,7 +18,7 @@ execute (functionName, userId){
   
 }
 
-export async function executeIfPermitted(userId, functionName,  ) {
+export async function executeIfPermitted(userId, functionName,rowId=null  ) {//insert would not know rowId
   const funcEntry = functionRegistry[functionName];
 
   if (!funcEntry) {
@@ -26,9 +26,9 @@ export async function executeIfPermitted(userId, functionName,  ) {
   }
 
   // Perform the critical security check
-  const hasPermission = permissions(currentUserId, funcEntry.metadata);
-  if (!hasPermission) {
-    throw new Error(`Permission denied: User '${currentUserId}' does not have access to function '${functionName}'.`);
+  const hasPermission = permissions(userId, functionName, rowId);
+  if (!hasPermission) {// there can be many reasons for not having permission. The following is just one of the reasons
+    throw new Error(`Permission denied: User '${userId}' does not have access to function '${functionName}'.`);
   }
 
 execute (functionEntry, userId)
