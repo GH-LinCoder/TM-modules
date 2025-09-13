@@ -8,10 +8,15 @@
  */
 import {permissions} from './gemini-permissions.js';
 
+execute (functionName, userId){
+//only ever called from the permission checked function below
+    console.log(`[Executor] Executing '${functionName}'...`);
+  return await funcEntry.handler(...args);
+  
+}
 
-async function execute(functionName, ...args) {
+async function executeIfPermitted(functionName, userId) {
   const funcEntry = functionRegistry[functionName];
-  const currentUserId = 'user_123'; // In a real app, you'd get this from your auth state.
 
   if (!funcEntry) {
     throw new Error(`Function '${functionName}' not found in the registry.`);
@@ -23,8 +28,9 @@ async function execute(functionName, ...args) {
     throw new Error(`Permission denied: User '${currentUserId}' does not have access to function '${functionName}'.`);
   }
 
+execute (functionEntry, userId)
+  
   // If the check passes, call the handler with the provided arguments
-  console.log(`[Executor] Executing '${functionName}'...`);
-  return await funcEntry.handler(...args);
+
 }
 
