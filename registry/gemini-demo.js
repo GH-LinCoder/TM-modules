@@ -1,5 +1,6 @@
 import {functionRegistry} from './gemini-function-registry'
 import{createSupabaseClient} from './supabase.js';
+import {permissions} from './gemini-permissions.js';
 // --- DEMONSTRATION OF USAGE ---
 
 supabase = createSupabaseClient();
