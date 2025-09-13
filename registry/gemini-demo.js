@@ -10,7 +10,7 @@ async function runDemo() {
     // 1. Demonstrate an insert operation
    // const newRecord = await execute('insertTask', 'New Task from Demo', 'This is a task created by the registry.');
    // console.log('Result of insertTask:', newRecord);
-
+const isPermitted = permissions();
     // 2. Demonstrate a read operation
     const taskIdToRead =  'bd603a0c-6b69-42e6-b6d6-9a7d2df05ca1'     //newRecord.id;
     const taskData = await execute('readTaskWithSteps', taskIdToRead);
