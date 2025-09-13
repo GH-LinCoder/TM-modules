@@ -20,15 +20,11 @@ const metadata = {
       // This could also hold other data like required user roles or permissions
     };
     
-const isPermitted = permissions(userId, metadata);
+
     // 2. Demonstrate a read operation
     const taskIdToRead =  'bd603a0c-6b69-42e6-b6d6-9a7d2df05ca1'     //newRecord.id;
-    const taskData = await execute('readTaskWithSteps', taskIdToRead);
+    const taskData = await executeIfPermitted('readTaskWithSteps', taskIdToRead);
     console.log('Result of readTaskWithSteps:', taskData);
-
-  } catch (error) {
-    console.error('An error occurred during execution:', error.message);
-  }
 }
 
 // Run the demonstration
