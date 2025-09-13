@@ -2,7 +2,7 @@ import {*} from './gemini-function-registry'
 import{createSupabaseClient} from './supabase.js';
 // --- DEMONSTRATION OF USAGE ---
 
-const supabase = createSupabaseClient();
+supabase = createSupabaseClient();
 
 async function runDemo() {
   try {
