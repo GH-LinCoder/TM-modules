@@ -1,64 +1,61 @@
-//  ./mutate/memberManagementSection.js
-console.log('memberManagementSection.js loaded');
-import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
+//  ./mutate/authorManagementSection.js
+console.log('authorManagementSection.js loaded');
+import { petitionBreadcrumbs } from'../ui/breadcrumb.js';
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
-<!-- Member Management section -->
-<div class="bg-green-100 rounded-lg shadow p-6" data-section="member-management">
-  <h2 class="text-lg font-semibold mb-2">Member Management</h2>
+<!-- author Management section -->
+<div class="bg-green-100 rounded-lg shadow p-6" data-section="author-management">
+  <h2 class="text-lg font-semibold mb-2">author Management</h2>
   <p class="text-sm text-gray-500 mb-4">Click to carryout the action, it opens in a new panel to the right </p>
 <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
 
-  <!-- Members -->
+  <!-- authors -->
   
       <!-- Return -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="member-management-section">
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="author-management-section">
     <h3 class="text-sm font-medium text-blue-700 mb-1">Return to previous section</h3>
     
     <p class="text-xs text-blue-600">Click here as a back button to return the section to its previous contents.</p>
   </div>
   
   <!-- Search -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="member-search">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Search Members</h3>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="author-search">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Search authors</h3>
     <p class="text-xs text-blue-600">This searches the users. If you want to search all approfiles, try the other section. </p>
   </div>
 
       <!-- Create -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-member">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Create a Member</h3>
-    <p class="text-xs text-blue-600">Normally members are created by their signing-up to be an authenticated user.</p>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-author">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Create an author</h3>
+    <p class="text-xs text-blue-600">Anyone who creates a task is called an author. Admin can appoint someone as an author which permits them to create tasks.</p>
   </div>
     
     <!-- Edit -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="edit-member">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Edit a Member</h3>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="edit-author">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Edit an author</h3>
     <p class="text-xs text-blue-600">There may be many things to edit. Not yet defined.</p>
   </div>
 
       <!-- Delete -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="delete-member">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Delete a Member</h3>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="delete-author">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Delete an author</h3>
     <p class="text-xs text-blue-600">Deletion marks the record as deleted, but does not erase it from the system</p>
   </div>
 
       <!-- Assign -->
-  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assign-member">
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assign-author">
     <h3 class="text-sm font-medium text-red-700 mb-1">Assign to a task</h3>
-    <p class="text-xs text-red-600">This places the member on the task. (If you are trying to assign a non-member try the approfiles section.)</p>
+    <p class="text-xs text-red-600">This places the author on a task.</p>
   </div>
 
       <!-- relate -->
-  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-member">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Relate a Member to...</h3>
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-author">
+    <h3 class="text-sm font-medium text-red-700 mb-1">Relate an author to...</h3>
     
-    <p class="text-xs text-red-600">Relate a member to someone or something.
-    (If you want to assign someone to a task use the other method. 
-    You can 'relate' a person to a task, but it doesn't put them on the task)</p>
+    <p class="text-xs text-red-600">authors can be related. Each author has an approfile.
+    The process of relating is between approfiles. An author can be related to other authors or tasks or anything that has an approfile, directly or via a 3rd abstract approfile. </p>
   </div>
-
-
 
 
 </div>
@@ -66,12 +63,12 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 export function render(panel, petition = {}) {
-    console.log('MemberManagement Render(', panel, petition, ')');
+    console.log('authorManagement Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
 
      //? query.petitioner : 'unknown';
     console.log('Petition:', petition);
-       // panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;}
+   // panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;}
    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
   }
 //petitioner

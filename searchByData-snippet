@@ -1,6 +1,0 @@
-function selectByData(attr, value) {
-  return document.querySelector(`[data-${attr}="${value}"]`);
-}
-
-//call by for example     where the html has: data-form='create-task' 
-const form = selectByData('form', 'create-task');

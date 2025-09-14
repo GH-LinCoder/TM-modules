@@ -1,7 +1,7 @@
 //  ./mutate/managerManagementSection.js
 console.log('managerManagementSection.js loaded');
 
-import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
+import { petitionBreadcrumbs } from'../ui/breadcrumb.js';
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `

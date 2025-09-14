@@ -26,11 +26,20 @@
 
 console.log('Imported: flexmain.js');
 
+// === LISTENERS 
+import { adminListeners } from './listeners/adminListeners.js';
+import { windowEventListener } from './listeners/windowEventListener.js';
+import { menuListeners } from './listeners/menuListeners.js';
 
-import { adminListeners } from './ui/adminListeners.js';
-import { appState } from './state/appState.js';
-import { registry } from './registry/registry.js';
+
+
+// === GLOBALS
+import { appState } from './state/appState.js'; // modules interact through appState
+import { registry } from './registry/registry.js'; // stores page (module) loading functions
+
+// === Data from database
 import { loadAdminDashWithData } from './dash/loadAdminDashWithData.js';
+
 // === UTILITY: Get main display area ===
 function getDisplayArea() {
 console.log('GetDisplayArea()');
@@ -97,10 +106,10 @@ try {
 }
 
 
-
+windowEventListener(); //Listen for change of State
 
 // === STATE CHANGE HANDLER ===
-
+/*  trying to use external file in place of this local function 10:15 Sept 14
 window.addEventListener('state-change', async (e) => {
     const { type, payload } = e.detail;
     console.log('State change event at window.addEventListener:', type, payload);
@@ -129,7 +138,7 @@ window.addEventListener('state-change', async (e) => {
         break;
     }
   });
-
+*/
 
 
 
@@ -154,7 +163,12 @@ async function onAppLoad() {
     const adminBtn = document.querySelector('[data-page="adminDash"]');
     if (adminBtn) adminBtn.classList.add('active');
   }
-  setupNavigationListeners();//local function
+// changed to external function 10:47 spet 14 2025
+
+menuListeners();//add listener to menu buttons, and respond to their being clicked
+
+
+//  setupNavigationListeners();//local function
   const frameAroundThePages = getFrameAroundThePages();
   adminListeners(frameAroundThePages); //imported function  this may be wrong element. need the frame around the pages
   console.log('-----------Initialization COMPLETED ------------.');

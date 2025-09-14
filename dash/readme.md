@@ -12,4 +12,19 @@ content html
 logic to manipulate data and deliver as an html stub (html divs without <!Doc type  head   etc>)
 
 
-look in ui/ for Listeners and button reactions 
+12:00 Sept 14 2025
+
+Tried to move adminDash.js  & memberDash.js 
+from 
+/work/dash/
+to
+/dash/
+
+Could not get it to work.
+
+Changed the path in registry
+Changed the path in imports
+
+Log said MIME error (which usually shows up if the file can't be found)
+
+No idea where this error originates

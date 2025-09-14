@@ -1,6 +1,6 @@
 //  ./mutate/quickStatsSection.js
 console.log('quickstats.js loaded');
-import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
+import { petitionBreadcrumbs } from'../ui/breadcrumb.js';
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
