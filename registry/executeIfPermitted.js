@@ -1,7 +1,7 @@
 console.log('executIfPermitted.js');
 
 
-import { functionRegistry } from './function-registry.js';
+import { registryWorkActions } from './registryWorkActions.js';
 import { permissions } from './permissions.js';
 import { createSupabaseClient } from '../db/supabase.js';
 
@@ -20,7 +20,7 @@ const supabase = createSupabaseClient();
 
 
 async function execute(userId, action, rowId) {
-  const funcEntry = functionRegistry[action];
+  const funcEntry = registryWorkActions[action];
   console.log(`[Executor] Executing '${action}'...`);
   let result;
 
@@ -55,24 +55,24 @@ async function execute(userId, action, rowId) {
 
 
 
-export async function executeIfPermitted(userId, action, rowId=null) {
+export async function executeIfPermitted(userId, action, payload={}) {
   console.log('executIfPermitted()');
 
-  const funcEntry = functionRegistry[action];
+  const funcEntry = registryWorkActions[action];
 
   if (!funcEntry) {
     throw new Error(`Function '${action}' not found in the registry.`);
   }
 
   // Perform the critical security check.
-  const hasPermission = permissions(userId, action, rowId);
+  const hasPermission = permissions(userId, action, payload);
   if (!hasPermission) {// one of many possible problems
     throw new Error(`Permission denied: User '${userId}' does not have access to function '${functionName}'.`);
   }
 
   // If the check passes, call the private execute function with all arguments.
   // We return the result of this call directly.
-  return await execute(userId, action, rowId);
+  return await execute(userId, action, payload);
 }
 
 
@@ -103,7 +103,7 @@ function execute (functionName, userId){
 }
 
 export async function executeIfPermitted(userId, functionName,rowId=null  ) {//insert would not know rowId
-  const funcEntry = functionRegistry[functionName];
+  const funcEntry = registryWorkActions[functionName];
 
   if (!funcEntry) {
     throw new Error(`Function '${functionName}' not found in the registry.`);

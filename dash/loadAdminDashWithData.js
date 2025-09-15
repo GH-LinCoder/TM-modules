@@ -50,9 +50,9 @@ export async function loadAdminDashWithData() {
     const authorProfiles = await readProfilesByIds(uniqueAuthors);
 
     // Inject data into DOM
-    injectStatsData(members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors);
-    injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles); //authorProfiles?
-    injectActivityData(members, tasks, assignments);
+ //   injectStatsData(members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors);
+   injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles); //authorProfiles?
+   injectActivityData(members, tasks, assignments);
 
     updateDeltas(members, assignments, tasks);
 
@@ -77,7 +77,7 @@ export async function loadAdminDashWithData() {
 
 /**
  * Injects data into the Quick Stats section
- */
+ */  /*
 function injectStatsData(members, tasks, assignments, uniqueStudents, uniqueManagers, uniqueAuthors) {
   // Update all instances of each data value
   updateAll('[data-value="members-count"]', members.length);
@@ -108,10 +108,10 @@ function injectStatsData(members, tasks, assignments, uniqueStudents, uniqueMana
       console.log(`NOT FOUND: ${item.selector}`);
     }
   });
-}  
+}  */
 
 /**
- * Injects data into the Task & Member Management section
+ * Injects data into quickStats & Task & Member Management (wherever the data-value='*' occur)
  */
 async function injectManagementData(members, tasks, assignments, uniqueStudents, uniqueManagers, authorProfiles) {
   // Update all instances of each data value
@@ -125,18 +125,18 @@ async function injectManagementData(members, tasks, assignments, uniqueStudents,
   length = await executeIfPermitted(null, 'assignmentsCount', null); 
   updateAll('[data-value="assignments-count"]', length);
 
- length = await executeIfPermitted(null, 'assignmentsCount', null); 
-  updateAll('[data-value="assignments-count"]', length);
+ length = await executeIfPermitted(null, 'tasksCount', null); 
+  updateAll('[data-value="tasks-count"]', length);
 
   length = await executeIfPermitted(null, 'authorsCount', null);
-  updateAll('[data-value="authors-count"]', length);//doesn't find this one but does find next 2  if the html has authors-count the js says '23' but if authors-count-unique it gets it right
+  updateAll('[data-value="authors-count-unique"]', length);//doesn't find this one but does find next 2  if the html has authors-count the js says '23' but if authors-count-unique it gets it right
 
 
   length = await executeIfPermitted(null, 'studentsCount', null);
-  updateAll('[data-value="students-count"]', length); //need change html students-count-unique
+  updateAll('[data-value="students-count-unique"]', length); //need change html students-count-unique
  
   length = await executeIfPermitted(null, 'managersCount', null); 
-  updateAll('[data-value="managers-count"]', length); //need change html managers-count-unique
+  updateAll('[data-value="managers-count-unique"]', length); //need change html managers-count-unique
 
 //replaced the length measurement of the array
 //  updateAll('[data-value="assignments-count"]', assignments.length);
@@ -158,19 +158,7 @@ function injectActivityData(members, tasks, assignments) {
   // Create recent activity items (most recent first)
   const activities = [];
 
-  // New member registration
-  if (members.length > 0) {
-    const latestMember = members.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
-    if (latestMember) {
-      activities.push({
-        type: 'new-member',
-        title: 'New member registered',
-        description: `${latestMember.username}`,
-        time: formatTimeAgo(latestMember.created_at)
-      });
-    }
-  }
-
+//
   // Recent task creation
   if (tasks.length > 0) {
     const latestTask = tasks.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
@@ -207,6 +195,22 @@ function injectActivityData(members, tasks, assignments) {
       time: `${Math.floor(Math.random() * 6) + 1} hours ago`
     });
   }
+
+    // New member registration
+    if (members.length > 0) {
+      const latestMember = members.sort((a, b) => new Date(b.created_at) - new Date(a.created_at))[0];
+      if (latestMember) {
+        activities.push({
+          type: 'new-member',
+          title: 'New member registered',
+          description: `${latestMember.username}`,
+          time: formatTimeAgo(latestMember.created_at)
+        });
+      }
+    }
+  
+
+
 
   // Render activities
   activities.slice(0, 4).forEach(activity => {

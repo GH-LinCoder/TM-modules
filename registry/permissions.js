@@ -7,7 +7,7 @@
  * @returns {boolean} True if the user has permission, false otherwise.
  */
 
-import {functionRegistry} from './function-registry.js';
+import {registryWorkActions} from './registryWorkActions.js';
 
 export function permissions(userId, functionName, rowId) {// when is the relevant metadata discovered? which function does this?
   // In a real application, we would implement complex logic here
@@ -23,10 +23,10 @@ readTaskWithSteps: {
     },
 */
 
-if (!functionRegistry[functionName]) {
+if (!registryWorkActions[functionName]) {
   throw new Error(`Function '${functionName}' not found in registry.`);
 }
-const metadata = functionRegistry[functionName]?.metadata;
+const metadata = registryWorkActions[functionName]?.metadata;
   if(!metadata)  throw new Error(`No metadata found - check ${functionName} in registry`);  
   console.log('metaData:',metadata);
   // do something with metadata and user id, to determine if permitted

@@ -123,29 +123,36 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <p class="text-sm text-gray-500 mb-4">Latest system events and user actions</p>
   <div class="space-y-4" id="activity-list">
 
-    <div class="activity-item" data-activity="new-member">
-      <p class="text-sm"><strong>New member registered</strong></p>
-      <p class="text-xs text-gray-600">M125 – Sarah Johnson</p>
-      <p class="text-xs text-gray-400">2 minutes ago</p>
+    <div class="activity-item" data-activity="db">
+      <p class="text-sm"><strong>source table</strong></p>
+      <p class="text-xs text-gray-600"> row </p>
+      <p class="text-xs text-gray-600"> event </p>
+      <p class="text-xs text-gray-400">time</p>
+      <p class="text-xs text-gray-600">abreviated id</p>
     </div>
 
-    <div class="activity-item" data-activity="task-completed">
-      <p class="text-sm"><strong>Task completed</strong></p>
-      <p class="text-xs text-gray-600">M089 – React Fundamentals</p>
-      <p class="text-xs text-gray-400">15 minutes ago</p>
+    <div class="activity-item" data-activity="work">
+      <p class="text-sm"><strong>name</strong></p>
+      <p class="text-xs text-gray-600">descriptiom</p>
+      <p class="text-xs text-gray-400">time</p>
+      <p class="text-xs text-gray-600">abreviated id</p>
     </div>
 
-    <div class="activity-item" data-activity="task-created">
-      <p class="text-sm"><strong>New task created</strong></p>
-      <p class="text-xs text-gray-600">Database Design Course</p>
-      <p class="text-xs text-gray-400">1 hour ago</p>
+    <div class="activity-item" data-activity="work">
+      <p class="text-sm"><strong>name</strong></p>
+      <p class="text-xs text-gray-600">descriptiom</p>
+      <p class="text-xs text-gray-400">time</p>
+      <p class="text-xs text-gray-600">abreviated id</p>
     </div>
 
-    <div class="activity-item" data-activity="member-assigned">
-      <p class="text-sm"><strong>Member assigned to task</strong></p>
-      <p class="text-xs text-gray-600">M045 – Frontend Bootcamp</p>
-      <p class="text-xs text-gray-400">2 hours ago</p>
+    <div class="activity-item" data-activity="db">
+      <p class="text-sm"><strong>source table</strong></p>
+      <p class="text-xs text-gray-600"> row </p>
+      <p class="text-xs text-gray-600"> event </p>
+      <p class="text-xs text-gray-400">time</p>
+      <p class="text-xs text-gray-600">abreviated id</p>
     </div>
+
 
   </div>
 </div>

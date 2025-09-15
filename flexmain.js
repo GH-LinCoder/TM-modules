@@ -35,7 +35,7 @@ import { menuListeners } from './listeners/menuListeners.js';
 
 // === GLOBALS
 import { appState } from './state/appState.js'; // modules interact through appState
-import { registry } from './registry/registry.js'; // stores page (module) loading functions
+import { registry } from './registry/registryLoadModule.js'; // stores page (module) loading functions
 
 // === Data from database
 import { loadAdminDashWithData } from './dash/loadAdminDashWithData.js';

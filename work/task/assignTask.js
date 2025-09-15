@@ -1,20 +1,196 @@
 // assignTask.js
+import{executeIfPermitted} from '../../registry/executeIfPermitted.js';
+import{showToast} from '../../ui/showToast.js';
 
-export function render(panel, query = {}) {console.log('assignTask.js render() called');const dialog = new AssignTaskDialog();dialog.render(panel, query);
+/*
+//import { executeIfPermitted } from '../executeIfPermitted.js';
+
+const state = {
+  user: 'your-user-id' // ← replace with dynamic user ID
+};
+
+export function render(panel, query = {}) {
+  panel.innerHTML = getTemplateHTML();
+  initElements(panel);
+  attachListeners(panel);
+  loadData();
 }
-console.log('🔥 assignTask.js: START');
+
+function initElements(panel) {
+  this.taskSelect = panel.querySelector('#taskSelect');
+  this.studentSelect = panel.querySelector('#studentSelect');
+  this.managerSelect = panel.querySelector('#managerSelect');
+  this.assignBtn = panel.querySelector('#assignTaskBtn');
+}
+
+async function loadData() {
+  try {
+    const taskHeaders = await executeIfPermitted(state.user, 'readTaskHeaders', {});
+    this.taskHeaders = taskHeaders || [];
+    this.populateTaskDropdown();
+
+    const approfiles = await executeIfPermitted(state.user, 'readApprofiles', {});
+    this.approfiles = approfiles || [];
+    this.populateUserDropdowns();
+  } catch (error) {
+    console.error('Failed to load data:', error);
+    this.showError('Failed to load tasks or users.');
+  }
+}
+
+function attachListeners(panel) {
+  this.taskSelect.addEventListener('change', (e) => {
+    // Optional: Load step 3 ID here if needed
+  });
+  this.assignBtn.addEventListener('click', handleAssignTask.bind(this));
+}
+
+async function handleAssignTask(e) {
+  e.preventDefault();
+  console.log('AssignTaskDialog.handleAssignTask(e)');
+
+  const selectedTask = this.taskSelect.value;
+  const selectedStudent = this.studentSelect.value;
+  const selectedManager = this.managerSelect.value;
+
+  if (!selectedTask || !selectedStudent) {
+    this.showError('Please select both a task and a student');
+    return;
+  }
+
+  this.assignBtn.disabled = true;
+  this.assignBtn.textContent = 'Assigning...';
+
+  try {
+    // Get step 3 ID for selected task
+    const step3 = await executeIfPermitted(state.user, 'readStep3Id', {
+      task_header_id: selectedTask
+    });
+    const step3Id = step3.id;
+
+    // Create assignment
+    const newAssignment = await executeIfPermitted(state.user, 'createAssignment', {
+      student_id: selectedStudent,
+      manager_id: selectedManager || null,
+      task_header_id: selectedTask,
+      step_id: step3Id
+    });
+
+    this.showSuccess('Task assigned successfully!');
+    // Optionally close panel or reset form
+  } catch (error) {
+    console.error('Failed to assign task:', error);
+    this.showError('Failed to assign task: ' + error.message);
+  } finally {
+    this.assignBtn.disabled = false;
+    this.assignBtn.textContent = 'Assign Task';
+  }
+}
+
+function populateTaskDropdown() {
+  console.log('AssignTaskDialog.populateTaskDropdown()');
+  this.taskSelect.innerHTML = '<option value="">Select a task</option>';
+  this.taskHeaders.forEach(task => {
+    const option = document.createElement('option');
+    option.value = task.id;
+    option.textContent = task.name;
+    this.taskSelect.appendChild(option);
+  });
+}
+
+function populateUserDropdowns() {
+  console.log('AssignTaskDialog.populateUserDropdowns()');
+  this.studentSelect.innerHTML = '<option value="">Select a student</option>';
+  this.managerSelect.innerHTML = '<option value="">Select a manager (optional)</option>';
+
+  this.approfiles.forEach(user => {
+    const studentOption = document.createElement('option');
+    studentOption.value = user.id;
+    studentOption.textContent = user.name; // ← fixed: was username
+    this.studentSelect.appendChild(studentOption);
+
+    const managerOption = document.createElement('option');
+    managerOption.value = user.id;
+    managerOption.textContent = user.name; // ← fixed: was username
+    this.managerSelect.appendChild(managerOption);
+  });
+}
+
+function showSuccess(message) {
+  showToast(message, 'bg-green-600');
+}
+
+function showError(message) {
+  showToast(message, 'bg-red-600');
+}
+
+function showToast(message, bgColor) {
+  const existing = document.querySelector('.toast');
+  if (existing) existing.remove();
+
+  const toast = document.createElement('div');
+  toast.className = `toast fixed bottom-4 right-4 px-4 py-3 rounded-lg text-white shadow-lg ${bgColor} transition-opacity duration-300`;
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    setTimeout(() => toast.remove(), 300);
+  }, 3000);
+}
+
+function getTemplateHTML() {
+  return `
+    <div class="assign-task-dialog p-6">
+      <h3 class="text-xl font-semibold mb-4">Assign Task</h3>
+      <div class="space-y-4">
+        <select id="taskSelect" class="w-full p-2 border rounded">
+          <option value="">Select Task</option>
+        </select>
+        <select id="studentSelect" class="w-full p-2 border rounded">
+          <option value="">Select Student</option>
+        </select>
+        <select id="managerSelect" class="w-full p-2 border rounded">
+          <option value="">Select Manager (Optional)</option>
+        </select>
+        <button id="assignTaskBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+          Assign Task
+        </button>
+      </div>
+    </div>
+  `;
+}
+*/
+
+
+const state = {
+  taskId: null,
+  steps: [],
+  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // Replace with dynamic user ID
+}; //borrowed from create task 'magic numbers'
+
+console.log('🔥 assignTask.js: START'); //output confirmed
+
+
+export function render(panel, query = {}) {
+  console.log('assignTask.js render() called');  //confirm logged  <------------------------
+  const dialog = new AssignTaskDialog();dialog.render(panel, query);// works see line 191
+}
+
+
+
 class AssignTaskDialog {
  constructor() {
     // ✅ Remove DOM references from constructor
     this.taskHeaders = [];
-    this.users = [];
+    this.approfiles = [];
     // No DOM elements here
   }
 
   render(panel, query = {}) {
-    console.log('AssignTaskDialog.render()');
+    console.log('AssignTaskDialog.render()'); // confirmed log  <-----------------------
     // ✅ Now the panel exists — inject HTML
-    panel.innerHTML = this.getTemplateHTML();
+    panel.innerHTML = this.getTemplateHTML(); //<------------ works
 
     // ✅ Now select elements from the injected DOM
     this.dialog = panel.querySelector('[data-form="assignTaskDialog"]');
@@ -28,7 +204,7 @@ class AssignTaskDialog {
     this.init();
   }
   init() {
-    console.log('AssignTaskDialog.init()');
+    console.log('AssignTaskDialog.init()');  // <------------------- works
     // Set up event listeners
     this.dialog.querySelectorAll('[data-action="close-dialog"]').forEach(el => {
       el.addEventListener('click', () => this.close());
@@ -36,10 +212,14 @@ class AssignTaskDialog {
 
     this.form.addEventListener('submit', (e) => this.handleAssignTask(e));
 
+    this.loadTaskHeaders();  //<------------ works loads in dropdown
+    this.loadApprofiles();
+
     // Populate dropdowns when dialog opens
-    this.dialog.addEventListener('dialog:open', () => {
+    this.dialog.addEventListener('open', () => {
+      console.log('dialog open'); // FAILS no log <-------------------------  doesn't know it is open
       this.loadTaskHeaders();
-      this.loadUsers();
+      this.loadApprofiles();
     });
   }
 
@@ -62,16 +242,6 @@ class AssignTaskDialog {
     this.form.reset();
     this.assignBtn.disabled = true;
   }
-
-/*
-  render(panel, query = {}) { //query is not currently used, but may be important for permissions
-  console.log('Render(', panel, query,')');
-//  panel.innerHTML = "TEST TEST TEST";// test in case html has error
-panel.innerHTML = getTemplateHTML();
-  attachListeners(panel);
-  //updatePanelLayout();
-}
-*/
 
 
 
@@ -147,7 +317,7 @@ panel.innerHTML = getTemplateHTML();
             Use the dropdowns to select each one and then click to assign it.
           </p>
           <p>
-            Currently using username from profiles table. Drop down will not scale. 
+            Currently using username from app_profiles table. Drop down will not scale. 
             Later will need search. Drop down populated from profiles for people and task_headers. 
             Written to task_assignments.
           </p>
@@ -171,22 +341,12 @@ panel.innerHTML = getTemplateHTML();
 
   }
   
-  
+ // read task_headers
   async loadTaskHeaders() {
     console.log('AssignTaskDialog.loadTaskHeaders()');
     try {
-      const { data, error } = await supabase
-        .from('task_headers')
-        .select('id, name')
-        .order('name');
-
-      if (error) {
-        console.error('Error fetching task headers:', error);
-        this.showError('Failed to load tasks');
-        return;
-      }
-
-      this.taskHeaders = data || [];
+      const taskHeaders = await executeIfPermitted(state.user, 'readTaskHeaders', {});
+      this.taskHeaders = taskHeaders || [];
       this.populateTaskDropdown();
     } catch (error) {
       console.error('Error fetching task headers:', error);
@@ -194,27 +354,20 @@ panel.innerHTML = getTemplateHTML();
     }
   }
 
-  async loadUsers() {
-    console.log('AssignTaskDialog.loadUsers()');
-    try {
-      const { data, error } = await supabase
-        .from('profiles')
-        .select('id, username')
-        .order('username');
 
-      if (error) {
-        console.error('Error fetching users:', error);
-        this.showError('Failed to load users');
-        return;
-      }
-
-      this.users = data || [];
-      this.populateUserDropdowns();
-    } catch (error) {
-      console.error('Error fetching users:', error);
-      this.showError('An unexpected error occurred');
+// readApprofiles
+    async loadApprofiles() {
+      console.log('AssignTaskDialog.loadApprofiles()');
+      try {
+        const approfiles = await executeIfPermitted(state.user, 'readApprofiles',{});
+        this.approfiles = approfiles || [];
+        this.populateUserDropdowns();
+      } catch (error) {
+        console.error('Error fetching approfiles:', error);
+        this.showError('Failed to load approfiles');
+      } 
     }
-  }
+    
 
   populateTaskDropdown() {
     console.log('AssignTaskDialog.populateTaskDropdown()');
@@ -232,78 +385,66 @@ panel.innerHTML = getTemplateHTML();
     console.log('AssignTaskDialog.populateUserDropdowns()');
     // Clear existing options (except placeholders)
     this.studentSelect.innerHTML = '<option value="">Select a student</option>';
-    this.managerSelect.innerHTML = '<option value="">Select a manager (optional)</option>';
-
-    this.users.forEach(user => {
+    this.managerSelect.innerHTML = '<option value="">Select a manager</option>';
+console.log('');
+    this.approfiles.forEach(file => {
+//      console.log('fileId',file.name);
       const studentOption = document.createElement('option');
-      studentOption.value = user.id;
-      studentOption.textContent = user.username;
+      studentOption.value = file.id;
+      studentOption.textContent = file.name;
       this.studentSelect.appendChild(studentOption);
 
       const managerOption = document.createElement('option');
-      managerOption.value = user.id;
-      managerOption.textContent = user.username;
+      managerOption.value = file.id;
+      managerOption.textContent = file.name;
       this.managerSelect.appendChild(managerOption);
     });
   }
 
+  //
+  
   async handleAssignTask(e) {
     e.preventDefault();
     console.log('AssignTaskDialog.handleAssignTask(e)');
-    const selectedTask = this.taskSelect.value;
-    const selectedStudent = this.studentSelect.value;
-    const selectedManager = this.managerSelect.value;
-
-    if (!selectedTask || !selectedStudent) {
+  
+    const task_header_id = this.taskSelect.value;
+    const student_id = this.studentSelect.value;
+    const manager_id = this.managerSelect.value;
+  
+    if (!task_header_id || !student_id) {
       this.showError('Please select both a task and a student');
       return;
     }
-
+  
     this.assignBtn.disabled = true;
     this.assignBtn.textContent = 'Assigning...';
-
+  
     try {
-      // Get the task_steps.id where step_order=3 for the selected task
-      const { data: stepData, error: stepError } = await supabase
-        .from('task_steps')
-        .select('id')
-        .eq('task_header_id', selectedTask)
-        .eq('step_order', 3)
-        .single();
-
-      if (stepError) {
-        console.error('Error fetching task step:', stepError);
-        this.showError('Failed to find step 3 for selected task');
-        return;
-      }
-
-      // Insert the assignment
-      const { error: insertError } = await supabase
-        .from('task_assignments')
-        .insert({
-          student_id: selectedStudent,
-          manager_id: selectedManager || null,
-          task_header_id: selectedTask,
-          step_id: stepData.id
-        });
-
-      if (insertError) {
-        console.error('Error inserting task assignment:', insertError);
-        this.showError('Failed to assign task');
-      } else {
-        this.showSuccess('Task assigned successfully!');
-        
-        // Reset and close
-        this.close();
-      }
+      const step3 = await executeIfPermitted(state.user, 'readStep3Id', { task_header_id });
+      const step_id = step3?.id;
+  
+      if (!step_id) throw new Error('Step 3 not found');
+  
+      const newAssignment = await executeIfPermitted(state.user, 'createAssignment', {
+        student_id,
+        manager_id: manager_id || null,
+        task_header_id,
+        step_id
+      });
+  
+      this.showSuccess('Task assigned successfully!');
+      this.close();
     } catch (error) {
-      console.error('Error assigning task:', error);
-      this.showError('An unexpected error occurred');
+      this.showError('Failed to assign task: ' + error.message);
     } finally {
       this.assignBtn.disabled = false;
       this.assignBtn.textContent = 'Assign Task';
     }
   }
+  
+//
+
+
 
   showSuccess(message) {
     // Simple toast implementation
@@ -333,7 +474,10 @@ panel.innerHTML = getTemplateHTML();
   }
 }
 
+//
 
+
+//
 
   
 

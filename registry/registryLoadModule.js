@@ -10,7 +10,7 @@ export const registry = { // this registry is for loading a new page to the righ
 // test modules
 'quick-stats-section.html': ()=> import('../dash/quickStatsSection.js'),
 'member-management-section.html': ()=> import('../dash/memberManagementSection.js'),// from button has .html
-'member-management-section': ()=> import('../work/memberManagementSection.js'), //from card
+'member-management-section': ()=> import('../dash/memberManagementSection.js'), //from card
 'assignment-management-section': ()=> import('../dash/assignmentManagementSection.js'),
 'task-management-section': ()=> import('../dash/taskManagementSection.js'),
 'author-management-section': ()=> import('../dash/authorManagementSection.js'),
