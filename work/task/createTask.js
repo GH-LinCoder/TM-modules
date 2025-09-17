@@ -8,7 +8,7 @@ console.log('createTaskForm.js loaded');
 const state = {
   taskId: null,
   steps: [],
-  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // Replace with dynamic user ID
+  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // DEV  Replace with dynamic user ID
 };
 
 export function render(panel, query = {}) { //query is not currently used, but may be important for permissions

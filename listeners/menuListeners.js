@@ -17,7 +17,7 @@ export function menuListeners() {//unlike admiListeners navListeners have not be
     const pageName = btn.dataset.page; //pageName is set in flexload.html Nothing else set there
 
     if(pageName === 'howTo'){ // store the existing petition for later use to give context related howTo
-const howToContext = appState.query.petitioner;
+const howToContext = appState.query.petitioner;  //legacy ? to be removed? now using petitioner & history?
 console.log('howToContext:',howToContext);
     }
 

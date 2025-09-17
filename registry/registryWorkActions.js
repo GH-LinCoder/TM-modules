@@ -252,6 +252,9 @@ readTaskSteps: {
   }
 },
 
+
+////////////////////////////////  UPDATE   /////////////////////
+
 updateTaskStep: {
   metadata: {
     tables: ['task_steps'],
@@ -278,7 +281,38 @@ updateTaskStep: {
   }
 },
 
+assignmentUpdateStep:{
+  // Metadata for the permissions system
+  metadata: {
+    tables: ['task_assignments'],
+    columns: [],
+    type: 'UPDATE',
+    requiredArgs:['supabase', 'userId', 'assignment_id', 'step_id' ]
+    // This could also hold other data like required user roles or permissions
+  },
+  // The actual function that interacts with the database
+handler: async  (supabase, userId, payload) =>{
+  const { step_id, assignment_id } = payload;
+  console.log('assignmentUpdateStep() stepId:',step_id,'assignment_id:',assignment_id);
+  const { data, error } = await supabase
+  .from('task_assignments')
+  .update({step_id:step_id}) // ←  
+.eq('id',assignment_id);
+  if (error) {
+    console.error('Error update assignment:', error.message);
+    throw new Error('Failed to update assignment.');
+  }
+  
+  return data// returns an empty array. Length=0  ?
+}
+},
 
+
+
+
+
+
+//////////////////////////////// INSERT   ///////////////////////////////
 createTaskStep: {
   metadata: {
     tables: ['task_steps'],
@@ -327,6 +361,98 @@ readApprofiles: {
   }
 },
 
+readThisAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
+  metadata: {
+  tables: ['task_assignment_view2'],  //VIEW not a table
+  columns: ['step_id', 'step_name','step_description', 'task_name', 'manager_id', 'step_order','student_id', 'assigned_at', 'abandoned_at', 'completed_at','manager_name','student_name','assignment_id', 'task_header_id', 'task_description'],
+  type: 'SELECT',
+  requiredArgs: ['assignment_id'] // ← id of a row in assignment which is also task_assignments.id
+},
+handler: async (supabase, userId, payload) => {
+  const { assignment_id} = payload;
+console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
+  const { data, error } = await supabase
+  .from('task_assignment_view2')
+  .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
+  .eq('assignment_id', encodeURIComponent(assignment_id))
+  //.eq('task_header_id', encodeURIComponent(task_header_id))
+  .select() //Return the inserted row
+  //.single(); //Return single object
+
+  if (error) throw error;
+  console.log('readThisAssignment{} data:',data);
+    return data; //
+  } 
+},
+
+
+
+readAssignmentExists:{ //requires the task_header_id could return ZERO rows ONE row or MANY rows
+  metadata: {
+  tables: ['task_assignment_view2'],  //VIEW not a table
+  columns: ['step_id', 'step_name','step_description', 'task_name', 'manager_id', 'step_order','student_id', 'assigned_at', 'abandoned_at', 'completed_at','manager_name','student_name','assignment_id', 'task_header_id', 'task_description'],
+  type: 'SELECT',
+  requiredArgs: ['task_header_id', 'student_id','manager_id'] // ← payload fields
+},
+handler: async (supabase, userId, payload) => {
+  const { task_header_id, student_id} = payload;
+console.log('readAssignment2Exists()');
+  const { data, error } = await supabase
+  .from('task_assignment_view2')
+  .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
+  .eq('student_id', encodeURIComponent(student_id))
+  .eq('task_header_id', encodeURIComponent(task_header_id))
+  .select() //Return the inserted row
+  //.single(); //Return single object
+
+  if (error) throw error;
+  console.log('readAssignment2Exists() data:',data);
+    return data; //
+  } 
+},
+
+
+readRelationships: {
+  metadata: {
+    tables: ['relationships'],
+    columns: ['id', 'name','category','description','created_at'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('readRelationships()');
+    const { data, error } = await supabase
+      .from('relationships')
+      .select('id, name, category, description, created_at ')
+      .order('name');
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+writeApprofileRelation: {
+  metadata: {
+    tables: ['approfile_relations'],
+    columns: ['id', 'approfile_is', 'relationship', 'of_approfile', 'created_at'],
+    type: 'INSERT',
+    requiredArgs: ['supabase', 'userId', 'approfile_is', 'relationship', 'of_approfile']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfile_is, relationship, of_approfile } = payload;
+    console.log('writeApprofileRelation()', payload);
+
+    const { data, error } = await supabase
+      .from('approfile_relations')
+      .insert([{ approfile_is:approfile_is, relationship:relationship, of_approfile: of_approfile }]);
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+
+
 
 readTaskHeaders: {
   metadata: {
@@ -373,20 +499,21 @@ handler: async (supabase, userId, payload) => {
   // Function to read a task and all its steps
   readTaskWithSteps: {
     metadata: {
-      tables: ['task_headers', 'task_steps'],
-      columns: ['id', 'name', 'description'],
+      tables: ['task_with_steps'], // VIEW not a table
+      columns: ['task_id', 'task_name','step_id', 'step_order', 'step_description'],
       type: 'SELECT',
       requiredArgs:['supabase', 'userId', 'taskId']
     },
-    handler: async (supabase, userId, taskId) => {
+    handler: async (supabase, userId, taskId) => {// assume receive {task_header_id:task_header_id}
+      taskId = taskId.task_header_id;
       console.log('taskId;',taskId);
       const { data, error } = await supabase
-        .from('task_headers')
-        .select('id, name, description')
+        .from('task_with_steps')
+        .select('task_name, step_id, step_order, step_name, step_description')
 //        .select('id, name, description, task_steps(*)')
-        .eq('id', encodeURIComponent(taskId));  // encodeURIComponent(value) for .eq() & .like()
+        .eq('task_id', encodeURIComponent(taskId));  // encodeURIComponent(value) for .eq() & .like()
       if (error) throw error;
-      return data[0];
+      return data; //an array of the steps
     }
   },// end of read Task with steps
 

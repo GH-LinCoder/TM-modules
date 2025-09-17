@@ -154,7 +154,7 @@ function getTemplateHTML() {
           <option value="">Select Manager (Optional)</option>
         </select>
         <button id="assignTaskBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-          Assign Task
+          Assign Task - waiting for selection
         </button>
       </div>
     </div>
@@ -163,7 +163,7 @@ function getTemplateHTML() {
 */
 
 
-const state = {
+const state = {   //  THIS HAS TO BE DELETED  and see state.user in two lines.  <------------------------------------  magic number
   taskId: null,
   steps: [],
   user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // Replace with dynamic user ID
@@ -207,22 +207,41 @@ class AssignTaskDialog {
     console.log('AssignTaskDialog.init()');  // <------------------- works
     // Set up event listeners
     this.dialog.querySelectorAll('[data-action="close-dialog"]').forEach(el => {
-      el.addEventListener('click', () => this.close());
+      el.addEventListener('click', () => this.close());//why foreEach ?
     });
 
-    this.form.addEventListener('submit', (e) => this.handleAssignTask(e));
+    this.assignBtn.addEventListener('click', (e) => this.handleAssignTask(e));
 
+    this.taskSelect.addEventListener('change', this.updateSubmitButtonState.bind(this));
+    this.studentSelect.addEventListener('change', this.updateSubmitButtonState.bind(this));
+    this.managerSelect.addEventListener('change', this.updateSubmitButtonState.bind(this));
+    
     this.loadTaskHeaders();  //<------------ works loads in dropdown
     this.loadApprofiles();
 
-    // Populate dropdowns when dialog opens
-    this.dialog.addEventListener('open', () => {
+    // Populate dropdowns when dialog opens, but this never happens so moved functions above
+    this.dialog.addEventListener('open', () => { // delete???
       console.log('dialog open'); // FAILS no log <-------------------------  doesn't know it is open
       this.loadTaskHeaders();
       this.loadApprofiles();
     });
   }
 
+  updateSubmitButtonState() {
+    const taskSelected = this.taskSelect.value !== '';
+    const studentSelected = this.studentSelect.value !== '';
+    const managerSelected = this.managerSelect.value !== '';
+
+    if (taskSelected && studentSelected && managerSelected) {
+      this.assignBtn.disabled = false; //only enable submit when all three selected (task, student, manager)
+      this.assignBtn.textContent = 'Assign Task';
+
+    };
+
+
+    this.assignBtn.disabled = !(taskSelected && studentSelected && managerSelected);
+  }
+  
 
   open() {
     console.log('AssignTaskDialog.open()');
@@ -235,6 +254,8 @@ class AssignTaskDialog {
 
   close() {
     console.log('AssignTaskDialog.close()');
+// should remove listeners see lines 210, 215-217, 221
+
     this.dialog.classList.add('hidden');
     this.dialog.classList.remove('flex');
     
@@ -275,7 +296,7 @@ class AssignTaskDialog {
     <div class="p-6 space-y-6">
   <div>
         <div class="space-y-2">
-          <label for="taskSelect" class="block text-sm font-medium text-gray-700" data-form="title">Assign Task</label>
+          <label for="taskSelect" class="block text-sm font-medium text-gray-700" data-form="title">Three dropdown choices needed</label>
           <select 
             id="taskSelect" 
             data-form="taskSelect"
@@ -289,7 +310,7 @@ class AssignTaskDialog {
         <div class="space-y-2">
       <form id="assignTaskForm" data-form="assignTaskForm" class="space-y-4">
 
-          <label for="studentSelect" class="block text-sm font-medium text-gray-700" data-form="dropdown-01">Select Student</label>
+          <label for="studentSelect" class="block text-sm font-medium text-gray-700" data-form="dropdown-01">you need to select a Task, Student, & Manager</label>
           <select 
             id="studentSelect" 
             data-form="studentSelect"
@@ -301,7 +322,7 @@ class AssignTaskDialog {
         </div>
 
         <div class="space-y-2">
-          <label for="managerSelect" class="block text-sm font-medium text-gray-700" data-form="dropdown-02">Select Manager</label>
+          <label for="managerSelect" class="block text-sm font-medium text-gray-700" data-form="dropdown-02">The student can also be the manager for some tasks</label>
           <select 
             id="managerSelect" 
             data-form="managerSelect"
@@ -316,8 +337,8 @@ class AssignTaskDialog {
             You can assign any member as a Student to any task and select any member to manage that process. 
             Use the dropdowns to select each one and then click to assign it.
           </p>
-          <p>
-            Currently using username from app_profiles table. Drop down will not scale. 
+          <p> DEV:
+            Currently using 'name' from app_profiles table. Drop down will not scale. 
             Later will need search. Drop down populated from profiles for people and task_headers. 
             Written to task_assignments.
           </p>
@@ -330,7 +351,7 @@ class AssignTaskDialog {
           class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
           disabled
         >
-          Assign Task
+          Assign Task awaitng selections
         </button>
       </form>
     </div>
@@ -386,7 +407,7 @@ class AssignTaskDialog {
     // Clear existing options (except placeholders)
     this.studentSelect.innerHTML = '<option value="">Select a student</option>';
     this.managerSelect.innerHTML = '<option value="">Select a manager</option>';
-console.log('');
+//console.log('');
     this.approfiles.forEach(file => {
 //      console.log('fileId',file.name);
       const studentOption = document.createElement('option');
@@ -401,44 +422,73 @@ console.log('');
     });
   }
 
+
+
+
   //
+
+  async checkToAvoidDuplicates({student_id:student_id, manager_id: manager_id,task_header_id:task_header_id}){
+console.log('checkToAvoidDuplicates() CODE IGNORES the result - need edit')
+//added function to registry  //readAssignmentExists()
+const data = await executeIfPermitted(state.user, 'readAssignmentExists', {
+        student_id:student_id,
+      //  manager_id: manager_id || null,
+        task_header_id:task_header_id   
+      });
+  
+if(data) console.log('This student has already been assigned to this task', data);
+
+//if(!data)return 0;// its okay to go ahead because not already in there
+return  data;
+//if(step==1 || step==2) return step //previous assignment abandoned or completed, make a decision      
+// assign again or move student back to step 3 of old assignment?      
+//      */
+  }
   
   async handleAssignTask(e) {
     e.preventDefault();
     console.log('AssignTaskDialog.handleAssignTask(e)');
-  
+    this.assignBtn.disabled = true;
+
     const task_header_id = this.taskSelect.value;
     const student_id = this.studentSelect.value;
     const manager_id = this.managerSelect.value;
   
-    if (!task_header_id || !student_id) {
-      this.showError('Please select both a task and a student');
-      return;
+    if (!task_header_id || !student_id || !manager_id) {
+      this.showError('Not found all 3 needed id');
+      return;  //unlikely as button is disabled until all three are selected
     }
   
-    this.assignBtn.disabled = true;
-    this.assignBtn.textContent = 'Assigning...';
+
   
-    try {
+    try { // should check if this assignment has already been made & is not completed or abandonded???
+      this.assignBtn.textContent = 'Finding task step...';
+
       const step3 = await executeIfPermitted(state.user, 'readStep3Id', { task_header_id });
-      const step_id = step3?.id;
+     // const step_id = step3?.id;
   
-      if (!step_id) throw new Error('Step 3 not found');
-  
+      if (!step3) {this.assignBtn.textContent = 'Failed to find task step...';
+        throw new Error('Step 3 not found', step3); return}
+      this.assignBtn.textContent = 'Found task step... check to avoid duplicates';
+
+
+      const data = this.checkToAvoidDuplicates({student_id:student_id, manager_id: manager_id || null,task_header_id:task_header_id});
+//what to do ??  don't know
+
+
       const newAssignment = await executeIfPermitted(state.user, 'createAssignment', {
-        student_id,
+        student_id:student_id,
         manager_id: manager_id || null,
-        task_header_id,
-        step_id
-      });
-  
-      this.showSuccess('Task assigned successfully!');
-      this.close();
+        task_header_id:task_header_id,
+        step_id:step3
+      });  
+      this.assignBtn.textContent = 'Assigned ! - select others or close';  
+      this.showSuccess('HandleAssignTask: assigned successfully!');
     } catch (error) {
       this.showError('Failed to assign task: ' + error.message);
     } finally {
-      this.assignBtn.disabled = false;
-      this.assignBtn.textContent = 'Assign Task';
+      this.assignBtn.disabled = true;
+      //this.assignBtn.textContent = 'Assign Task -waiting for selection';
     }
   }
   
@@ -470,7 +520,7 @@ console.log('');
     setTimeout(() => {
       toast.style.opacity = '0';
       setTimeout(() => toast.remove(), 300);
-    }, 3000);
+    }, 5000);
   }
 }
 

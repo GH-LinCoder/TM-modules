@@ -151,10 +151,14 @@ async function onAppLoad() {
     console.log('onAppLoad(), initializing...');
   // Ensure display area is available
   //const displayArea = getDisplayArea();
-  let query=appState.query; //now global
+
+  
+  let query=appState.query; //now global    //<------------------------- important
+  
+  
   // Load a page initially (full width)
   if (panelsOnDisplay.length === 0) {
-    await renderPanel(query.petitioner);
+    await renderPanel(query.petitioner); 
     const name=query.petitioner.Action;//changed 16:46 7 Sept 2025
   console.log('Calling loadPageWithData(',name,')');
   await loadPageWithData(name.replace('.html','')); //changed 14:49 7 Sept 2025
@@ -286,7 +290,7 @@ if(registryEntry) { console.log('Registry recognises', stubName, 'push details i
 const selectedModule = await registryEntry(); // Use the pointer to get the function
 //console.log('Loaded module functions:', selectedModule);
 
-if(true) renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea);
+if(true) renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); //was a test but never changed the if??
 else renderSection(query, selectedModule,displayArea);
 ///below conditional on 'new-panel
 /*
@@ -335,7 +339,7 @@ selectedModule.render(panel,query); // use the function that was obtained from t
 
 // === CLOSE PANEL ===
 function closePanel(stubName) {
-  console.log('ClosePanel(', stubName, ')');
+  console.log('ClosePanel(', stubName, ')  BUT should let module know so can removed listeners etc');
 
   const entry = panelsOnDisplay.find(p => p.stubName === stubName);
   if (entry && entry.panel) {
@@ -368,7 +372,7 @@ function updatePanelLayout() {
 
 
 // === FETCH STUB CONTENT ===
-async function getStubContent(stubName) {
+async function getStubContent(stubName) { // legacy
 
   const pageUrl = `htmlStubs/${stubName}`;
   console.log('getStubContent(', stubName, ') from:', pageUrl);
@@ -388,18 +392,7 @@ async function getStubContent(stubName) {
      // console.log('   Match found:', panelsOnDisplay.some(p => p.stubName === stubName));
      // console.log('   All stubNames:', panelsOnDisplay.map(p => ` "${p.stubName}" `));
 
-/*
-function handleChangeOfState(action) {
-  const { section, action } = query;
-  const mutation = MutateRegistry[section]?.[action];
 
-  if (mutation) {
-    mutateDashboardSection(section, mutation);
-  } else {
-    openClosePanelsByRule(stubName, fromButtonClick = false);// this needs to be as is
-  }
-}
-*/
 
 
 // === OPEN/CLOSE PANELS BY RULE ===

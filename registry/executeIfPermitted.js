@@ -19,13 +19,13 @@ const supabase = createSupabaseClient();
 
 
 
-async function execute(userId, action, rowId) {
+async function execute(userId, action, payload) {
   const funcEntry = registryWorkActions[action];
   console.log(`[Executor] Executing '${action}'...`);
   let result;
 
   try {
-    result = await funcEntry.handler(supabase, userId, rowId);
+    result = await funcEntry.handler(supabase, userId, payload);
   } catch (error) {
     console.error(`funcEntry.handler:`, error);
     throw error; // optional: rethrow to bubble up

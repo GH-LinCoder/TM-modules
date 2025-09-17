@@ -9,9 +9,13 @@ export const appState = {
  */
 
     query: {
-      userId: null,
-      stubName: null,//obsolescent - phasing-out
-      recordId: null, //not sure if needed
+
+
+      //userId: null, // as at 15:00 sept 16 not used
+      userId: "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df", //DEV id for user 'profilia' 15:03 trial
+      
+      //stubName: null,//obsolescent - phasing-out
+      //recordId: null, //not sure if needed
       
       // simple description of the request. Not sure if useful
       READ_request: false,
