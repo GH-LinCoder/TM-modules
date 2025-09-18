@@ -431,6 +431,34 @@ readRelationships: {
   }
 },
 
+readRelationshipExists:{
+  metadata: {
+    tables: ['approfile_relationships'],  //VIEW not a table
+    columns: ['rel_name', 'created_at', 'relation_id', 'approfile_is', 'of_approfile', 'relationship', 'rel_description','approfile_is_name', 'of_approfile.name'],
+    type: 'SELECT',
+    requiredArgs: ['approfile_is', 'of_approfile', 'relationship'] 
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfile_is, of_approfile, relationship} = payload;
+  console.log('readRelationshipExists{}','payload:', payload);
+    const { data, error } = await supabase
+    .from('approfile_relations')
+    .select('*')
+    .eq('approfile_is', approfile_is)
+    .eq('relationship', encodeURIComponent(relationship))
+    .eq('of_approfile', of_approfile)
+    .select() //Return the inserted row
+    //.single(); //Return single object
+  
+    if (error) throw error;
+    console.log('readRelationshipExists{} data:',data);
+      return data; //
+    } 
+  },
+
+
+
+
 writeApprofileRelation: {
   metadata: {
     tables: ['approfile_relations'],

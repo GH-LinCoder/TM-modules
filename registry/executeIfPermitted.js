@@ -56,7 +56,7 @@ async function execute(userId, action, payload) {
 
 
 export async function executeIfPermitted(userId, action, payload={}) {
-  console.log('executIfPermitted()');
+  console.log('executIfPermitted()action=',action);
 
   const funcEntry = registryWorkActions[action];
 

@@ -200,6 +200,8 @@ class AssignTaskDialog {
     this.managerSelect = panel.querySelector('[data-form="managerSelect"]');
     this.assignBtn = panel.querySelector('[data-form="assignTaskBtn"]');
 
+    this.informationFeedback = this.dialog.querySelector('[data-task="information-feedback"]'); 
+
     // ✅ Now initialize event listeners
     this.init();
   }
@@ -355,6 +357,9 @@ class AssignTaskDialog {
         </button>
       </form>
     </div>
+    <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
+       <p class="text-lg font-bold"> Information:</p><p data-task="information-feedback">??</>
+       </div>    
   </div>
 </div>
 </div>
@@ -435,15 +440,20 @@ const data = await executeIfPermitted(state.user, 'readAssignmentExists', {
       //  manager_id: manager_id || null,
         task_header_id:task_header_id   
       });
-  
-if(data) console.log('This student has already been assigned to this task', data);
+if(data ) console.log('This student has already been assigned to this task', data);
 
-//if(!data)return 0;// its okay to go ahead because not already in there
+//Should check if 
+// completed  -> can assign again
+//abandoned -> can assign again 
+
 return  data;
 //if(step==1 || step==2) return step //previous assignment abandoned or completed, make a decision      
 // assign again or move student back to step 3 of old assignment?      
 //      */
   }
+  
+
+
   
   async handleAssignTask(e) {
     e.preventDefault();
@@ -467,14 +477,38 @@ return  data;
       const step3 = await executeIfPermitted(state.user, 'readStep3Id', { task_header_id });
      // const step_id = step3?.id;
   
-      if (!step3) {this.assignBtn.textContent = 'Failed to find task step...';
-        throw new Error('Step 3 not found', step3); return}
+     if (!step3) {
+      this.assignBtn.textContent = 'Failed to find task step...';
+      throw new Error(`Step 3 not found for task_header_id: ${task_header_id}`);
+    }
+    
       this.assignBtn.textContent = 'Found task step... check to avoid duplicates';
 
 
-      const data = this.checkToAvoidDuplicates({student_id:student_id, manager_id: manager_id || null,task_header_id:task_header_id});
-//what to do ??  don't know
+      const existing = await this.checkToAvoidDuplicates({
+        student_id:student_id, 
+        manager_id: manager_id || null,
+        task_header_id:task_header_id
+      });
 
+
+
+      if (existing && existing.length > 0) {
+        
+
+        const currentStep = existing[0].step_order;
+          this.informationFeedback.innerHTML =`<p>This student has already been assigned to this task</p>
+            <p>If the task is still active it cannot be assigned again</p>
+            <p> The current step is [${currentStep}] </p>`;
+if(currentStep===1) {this.informationFeedback.innerHTML+='<p>The task was abandoned</p>'} else
+if(currentStep==2) {this.informationFeedback.innerHTML+='<p>The task was completed</p>'}else 
+{this.informationFeedback.innerHTML+='<p>The task is active and cannot be assigned to the same student</p>'
+  }
+if(currentStep===1 || currentStep===2) {'<p>The task is active and can be assigned again to the same student</p>'}
+else return;
+// If 1 or 2 the new assignment happens without the admin having time to consider anything. There should be a confirmation.
+
+      }
 
       const newAssignment = await executeIfPermitted(state.user, 'createAssignment', {
         student_id:student_id,

@@ -1,254 +1,426 @@
-console.log('relateApprofiles.js');
-/*
-export function render(panel, query = {}) { //query is not currently used, but may be important for permissions
-  console.log('Relate Approfiles  Render(', panel, query,')');
-//  panel.innerHTML = "TEST TEST TEST";//working 16:05 3 sept 2025
-  panel.innerHTML = getTemplateHTML();
- // attachListeners(panel);
+// relate.js
+import{executeIfPermitted} from '../../registry/executeIfPermitted.js';
+import{showToast} from '../../ui/showToast.js';
+import{appState} from '../../state/appState.js';
 
-}
-*/
-function getTemplateHTML() { console.log('getTemplateHTML()');
-  return `
-<!--div class="bg-gray-100 font-sans p-8 flex items-center justify-center "-->
-<div class="bg-gray-200 font-sans">
-  <div class="bg-white rounded-xl shadow-lg     relative w-full h-full  items-center justify-center">
-    <h1 class="text-3xl font-bold text-gray-800 text-center mb-6">Establish a New Relationship</h1>
-    
-    <!-- Main Relationship Cards Container -->
-    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
 
-      <!-- Card 1: 'is' entity -->
-      <div id="is-card" data-card-name="is" class="w-full md:w-1/3 min-h-[150px] bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center text-center border-2 border-transparent transition-all duration-200">
-        <h2 id="is-name" class="text-xl font-bold text-gray-700 mb-2">Name</h2>
-        <p id="is-description" class="text-sm text-gray-500">Description</p>
-      </div>
+console.log('realteApprofiles.js');
 
-      <!-- Card 2: Relationship dropdown -->
-      <div class="w-full md:w-1/3 flex flex-col items-center justify-center">
-        <select id="relationships-dropdown" class="w-full px-4 py-2 rounded-lg border-2 border-gray-300 focus:outline-none focus:border-blue-500 transition">
-          <option value="" disabled selected>Select relationship</option>
-          <!-- Options will be populated by JavaScript -->
-        </select>
-      </div>
 
-      <!-- Card 3: 'of' entity -->
-      <div id="of-card" data-card-name="of" class="w-full md:w-1/3 min-h-[150px] bg-gray-50 rounded-lg p-6 flex flex-col items-center justify-center text-center border-2 border-transparent transition-all duration-200">
-        <h2 id="of-name" class="text-xl font-bold text-gray-700 mb-2">Name</h2>
-        <p id="of-description" class="text-sm text-gray-500">Description</p>
-      </div>
-
-    </div>
-
-    <!-- Action Buttons -->
-    <div class="mt-8 flex flex-col md:flex-row justify-center gap-4">
-      <button id="select-is-btn" class="flex-1 py-3 px-6 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition">
-        Select 'is'
-      </button>
-      <button id="confirm-btn" class="flex-1 py-3 px-6 bg-blue-600 text-white font-semibold rounded-lg shadow-md hover:bg-blue-700 transition">
-        Confirm
-      </button>
-      <button id="select-of-btn" class="flex-1 py-3 px-6 bg-gray-600 text-white font-semibold rounded-lg shadow-md hover:bg-gray-700 transition">
-        Select 'of'
-      </button>
-    </div>
-
-  </div>
-
-  <!-- Modal for selecting entities -->
-  <div id="select-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center">
-    <!-- Backdrop -->
-    <div class="fixed inset-0 bg-black/80" data-action="close-modal"></div>
-    
-    <!-- Modal Container -->
-    <div class="bg-white rounded-lg shadow-lg w-full max-w-md mx-4 z-10 p-6">
-      <h3 id="modal-title" class="text-xl font-semibold text-gray-900 mb-4">Select Entity</h3>
-      <div id="modal-list" class="space-y-2 max-h-80 overflow-y-auto">
-        <!-- List items will be populated by JavaScript -->
-      </div>
-      <button data-action="close-modal" class="mt-6 w-full py-3 px-6 bg-red-600 text-white font-semibold rounded-lg hover:bg-red-700 transition">
-        Cancel
-      </button>
-    </div>
-  </div>
- </div>
-</div>`;
+export function render(panel, query = {}) {
+  console.log('realteApprofiles.js render() called');  
+  const dialog = new RelateDialog();dialog.render(panel, query);
 }
 
 
 
+class RelateDialog {
+ constructor() {
+    // ✅ Remove DOM references from constructor
+    this.relationship  = [];
+    this.approfiles = [];
+    // No DOM elements here
+  }
 
-    // --- Simulated Database Tables ---
-    const approfile = [
-      { id: 1, name: 'John Smith', description: 'A software engineer at Acme Corp.' },
-      { id: 2, name: 'Acme Corp.', description: 'A large multinational technology company.' },
-      { id: 3, name: 'Project Atlas', description: 'A secret project to build a new AI model.' },
-      { id: 4, name: 'Sarah Miller', description: 'A data scientist on the research team.' },
-      { id: 5, name: 'The Marketing Department', description: 'Responsible for all public relations and advertising.' },
-    ];
+  render(panel, query = {}) {
+    console.log('RealateDialog.render()'); //
+    // ✅ Now the panel exists — inject HTML
+    panel.innerHTML = this.getTemplateHTML(); //
 
-    const relationships = [
-      'employee', 'subsidiary', 'parent_company', 'member', 'owner', 'manager', 'task_owner'
-    ];
-    // --- End of Simulated Database Tables ---
+    // ✅ Now select elements from the injected DOM
+    this.dialog = panel.querySelector('[data-form="relateDialog"]');
+    this.form = panel.querySelector('[data-form="relateForm"]');
+    this.relationSelect = panel.querySelector('[data-form="relationSelect"]');
+    this.approfile_is = panel.querySelector('[data-form="approfile_is"]');
+    this.of_approfile = panel.querySelector('[data-form="of_approfile"]');
+    this.assignBtn = panel.querySelector('[data-form="relateBtn"]');
 
-    export function render(panel, query = {}) {
-        console.log('realateApprofiles Render(', panel, query, ')');
-        panel.innerHTML = getTemplateHTML();
-      
-        // ✅ Now safe to query within the panel
-        const isCard = panel.querySelector('#is-card');
-        const ofCard = panel.querySelector('#of-card');
-        const isName = panel.querySelector('#is-name');
-        const isDescription = panel.querySelector('#is-description');
-        const ofName = panel.querySelector('#of-name');
-        const ofDescription = panel.querySelector('#of-description');
-        const relationshipsDropdown = panel.querySelector('#relationships-dropdown');
-        const selectIsBtn = panel.querySelector('#select-is-btn');
-        const selectOfBtn = panel.querySelector('#select-of-btn');
-        const confirmBtn = panel.querySelector('#confirm-btn');
-        const selectModal = panel.querySelector('#select-modal');
-        const modalTitle = panel.querySelector('#modal-title');
-        const modalList = panel.querySelector('#modal-list');
-      
-        // State variables
-        let selectedIsEntity = null;
-        let selectedOfEntity = null;
-      
-        // ✅ Move all functions inside render
-        function populateRelationshipsDropdown() {
-          relationshipsDropdown.innerHTML = '<option value="" disabled selected>Select relationship</option>';
-          relationships.forEach(rel => {
-            const option = document.createElement('option');
-            option.value = rel;
-            option.textContent = rel;
-            relationshipsDropdown.appendChild(option);
-          });
-        }
-      
-        function openModal(cardType) {
-          modalList.innerHTML = '';
-          modalTitle.textContent = `Select Entity for '${cardType}'`;
-      
-          approfile.forEach(profile => {
-            const listItem = document.createElement('div');
-            listItem.classList.add('cursor-pointer', 'p-3', 'rounded-lg', 'border', 'border-gray-200', 'hover:bg-blue-100', 'transition', 'flex', 'flex-col');
-            
-            const nameEl = document.createElement('h4');
-            nameEl.classList.add('font-semibold', 'text-gray-800');
-            nameEl.textContent = profile.name;
-            
-            const descEl = document.createElement('p');
-            descEl.classList.add('text-sm', 'text-gray-500');
-            descEl.textContent = profile.description;
-            
-            listItem.appendChild(nameEl);
-            listItem.appendChild(descEl);
-      
-            listItem.addEventListener('click', () => {
-              if (cardType === 'is') {
-                selectedIsEntity = profile;
-                updateIsCard();
-              } else {
-                selectedOfEntity = profile;
-                updateOfCard();
-              }
-              closeModal();
-            });
-            modalList.appendChild(listItem);
-          });
-      
-          selectModal.classList.remove('hidden');
-        }
-      
-        function updateIsCard() {
-          if (selectedIsEntity) {
-            isName.textContent = selectedIsEntity.name;
-            isDescription.textContent = selectedIsEntity.description;
-            isCard.classList.add('card-selected');
-          } else {
-            isName.textContent = "Name";
-            isDescription.textContent = "Description";
-            isCard.classList.remove('card-selected');
-          }
-        }
-      
-        function updateOfCard() {
-          if (selectedOfEntity) {
-            ofName.textContent = selectedOfEntity.name;
-            ofDescription.textContent = selectedOfEntity.description;
-            ofCard.classList.add('card-selected');
-          } else {
-            ofName.textContent = "Name";
-            ofDescription.textContent = "Description";
-            ofCard.classList.remove('card-selected');
-          }
-        }
-      
-        function closeModal() {
-          selectModal.classList.add('hidden');
-        }
-      
-        function handleConfirm() {
-          const relationship = relationshipsDropdown.value;
-      
-          if (!selectedIsEntity) {
-            alert("Please select the 'is' entity first.");
-            return;
-          }
-      
-          if (!selectedOfEntity) {
-            alert("Please select the 'of' entity first.");
-            return;
-          }
-          
-          if (!relationship) {
-            alert("Please select a relationship.");
-            return;
-          }
-      
-          const logMessage = `${selectedIsEntity.name} IS a '${relationship}' OF ${selectedOfEntity.name}.`;
-          console.log(logMessage);
-          
-          console.log("Simulating database write for this relationship...");
-          
-          selectedIsEntity = null;
-          selectedOfEntity = null;
-          updateIsCard();
-          updateOfCard();
-          
-          relationshipsDropdown.value = "";
-          
-          alert("Relationship confirmed and saved!");
-        }
-      
-        // --- Initialize ---
-      
-        // Simulated data
-        const approfile = [
-          { id: 1, name: 'John Smith', description: 'A software engineer at Acme Corp.' },
-          { id: 2, name: 'Acme Corp.', description: 'A large multinational technology company.' },
-          { id: 3, name: 'Project Atlas', description: 'A secret project to build a new AI model.' },
-          { id: 4, name: 'Sarah Miller', description: 'A data scientist on the research team.' },
-          { id: 5, name: 'The Marketing Department', description: 'Responsible for all public relations and advertising.' },
-        ];
-      
-        const relationships = [
-          'employee', 'subsidiary', 'parent_company', 'member', 'owner', 'manager', 'task_owner'
-        ];
-      
-        // Populate dropdown
-        populateRelationshipsDropdown();
-      
-        // Attach event listeners
-        selectIsBtn.addEventListener('click', () => openModal('is'));
-        selectOfBtn.addEventListener('click', () => openModal('of'));
-        confirmBtn.addEventListener('click', handleConfirm);
+    // ✅ Now initialize event listeners
+    this.init();
+  }
+  init() {
+    console.log('relateDialog.init()');  // 
+    // Set up event listeners
+    this.dialog.querySelectorAll('[data-action="close-dialog"]').forEach(el => {
+      el.addEventListener('click', () => this.close());//why foreEach ?
+    });
+
+    this.assignBtn.addEventListener('click', (e) => this.handleRelate(e));
+
+    this.relationSelect.addEventListener('change', this.updateSubmitButtonState.bind(this));
+    this.approfile_is.addEventListener('change', this.updateSubmitButtonState.bind(this));
+    this.of_approfile.addEventListener('change', this.updateSubmitButtonState.bind(this));
+    
+    this.loadrelations ();  
+    this.loadApprofiles();
+
+    // Populate dropdowns when dialog opens, but this never happens so moved functions above
+    this.dialog.addEventListener('open', () => { // delete???
+      console.log('dialog open'); // FAILS no log <-------------------------  doesn't know it is open
+      this.loadrelations ();
+      this.loadApprofiles();
+    });
+  }
+
+  updateSubmitButtonState() {
+    const relationSelected = this.relationSelect.value !== '';
+    const approfile_is = this.approfile_is.value !== '';
+    const of_approfile = this.of_approfile.value !== '';
+
+    if (relationSelected && approfile_is && of_approfile) {
+      this.assignBtn.disabled = false; //only enable submit when all three selected (relations, approfile_is, of_approfile)
+      this.assignBtn.textContent = 'Relate them';
+
+    };
+
+
+    this.assignBtn.disabled = !(relationSelected && approfile_is && of_approfile);
+  }
+  
+
+  open() {
+    console.log('relateDialog.open()');
+    this.dialog.classList.remove('hidden');
+    this.dialog.classList.add('flex');
+    
+    // Dispatch custom event
+    this.dialog.dispatchEvent(new CustomEvent('dialog:open'));
+  }
+
+  close() {
+    console.log('relateDialog.close()');
+// should remove listeners see lines 210, 215-217, 221
+
+    this.dialog.classList.add('hidden');
+    this.dialog.classList.remove('flex');
+    
+    // Reset form
+    this.form.reset();
+    this.assignBtn.disabled = true;
+  }
+
+
+
+  getTemplateHTML() { console.log('getTemplateHTML()');
+    return `
+  <!-- assign-relations-dialog.html -->
+
+<div id="relateDialog" data-form="relateDialog" class="assign-relations-dialog  flex items-center justify-center">
+<!--div id="relateDialog" data-form="relateDialog" class="assign-relations-dialog  flex items-center justify-center"-->
+
+
+  <!-- Dialog -->
+  <div class="bg-white rounded-lg shadow-lg w-auto max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
+
+     <div class="p-6 border-b border-gray-200">
+      <div class="flex items-center justify-between">
+        <h3 class="text-lg font-semibold text-gray-900">Assign relations</h3>
+      <p class="text-sm text-gray-600">Assign a relationship between two approfiles</p>
+
+        <button 
+        class="text-gray-500 hover:text-gray-700"
+        data-action="close-dialog"
+        aria-label="Close"
+        >
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+</div>
+    <div class="p-6 space-y-6">
+  <div>
         
-        // Close modal
-        panel.querySelectorAll('[data-action="close-modal"]').forEach(btn => {
-          btn.addEventListener('click', closeModal);
-        });
-      }
+
+        <div class="space-y-2">
+      <form id="relateForm" data-form="relateForm" class="space-y-4">
+          <label for="approfile_is" class="block text-sm font-medium text-gray-700" data-form="dropdown-01">Select an approfile then a relationship, to another approfile</label>
+          <select 
+            id="approfile_is" 
+            data-form="approfile_is"
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option value="">Select a approfile_is</option>
+          </select>
+        </div>
+
+<div class="space-y-2">
+          <label for="relationSelect" class="block text-sm font-medium text-gray-700" data-form="title">Three dropdown choices needed</label>
+          <select 
+            id="relationSelect" 
+            data-form="relationSelect"
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            required
+          >
+            <option value="">Select a relationship</option>
+          </select>
+        </div>
+
+
+        <div class="space-y-2">
+          <label for="of_approfile" class="block text-sm font-medium text-gray-700" data-form="dropdown-02">How the first relates to the second</label>
+          <select 
+            id="of_approfile" 
+            data-form="of_approfile"
+            class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="">Select of_approfile</option>
+          </select>
+        </div>
+
+        <div class="text-sm text-gray-500 space-y-2 p-3 bg-gray-50 rounded-lg">
+          <p>
+            You can assign any approfile to any relation and select any approfile that you want to relate it to. 
+            Use the dropdowns to select each one and then click to relate it.
+          </p>
+          <p>This relationship can be read, in ungrammitcal English as 'this approfile is (relationship) of that approfile. Such as: John is employee of Gem co. In this 'John' is represented by an 'approfile' and he comes the approfile_is while 'Gem co' is also represnted as an approfile and it becomes the of_approfile.</p>
+          <p> DEV:
+            Currently using 'name' from app_profiles table. Drop down will not scale. 
+            Later will need search. Drop down populated from 'app_profiles' for people and 'relationships' . 
+            Written to approfile_relations.
+          </p>
+        </div>
+
+        <button 
+          type="submit" 
+          id="relateBtn"
+          data-form="relateBtn"
+          class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled
+        >
+          Assign relations awaitng selections
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+</div>
+`;
+
+  }
+  
+ // read relations_ 
+  async loadrelations () {
+    console.log('relateDialog.loadrelations ()');
+    try {//the function returns id, name, category, description, created_at
+      const relations  = await executeIfPermitted(appState.query.userId, 'readRelationships', {});
+      this.relations  = relations  || [];
+      this.populaterelationsDropdown();
+    } catch (error) {
+      console.error('Error fetching relations  :', error);
+      this.showError('An unexpected error occurred');
+    }
+  }
+
+
+// readApprofiles
+    async loadApprofiles() {
+      console.log('relateDialog.loadApprofiles()');
+      try {
+        const approfiles = await executeIfPermitted(appState.query.userId, 'readApprofiles',{});
+        this.approfiles = approfiles || [];
+        this.populateapprofileDropdowns();
+      } catch (error) {
+        console.error('Error fetching approfiles:', error);
+        this.showError('Failed to load approfiles');
+      } 
+    }
+    
+
+  populaterelationsDropdown() {
+    console.log('relateDialog.populaterelationsDropdown()');
+    this.relationSelect.innerHTML = '<option value="">Select relationship</option>';
+    
+    this.relations .forEach(relations => {
+      const option = document.createElement('option');
+      option.value = relations.name;
+      option.textContent = relations.name;
+      this.relationSelect.appendChild(option);
+    });
+  }
+
+  populateapprofileDropdowns() {
+    console.log('relateDialog.populateapprofileDropdowns()');
+    // Clear existing options (except placeholders)
+    this.approfile_is.innerHTML = '<option value="">Select approfile_is</option>';
+    this.of_approfile.innerHTML = '<option value="">Select of_approfile</option>';
+//console.log('');
+    this.approfiles.forEach(file => {
+//      console.log('fileId',file.name);
+      const approfile_isOption = document.createElement('option');
+      approfile_isOption.value = file.id;
+      approfile_isOption.textContent = file.name;
+      this.approfile_is.appendChild(approfile_isOption);
+
+      const of_approfileOption = document.createElement('option');
+      of_approfileOption.value = file.id;
+      of_approfileOption.textContent = file.name;
+      this.of_approfile.appendChild(of_approfileOption);
+    });
+  }
+
+
+
 
   
+// has this relationship already been stored? Works (the table has a unique constraint so can't write to it)
+async checkToAvoidDuplicates({approfile_is:approfile_is, of_approfile: of_approfile,relationship:relationship}){
+      console.log('checkToAvoidDuplicates() CODE IGNORES the result - need edit')
+      //nned add function to registry  //readRelationshipExists()
+      const data = await executeIfPermitted(appState.query.userId, 'readRelationshipExists', {
+        approfile_is:approfile_is,  //uuid
+        of_approfile: of_approfile, //uuid
+        relationship:relationship //name text   
+      });
+  
+if(data) {console.log('Relationship duplicate:', data);
+this.showError('This relationship is already in the system');}//
+//if(!data)return 0;// its okay to go ahead because not already in there
+return  data;
+//if(step==1 || step==2) return step //previous assignment abandoned or completed, make a decision      
+// assign again or move approfile_is back to step 3 of old assignment?      
+//      
+  }
+  
+
+  async handleRelate(e) {
+    e.preventDefault();
+    console.log('relateDialog.handleRelate(e)');
+    this.assignBtn.disabled = true;
+  
+    const relationship_name = this.relationSelect.value;
+    const approfile_is_id = this.approfile_is.value;
+    const of_approfile_id = this.of_approfile.value;
+  
+    if (!relationship_name || !approfile_is_id || !of_approfile_id) {
+    //  this.showError('All 3 needed');
+      return;
+    }
+  
+    try {
+      const existing = await this.checkToAvoidDuplicates({
+        approfile_is: approfile_is_id,
+        of_approfile: of_approfile_id,
+        relationship: relationship_name
+      });
+  
+      if (existing && existing.length > 0) {
+        this.assignBtn.textContent = 'Duplicate. This relationship already known. Select new';
+       //this.showError('This relationship already exists.');
+        return;
+      }
+  
+      const newRelationship = await executeIfPermitted(appState.query.userId, 'writeApprofileRelation', {
+        approfile_is: approfile_is_id,
+        of_approfile: of_approfile_id,
+        relationship: relationship_name
+      });
+  
+      this.assignBtn.textContent = 'Related! Select others or close';
+      this.showSuccess('Relationship created successfully.');
+    } catch (error) {
+      console.log(error.message);
+      this.showError('Using show error: ' + error.message);
+    } finally {
+      this.assignBtn.disabled = true;
+    }
+  }
+  
+
+
+/*
+  async handleRelate(e) {
+    e.preventDefault();
+    console.log('relateDialog.handleRelate(e)');
+    this.assignBtn.disabled = true;
+
+    const relationship_name = this.relationSelect.value; // the values have been set to the same as the displayed text
+    //const relationship_name = this.relationSelect.name;    
+    const approfile_is_id = this.approfile_is.value;
+    const of_approfile_id = this.of_approfile.value;
+  
+    if (!relationship_name || !approfile_is_id || !of_approfile_id) {
+      this.showError('All 3 needed');
+      return;  //unlikely as button is disabled until all three are selected
+    }
+  try{
+    const data = await this.checkToAvoidDuplicates({approfile_is:approfile_is_id, of_approfile: of_approfile_id,relationship:relationship_name});
+    //Should check if this relationship already exists<-------------------
+    //console.log('RelateDialog:',approfile_is_id,'@',of_approfile_id,'@',relationship_name); //return 
+
+    if(!data){
+      try { // should check if this assignment has already been made & is not completed or abandonded???
+        
+           const newRelationship = await executeIfPermitted(appState.query.userId, 'writeApprofileRelation', {
+          approfile_is:approfile_is_id,
+          of_approfile: of_approfile_id,
+          relationship:relationship_name,        
+        }); 
+  
+        this.assignBtn.textContent = 'Related ! - select others or close';  
+        this.showSuccess('handleRelate: related successfully!');
+      } catch (error) {
+        this.showError('Failed to relate: ' + error.message);
+      } finally {
+        this.assignBtn.disabled = true;
+    
+        //this.assignBtn.textContent = 'Relations -waiting for selection';
+      }
+      } else {//it is a duplicate
+        this.assignBtn.textContent = 'Duplicate. This relationship already known. Select new';}
+
+  }catch(error) {
+    this.showError('Failed to relate: ' + error.message);
+  }
+
+  }*/
+
+//
+
+
+
+  showSuccess(message) {
+    // Simple toast implementation
+    this.showToast(message, 'bg-green-600');
+  }
+
+  showError(message) {
+    this.showToast(message, 'bg-red-600');
+  }
+
+  showToast(message, bgColor) {
+    // Remove any existing toast
+    const existing = document.querySelector('.toast');
+    if (existing) existing.remove();
+
+    const toast = document.createElement('div');
+    toast.className = `toast fixed bottom-4 right-4 px-4 py-3 rounded-lg text-white shadow-lg ${bgColor} transition-opacity duration-300`;
+    toast.textContent = message;
+    
+    document.body.appendChild(toast);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 300);
+    }, 5000);
+  }
+}
+
+//
+
+
+//
+
+  
+
+  console.log('✅ relate.js: END - About to export render');
+
+  //export { render, relateDialog };
+ 
+//duplicate export error in parser
+//but commented out error failed to load module 
+// dialog.render is not a function
+//try this:
+export {RelateDialog};
