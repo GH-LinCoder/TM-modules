@@ -107,6 +107,12 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-xs text-gray-500">Step by step</p>
     </div>
 
+<!-- CREATE APPROFILE -->    
+    <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="create-approfile-dialogue">
+      <h3 class="text-sm font-medium text-yellow-500">Create Approfile</h3>
+      <p class="text-xs text-gray-500">Create a new approfile, probably an abstract one</p>
+</div>    
+
 <!-- RELATE APPROFILES -->
     <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='relate-approfiles-dialogue'>
       <h3 class="text-sm font-medium text-blue-700">Relate Approfiles</h3>

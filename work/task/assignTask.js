@@ -1,173 +1,17 @@
 // assignTask.js
 import{executeIfPermitted} from '../../registry/executeIfPermitted.js';
 import{showToast} from '../../ui/showToast.js';
-
-/*
-//import { executeIfPermitted } from '../executeIfPermitted.js';
-
-const state = {
-  user: 'your-user-id' // ← replace with dynamic user ID
-};
-
-export function render(panel, query = {}) {
-  panel.innerHTML = getTemplateHTML();
-  initElements(panel);
-  attachListeners(panel);
-  loadData();
-}
-
-function initElements(panel) {
-  this.taskSelect = panel.querySelector('#taskSelect');
-  this.studentSelect = panel.querySelector('#studentSelect');
-  this.managerSelect = panel.querySelector('#managerSelect');
-  this.assignBtn = panel.querySelector('#assignTaskBtn');
-}
-
-async function loadData() {
-  try {
-    const taskHeaders = await executeIfPermitted(state.user, 'readTaskHeaders', {});
-    this.taskHeaders = taskHeaders || [];
-    this.populateTaskDropdown();
-
-    const approfiles = await executeIfPermitted(state.user, 'readApprofiles', {});
-    this.approfiles = approfiles || [];
-    this.populateUserDropdowns();
-  } catch (error) {
-    console.error('Failed to load data:', error);
-    this.showError('Failed to load tasks or users.');
-  }
-}
-
-function attachListeners(panel) {
-  this.taskSelect.addEventListener('change', (e) => {
-    // Optional: Load step 3 ID here if needed
-  });
-  this.assignBtn.addEventListener('click', handleAssignTask.bind(this));
-}
-
-async function handleAssignTask(e) {
-  e.preventDefault();
-  console.log('AssignTaskDialog.handleAssignTask(e)');
-
-  const selectedTask = this.taskSelect.value;
-  const selectedStudent = this.studentSelect.value;
-  const selectedManager = this.managerSelect.value;
-
-  if (!selectedTask || !selectedStudent) {
-    this.showError('Please select both a task and a student');
-    return;
-  }
-
-  this.assignBtn.disabled = true;
-  this.assignBtn.textContent = 'Assigning...';
-
-  try {
-    // Get step 3 ID for selected task
-    const step3 = await executeIfPermitted(state.user, 'readStep3Id', {
-      task_header_id: selectedTask
-    });
-    const step3Id = step3.id;
-
-    // Create assignment
-    const newAssignment = await executeIfPermitted(state.user, 'createAssignment', {
-      student_id: selectedStudent,
-      manager_id: selectedManager || null,
-      task_header_id: selectedTask,
-      step_id: step3Id
-    });
-
-    this.showSuccess('Task assigned successfully!');
-    // Optionally close panel or reset form
-  } catch (error) {
-    console.error('Failed to assign task:', error);
-    this.showError('Failed to assign task: ' + error.message);
-  } finally {
-    this.assignBtn.disabled = false;
-    this.assignBtn.textContent = 'Assign Task';
-  }
-}
-
-function populateTaskDropdown() {
-  console.log('AssignTaskDialog.populateTaskDropdown()');
-  this.taskSelect.innerHTML = '<option value="">Select a task</option>';
-  this.taskHeaders.forEach(task => {
-    const option = document.createElement('option');
-    option.value = task.id;
-    option.textContent = task.name;
-    this.taskSelect.appendChild(option);
-  });
-}
-
-function populateUserDropdowns() {
-  console.log('AssignTaskDialog.populateUserDropdowns()');
-  this.studentSelect.innerHTML = '<option value="">Select a student</option>';
-  this.managerSelect.innerHTML = '<option value="">Select a manager (optional)</option>';
-
-  this.approfiles.forEach(user => {
-    const studentOption = document.createElement('option');
-    studentOption.value = user.id;
-    studentOption.textContent = user.name; // ← fixed: was username
-    this.studentSelect.appendChild(studentOption);
-
-    const managerOption = document.createElement('option');
-    managerOption.value = user.id;
-    managerOption.textContent = user.name; // ← fixed: was username
-    this.managerSelect.appendChild(managerOption);
-  });
-}
-
-function showSuccess(message) {
-  showToast(message, 'bg-green-600');
-}
-
-function showError(message) {
-  showToast(message, 'bg-red-600');
-}
-
-function showToast(message, bgColor) {
-  const existing = document.querySelector('.toast');
-  if (existing) existing.remove();
-
-  const toast = document.createElement('div');
-  toast.className = `toast fixed bottom-4 right-4 px-4 py-3 rounded-lg text-white shadow-lg ${bgColor} transition-opacity duration-300`;
-  toast.textContent = message;
-  document.body.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.opacity = '0';
-    setTimeout(() => toast.remove(), 300);
-  }, 3000);
-}
-
-function getTemplateHTML() {
-  return `
-    <div class="assign-task-dialog p-6">
-      <h3 class="text-xl font-semibold mb-4">Assign Task</h3>
-      <div class="space-y-4">
-        <select id="taskSelect" class="w-full p-2 border rounded">
-          <option value="">Select Task</option>
-        </select>
-        <select id="studentSelect" class="w-full p-2 border rounded">
-          <option value="">Select Student</option>
-        </select>
-        <select id="managerSelect" class="w-full p-2 border rounded">
-          <option value="">Select Manager (Optional)</option>
-        </select>
-        <button id="assignTaskBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-          Assign Task - waiting for selection
-        </button>
-      </div>
-    </div>
-  `;
-}
-*/
+import { appState } from '../../state/appState.js'; // modules interact through appState
 
 ////////////////////////////////////////////  DEV    must CHANGE 
-const state = {   //  THIS HAS TO BE DELETED  and see state.user in two lines.  <------------------------------------  magic number
+/*
+const state = {   //  THIS HAS TO BE DELETED  and see userId in two lines.  <------------------------------------  magic number
   taskId: null,
   steps: [],
   user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // Replace with dynamic user ID
 }; //borrowed from create task 'magic numbers'
+*/
+const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
 
 console.log('🔥 assignTask.js: START'); //output confirmed
 
@@ -371,7 +215,7 @@ class AssignTaskDialog {
   async loadTaskHeaders() {
     console.log('AssignTaskDialog.loadTaskHeaders()');
     try {
-      const taskHeaders = await executeIfPermitted(state.user, 'readTaskHeaders', {});
+      const taskHeaders = await executeIfPermitted(userId, 'readTaskHeaders', {});
       this.taskHeaders = taskHeaders || [];
       this.populateTaskDropdown();
     } catch (error) {
@@ -385,7 +229,7 @@ class AssignTaskDialog {
     async loadApprofiles() {
       console.log('AssignTaskDialog.loadApprofiles()');
       try {
-        const approfiles = await executeIfPermitted(state.user, 'readApprofiles',{});
+        const approfiles = await executeIfPermitted(userId, 'readApprofiles',{});
         this.approfiles = approfiles || [];
         this.populateUserDropdowns();
       } catch (error) {
@@ -435,7 +279,7 @@ class AssignTaskDialog {
   async checkToAvoidDuplicates({student_id:student_id, manager_id: manager_id,task_header_id:task_header_id}){
 console.log('checkToAvoidDuplicates() CODE IGNORES the result - need edit')
 //added function to registry  //readAssignmentExists()
-const data = await executeIfPermitted(state.user, 'readAssignmentExists', {
+const data = await executeIfPermitted(userId, 'readAssignmentExists', {
         student_id:student_id,
       //  manager_id: manager_id || null,
         task_header_id:task_header_id   
@@ -474,7 +318,7 @@ return  data;
     try { // should check if this assignment has already been made & is not completed or abandonded???
       this.assignBtn.textContent = 'Finding task step...';
 
-      const step3 = await executeIfPermitted(state.user, 'readStep3Id', { task_header_id });
+      const step3 = await executeIfPermitted(userId, 'readStep3Id', { task_header_id });
      // const step_id = step3?.id;
   
      if (!step3) {
@@ -510,7 +354,7 @@ else return;
 
       }
 
-      const newAssignment = await executeIfPermitted(state.user, 'createAssignment', {
+      const newAssignment = await executeIfPermitted(userId, 'createAssignment', {
         student_id:student_id,
         manager_id: manager_id || null,
         task_header_id:task_header_id,
@@ -558,14 +402,7 @@ else return;
   }
 }
 
-//
-
-
-//
-
-  
-
-  console.log('✅ assignTask.js: END - About to export render');
+ // console.log('✅ assignTask.js: END - About to export render');
 
   //export { render, AssignTaskDialog };
  

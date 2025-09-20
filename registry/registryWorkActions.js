@@ -166,6 +166,28 @@ handler: async  (supabase, userId) =>{
 
  /////////////     CREATING  (INSERTING)    ///////////////////
 
+ createApprofile:{
+  metadata: {
+    tables: ['app_profiles'],
+    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
+    type: 'INSERT',
+    requiredArgs: ['name', 'description']
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('Create Approfile()');
+    const { name, description } = payload;
+
+    const { data, error } = await supabase
+      .from('app_profiles')
+      .insert({name:name, description:description})
+      .select() //Return the inserted row
+      .single(); //Return single object
+    if (error) throw error;
+    return data; // ✅ Return the array of task headers
+  }
+ },
+
+
 createAssignment:{
   metadata: {
   tables: ['task_assignments'],
@@ -386,6 +408,31 @@ handler: async (supabase, userId, payload) => {
  }
 },
 
+readApprofileByName:{
+  metadata: {
+    tables: ['app_profiles'],
+    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
+    type: 'SELECT',
+    requiredArgs: ['approfileName']
+  },
+handler: async (supabase, userId, payload) => {
+    console.log('readProfilesByName');
+    const { approfileName } = payload;
+    if (approfileName===null) { return []; }
+  
+  const { data, error } = await supabase
+    .from('app_profiles')
+    .select('id, name, email, notes, phone, sort_int, avatar_url, created_at, updated_at, description, auth_user_id, external_url, task_header_id')
+    .eq('name',encodeURIComponent(approfileName));
+    if (error) throw error;
+  return data;
+ }
+},
+
+
+
+
+
 //*
 readThisColumnIdFromThatTable:{
 metadata:{
@@ -545,6 +592,7 @@ readRelationships: {
     const { data, error } = await supabase
       .from('relationships')
       .select('id, name, category, description, created_at ')
+      .order('category') // category is in relationships, not listed in approfiles
       .order('name');
 
     if (error) throw error;
@@ -570,7 +618,7 @@ readRelationshipExists:{
     .eq('of_approfile', of_approfile)
     .select() //Return the inserted row
     //.single(); //Return single object
-  
+  console.log('data-readRelationshipExists:',data);
     if (error) throw error;
     console.log('readRelationshipExists{} data:',data);
       return data; //

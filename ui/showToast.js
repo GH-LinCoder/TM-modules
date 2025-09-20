@@ -3,7 +3,7 @@
 console.log('toast.js loaded');
 
 
-export function showToast(message, type = 'info', duration = 3000) {
+export function showToast(message, type = 'info', duration = 5000) {
     const toast = document.createElement('div');
     toast.className = `toast-message toast-${type}`;
     toast.textContent = message;

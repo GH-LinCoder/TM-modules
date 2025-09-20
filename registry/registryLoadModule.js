@@ -24,7 +24,11 @@ export const registry = { // this registry is for loading a new page to the righ
 'assign-task-dialogue': () => import('../work/task/assignTask.js'),
 'create-task-dialogue': () => import('../work/task/createTask.js'),
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),
+"create-approfile-dialogue":()=> import('../work/approfiles/createApprofile.js'),
 'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
+
+
+
 
 'howTo': () => import('../work/how/howTo.js'),
 

@@ -2,14 +2,15 @@
 //import{createSupabaseClient} from '../../db/supabase.js';
 import{executeIfPermitted} from '../../registry/executeIfPermitted.js';
 import{showToast} from '../../ui/showToast.js';
+import { appState } from '../../state/appState.js'; // modules interact through appState
 
 console.log('createTaskForm.js loaded');
 
-const state = {
-  taskId: null,
-  steps: [],
-  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // DEV  Replace with dynamic user ID
-};
+////////////////////////////   DEV   MAGIC VALUES ?
+
+const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
+let taskId = null;
+let steps = [];
 
 export function render(panel, query = {}) { //query is not currently used, but may be important for permissions
   console.log('Render(', panel, query,')');
@@ -124,13 +125,13 @@ async function handleTaskSubmit(e) {
 
   try {
     // ✅ NEW — use executeIfPermitted
-    const newTask = await executeIfPermitted(state.user, 'createTask', {
+    const newTask = await executeIfPermitted(userId, 'createTask', {
       taskName:taskName,
       taskDescription:taskDescription,
       taskUrl:taskUrl
     });
 
-    state.taskId = newTask.id; // ← store the new task ID
+    taskId = newTask.id; // ← store the new task ID
     document.querySelector('#stepsSection')?.classList.remove('opacity-50', 'pointer-events-none');
     showToast('Task created successfully!');
   } catch (error) {
@@ -141,7 +142,7 @@ async function handleTaskSubmit(e) {
   saveBtn.textContent = 'Save Task';
 
   //read db steps of newly created task and display step 3 as confirmation
-  const steps = await executeIfPermitted(state.user, 'readTaskSteps', { taskId: state.taskId });
+  const steps = await executeIfPermitted(userId, 'readTaskSteps', { taskId: taskId });
   const step3 = steps.find(s => s.step_order === 3);
   if (step3) {
     // Pre-fill step 3 form
@@ -164,7 +165,7 @@ async function handleStepSubmit(e) {
   const stepUrl = document.querySelector('#stepUrl')?.value.trim();
   const saveBtn = document.querySelector('#saveStepBtn');
 
-  if (!state.taskId || !state.user) {
+  if (!taskId || !userId) {
     showToast('Task not saved or user missing', 'error');
     return;
   }
@@ -182,8 +183,8 @@ async function handleStepSubmit(e) {
     let result;
     if (order === 3) {
       // ✅ Update existing step 3
-      result = await executeIfPermitted(state.user, 'updateTaskStep', {
-        taskId: state.taskId,
+      result = await executeIfPermitted(userId, 'updateTaskStep', {
+        taskId: taskId,
         stepOrder: 3,
         stepName,
         stepDescription,
@@ -191,8 +192,8 @@ async function handleStepSubmit(e) {
       });
     } else {
       // ✅ Create new step (4+)
-      result = await executeIfPermitted(state.user, 'createTaskStep', {
-        taskId: state.taskId,
+      result = await executeIfPermitted(userId, 'createTaskStep', {
+        taskId: taskId,
         stepOrder: order,
         stepName,
         stepDescription,
@@ -201,7 +202,7 @@ async function handleStepSubmit(e) {
     }
 
     // Update local state
-    state.steps.push({ name: stepName, description: stepDescription, order, external_url: stepUrl });
+    steps.push({ name: stepName, description: stepDescription, order, external_url: stepUrl });
     updateStepsList();
     document.querySelector('#createdSteps')?.classList.remove('hidden');
     
@@ -232,7 +233,7 @@ function updateStepsList() {
   if (!list) return;
 
   list.innerHTML = '';
-  state.steps.forEach(step => {
+  steps.forEach(step => {
     const div = document.createElement('div');
     div.className = 'text-sm p-2 bg-gray-50 rounded';
     div.textContent = `Step ${step.order}: ${step.name}`;

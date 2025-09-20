@@ -114,7 +114,7 @@ class RelateDialog {
 
      <div class="p-6 border-b border-gray-200">
       <div class="flex items-center justify-between">
-        <h3 class="text-lg font-semibold text-gray-900">Assign relations</h3>
+        <h3 class="text-lg font-semibold text-gray-900">Relate Approfiles</h3>
       <p class="text-sm text-gray-600">Assign a relationship between two approfiles</p>
 
         <button 
@@ -235,7 +235,7 @@ class RelateDialog {
     this.relations .forEach(relations => {
       const option = document.createElement('option');
       option.value = relations.name;
-      option.textContent = relations.name;
+      option.textContent = relations.name + '~~~~~~ [category:'+ relations.category +']';
       this.relationSelect.appendChild(option);
     });
   }
