@@ -4,8 +4,8 @@ import{createSupabaseClient} from './supabase.js';
 
 //const
  supabase = createSupabaseClient();
-
-export async function readAllMembers() {
+//registry has membersCount
+export async function readAllMembers() {//this should read from approfiles based on column of members
   console.log('readAllMembers()');
   const { data, error } = await supabase
     .from('profiles')
@@ -20,7 +20,7 @@ export async function readAllMembers() {
   return data || [];
 }
 
-export async function readAllTasks() {
+export async function readAllTasks() {//registry has: readTaskHeaders:
   console.log('readAllTasks()');
   const { data, error } = await supabase
     .from('task_headers')
@@ -35,7 +35,7 @@ export async function readAllTasks() {
   return data || [];
 }
 
-export async function readAllAssignments() {
+export async function readAllAssignments() {//registry uses view in readAllAssignments:
   console.log('readAllAssignments()');
   const { data, error } = await supabase
     .from('task_assignments')
@@ -50,7 +50,8 @@ export async function readAllAssignments() {
   return data || [];
 }
 
-export async function readAllSteps() {
+export async function readAllSteps() { //registry has readAllSteps
+  //registry has readTaskWithSteps: for a single task
   console.log('readAllSteps()');
   const { data, error } = await supabase
     .from('task_steps')
@@ -65,7 +66,7 @@ export async function readAllSteps() {
   return data || [];
 }
 
-export async function readProfilesByIds(ids) {
+export async function readProfilesByIds(ids) {//registry has similar readProfilesByIds
   console.log('readProfilesByIds');
   if (ids.length === 0) {
     return [];
@@ -91,7 +92,7 @@ export async function readProfilesByIds(ids) {
 
 
                 // -------------all----------- //
-export async function readAllRelatedIds(tableName, idColumnName) {
+export async function readAllRelatedIds(tableName, idColumnName) {//registry has readThisColumnFromThatTable:
   console.log(`readAllRelatedIds from ${tableName}.${idColumnName}`);
   const { data, error } = await supabase
     .from(tableName)
@@ -105,17 +106,17 @@ export async function readAllRelatedIds(tableName, idColumnName) {
   return data || [];
 }
                 
-export async function readAllStudentEntries() {
+export async function readAllStudentEntries() {//registry has readAllStudents
   console.log('readAllStudentEntries');
   return await readAllRelatedIds('task_assignments', 'student_id');
 }
 
-export async function readAllManagerEntries() {
+export async function readAllManagerEntries() {//registry has readAllManagers
   console.log('readAllManagerEntries');
   return await readAllRelatedIds('task_assignments', 'manager_id');
 }
 
-export async function readAllAuthorEntries() { // this produces wrong number (23) when real number is about (5) It can't be more than tasks (10)
+export async function readAllAuthorEntries() { // //registry has readAllAutthors
   console.log('readAllAuthorEntries');
   return await readAllRelatedIds('task_headers', 'author_id');
 }

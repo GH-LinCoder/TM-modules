@@ -160,7 +160,7 @@ async function onAppLoad() {
   if (panelsOnDisplay.length === 0) {
     await renderPanel(query.petitioner); 
     const name=query.petitioner.Action;//changed 16:46 7 Sept 2025
-  console.log('Calling loadPageWithData(',name,')');
+  //console.log('Calling loadPageWithData(',name,')');
   await loadPageWithData(name.replace('.html','')); //changed 14:49 7 Sept 2025
 
     // Set active button   //redundant?
@@ -267,7 +267,7 @@ const stubName = appState.query.petitioner.Action; //legacy html to be phased-ou
   console.log('petitioner .Module:', appState.query.petitioner.Module, '.Action:', appState.query.petitioner.Action, '.Destination:', appState.query.petitioner.Destination);
   // Check if panel is already open
   const alreadyOpen = panelsOnDisplay.some(p => p.stubName === stubName);
-  console.log(panelsOnDisplay);//why does panelsOnDisplay have a 'stubName' ?
+  //console.log(panelsOnDisplay);//why does panelsOnDisplay have a 'stubName' ?
   if (alreadyOpen) {
     // If it's already open, just focus it (don't open again)
     return;

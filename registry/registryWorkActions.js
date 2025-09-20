@@ -342,7 +342,10 @@ createTaskStep: {
 ///////////////////  READING DATA   /////////////////////////
 
 
-readApprofiles: {
+readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_id"
+  //if !null an entry in one of those columns tells us what kind of approfile it is.
+  //humans would have an entry in "auth_user_id". Tasks would have an entry in "task_header_id"
+  // grpups or abstract would be null in both. (Groups may end up having their own column?)
   metadata: {
     tables: ['app_profiles'],
     columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
@@ -361,6 +364,99 @@ readApprofiles: {
   }
 },
 
+
+readProfilesByIds:{
+  metadata: {
+    tables: ['app_profiles'],
+    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
+    type: 'SELECT',
+    requiredArgs: ['ids']
+  },
+handler: async (supabase, userId, payload) => {
+    console.log('readProfilesByIds');
+  
+    if (ids.length === 0) { return []; }
+  
+  const { data, error } = await supabase
+    .from('profiles')
+    .select('id, name, email, notes, phone, sort_int, avatar_url, created_at, updated_at, description, auth_user_id, external_url, task_header_id');
+
+    if (error) throw error;
+  return data;
+ }
+},
+
+//*
+readThisColumnIdFromThatTable:{
+metadata:{
+  tables:['any_table'], //
+  columns:['any_columns'],
+  type: 'SELECT',
+  requiredArgs:['tableName', 'columnNameId']
+},
+handler: async (supabase, userId, payload) =>{
+  const { tableName, columnNameId } = payload;
+  console.log(`readAllRelatedIds from ${tableName}.${columnNameId}`);
+  const { data, error } = await supabase
+    .from(tableName)
+    .select(columnNameId);
+
+  if (error) {
+    console.error(`Error fetching all IDs from ${tableName}.${columnNameId}:`, error.message);
+    throw new Error(`Failed to fetch IDs from ${tableName}.${columnNameId}.`);
+  }
+  return data || [];
+ }
+},
+//*/
+
+////////////////////////////////  the below don't call the db  they call other functions.
+////////////////////////////////  I don't think this can work from the registry
+
+readAllStudent:{
+  metadata:{
+    tables:['task_assignments'], //
+    columns:['student_id'],
+    type: 'SELECT',
+    requiredArgs:[],
+    },
+handler: async(supabase, userId) => {
+    console.log('readAllStudent');
+    return await readThisColumnIdFromThatTable('task_assignments', 'student_id');
+ }
+},
+
+readAllManager:{
+  metadata:{
+    tables:['task_assignments'], //
+    columns:['manager_id'],
+    type: 'SELECT',
+    requiredArgs:[],
+    },
+handler: async(supabase, userId) => {
+  console.log('readAllManagers');
+  return await readAllRelatedIds('task_assignments', 'manager_id');
+ }
+},
+
+readAllAuthor:{
+  metadata:{
+    tables:['task_headers'], //
+    columns:['author_id'],
+    type: 'SELECT',
+    requiredArgs:[],
+    },
+handler: async(supabase, userId) => {
+    console.log('readAllAuthors');
+    return await readThisColumnIdFromThatTable('task_assignments', 'author_id');
+ }
+},
+
+///////////////////////////  end of functions that call functions
+
+
+
+
 readThisAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
   metadata: {
   tables: ['task_assignment_view2'],  //VIEW not a table
@@ -375,6 +471,31 @@ console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   .from('task_assignment_view2')
   .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
   .eq('assignment_id', encodeURIComponent(assignment_id))
+  //.eq('task_header_id', encodeURIComponent(task_header_id))
+  .select() //Return the inserted row
+  //.single(); //Return single object
+
+  if (error) throw error;
+  console.log('readThisAssignment{} data:',data);
+    return data; //
+  } 
+},
+
+
+readAllAssignments:{//requires the assignment_id (not the task_header_id. Returns a single row )
+  metadata: {
+  tables: ['task_assignment_view2'],  //VIEW not a table
+  columns: ['step_id', 'step_name','step_description', 'task_name', 'manager_id', 'step_order','student_id', 'assigned_at', 'abandoned_at', 'completed_at','manager_name','student_name','assignment_id', 'task_header_id', 'task_description'],
+  type: 'SELECT',
+  requiredArgs: ['assignment_id'] // ← id of a row in assignment which is also task_assignments.id
+},
+handler: async (supabase, userId, payload) => {
+  const { assignment_id} = payload;
+console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
+  const { data, error } = await supabase
+  .from('task_assignment_view2')
+  .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
+  //.eq('assignment_id', encodeURIComponent(assignment_id))
   //.eq('task_header_id', encodeURIComponent(task_header_id))
   .select() //Return the inserted row
   //.single(); //Return single object
@@ -546,7 +667,27 @@ handler: async (supabase, userId, payload) => {
   },// end of read Task with steps
 
 
-
+  readAllSteps:{ //is this useful??
+   
+    metadata: {
+      tables: ['task_steps'],
+      columns: ['id', 'task_header_id', 'name', 'step_order', 'created_at', 'description', 'external_url', 'author_id'],
+      type: 'SELECT',
+      requiredArgs:['supabase', 'userId']
+    }, 
+    handler: async (supabase,userId)=>{
+    console.log('readAllSteps()');
+    const { data, error } = await supabase
+      .from('task_steps')
+      .select('id, task_header_id, name, step_order, created_at, description, external_url, author_id')
+      .order('task_header_id, step_order');    
+    if (error) {
+      console.error('Error fetching task_steps:', error.message);
+      throw new Error('Failed to fetch all task steps.');
+    }
+    return data || [];
+    }
+  },
 
 
 
