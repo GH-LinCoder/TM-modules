@@ -33,9 +33,9 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <p class="text-sm text-gray-500 mb-4">Summaries: Click for details. They open in a new panel to the right. Click card again to close.</p>
   <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
 
-    <!-- Members -->
+    <!-- Approfiles Human -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="members-stats">
-      <h3 class="text-sm font-medium text-blue-700 mb-1">Members</h3>
+      <h3 class="text-sm font-medium text-blue-700 mb-1">Approfiles-Human</h3>
       <p class="text-2xl font-bold text-blue-900" data-value="members-count">?</p>
       <p class="text-xs text-blue-600">Registered users</p>
       <p class="text-xs text-blue-400 mt-1" data-delta="members-month">+? new this month</p>
@@ -78,6 +78,14 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-xs text-indigo-600">Task supervisors</p>
     </div>
 
+        <!-- Approfiles -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="approfiles-stats">
+      <h3 class="text-sm font-medium text-blue-700 mb-1">Approfiless total</h3>
+      <p class="text-2xl font-bold text-blue-900" data-value="approfiles-count">?</p>
+      <p class="text-xs text-blue-600">Humans + tasks + abstracts</p>
+      <p class="text-xs text-blue-400 mt-1" data-delta="members-month">+? new this month</p>
+    </div>
+
   </div>
 </div>
 
@@ -118,6 +126,12 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <h3 class="text-sm font-medium text-blue-700">Relate Approfiles</h3>
       <p class="text-xs text-gray-500">Show how two approfiles are related to each other </p>
     </div>
+
+<!-- SELECTOR -->
+    <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='selector-dialogue'>
+      <h3 class="text-sm font-medium text-blue-700">Select anything</h3>
+      <p class="text-xs text-gray-500">Dropdowns for all tables</p>
+    </div>    
 
   </div>
 </div>
@@ -170,11 +184,11 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-<!-- MEMBER -->
+<!-- Approfiles -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action='member-management-section'>
-      <p class="text-3xl font-bold text-blue-900" data-value="members-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Members</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage members</p>
+      <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
+      <h3 class="text-sm font-medium text-blue-700">approfiless</h3>
+      <p class="text-xs text-gray-500">View, edit, and manage member, task & abstract, approfiles</p>
     </div>
 
 <!-- ASSIGNMENT -->

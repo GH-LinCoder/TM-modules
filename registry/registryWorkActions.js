@@ -1,3 +1,5 @@
+// ./../../registry/registryWorkActions.js
+
 /**
  * A central registry that maps data-action:"data-*  " action names to their metadata and
  * a reference to the actual function for some work process.
@@ -7,7 +9,55 @@ export const registryWorkActions = {
 
 
 
+// DEV  ------------------------------ probably delete later
+readGenericTable: {
+  metadata: {
+    tables: ['app_profiles'], // mock 
+    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    const { tableName } = payload;
+    if (!tableName) throw new Error('tableName required');
+    
+    const { data, error } = await supabase
+      .from(tableName)
+      .select('*');
+    
+    if (error) throw error;
+    return data;
+  }
+},
+
+
+
+
 //////////////////////////   COUNTING   ///////////////////////
+
+approfilesCount:{
+  metadata: {
+    tables: ['app_profiles'],
+    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async  (supabase, userId) =>{
+    console.log('approfilesCount()');
+    const { count, error } = await supabase
+    .from('app_profiles')
+    .select('*', { count: 'exact', head: true }); // ← head: true = don't return rows, just count 
+
+    if (error) {
+      console.error('Error counting members:', error.message);
+      throw new Error('Failed to count members.');
+    }
+    
+    return count// if use {count} it would be in form  {count: 23}
+  }
+},
+
+
 
 assignmentsCount:{
   // Metadata for the permissions system

@@ -41,10 +41,7 @@ import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js'; // modules interact through appState
 
 console.log('createApprofileForm.js loaded');
-/*
-const state = {
-  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // Replace with dynamic user ID
-};  */
+
 const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
 
 export function render(panel, query = {}) {

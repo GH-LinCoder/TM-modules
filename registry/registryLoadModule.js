@@ -9,8 +9,8 @@ export const registry = { // this registry is for loading a new page to the righ
 
 // test modules
 'quick-stats-section.html': ()=> import('../dash/quickStatsSection.js'),
-'member-management-section.html': ()=> import('../dash/memberManagementSection.js'),// from button has .html
-'member-management-section': ()=> import('../dash/memberManagementSection.js'), //from card
+'member-management-section.html': ()=> import('../dash/approfileManagementSection.js'),// from button has .html
+'member-management-section': ()=> import('../dash/approfileManagementSection.js'), //from card
 'assignment-management-section': ()=> import('../dash/assignmentManagementSection.js'),
 'task-management-section': ()=> import('../dash/taskManagementSection.js'),
 'author-management-section': ()=> import('../dash/authorManagementSection.js'),
@@ -26,9 +26,9 @@ export const registry = { // this registry is for loading a new page to the righ
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),
 "create-approfile-dialogue":()=> import('../work/approfiles/createApprofile.js'),
 'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
-
-
-
+'edit-task-dialogue': () => import('../work/task/editTask.js'),
+'edit-approfile-dialogue':()=> import('../work/approfiles/editApprofile.js'),
+'selector-dialogue' :()=> import('../work/universal/selectAnyRow.js'),
 
 'howTo': () => import('../work/how/howTo.js'),
 

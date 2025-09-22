@@ -3,14 +3,6 @@ import{executeIfPermitted} from '../../registry/executeIfPermitted.js';
 import{showToast} from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js'; // modules interact through appState
 
-////////////////////////////////////////////  DEV    must CHANGE 
-/*
-const state = {   //  THIS HAS TO BE DELETED  and see userId in two lines.  <------------------------------------  magic number
-  taskId: null,
-  steps: [],
-  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // Replace with dynamic user ID
-}; //borrowed from create task 'magic numbers'
-*/
 const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
 
 console.log('🔥 assignTask.js: START'); //output confirmed

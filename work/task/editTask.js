@@ -5,10 +5,9 @@ import { showToast } from '../../ui/showToast.js';
 
 console.log('editTaskForm.js loaded');
 
-const state = {
-  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df', // Replace with dynamic user ID
-  currentTask: null
-};
+import { appState } from '../../state/appState.js'; // modules interact through appState
+
+const userId = appState.query.userId;
 
 export function render(panel, query = {}) {
   console.log('Render Edit Task Form:', panel, query);
@@ -29,7 +28,7 @@ export function render(panel, query = {}) {
 
 function getTemplateHTML() {
   return `
-    <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full">
+    <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new panel">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 class="text-xl font-semibold text-gray-900">Edit Task</h3>

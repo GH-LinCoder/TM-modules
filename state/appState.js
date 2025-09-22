@@ -33,6 +33,10 @@ export const appState = {
       payload: [], //varies depending on the module. approfile-is/relationship/of_approfile  or task_id/step_id/ordinal
       
       response: [], //contains read from DB & status of permission & other response of query DB
+
+      remember: [],// redundant ??
+
+      cliboard:[]
     },
     
 

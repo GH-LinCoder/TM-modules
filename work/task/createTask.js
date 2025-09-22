@@ -6,11 +6,7 @@ import { appState } from '../../state/appState.js'; // modules interact through 
 
 console.log('createTaskForm.js loaded');
 
-////////////////////////////   DEV   MAGIC VALUES ?
-
-const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
-let taskId = null;
-let steps = [];
+const userId = appState.query.userId;
 
 export function render(panel, query = {}) { //query is not currently used, but may be important for permissions
   console.log('Render(', panel, query,')');

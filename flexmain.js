@@ -45,7 +45,7 @@ function getDisplayArea() {
 console.log('GetDisplayArea()');
 
 const destination=appState.query.petitioner.Destination;
-//console.log('destination:',destination);
+console.log('destination:',destination);
 if(destination==='new-panel') return document.querySelector('[data-panel="inject-here"]');
 else {const displayArea = document.querySelector(`[data-section="${destination}"]`);
   console.log('displayArea:',displayArea );
@@ -284,7 +284,11 @@ const stubName = appState.query.petitioner.Action; //legacy html to be phased-ou
 
 let registryEntry = await registry[stubName]; //send string to lookup object, get a pointer to a function (don't need await)
 
-if(registryEntry) { console.log('Registry recognises', stubName, 'push details in array');
+
+if(!registryEntry) { console.log('Registry unknown', stubName, ' not here');}
+
+if(registryEntry) { console.log('Registry recognises', stubName, 'push details in array')
+  
  // console.log('registryEntry is:', registryEntry);
 
 const selectedModule = await registryEntry(); // Use the pointer to get the function
@@ -436,7 +440,7 @@ export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
           closePanel(stubName);
         } else 
   
-        { // 1st Click for an ordinary page
+        {  console.log('Panel NOT open:', stubName);  // 1st Click for an ordinary page
           // Open new panel - this is to display a new side page that is not admin or member & not already open
           await renderPanel({...appState.query.petitioner, 'Action': stubName});
           await loadPageWithData(appState.query.petitioner.Action.replace('.html','')); 
