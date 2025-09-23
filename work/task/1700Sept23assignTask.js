@@ -48,7 +48,11 @@ class AssignTaskDialog {
     this.studentSelect.addEventListener('change', this.updateSubmitButtonState.bind(this));
     this.managerSelect.addEventListener('change', this.updateSubmitButtonState.bind(this));
 
-    // Clipboard integration ONLY - no direct DB loading
+    // Load data (optional — clipboard can handle it)
+   // this.loadTaskHeaders();
+   // this.loadApprofiles();
+
+    // Clipboard integration
     this.populateFromClipboard();
     onClipboardUpdate(() => {
       this.populateFromClipboard();
@@ -60,7 +64,7 @@ class AssignTaskDialog {
     
     const students = getClipboardItems({ as: 'student', type: 'app-human' });
     const managers = getClipboardItems({ as: 'manager', type: 'app-human' });
-    const tasks = getClipboardItems({ as: 'task', type: 'tasks' });
+    const tasks = getClipboardItems({ as: 'task', type: 'tasks' }); // ✅ LOOKING FOR "AS task"
 
     // Auto-fill single items
     if (students.length === 1 && !this.studentSelect.value) {
@@ -180,30 +184,57 @@ class AssignTaskDialog {
     `;
   }
 
-  async getStep3Id(task_header_id) {
-    console.log('AssignTaskDialog.getStep3Id() for task_header_id:', task_header_id);
+  async loadTaskHeaders() {
+    console.log('AssignTaskDialog.loadTaskHeaders()');
     try {
-      const steps = await executeIfPermitted(userId, 'readTaskSteps', { taskId: task_header_id });
-      
-      if (!steps || steps.length === 0) {
-        throw new Error(`No steps found for task_header_id: ${task_header_id}`);
-      }
-      
-      // Find step with step_order === 3
-      const step3 = steps.find(step => step.step_order === 3);
-      
-      if (!step3) {
-        // If no step 3, use the last step (as fallback)
-        const lastStep = steps[steps.length - 1];
-        console.warn(`Step 3 not found, using last step:`, lastStep);
-        return lastStep.id;
-      }
-      
-      return step3.id;
+      const taskHeaders = await executeIfPermitted(userId, 'readTaskHeaders', {});
+      this.taskHeaders = taskHeaders || [];
+      this.populateTaskDropdown();
     } catch (error) {
-      console.error('Error getting step 3 ID:', error);
-      throw error;
+      console.error('Error fetching task headers:', error);
     }
+  }
+
+  async loadApprofiles() {
+    console.log('AssignTaskDialog.loadApprofiles()');
+    try {
+      const approfiles = await executeIfPermitted(userId, 'readApprofiles', {});
+      this.approfiles = approfiles || [];
+      this.populateUserDropdowns();
+    } catch (error) {
+      console.error('Error fetching approfiles:', error);
+    }
+  }
+
+  populateTaskDropdown() {
+    console.log('AssignTaskDialog.populateTaskDropdown()');
+    this.taskSelect.innerHTML = '<option value="">Select a task</option>';
+    this.taskHeaders.forEach(task => {
+      const option = document.createElement('option');
+      option.value = task.id;
+      option.textContent = task.name;
+      this.taskSelect.appendChild(option);
+    });
+  }
+
+  populateUserDropdowns() {
+    console.log('AssignTaskDialog.populateUserDropdowns()');
+    this.studentSelect.innerHTML = '<option value="">Select a student</option>';
+    this.managerSelect.innerHTML = '<option value="">Select a manager</option>';
+    
+    this.approfiles.forEach(file => {
+      // Student option
+      const studentOption = document.createElement('option');
+      studentOption.value = file.id;
+      studentOption.textContent = file.name;
+      this.studentSelect.appendChild(studentOption);
+
+      // Manager option
+      const managerOption = document.createElement('option');
+      managerOption.value = file.id;
+      managerOption.textContent = file.name;
+      this.managerSelect.appendChild(managerOption);
+    });
   }
 
   async checkToAvoidDuplicates({ student_id, manager_id, task_header_id }) {
@@ -236,14 +267,11 @@ class AssignTaskDialog {
     }
 
     try {
-      this.assignBtn.textContent = 'Finding step 3...';
+      this.assignBtn.textContent = 'Finding task step...';
+      const step3 = await executeIfPermitted(userId, 'readStep3Id', { task_header_id });
       
-      // ✅ FIXED: Get step_id by finding step_order === 3
-      const step_id = await this.getStep3Id(task_header_id);
-      console.log('Found step_id:', step_id);
-      
-      if (!step_id) {
-        throw new Error('Could not find step 3 for this task');
+      if (!step3) {
+        throw new Error(`Step 3 not found for task_header_id: ${task_header_id}`);
       }
 
       this.assignBtn.textContent = 'Checking for duplicates...';
@@ -277,7 +305,7 @@ class AssignTaskDialog {
         student_id,
         manager_id: manager_id || null,
         task_header_id,
-        step_id  // ✅ Now properly set from step_order === 3
+        step_id: step3.id
       });
 
       this.assignBtn.textContent = 'Assigned! - select others or close';

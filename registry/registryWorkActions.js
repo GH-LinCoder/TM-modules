@@ -379,6 +379,91 @@ handler: async  (supabase, userId, payload) =>{
 }
 },
 
+updateApprofile: {
+  metadata: {
+    tables: ['app_profiles'],
+    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_id'],
+    type: 'UPDATE',
+    requiredArgs: ['id', 'name', 'description'] // id is required for update
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('updateApprofile()');
+    const { id, name, description } = payload; //// id is required for update & name same as sent
+
+    if (!id) {
+      throw new Error('id is required for update');
+    }
+
+    const { data, error } = await supabase
+      .from('app_profiles')
+      .update({ 
+        name: name, 
+        description: description,
+        updated_at: new Date().toISOString() // ✅ Good practice to update timestamp
+      })
+      .eq('id', id) // ✅ Supabase uses .eq() for WHERE conditions
+      .select()
+      .single();
+      
+    if (error) throw error;
+    return data;
+  }
+},
+/*
+updateTaskHeader: {// not used ? 
+  metadata: {
+    tables: ['task_headers'],
+    columns: ['name', 'description', 'external_url', 'author_id'],
+    type: 'INSERT',
+    requiredArgs: ['taskName', 'taskDescription'] // ← payload fields
+  },
+  handler: async (supabase, userId, payload) => {
+    const { taskName, taskDescription, taskUrl } = payload;
+
+    const { data, error } = await supabase
+      .from('task_headers')
+      .update({
+        name: taskName,
+        description: taskDescription,
+        external_url: taskUrl || null,
+        author_id: userId // ← use passed userId
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // ← returns { id, name, description, ... }
+  }
+},
+*/
+
+updateTask: {
+  metadata: {
+    tables: ['task_headers'],
+    columns: ['name', 'description', 'external_url'],
+    type: 'UPDATE',
+    requiredArgs: ['id', 'name', 'description']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { id, name, description, external_url } = payload;
+
+    const { data, error } = await supabase
+      .from('task_headers')
+      .update({
+        name: name,
+        description: description,
+        external_url: external_url || null,
+        updated_at: new Date().toISOString() // Good practice to update timestamp
+      })
+      .eq('id', id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+},
+
 
 
 
@@ -660,7 +745,7 @@ handler: async (supabase, userId, payload) => {
   const { task_header_id, student_id} = payload;
 console.log('readAssignment2Exists()');
   const { data, error } = await supabase
-  .from('task_assignment_view2')
+  .from('task_assignment_view')
   .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
   .eq('student_id', encodeURIComponent(student_id))
   .eq('task_header_id', encodeURIComponent(task_header_id))
@@ -668,7 +753,7 @@ console.log('readAssignment2Exists()');
   //.single(); //Return single object
 
   if (error) throw error;
-  console.log('readAssignment2Exists() data:',data);
+  console.log('readAssignmentExists() data:',data);
     return data; //
   } 
 },
@@ -741,7 +826,7 @@ readApprofile_relations_view:{
     }
 },
 
-writeApprofileRelation: {
+createApprofileRelation: {
   metadata: {
     tables: ['approfile_relations'],
     columns: ['id', 'approfile_is', 'relationship', 'of_approfile', 'created_at'],

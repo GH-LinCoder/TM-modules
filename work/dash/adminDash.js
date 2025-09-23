@@ -129,8 +129,8 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- SELECTOR -->
     <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='selector-dialogue'>
-      <h3 class="text-sm font-medium text-blue-700">Select anything</h3>
-      <p class="text-xs text-gray-500">Dropdowns for all tables</p>
+      <h3 class="text-sm font-medium text-blue-700">Select to remember</h3>
+      <p class="text-xs text-gray-500">List things & click to remember the. Can use to fill-in forms</p>
     </div>    
 
   </div>

@@ -1,7 +1,7 @@
 // ./work/approfiles/editApprofileForm.js
+
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
-import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 
 console.log('editApprofileForm.js loaded');
 
@@ -13,52 +13,17 @@ const state = {
 export function render(panel, query = {}) {
   console.log('Render Edit Approfile Form:', panel, query);
   
+  // Store the approfile data if provided
+  if (query.approfile) {
+    state.currentApprofile = query.approfile;
+  }
+  
   panel.innerHTML = getTemplateHTML();
   attachListeners(panel);
   
-  // Initialize clipboard integration
-  initClipboardIntegration(panel);
-}
-
-function initClipboardIntegration(panel) {
-  // Check clipboard immediately
-  populateFromClipboard(panel);
-  
-  // Listen for future changes
-  onClipboardUpdate(() => {
-    populateFromClipboard(panel);
-  });
-}
-
-function populateFromClipboard(panel) {
-  console.log('populateFromClipboard()');
-  
-  // Get approfiles from clipboard (any type)
-  const approfiles = getClipboardItems({ type: 'app-human' })
-    .concat(getClipboardItems({ type: 'app-task' }))
-    .concat(getClipboardItems({ type: 'app-abstract' }));
-  
-  if (approfiles.length === 0) return;
-  
-  // Use the most recent one
-  const item = approfiles[0];
-  state.currentApprofile = item.entity.item; // full row data
-  
-  // Populate form
-  const nameInput = panel.querySelector('#approfileName');
-  const descriptionInput = panel.querySelector('#approfileDescription');
-  const nameCounter = panel.querySelector('#approfileNameCounter');
-  const descriptionCounter = panel.querySelector('#approfileDescriptionCounter');
-  
-  if (nameInput && state.currentApprofile.name) {
-    nameInput.value = state.currentApprofile.name;
-    nameCounter.textContent = `${state.currentApprofile.name.length}/64 characters`;
-    showToast(`Auto-filled from clipboard: ${state.currentApprofile.name}`, 'info');
-  }
-  
-  if (descriptionInput && state.currentApprofile.description) {
-    descriptionInput.value = state.currentApprofile.description;
-    descriptionCounter.textContent = `${state.currentApprofile.description.length}/2000 characters`;
+  // Populate form if we have approfile data
+  if (state.currentApprofile) {
+    populateForm();
   }
 }
 
@@ -85,7 +50,6 @@ function getTemplateHTML() {
               <li>• You can modify the name and description</li>
               <li>• The name must be unique across all existing approfiles</li>
               <li>• Click "Update Approfile" to save your changes</li>
-              <li>📋 Auto-filled from clipboard if available</li>
             </ul>
           </div>
 
@@ -120,6 +84,25 @@ function getTemplateHTML() {
       </div>
     </div>
   `;
+}
+
+function populateForm() {
+  if (!state.currentApprofile) return;
+  
+  const nameInput = document.querySelector('#approfileName');
+  const descriptionInput = document.querySelector('#approfileDescription');
+  const nameCounter = document.querySelector('#approfileNameCounter');
+  const descriptionCounter = document.querySelector('#approfileDescriptionCounter');
+  
+  if (nameInput) {
+    nameInput.value = state.currentApprofile.name || '';
+    nameCounter.textContent = `${(state.currentApprofile.name || '').length}/64 characters`;
+  }
+  
+  if (descriptionInput) {
+    descriptionInput.value = state.currentApprofile.description || '';
+    descriptionCounter.textContent = `${(state.currentApprofile.description || '').length}/2000 characters`;
+  }
 }
 
 function attachListeners(panel) {
@@ -181,6 +164,8 @@ async function handleApprofileUpdate(e) {
 
     saveBtn.textContent = 'Updating Approfile...';
 
+    // In a real implementation, you would have an updateApprofile function in your registry
+    // For now, we'll simulate the update
     const updatedApprofile = await executeIfPermitted(state.user, 'updateApprofile', {
       id: state.currentApprofile?.id,
       name,
@@ -190,10 +175,10 @@ async function handleApprofileUpdate(e) {
     showToast('Approfile updated successfully!');
     saveBtn.textContent = 'Approfile updated!';
     
-    // Update state
+    // Update the state with the new data
     state.currentApprofile = updatedApprofile;
     
-    // Close after delay
+    // Optionally close the dialog after a delay
     setTimeout(() => {
       const dialog = document.querySelector('#editApprofileDialog');
       if (dialog && dialog.parentElement) {

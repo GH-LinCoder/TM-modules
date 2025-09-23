@@ -1,4 +1,4 @@
-// work/universal/devDataSelector.js
+// ./work/select/selectRemember.js
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
@@ -47,11 +47,11 @@ class DevDataSelector {
         <div class="mb-4">
           <h4 class="font-medium mb-2">1. Load List:</h4>
           <div class="space-y-1">
-            <label><input type="radio" name="view" value="app-human"> APPROFILE (person)</label>
-            <label><input type="radio" name="view" value="app-abstract"> APPROFILE (abstract)</label>
-            <label><input type="radio" name="view" value="app-task"> APPROFILE (task)</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-human"> APPROFILE (person)</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-abstract"> APPROFILE (abstract)</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-task"> APPROFILE (task)</label>
             <div class="border-t my-2"></div>
-            <label><input type="radio" name="view" value="tasks"> TASKS</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="tasks"> TASKS</label>
           </div>
         </div>
 
@@ -66,9 +66,10 @@ class DevDataSelector {
         <div class="mb-4">
           <h4 class="font-medium mb-2">2. Remember as:</h4>
           <div class="space-y-1">
-            <label><input type="radio" name="as" value="student"> Student</label>
-            <label><input type="radio" name="as" value="manager"> Manager</label>
-            <label><input type="radio" name="as" value="other"> Other</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="student"> Student</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="manager"> Manager</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="other"> Other</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="task"> Task</label>
           </div>
         </div>
 
@@ -108,6 +109,9 @@ class DevDataSelector {
 
     // Confirm button
     this.confirmBtn.addEventListener('click', () => this.confirmSelection());
+
+    // Initialize feedback display
+    this.refreshFeedbackDisplay();
   }
 
   async onViewChange(e) {
@@ -148,7 +152,15 @@ class DevDataSelector {
   }
 
   populateList(view) {
-    this.listContainer.innerHTML = '';
+    // Set container background based on view
+    const bgColor = {
+      'app-human': 'bg-blue-50',
+      'app-abstract': 'bg-purple-50',
+      'app-task': 'bg-green-50',
+      'tasks': 'bg-red-50'
+    }[view] || 'bg-gray-50';
+
+    this.listContainer.className = `border rounded min-h-32 max-h-60 overflow-y-auto p-3 mb-4 ${bgColor}`;
 
     let items = [];
     switch (view) {
@@ -169,8 +181,21 @@ class DevDataSelector {
         return;
     }
 
+    // Add header
+    const header = document.createElement('div');
+    header.className = 'font-medium mb-2 pb-2 border-b border-gray-300';
+    header.textContent = {
+      'app-human': '👥 Human Approfiles',
+      'app-abstract': '🎭 Abstract Approfiles',
+      'app-task': '📋 Task Approfiles',
+      'tasks': '🚀 Tasks'
+    }[view] || 'Select a type above';
+
+    this.listContainer.innerHTML = '';
+    this.listContainer.appendChild(header);
+
     if (items.length === 0) {
-      this.listContainer.innerHTML = '<div class="text-gray-500 text-center py-4">No items found</div>';
+      this.listContainer.innerHTML += '<div class="text-gray-500 text-center py-4">No items found</div>';
       return;
     }
 
@@ -196,8 +221,13 @@ class DevDataSelector {
 
   updateConfirmButton() {
     if (this.selectedItem && this.selectedAs && this.currentView) {
+      // Truncate long names for button
+      const displayName = this.selectedItem.name.length > 30 
+        ? this.selectedItem.name.substring(0, 30) + '...' 
+        : this.selectedItem.name;
+
       this.confirmBtn.disabled = false;
-      this.confirmBtn.textContent = `Confirm: ${this.selectedItem.name} as ${this.selectedAs}`;
+      this.confirmBtn.textContent = `Click to store: "${displayName}" ---- AS ---- "${this.selectedAs}"`;
     } else {
       this.confirmBtn.disabled = true;
       this.confirmBtn.textContent = 'Select item and category first';
@@ -211,10 +241,10 @@ class DevDataSelector {
       entity: {
         id: this.selectedItem.id,
         name: this.selectedItem.name,
-        type: this.currentView,        // e.g., "app-human", "tasks"
-        data: this.selectedItem        // full row
+        type: this.currentView,
+        item: this.selectedItem
       },
-      as: this.selectedAs,             // "student", "manager", "other"
+      as: this.selectedAs,
       meta: {
         timestamp: Date.now(),
         source: 'dev-data-selector',
@@ -226,14 +256,8 @@ class DevDataSelector {
     if (!appState.clipboard) appState.clipboard = [];
     appState.clipboard.push(clipboardItem);
 
-    // Feedback
-    this.informationFeedback.innerHTML += `
-      <div class="my-1 p-2 bg-white border rounded">
-        <strong>${clipboardItem.entity.name}</strong> 
-        (type: ${clipboardItem.entity.type}) 
-        remembered as <strong>${clipboardItem.as}</strong>
-      </div>
-    `;
+    // Refresh feedback display
+    this.refreshFeedbackDisplay();
 
     // Notify
     if (document) {
@@ -241,5 +265,55 @@ class DevDataSelector {
     }
 
     showToast(`Stored: ${clipboardItem.entity.name} as ${clipboardItem.as}`, 'success');
+  }
+
+  refreshFeedbackDisplay() {
+    if (!appState.clipboard || appState.clipboard.length === 0) {
+      this.informationFeedback.innerHTML = '<div class="text-gray-500">No items stored yet</div>';
+      return;
+    }
+
+    this.informationFeedback.innerHTML = appState.clipboard.map((item, index) => `
+      <div class="my-2 p-3 bg-white border rounded shadow-sm flex items-center justify-between">
+        <div>
+          <div class="font-medium">${item.entity.name}</div>
+          <div class="text-sm text-gray-600">
+            Type: <span class="px-2 py-0.5 bg-gray-200 rounded text-xs">${item.entity.type}</span>
+            As: <span class="px-2 py-0.5 bg-blue-100 text-blue-800 rounded text-xs">${item.as}</span>
+          </div>
+        </div>
+        <button 
+          data-remove-index="${index}" 
+          class="text-red-500 hover:text-red-700 ml-4 p-1 rounded hover:bg-red-50"
+          title="Remove from clipboard"
+        >
+          ×
+        </button>
+      </div>
+    `).join('');
+
+    // Attach remove listeners
+    this.panel.querySelectorAll('[data-remove-index]').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const index = parseInt(e.target.dataset.removeIndex);
+        this.removeClipboardItem(index);
+      });
+    });
+//16:38 sept 23rd addition:
+
+// After updating the display
+document.dispatchEvent(new CustomEvent('clipboard:updated', {
+  detail: { clipboard: appState.clipboard }
+}));
+
+
+  }
+
+  removeClipboardItem(index) {
+    if (!appState.clipboard || index < 0 || index >= appState.clipboard.length) return;
+
+    const removedItem = appState.clipboard.splice(index, 1)[0];
+    this.refreshFeedbackDisplay();
+    showToast(`Removed: ${removedItem.entity.name}`, 'info');
   }
 }
