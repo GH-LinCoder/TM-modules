@@ -14,9 +14,9 @@ export function getDisplayLabel(row, tableSchema, tableName) {
         // Show: "[name] (Step #[step_order])"
         return `${row.name} (Step #${row.step_order})`;
   
-      case 'approfile_relationships':
+      case 'approfile_relations_view':
         // This view has names! Show: "Jane → member → Team Alpha"
-        return `${row.approfile_is_name} → ${row.relationship} → ${row.of_approfile_name}`;
+        return `${row.approfile_is_name} is ${row.relationship} of ${row.of_approfile_name}`;
   
       case 'task_assignment_view':
       case 'task_assignment_view2':  

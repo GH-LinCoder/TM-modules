@@ -90,7 +90,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 </div>
 
 
-  <!-- Quick Actions -->
+  <!-- Quick Acts -->
   <div class="bg-red-100 rounded-lg shadow p-6" data-section="quick-acts" data-destination='new-panel'>
     <h2 class="text-lg font-semibold mb-2">Quick Acts</h2>
     <p class="text-sm text-gray-500 mb-4">Fast access to common admin tasks. They open in a new panel to the right. (Click the card again to close)</p>

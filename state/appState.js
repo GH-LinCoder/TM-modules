@@ -8,6 +8,8 @@ export const appState = {
  * 
  */
 
+cliboard:[],
+
     query: {
 
 
@@ -36,7 +38,7 @@ export const appState = {
 
       remember: [],// redundant ??
 
-      cliboard:[]
+      //cliboard:[]
     },
     
 

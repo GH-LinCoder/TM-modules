@@ -413,7 +413,7 @@ createTaskStep: {
 
 ///////////////////  READING DATA   /////////////////////////
 
-
+/*
 readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_id"
   //if !null an entry in one of those columns tells us what kind of approfile it is.
   //humans would have an entry in "auth_user_id". Tasks would have an entry in "task_header_id"
@@ -434,7 +434,51 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
     if (error) throw error;
     return data; // ✅ Return the array of task headers
   }
-},
+}, */
+
+
+readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_id"
+  //if !null an entry in one of those columns tells us what kind of approfile it is.
+  //humans would have an entry in "auth_user_id". Tasks would have an entry in "task_header_id"
+  // grpups or abstract would be null in both. (Groups may end up having their own column?)
+  metadata: {
+    tables: ['app_profiles'],
+    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('readApp_profiles()');
+    const { data, error } = await supabase
+      .from('app_profiles')
+      .select('id, name, email, notes, phone, sort_int, avatar_url, created_at, updated_at, description, auth_user_id, external_url, task_header_id')
+      .order('name');
+  
+    if (error) throw error;
+  
+    // Separate into three groups
+    const humanApprofiles = [];
+    const taskApprofiles = [];
+    const abstractApprofiles = [];
+  
+    data.forEach(profile => {
+      if (profile.auth_user_id) {
+        humanApprofiles.push(profile);
+      } else if (profile.task_header_id) {
+        taskApprofiles.push(profile);
+      } else {
+        abstractApprofiles.push(profile);
+      }
+    });
+
+    if (error) throw error;
+    return {
+      humanApprofiles,
+      taskApprofiles,
+      abstractApprofiles
+    }; 
+  }
+}, 
 
 
 readProfilesByIds:{
@@ -579,12 +623,12 @@ console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
 },
 
 
-readAllAssignments:{//requires the assignment_id (not the task_header_id. Returns a single row )
+readAllAssignments:{// VIEW  not a table returns all rows )
   metadata: {
   tables: ['task_assignment_view2'],  //VIEW not a table
   columns: ['step_id', 'step_name','step_description', 'task_name', 'manager_id', 'step_order','student_id', 'assigned_at', 'abandoned_at', 'completed_at','manager_name','student_name','assignment_id', 'task_header_id', 'task_description'],
   type: 'SELECT',
-  requiredArgs: ['assignment_id'] // ← id of a row in assignment which is also task_assignments.id
+  requiredArgs: []
 },
 handler: async (supabase, userId, payload) => {
   const { assignment_id} = payload;
@@ -652,14 +696,14 @@ readRelationships: {
 
 readRelationshipExists:{
   metadata: {
-    tables: ['approfile_relationships'],  //VIEW not a table
+    tables: ['approfile_relations'],  //VIEW not a table
     columns: ['rel_name', 'created_at', 'relation_id', 'approfile_is', 'of_approfile', 'relationship', 'rel_description','approfile_is_name', 'of_approfile.name'],
     type: 'SELECT',
     requiredArgs: ['approfile_is', 'of_approfile', 'relationship'] 
   },
   handler: async (supabase, userId, payload) => {
     const { approfile_is, of_approfile, relationship} = payload;
-  console.log('readRelationshipExists{}','payload:', payload);
+  console.log('readRelationExists{}','payload:', payload);
     const { data, error } = await supabase
     .from('approfile_relations')
     .select('*')
@@ -676,7 +720,26 @@ readRelationshipExists:{
   },
 
 
-
+readApprofile_relations_view:{
+  metadata: {
+    tables: ['approfile_relations'],  //VIEW not a table
+    columns: ['rel_name', 'created_at', 'relation_id', 'approfile_is', 'of_approfile', 'relationship', 'rel_description','approfile_is_name', 'of_approfile.name'],
+    type: 'SELECT',
+    requiredArgs: [] 
+  },
+  handler: async (supabase, userId, payload) => {
+//    const { approfile_is, of_approfile, relationship} = payload;
+  //console.log('approfile_relations_view{}','payload:', payload);
+    const { data, error } = await supabase
+    .from('approfile_relations_view')
+    .select('*')
+    .order('approfile_is_name');
+  console.log('approfile_relations_view:',data);
+    if (error) throw error;
+    console.log('approfiel_relations_view data:',data);
+      return data; //
+    }
+},
 
 writeApprofileRelation: {
   metadata: {

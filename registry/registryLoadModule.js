@@ -3,7 +3,7 @@ console.log('Imported: registry.js');
 
 // A lookup table for your new JavaScript-based modules.
 // This is where you will add new entries as you convert more forms.
-
+//15:00 sept 22  the .html are now legacy, probably never used. Change made in menuListeners.js
 
 export const registry = { // this registry is for loading a new page to the right of the dashboard. 
 
@@ -50,7 +50,7 @@ export const registry = { // this registry is for loading a new page to the righ
 
 // sort buttons?  statsCard? 
 // old html stub versions for admin dashboard
-//'assignTaskForm.html': () => import('../work/task/assignTask.js'),
+
 'assignTaskForm.html': () => {
   console.log('Loading assignTask.js');
   return import('../work/task/assignTask.js');

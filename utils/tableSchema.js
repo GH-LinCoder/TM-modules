@@ -8,16 +8,16 @@ export const TABLE_SCHEMAS = {
       defaultAs: "approfile",
       description: "Profiles for users, tasks, groups, and abstract concepts"
     },
-  
+  /*
     // RELATIONSHIPS — The actual relations between approfiles
     approfile_relations: {
-      label: "Approfile Relationships",
+      label: "Approfile Relations",
       displayField: "relationship_display", // We'll compute this
       idField: "id",
       defaultAs: "relationship",
       description: "Which approfile is related to which other, via what bridge"
     },
-  
+  */
     // RELATIONSHIP TYPES — The dictionary of allowed relationship names
     relationships: {
       label: "Relationship Types (Bridge Dictionary)",
@@ -28,6 +28,7 @@ export const TABLE_SCHEMAS = {
     },
   
     // TASK ASSIGNMENTS — Who is assigned to what task/step
+ /*
     task_assignments: {
       label: "Task Assignments (Student ↔ Task Step)",
       displayField: "assignment_display", // We'll compute this
@@ -35,7 +36,8 @@ export const TABLE_SCHEMAS = {
       defaultAs: "assignment",
       description: "Tracks who (student) is on which task step"
     },
-  
+ */ 
+/*
     // TASK STEPS — Individual steps within tasks
     task_steps: {
       label: "Task Steps",
@@ -44,7 +46,7 @@ export const TABLE_SCHEMAS = {
       defaultAs: "step",
       description: "The many steps that a task comprises"
     },
-  
+  */
     // TASK HEADERS — The main task containers (name, description)
     task_headers: {
       label: "Task Headers (Tasks)",
@@ -56,15 +58,15 @@ export const TABLE_SCHEMAS = {
   
     // VIEWS — For easier selection
   
-    approfile_relationships: {
+    approfile_relations_view: {
       label: "Approfile Relationships (View)",
       displayField: "view_display", // We'll compute this
       idField: "relation_id",
       defaultAs: "relationship",
-      description: "View: approfile_is_name → relationship → of_approfile_name"
+      description: "View: approfile_is_name is relationship of of_approfile_name"
     },
   
-    task_assignment_view2: {
+    task_assignment_view: {
       label: "Task Assignments (View)",
       displayField: "view_display", // We'll compute this
       idField: "assignment_id",

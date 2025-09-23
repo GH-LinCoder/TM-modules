@@ -215,7 +215,7 @@ relationships:{ // a reference table of all recognised relationships
               }
 },
 
-approfile_relationships: //view
+approfile_relations_view: //view
     {
           "rel_name": {
             "data_type": "text",

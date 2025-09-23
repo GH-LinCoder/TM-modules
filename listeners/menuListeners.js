@@ -22,7 +22,8 @@ console.log('howToContext:',howToContext);
     }
 
     console.log('Navigation button clicked for page:', );
-    const petition={'Section':'menu','Action':pageName+'.html', 'Destination':'new-panel'}; //new petitioner object 23:22 7 Sept 2025
+    const petition={'Section':'menu','Action':pageName, 'Destination':'new-panel'};//try without .html 14:56 sep 22 2025
+    //const petition={'Section':'menu','Action':pageName+'.html', 'Destination':'new-panel'}; //new petitioner object 23:22 7 Sept 2025
     //appState.query.petitioner.Action = pageName + '.html'; //keeping petitioner in sync with stubName
     appState.setPetitioner(petition); //keeping petitioner in sync with stubName
 
