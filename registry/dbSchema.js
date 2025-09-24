@@ -320,9 +320,9 @@ task_assignments: { // who or what is on a task
         "is_nullable": "NO",
         "column_default": null,
         "foreign_table_name": "task_headers",
-    "foreign_column_name": "id",
-    "on_update": "NO ACTION",
-    "on_delete": "CASCADE"      
+        "foreign_column_name": "id",
+        "on_update": "NO ACTION",
+         "on_delete": "CASCADE"      
         }
 },
 
@@ -500,76 +500,11 @@ task_assignment_view: {
           "is_nullable": "YES",
           "column_default": null
         }
-      }
-}
+      },
 
 
 
-
-
-
-
-/*   replaced by task_assignment_view (see above) 20:04 Sept 15 2025
-//because this older one doesn't have step number or name
-task_assignment_details: //view
-    {
-
-          "task_name": {
-            "data_type": "text",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "manager_id": {
-            "data_type": "uuid",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "student_id": {
-            "data_type": "uuid",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "assigned_at": {
-            "data_type": "timestamp with time zone",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "abandoned_at": {
-            "data_type": "timestamp with time zone",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "completed_at": {
-            "data_type": "timestamp with time zone",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "manager_name": {
-            "data_type": "text",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "student_name": {
-            "data_type": "text",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "assignment_id": {
-            "data_type": "uuid",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "task_header_id": {
-            "data_type": "uuid",
-            "is_nullable": "YES",
-            "column_default": null
-          },
-          "task_description": {
-            "data_type": "text",
-            "is_nullable": "YES",
-            "column_default": null
-          }
-},
+   
   
       
 tasks_with_steps: //view
@@ -680,10 +615,6 @@ app_event_log:{ //trigger from most other tables and function
               }
 },
 
-//
-
-
-//
 
 unified_event_log: //view
     {
@@ -914,10 +845,70 @@ unique_authors: //view
       
 },
 
-    
+ /*   
+replaced by task_assignment_view (see above) 20:04 Sept 15 2025
+//because this older one doesn't have step number or name
+task_assignment_details: //view
+    {
 
+          "task_name": {
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "manager_id": {
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "student_id": {
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "assigned_at": {
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "abandoned_at": {
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "completed_at": {
+            "data_type": "timestamp with time zone",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "manager_name": {
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "student_name": {
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "assignment_id": {
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "task_header_id": {
+            "data_type": "uuid",
+            "is_nullable": "YES",
+            "column_default": null
+          },
+          "task_description": {
+            "data_type": "text",
+            "is_nullable": "YES",
+            "column_default": null
+          }
+},
 
-
+*/
 
 
 

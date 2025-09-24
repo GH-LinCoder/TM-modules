@@ -566,7 +566,7 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
 }, 
 
 
-readProfilesByIds:{
+readProfilesByIds:{// bad naming  RApprofiles
   metadata: {
     tables: ['app_profiles'],
     columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
@@ -608,7 +608,26 @@ handler: async (supabase, userId, payload) => {
  }
 },
 
-
+// Add to your registry
+readApprofileById:{
+  metadata: {
+    tables: ['app_profiles'],
+    columns: ['id', 'name', 'email', 'created_at'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfileId } = payload;
+    const { data, error } = await supabase
+      .from('app_profiles')
+      .select('id, name, email, created_at')
+      .eq('id', approfileId)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  }
+},
 
 
 
@@ -685,7 +704,7 @@ handler: async(supabase, userId) => {
 
 readThisAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
   metadata: {
-  tables: ['task_assignment_view2'],  //VIEW not a table
+  tables: ['task_assignment_view'],  //VIEW not a table
   columns: ['step_id', 'step_name','step_description', 'task_name', 'manager_id', 'step_order','student_id', 'assigned_at', 'abandoned_at', 'completed_at','manager_name','student_name','assignment_id', 'task_header_id', 'task_description'],
   type: 'SELECT',
   requiredArgs: ['assignment_id'] // ← id of a row in assignment which is also task_assignments.id
@@ -694,7 +713,7 @@ handler: async (supabase, userId, payload) => {
   const { assignment_id} = payload;
 console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   const { data, error } = await supabase
-  .from('task_assignment_view2')
+  .from('task_assignment_view')
   .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
   .eq('assignment_id', encodeURIComponent(assignment_id))
   //.eq('task_header_id', encodeURIComponent(task_header_id))
@@ -757,6 +776,28 @@ console.log('readAssignment2Exists()');
     return data; //
   } 
 },
+
+
+readStudentAssignments: {
+  metadata: {
+    tables: ['task_assignment_view'],
+    columns: ['assignment_id', 'student_id', 'task_header_id', 'task_name', 'task_description', 'step_order', 'step_name', 'step_description', 'manager_id', 'manager_name', 'assigned_at'],
+    type: 'SELECT',
+    requiredArgs: ['student_id']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { student_id } = payload;
+    const { data, error } = await supabase
+      .from('task_assignment_view')
+      .select('assignment_id, student_id, task_header_id, task_name, task_description, step_order, step_name, step_description, manager_id, manager_name, assigned_at')
+      .eq('student_id', student_id)
+      .order('assigned_at', { ascending: false });
+    
+    if (error) throw error;
+    return data;
+  }
+},
+
 
 
 readRelationships: {
@@ -894,7 +935,7 @@ handler: async (supabase, userId, payload) => {
   // Function to read a task and all its steps
   readTaskWithSteps: {
     metadata: {
-      tables: ['task_with_steps'], // VIEW not a table
+      tables: ['task_with_steps_view'], // VIEW not a table
       columns: ['task_id', 'task_name','step_id', 'step_order', 'step_description'],
       type: 'SELECT',
       requiredArgs:['supabase', 'userId', 'taskId']
@@ -903,7 +944,7 @@ handler: async (supabase, userId, payload) => {
       taskId = taskId.task_header_id;
       console.log('taskId;',taskId);
       const { data, error } = await supabase
-        .from('task_with_steps')
+        .from('task_with_steps_view')
         .select('task_name, step_id, step_order, step_name, step_description')
 //        .select('id, name, description, task_steps(*)')
         .eq('task_id', encodeURIComponent(taskId));  // encodeURIComponent(value) for .eq() & .like()

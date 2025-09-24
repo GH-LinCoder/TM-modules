@@ -7,6 +7,7 @@ export const appState = {
  * @type {{ action: string, payload: Array<{approfile_is: string, relationship: string, of_approfile: string}>, 
  * 
  */
+isDevMode:true,
 
 cliboard:[],
 

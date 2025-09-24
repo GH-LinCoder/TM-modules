@@ -3,6 +3,7 @@
 import{executeIfPermitted} from '../../registry/executeIfPermitted.js';
 import{showToast} from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js'; // modules interact through appState
+import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 
 console.log('createTaskForm.js loaded');
 
@@ -31,8 +32,10 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
           </button>
           </div>
           
-          <div>  <!--  Concise instructions   -->
-          <p>To track the progress of some process, or to create a training course. 
+        <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+            <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
+            <p class="text-blue-700 text-sm">
+          To track the progress of some process, or to create a training course. 
           First check if a suitable task already exists. 
           Plan your task. You may want to copy paste from an editor.
           Try to have a name that has obvious meaning and appeal.
@@ -49,6 +52,14 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
             <p id="taskDescriptionCounter" class="text-xs text-gray-500">0/2000 characters</p>
 
             <input id="taskUrl" type="url" placeholder="Optional URL" class="w-full p-2 border rounded" />
+
+ <div class="space-y-2">           <!-- Manager dropdown  Auto filled from clipboard -->
+              <label for="managerSelect" class="block text-sm font-medium text-gray-500">Select Manager</label>
+              <select id="managerSelect" data-form="managerSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Select a manager (optional)</option>
+              </select>
+            </div>
+
 
             <button id="saveTaskBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Save Task</button>
           </div>
@@ -71,6 +82,10 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
               <label class="block text-sm font-medium text-gray-700 mb-2">Created Steps:</label>
               <div id="stepsList" class="space-y-1"></div>
             </div>
+          </div>
+           <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
+            <p class="text-lg font-bold">Information:</p>
+            <p data-task="information-feedback"></p>
           </div>
         </div>
       </div>
@@ -99,7 +114,73 @@ function attachListeners(panel) {
   panel.querySelector('#saveTaskBtn')?.addEventListener('click', handleTaskSubmit);
   panel.querySelector('#saveStepBtn')?.addEventListener('click', handleStepSubmit);
   panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
+
+//new 15:54 sept 24 - to collect data from clipboard
+  // Clipboard integration ONLY - no direct DB loading
+
+  
+  const informationFeedback = panel.querySelector('[data-task="information-feedback"]');
+  
+  
+  populateFromClipboard(panel);
+    onClipboardUpdate(() => {
+      populateFromClipboard(panel);
+
+    });  // end new
+
+
+
 }
+
+//new 15:54 sept 24 - to collect data from clipboard
+
+function populateFromClipboard(panel) {
+  console.log('createTaskDialog.populateFromClipboard()');
+  
+   const managers = getClipboardItems({ as: 'manager', type: 'app-human' });
+   const managerSelect = panel.querySelector('[data-form="managerSelect"]');
+  // Auto-fill single items
+
+  if (managers.length === 1 && !managerSelect.value) {
+    managerSelect.value = managers[0].entity.id;
+    informationFeedback.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled manager: ${managers[0].entity.name}</div>`;
+  }
+  
+  // Add to dropdowns if not exists
+
+  addClipboardItemsToDropdown(managers, managerSelect);
+  updateSubmitButtonState();
+}
+
+function addClipboardItemsToDropdown(items, selectElement) {
+  if (!items || items.length === 0) return;
+  
+  items.forEach(item => {
+    const existingOption = Array.from(selectElement.options).find(opt => opt.value === item.entity.id);
+    if (!existingOption) {
+      const option = document.createElement('option');
+      option.value = item.entity.id;
+      option.textContent = `${item.entity.name} (clipboard)`;
+      option.dataset.source = 'clipboard';
+      selectElement.appendChild(option);
+    }
+  });
+}
+
+function updateSubmitButtonState() {
+  const managerSelected = managerSelect.value !== '';
+
+  assignBtn.disabled = !(taskSelected && studentSelected && managerSelected);
+  if (taskSelected && studentSelected && managerSelected) {
+    assignBtn.textContent = 'Create Task';
+  }
+}
+
+ // end new
+
+
+
+
 
 // In handleTaskSubmit
 async function handleTaskSubmit(e) {

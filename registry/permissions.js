@@ -8,6 +8,35 @@
  */
 
 import {registryWorkActions} from './registryWorkActions.js';
+import { appState } from '../state/appState.js'; // for checking if in DEVMode
+
+
+//new 20:37 Sept 24 2025
+
+export function checkIfUserIsAdmin(userId) {
+  // PLACEHOLDER: Implement real permission logic when auth is ready
+  // For now, return false in production, true in DEV
+  return appState.isDevMode;
+}
+
+export function canAccessFeature(featureName, userId) {
+  if (appState.isDevMode) {
+    return true; // All features available in DEV
+  }
+  
+  // Future: Check feature-specific permissions
+  const adminOnlyFeatures = ['selectRemember', 'adminDash', 'moveStudent'];
+  if (adminOnlyFeatures.includes(featureName)) {
+    return checkIfUserIsAdmin(userId);
+  }
+  
+  return true; // Public features
+}
+
+
+
+
+
 
 export function permissions(userId, functionName, rowId) {// when is the relevant metadata discovered? which function does this?
   // In a real application, we would implement complex logic here
