@@ -32,7 +32,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
 'display-related-approfiles-dialogue': () => import('../work/approfiles/displayRelations.js'),
 
-
+'money-management-section': () => import('../dash/moneyManagementSection.js'),
 
 //'selector-dialogue' :()=> import('../work/universal/selectAnyRow.js'),
 'selector-dialogue' :()=> import('../work/select/selectRemember.js'),
