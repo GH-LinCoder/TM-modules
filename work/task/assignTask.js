@@ -162,7 +162,7 @@ class AssignTaskDialog {
             <div class="space-y-2">
               <label for="managerSelect" class="block text-sm font-medium text-gray-700">Select Manager</label>
               <select id="managerSelect" data-form="managerSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="">Select a manager (optional)</option>
+                <option value="">Select a manager </option>
               </select>
             </div>
             <div class="text-sm text-gray-500 space-y-2 p-3 bg-gray-50 rounded-lg">

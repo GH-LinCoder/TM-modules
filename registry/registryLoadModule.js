@@ -23,14 +23,19 @@ export const registry = { // this registry is for loading a new page to the righ
 // data-action values for admin dashboard
 'assign-task-dialogue': () => import('../work/task/assignTask.js'),
 'create-task-dialogue': () => import('../work/task/createTask.js'),
-'move-student-dialogue': () => import('../work/student/moveStudent.js'),
-"create-approfile-dialogue":()=> import('../work/approfiles/createApprofile.js'),
-'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
 'edit-task-dialogue': () => import('../work/task/editTask.js'),
+
+'move-student-dialogue': () => import('../work/student/moveStudent.js'),
+
+"create-approfile-dialogue":()=> import('../work/approfiles/createApprofile.js'),
 'edit-approfile-dialogue':()=> import('../work/approfiles/editApprofile.js'),
+'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
+'display-related-approfiles-dialogue': () => import('../work/approfiles/displayRelations.js'),
+
+
+
 //'selector-dialogue' :()=> import('../work/universal/selectAnyRow.js'),
 'selector-dialogue' :()=> import('../work/select/selectRemember.js'),
-
 
 
 'howTo': () => import('../work/how/howTo.js'),

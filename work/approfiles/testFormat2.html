@@ -1,0 +1,147 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+  <style>
+    .container {
+      max-width: 700px; 
+      margin: 20px; 
+      font-family: Arial, sans-serif;
+    }
+    
+    .section {
+      margin-bottom: 24px;
+      border: 1px solid #2a0985;
+      border-radius: 4px;
+      padding: 16px;
+    }
+    
+    .section-title {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 16px;
+      color: #374151;
+      text-align: center;
+    }
+    
+    .relationship-group {
+      margin-bottom: 20px;
+    }
+    
+    .relationship-type {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 12px;
+      color: #4f46e5;
+      padding-bottom: 4px;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    /* DETAILED TRIPLE VIEW */
+    .relationship-triple {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px;
+      border: 1px solid #4273d6;
+      border-radius: 8px;
+      background: white;
+      margin: 8px 0;
+    }
+    
+    .subject { font-weight: 600; }
+    .object { font-weight: 600; }
+    
+    .is-word {
+      background-color: #fef9c3;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    
+    .of-word {
+      background-color: #dbeafe;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    
+    .relationship {
+      font-style: italic;
+      font-weight: 600;
+      color: #4f46e5;
+    }
+    
+    /* VISUAL FLOW VIEW */
+    .relationship-flow {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 1rem 0;
+      gap: 1rem;
+      padding: 1rem;
+      background: #f8fafc;
+      border-radius: 8px;
+    }
+    
+    .flow-part {
+      padding: 0.5rem 1rem;
+      background: white;
+      border: 2px solid #3b82f6;
+      border-radius: 6px;
+      font-weight: bold;
+      text-align: center;
+      min-width: 120px;
+    }
+    
+    .flow-is {
+      background-color: #fef9c3;
+      border-color: #f59e0b;
+    }
+    
+    .flow-of {
+      background-color: #dbeafe;
+      border-color: #3b82f6;
+    }
+    
+    .flow-bridge {
+      color: #6b7280;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2>RegistryLoadModule</h2>
+  
+  <!-- IS SECTION -->
+  <div class="section">
+    <div class="section-title">RegistryLoadModule is</div>
+    
+    <div class="relationship-group">
+      <div class="relationship-type">member</div>
+      
+      <!-- Visual Flow View -->
+      <div class="relationship-flow">
+        <div class="flow-part">RegistryLoadModule</div>
+        <div class="flow-part flow-is">is</div>
+        <div class="flow-part">member</div>
+        <div class="flow-part flow-of">of</div>
+        <div class="flow-part">Registry</div>
+      </div>
+      
+      <!-- Detailed Text View -->
+      <div class="relationship-triple">
+        <span class="subject">RegistryLoadModule</span>
+        <span class="is-word">is</span>
+        <span class="relationship">member</span>
+        <span class="of-word">of</span>
+        <span class="object">Registry</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

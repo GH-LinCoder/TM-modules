@@ -122,14 +122,21 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 </div>    
 
 <!-- RELATE APPROFILES -->
-    <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='relate-approfiles-dialogue'>
-      <h3 class="text-sm font-medium text-blue-700">Relate Approfiles</h3>
-      <p class="text-xs text-gray-500">Show how two approfiles are related to each other </p>
+    <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="relate-approfiles-dialogue">
+      <h3 class="text-sm font-medium text-blue-700">Create a relationship (Approfiles)</h3>
+      <p class="text-xs text-gray-500">One thing IS [some relationship] OF another thing. Connecting two approfiles. </p>
     </div>
 
+<!-- VIEW RELATED APPROFILES -->
+    <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="display-related-approfiles-dialogue">
+      <h3 class="text-sm font-medium text-blue-700">View how things are related (Approfiles)</h3>
+      <p class="text-xs text-gray-500">See how a chosen thing IS [some relationship] OF any other things. Display hierarchy & connections. </p>
+    </div>
+
+
 <!-- SELECTOR -->
-    <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='selector-dialogue'>
-      <h3 class="text-sm font-medium text-blue-700">Select to remember</h3>
+    <div class="bg-green-50 border border-indigo-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='selector-dialogue'>
+      <h3 class="text-sm font-medium text-indigo-700">Select to remember</h3>
       <p class="text-xs text-gray-500">List things & click to remember the. Can use to fill-in forms</p>
     </div>    
 

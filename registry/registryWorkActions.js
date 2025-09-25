@@ -566,7 +566,7 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
 }, 
 
 
-readProfilesByIds:{// bad naming  RApprofiles
+readProfilesByIds:{// possibly not used
   metadata: {
     tables: ['app_profiles'],
     columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
@@ -629,7 +629,34 @@ readApprofileById:{
   }
 },
 
-
+readApprofileRelationships: {
+  metadata: {
+    tables: ['approfile_relationships_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfileId } = payload;
+    
+    // Get relationships where approfile IS something
+    const isRels = await supabase
+      .from('approfile_relations_view')
+      .select('*')
+      .eq('approfile_is', approfileId);
+    
+    // Get relationships where approfile IS the OF target  
+    const ofRels = await supabase
+      .from('approfile_relations_view')
+      .select('*')
+      .eq('of_approfile', approfileId);
+    
+    return {
+      is: isRels.data || [],
+      of: ofRels.data || []
+    };
+  }
+},
 
 //*
 readThisColumnIdFromThatTable:{

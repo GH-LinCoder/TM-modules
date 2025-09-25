@@ -9,7 +9,7 @@ export const appState = {
  */
 isDevMode:true,
 
-cliboard:[],
+clipboard:[],
 
     query: {
 
