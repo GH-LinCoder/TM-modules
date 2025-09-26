@@ -20,7 +20,7 @@ registry - functions for loading modules (pages), database interaction, utilitie
 
 state - the object where data is stored for functions
 
-ui     - infrastructue such as listeners rendering of data to the screen, button reactions
+ui     - breadcrumbs, showToast
 
 utils - 
 
