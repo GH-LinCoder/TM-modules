@@ -1,6 +1,6 @@
 folder structure at 10:31 25 Aug 2025..updated sept 25 2025
 
-auth
+auth - login, permissions
 
 dash - js for the dashboards which display info from the database & receive user clicks to do actions
 
