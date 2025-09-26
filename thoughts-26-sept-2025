@@ -1,0 +1,67 @@
+Two App dev tasks
+
+1) App DEV code infrastructure
+(list items already done)
+create initial db tables for tasks/steps/ assignments
+mock-up adminDash & memberDash
+added display of quick stats from db
+add create task
+add asign task
+changed tech from lovable /vite/ react to plain serve javascript
+Adapted page display from The Lab
+created dynamic display using html stub pages and forms
+changed to state machine & listeners to load pages
+changed from html stubs, converted to js modules
+added db event logging
+added db triggers and functions on create task
+developed idea of 'approfiles'
+added registry
+added petition for change of state
+added breadcrumb tracking of petitions
+added how? using breadcrumb to know context for instructions
+developed create task module
+developed assign task module
+developed move student module
+developed relate approfile module
+developed display relations module
+added actual display task in place of mock-up in memberDash
+
+future: actual sign-in
+future: sessions
+future: paginated list display
+future: edit forms
+future: display anything
+future: move towards subcontract of member fee management
+
+
+
+
+2) App DEV work superstructure
+(list approfiles & tasks and relationships to create)
+Create high level approfiles:
+App (the entire web app)  [App IS member of Org]
+Org (the organisation)
+Test Mock (all the things that are for dev test rather than real) [Test Mock IS member OF App]
+Database
+Software
+Supabase
+GitHub
+Codespaces
+Qwen
+Copilot
+Gemini
+Human (for all auth users)  [Human IS member of Org]
+Categories (for any approfile that is itself a category that others belong to)
+
+create the task steps that are needed to teach the app
+
+Check that every approfile is related to something and is part of hierarchy.  
+
+(Need a 'no one is an island' utility to find unmapped approfiles: forEach appro in the app_profiles TABLE search by id in the app_relations table. islandArry.Push[row] || relatedArray.push[row] 
+Then can output the islands or the connected.)
+
+Create the survey module. Should we have an editable survey creator? This would have click options to task assignment or/& to approfile relation
+
+
+
+[Try to avoid using approfiles for things that change like 'newbies' ]
