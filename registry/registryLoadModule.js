@@ -18,6 +18,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'manager-management-section': ()=> import('../dash/managerManagementSection.js'),
 'task&member-management-section': ()=> import('../dash/task&memberManagementSection.js'),
 //'-management-section': ()=> import('../work/dash/ManagementSection.js'),
+'survey-management-section': ()=> import('../dash/surveyManagementSection.js'),
 
 
 // data-action values for admin dashboard

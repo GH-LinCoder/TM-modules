@@ -302,51 +302,59 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
+    <!-- Surveys & Quiz-->         
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="knowledge" data-action="survey-management-section">
+      <p class="text-3xl font-bold text-blue-900" data-value="surveys-count">?</p>
+      <h3 class="text-sm font-medium text-blue-700">Surveys & Quiz</h3>
+      <p class="text-xs text-gray-500">View, edit, and manage any survey or quiz including automations</p>
+    </div>
+
+
 <!-- ALL HOWTOS-->         
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="profiles">
-      <p class="text-3xl font-bold text-blue-900" data-value="howto-count">63</p>
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="knowledge">
+      <p class="text-3xl font-bold text-blue-900" data-value="howto-count">?</p>
       <h3 class="text-sm font-medium text-blue-700">All how to knowledge</h3>
       <p class="text-xs text-gray-500">View, edit, and manage any of the training or instructional knowledge</p>
     </div>
 
 <!-- TASK KNOWLEDGE-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="task-approfiles">
-      <p class="text-3xl font-bold text-indigo-900" data-value="task-approfiles-count">8</p>
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="task-apknowledge">
+      <p class="text-3xl font-bold text-indigo-900" data-value="task-knowledge-count">?</p>
       <h3 class="text-sm font-medium text-indigo-700">Task knowledge</h3>
       <p class="text-xs text-gray-500">View and manage the knowledge for tasks</p>
     </div>
 
 <!-- MEMBER KNOWLEDGE-->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="member_approfiles">
-      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">23</p>
+      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
       <h3 class="text-sm font-medium text-purple-700">Member knowledge</h3>
       <p class="text-xs text-gray-500">View and manage the knowledge for members</p>
     </div>
 
 <!-- GROUP KNOWLEDGE-->    
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="group_approfiles">
-      <p class="text-3xl font-bold text-blue-900" data-value="profiles-count">3</p>
+      <p class="text-3xl font-bold text-blue-900" data-value="profiles-count">?</p>
       <h3 class="text-sm font-medium text-blue-700">Group knowledge</h3>
       <p class="text-xs text-gray-500">View, edit, and manage  the knowledge for groups</p>
     </div>
 
 <!-- ABSTRACT KNOWLEDGE-->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="abstract_approfiles">
-      <p class="text-3xl font-bold text-pink-900" data-value="abstract-approfiles-count">3</p>
+      <p class="text-3xl font-bold text-pink-900" data-value="abstract-approfiles-count">?</p>
       <h3 class="text-sm font-medium text-pink-700">Abstract knowledge</h3>
       <p class="text-xs text-gray-500">View and manage abstract knowledge</p>
     </div>
 
 <!-- RELATE KNOWLEDGE-->    
     <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="relationships">
-      <p class="text-3xl font-bold text-yellow-900" data-value="relationships-count">8</p>
+      <p class="text-3xl font-bold text-yellow-900" data-value="relationships-count">?</p>
       <h3 class="text-sm font-medium text-yellow-700">Relationship knowledge</h3>
       <p class="text-xs text-gray-500">Assign and organize knowledge about relationships between approfiles</p>
     </div>
 
 <!-- RELATIONSHIPS KNOWLEDGE-->    
     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="relations">
-      <p class="text-3xl font-bold text-red-900" data-value="relations-count">40</p>
+      <p class="text-3xl font-bold text-red-900" data-value="relations-count">?</p>
       <h3 class="text-sm font-medium text-red-700">Relations</h3>
       <p class="text-xs text-gray-500">Create and edit the knowledge on the concept of a relationship that can be applied to any two approfiles</p>
     </div>
