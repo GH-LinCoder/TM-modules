@@ -22,7 +22,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <div id="createTaskDialog" class="create-task-dialogue relative z-10 flex flex-col h-full">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-xl font-semibold text-gray-900">Create New Task</h3>
+          <h3 class="text-xl font-semibold text-gray-900">Create New Task 🔧</h3>
 
           <!-- close x -->
           <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">

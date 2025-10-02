@@ -27,13 +27,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
       <!-- Create -->
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-approfile-dialogue">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Create an Approfile</h3>
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Create an Approfile 🪪</h3>
     <p class="text-xs text-blue-600">Normally approfiles for users are created by their signing-up to be an authenticated user.</p>
   </div>
     
     <!-- Edit -->
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="edit-approfile-dialogue">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Edit an Approfile</h3>
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Edit an Approfile  ✍️ 🪪</h3>
     <p class="text-xs text-blue-600">There may be many things to edit. Not yet defined.</p>
   </div>
 
@@ -45,8 +45,8 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
       <!-- relate -->
-  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-approfile-dialogue">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Relate an approfile to...</h3>
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-approfiles-dialogue">
+    <h3 class="text-sm font-medium text-red-700 mb-1">Relate an approfile to...🖇️</h3>
     
     <p class="text-xs text-red-600">Relate an approfile to someone or something.
     (If you want to assign someone to a task use the other method. 

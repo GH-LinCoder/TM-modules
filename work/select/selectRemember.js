@@ -77,10 +77,11 @@ class DevDataSelector {
   getTemplateHTML() {
     return `
       <div class="dev-selector bg-white rounded-lg shadow p-6">
+       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 📝</h3>
         <!-- INSTRUCTIONS -->
         <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
           <p class="text-sm text-blue-800">
-            <strong>How to use:</strong><br>
+            <strong> How to use:</strong><br>
             1. Click a checkbox below to load a list.<br>
             2. Click a name from the list to select it.<br>
             3. Choose how to remember it (Student, Manager, Other).<br>
@@ -92,11 +93,11 @@ class DevDataSelector {
         <div class="mb-4">
           <h4 class="font-medium mb-2">1. Load List:</h4>
           <div class="space-y-1">
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-human"> APPROFILE (person)</label>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-abstract"> APPROFILE (abstract)</label>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-task"> APPROFILE (task)</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-human"> APPROFILE (person) for relating 🖇️</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-abstract"> APPROFILE (abstract) for relating 🖇️</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-task"> APPROFILE (task) for relating 🖇️</label>
             <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="tasks"> TASKS</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="tasks"> 🔧 Tasks for assignment</label>
           </div>
         </div>
 
@@ -113,7 +114,7 @@ class DevDataSelector {
           <div class="space-y-1">
             <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="student"> Student</label>
             <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="manager"> Manager</label>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="other"> Other</label>
+            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="other" checked> Other</label>
             <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="task"> Task</label>
           </div>
         </div>

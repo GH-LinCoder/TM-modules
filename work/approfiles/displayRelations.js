@@ -18,7 +18,7 @@ function getTemplateHTML() {
   return `
     <div class="bg-white rounded-lg shadow p-6">
       <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 class="text-lg font-semibold text-blue-800 mb-2">Display Relationships</h3>
+        <h3 class="text-lg font-semibold text-blue-800 mb-2">Display Relationships 🖇️</h3>
         <p class="text-blue-700 text-sm">
           View all relationships for a selected approfile. 
           Select an approfile from your clipboard below.

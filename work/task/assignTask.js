@@ -137,7 +137,7 @@ class AssignTaskDialog {
         <div class="bg-white rounded-lg shadow-lg w-auto max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
           <div class="p-6 border-b border-gray-200">
             <div class="flex items-center justify-between">
-              <h3 class="text-lg font-semibold text-gray-900">Assign Task</h3>
+              <h3 class="text-lg font-semibold text-gray-900">Assign Task 👨‍🔧</h3>
               <p class="text-sm text-gray-600">Assign a task to a student and manager</p>
               <button class="text-gray-500 hover:text-gray-700" data-action="close-dialog" aria-label="Close">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

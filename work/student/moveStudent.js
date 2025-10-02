@@ -395,7 +395,7 @@ else if (numberOfSteps>currentStep) this.displayNextStep(currentStep,taskSteps);
       <!-- Close Button and Title -->
       <div class="p-6 border-b border-gray-200">
         <div class="flex items-center justify-between">
-          <h3 class="text-xl font-semibold text-gray-900" data-form="title">Advance Student Step</h3>
+          <h3 class="text-xl font-semibold text-gray-900" data-form="title">Advance Student Step 🧑‍🎓</h3>
           <div class="text-gray-500 hover:text-gray-700" data-task="name-of-task">name of task</div>
           <button
             class="text-gray-500 hover:text-gray-700"

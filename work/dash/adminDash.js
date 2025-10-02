@@ -99,45 +99,45 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- CREATE TASK -->    
     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="create-task-dialogue">
-      <h3 class="text-sm font-medium text-yellow-500">Create Task</h3>
-      <p class="text-xs text-gray-500">Author a new task</p>
+      <h3 class="text-sm font-medium text-yellow-500">Create Task 🔧</h3>
+      <p class="text-xs text-gray-500">Author a new task as a training course, or to track progress, or as a step by step recipe, or as a soft production line.</p>
 </div>
 
 <!-- ASSIGN TASK -->    
     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='assign-task-dialogue'>
-      <h3 class="text-sm font-medium text-yellow-700">Assign Task</h3>
-      <p class="text-xs text-gray-500">Link members to tasks</p>
+      <h3 class="text-sm font-medium text-yellow-700">Assign Task 👨‍🔧</h3>
+      <p class="text-xs text-gray-500">Put a person or a thing on a task. Could be a training course, could be a soft production line</p>
     </div>
 
 <!-- MOVE STUDENT -->    
     <div class="bg-red-50 border border-green-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='move-student-dialogue'>
-      <h3 class="text-sm font-medium text-green-700">Move Student</h3>
-      <p class="text-xs text-gray-500">Step by step</p>
+      <h3 class="text-sm font-medium text-green-700">Move Student 🧑‍🎓</h3>
+      <p class="text-xs text-gray-500">Every task starts with a third step...  You can move the student to the next step, and maybe even complete the task, (or give-up)</p>
     </div>
 
 <!-- CREATE APPROFILE -->    
     <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="create-approfile-dialogue">
-      <h3 class="text-sm font-medium text-yellow-500">Create Approfile</h3>
-      <p class="text-xs text-gray-500">Create a new approfile, probably an abstract one</p>
+      <h3 class="text-sm font-medium text-yellow-500">Create Appro 🪪</h3>
+      <p class="text-xs text-gray-500">Create a new approfile, probably an abstract one to represent a concept or an aim or a person.</p>
 </div>    
 
 <!-- RELATE APPROFILES -->
     <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="relate-approfiles-dialogue">
-      <h3 class="text-sm font-medium text-blue-700">Create a relationship (Approfiles)</h3>
-      <p class="text-xs text-gray-500">One thing IS [some relationship] OF another thing. Connecting two approfiles. </p>
+      <h3 class="text-sm font-medium text-blue-700">Create a relationship (Approfiles) 🖇️ </h3>
+      <p class="text-xs text-gray-500">One thing IS [some relationship] OF another thing. Connecting two approfiles, building structure and hierarchy. </p>
     </div>
 
 <!-- VIEW RELATED APPROFILES -->
     <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="display-related-approfiles-dialogue">
-      <h3 class="text-sm font-medium text-blue-700">View how things are related (Approfiles)</h3>
+      <h3 class="text-sm font-medium text-blue-700">Display relationships of Approfiles 👁️🖇️</h3>
       <p class="text-xs text-gray-500">See how a chosen thing IS [some relationship] OF any other things. Display hierarchy & connections. </p>
     </div>
 
 
 <!-- SELECTOR -->
     <div class="bg-green-50 border border-indigo-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='selector-dialogue'>
-      <h3 class="text-sm font-medium text-indigo-700">Select to remember</h3>
-      <p class="text-xs text-gray-500">List things & click to remember the. Can use to fill-in forms</p>
+      <h3 class="text-sm font-medium text-indigo-700">Select to remember 📝</h3>
+      <p class="text-xs text-gray-500">List things & click to remember them. Can use to automatically fill-in forms</p>
     </div>    
 
   </div>
@@ -194,7 +194,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <!-- Approfiles -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action='member-management-section'>
       <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">approfiless</h3>
+      <h3 class="text-sm font-medium text-blue-700">approfiless 🪪</h3>
       <p class="text-xs text-gray-500">View, edit, and manage member, task & abstract, approfiles</p>
     </div>
 
@@ -305,7 +305,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <!-- Surveys & Quiz-->         
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="knowledge" data-action="survey-management-section">
       <p class="text-3xl font-bold text-blue-900" data-value="surveys-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Surveys & Quiz</h3>
+      <h3 class="text-sm font-medium text-blue-700">Surveys & Quiz 📜</h3>
       <p class="text-xs text-gray-500">View, edit, and manage any survey or quiz including automations</p>
     </div>
 

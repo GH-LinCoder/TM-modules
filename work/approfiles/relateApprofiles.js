@@ -44,13 +44,15 @@ function getTemplateHTML() {
             3. Choose one in each dropdown.<br>
             4. Choose the relationship in the middle dropdown.<br>
             5. Click "Confirm" to store it for use in forms.
+            6. IMPORTANT: To relate tasks make sure you have selected the appro for the task, and not the actual task.
+            Only appros can be related. (Tasks can be assigned but not related. Sorry, it is confusing)
           </p>
         </div>  
     
     <div class="bg-white rounded-lg shadow-lg w-auto max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200">
           <div class="flex items-center justify-between">
-            <h3 class="text-lg font-semibold text-gray-900">Relate Approfiles</h3>
+            <h3 class="text-lg font-semibold text-gray-900">Relate Approfiles 🖇️</h3>
             <p class="text-sm text-gray-600">Create a relationship between two approfiles</p>
             <button class="text-gray-500 hover:text-gray-700" data-action="close-dialog" aria-label="Close">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
