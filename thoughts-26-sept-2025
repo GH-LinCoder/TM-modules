@@ -1,0 +1,176 @@
+PROJECT: Web app: To help loosely associated humans to organise, to build an organisation around a shared interest or aim. The app to eventually be a suite of semi-autonomous apps which communicate by API. Current plan has apps to handle:  
+
+Membership/subscriptions/donations
+Task creation, assignment and management
+Relationship creation, tracking, & display (allowing hierarchy management)
+Bug reporting
+User communication (messaging and discussion)
+Survey creation & display with answers causes code branching (how someone replies to a survey determines how the app reacts)
+Recruitment and promotions
+
+Any of these key apps functionality could be fulfilled by subcontracting the process to external API driven established platforms.
+
+Development stage: Early design, partial implementation. The design is iteractive based on testing each stage.
+
+Partially implemented: 
+Bug reporting and tracking in an autonmous app "The Lab notebook".
+
+Database schema, tables built and used, schema in JSON available for reading. 
+Some triggers & functions for automation at the database. 
+
+Design of admin dashboard. Parts that function: 
+"Quick Stats" reads the db and displays general numbers in several categories.
+"Create task"
+"Edit task"
+"Assign Task"
+"Create approfile"
+"Edit approfile"
+"Relate approfiles"
+
+Design of member dashboard. Parts that function:
+Display of member name, email, date when joined, how many tasks currently active, how many completed or abandonded
+Detail display of current active tasks.
+
+Registry as JSON with metadata on every function that interacts with the database API. The metadata is to be crawled by the permission system to determine if the current user has permission to carr-out the database query.
+
+Registry (lazy loader) for all modules that are the pages of the website.
+
+Registry (lazy loader) for utility functions
+
+Lazy loading of webpages in response to clicks on the menu or on cards inside the admin/member dashboards. The listeners read a data-* from the html & set a request (called the petition) and then stop. A change of state triggers the reading of that request and the loading of the page module.
+
+Modules that require data from the DB or to write to the DB know nothing about the database, but they do know the name of the function that will carry out the action. They pass this function to the permissions system via ifPermittedExecute(action). That reads the metadata for the function and will determine permissions but is currently a placeholder that always replies 'permitted'.
+
+Modules should be independent classes, but the loader always calls an exported function render(panel, payload). Therefore the file of the class also has that function which instantiates the class & passes on the args to its method 'render(panel,payload).  [Some of the current modules, written prior to this specification are functions and not classes, but will be refactored]
+
+Clicking the [how?] button opens a module to supply context specific help / instructions. It uses the stored petition to know what the user has recently clicked and will search for pre-written help for that context. It currently just displays what the help should be. [The actual help has not yet been written]
+
+AppState is the global through which the system communicates from module to module. The definition/declaration is in the appstate/appState.js file.
+
+Design aims:
+From the moment of signing up to the app, the user is encouraged to become an active participant in building the organisation. The member dashboard will show 2 or 3, perhaps more 'tasks' that the new person is automatically on. Also there will be other tasks that the new user is on without being aware.
+
+
+Tasks: an explanation.
+This is a multi-purpose system. A task has a unique name (no two tasks can have the same name) & a description which can be upto about 400 words. Every task has at least one step (which also has a name and description of equal maximum length). This can be used like a series of filing trays to just keep track of a step by step process. (The subject is moved from one step to the next as a record of some external process). But the task can also be the process where the person on the task reads the descriptions as instructions to do things. The task can in that way be a training course or a process to be gone through. Also the app can use the task as an automated record system for actions that it is taking.
+
+The new user will always be automatically invited to review available tasks and self select those that seem interesting.
+
+The new user receives invitations to take part in activities including voicing opinions via surveys.
+
+Surveys are active coding. The answer to a question can be automated to do several things, 1) Put the user on a task 2)Move the user to a new step on a task 3) Relate the user to an abstract concept or to other users.
+
+There are two mottos involved here:  
+
+"No one is an island," which means that everyone is related to at least one other item within the app, and probably to many.
+
+"Have your say, do your bit,"  Users are repeatedly invited to express views and to become involved in the management of the organisation.
+
+"No one is an island" - Explaining approfiles
+All the users are represented by an 'approfile' ( a contraction of app profile, or 'appro'). In addition all tasks are also represented by an appro. In addition the App is represented by an appro, but so is the database, and the organisation that the users are building. More than that any abstract notion or grouping can become part of the system by creating an appro to represent it.  [Try to avoid using approfiles for things that change like 'newbies']
+
+Relating appros
+Any appro can be related to any other using one of the enumerated relationships such as 'member'. (Technically these are all taxons and the appros are nodes while the relationships are edges.) Every new user is automatically related to the appro 'Human' and 'Organisation'. If the user wants to join a group that is done by relating to the 'Name of Group' appro. The 'Name of group' appro is automatically related to the 'Groups' appro and the 'Organisation' appro. Any tasks which are specifically related to that group have their appros related to that group appro.  In this way searching for 'Groups' will lead to that group and eventually to everyone and every task related to that group.  In addition to the automatic relating described here, admin users can relate approfiles manually.
+
+
+The hierarchy building aspect of approfiles may also eventually become an independent system connected by API with possible use by customers.
+
+
+"Have your say, do your bit"
+This underlies the app design. To encourage user involvement both in expression and in action. The aim is to build a vibrant self managing organisation out of like minded but isolated individuals.
+
+
+Knowledge
+The context specific 'how?' system is expected to grow into a knowledge deliver system with an interface that can cope with knowledge delivery to any of the apps in the system and eventually to outside customers.
+
+
+Semantic clipboard
+Admin users can select some items from the database, classify them as being 'student' 'manager' 'task' 'other' which is then stored on the appState.clipboard object. This is used to auto-populate any form that is open or opened. If that form expects an input of the type 'student' it will collect the data from the clipboard and display it (subject to user override). 
+
+
+1) App code written as part of the infrastructure
+(list items already done)
+
+create initial db tables for tasks/steps/ assignments
+mock-up adminDash & memberDash
+added display of quick stats from db
+added create task
+added asign task
+changed tech from lovable /vite/ react to plain server javascript
+Adapted page display from The Lab
+created dynamic display using html stub pages and forms
+changed to state machine & listeners to load pages
+changed from html stubs, converted to js modules
+added db event logging
+added db triggers and functions on create task
+developed idea of 'approfiles'
+added registry
+added petition for change of state
+added breadcrumb tracking of petitions
+added how? using breadcrumb to know context for instructions
+added ability to 'transmute/mutate' dashboard sections when card is clicked to open more detailed cards
+developed create task module
+developed assign task module
+develo[ed edit task module
+developed task display for member dash
+developed move student module
+developed create approfile module
+developed edit approfile module
+developed relate approfile module
+developed display relations module
+
+(at each stage, tested and refined the modules)
+
+
+Inconsistencies:
+Modules developed on different dates and by different authors mean that some are classes while others are exported functions, some clean-up when closing, some don't. Styling is different. Naming is confusing do to design changes.
+
+The future:
+The app is now almost usable. The most essential infrastructure is believed to be there. The process from here is to act as if the app were complete and try to use it as if we are building an organisation. 
+
+What is missing?
+What doesn't work?
+What is impractical?
+How does out mental model need to change?
+
+(And in doing this how many things need tidying and correcting?)
+
+
+Superstructure
+(list approfiles & tasks and relationships to create)
+Create high level approfiles:
+App (the entire web app)  [App IS member of Org]
+Org (the organisation)
+Test Mock (all the things that are for dev test rather than real) [Test Mock IS member OF App]
+Database
+Software
+Supabase
+GitHub
+Codespaces
+Qwen
+Copilot
+Gemini
+Human (for all auth users)  [Human IS member of Org]
+Categories (for any approfile that is itself a category that others belong to)
+
+create the task steps that are needed to teach the app
+
+Check that every approfile is related to something and is part of hierarchy.  
+
+(Need a 'no one is an island' utility to find unmapped approfiles: forEach appro in the app_profiles TABLE search by id in the app_relations table. islandArry.Push[row] || relatedArray.push[row] 
+Then can output the islands or the connected.)
+
+Create the survey module. Should we have an editable survey creator? This would have click options to task assignment or/& to approfile relation
+
+
+
+
+
+
+TECH STACK: HTML, Javascript, CSS (legacy Tailwind), Supabase. Hosted locally in development using VSC and python3 http.server. No public access. Files are coordinated via git and GitHub. 
+
+-Spec END -
+
+
+
+
