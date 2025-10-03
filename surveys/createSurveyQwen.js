@@ -1,4 +1,10 @@
+import { appState} from '../state/appState.js';
+import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
+import{executeIfPermitted} from '../registry/executeIfPermitted.js';
+import{showToast} from '../ui/showToast.js';
+
 // Mock clipboard utilities - replace these with your actual clipboard functions
+/*
 function getClipboardItems(options = {}) {
     // This should call your actual clipboard system
     // For now, returning mock data for demonstration
@@ -8,8 +14,8 @@ function getClipboardItems(options = {}) {
         return window.getClipboardItems ? window.getClipboardItems(options) : [];
     }
     return [];
-}
-
+} */
+/*
 function onClipboardUpdate(callback) {
     // This should call your actual clipboard update listener
     // For now, using the global one if it exists
@@ -18,8 +24,8 @@ function onClipboardUpdate(callback) {
     }
     // Fallback: call immediately
     setTimeout(() => callback(), 100);
-}
-
+} */
+/*
 function showToast(message, type = 'info') {
     // Use your actual showToast function
     if (window.showToast) {
@@ -27,8 +33,8 @@ function showToast(message, type = 'info') {
     } else {
         console.log(`Toast [${type}]: ${message}`);
     }
-}
-
+} */
+/*
 function executeIfPermitted(userId, action, payload) {
     // Use your actual executeIfPermitted function
     if (window.executeIfPermitted) {
@@ -37,7 +43,7 @@ function executeIfPermitted(userId, action, payload) {
     // Mock implementation for testing
     console.log(`Executing: ${action}`, payload);
     return Promise.resolve({ id: 'survey-' + Date.now() });
-}
+} */
 
 class SurveyEditor {
     constructor() {
@@ -147,7 +153,7 @@ class SurveyEditor {
 
     getQuestionHTML(questionId) {
         return `
-            <div class="bg-white p-4 rounded-lg border border-gray-300" data-question-id="${questionId}">
+            <div class="bg-white p-4 rounded-lg border border-gray-300" data-question-id="${questionId}"  data-question-container="${questionId}">
                 <div class="flex justify-between items-center mb-3">
                     <label class="block text-sm font-medium text-gray-700">Question</label>
                     <button type="button" data-action="remove-question" data-question-id="${questionId}" 
@@ -166,8 +172,21 @@ class SurveyEditor {
                         + Add Answer
                 </button>
             </div>
-        `;
+    
+    
+
+
+            
+    
+    
+            `;
     }
+
+
+
+
+
+
 
     setupQuestionListeners(panel, questionId) {
         const self = this;
@@ -205,42 +224,42 @@ class SurveyEditor {
 
     getAnswerHTML(questionId, answerId) {
         return `
-            <div class="bg-gray-50 p-3 rounded border" data-answer-id="${answerId}" data-question-id="${questionId}">
-                <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-600">Answer</span>
-                    <button type="button" data-action="remove-answer" data-answer-id="${answerId}" 
-                            class="text-red-500 hover:text-red-700 text-xs">Remove</button>
-                </div>
-                <input type="text" data-answer-text="${answerId}" placeholder="Answer option" 
-                       class="w-full p-2 border rounded mb-3" maxlength="200" />
-                <p class="text-xs text-gray-500 mb-3"><span data-answer-text-counter="${answerId}">0</span>/200 characters</p>
-                
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <!-- Task Dropdown -->
-                    <div class="space-y-1">
-                        <label class="block text-xs font-medium text-gray-600">Task (optional)</label>
-                        <select data-form="taskSelect" data-answer-id="${answerId}" 
-                                class="w-full p-2 border border-gray-300 rounded text-sm">
-                            <option value="">Select a task</option>
-                        </select>
-                    </div>
-                    
-                    <!-- Approfile Dropdown -->
-                    <div class="space-y-1">
-                        <label class="block text-xs font-medium text-gray-600">Approfile (optional)</label>
-                        <select data-form="approfileSelect" data-answer-id="${answerId}" 
-                                class="w-full p-2 border border-gray-300 rounded text-sm">
-                            <option value="">Select an approfile</option>
-                        </select>
-                    </div>
-                </div>
-                
-                <div class="mt-2">
-                    <label class="block text-xs font-medium text-gray-600">Relationship Type</label>
-                    <input type="text" data-relationship-type="${answerId}" placeholder="e.g., member, attendee" 
-                           class="w-full p-2 border rounded text-sm" maxlength="50" />
-                </div>
-            </div>
+            <div class="bg-gray-50 p-3 rounded border" data-answer-container="${answerId}" data-question-id="${questionId}">
+    <div class="flex justify-between items-center mb-2">
+        <span class="text-sm font-medium text-gray-600">Answer</span>
+        <button type="button" data-action="remove-answer" data-answer-id="${answerId}" 
+                class="text-red-500 hover:text-red-700 text-xs">Remove</button>
+    </div>
+    <input type="text" data-answer-text="${answerId}" placeholder="Answer option" 
+           class="w-full p-2 border rounded mb-3" maxlength="200" />
+    <p class="text-xs text-gray-500 mb-3"><span data-answer-text-counter="${answerId}">0</span>/200 characters</p>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+        <!-- Task Dropdown -->
+        <div class="space-y-1">
+            <label class="block text-xs font-medium text-gray-600">Task (optional)</label>
+            <select data-answer-task="${answerId}" 
+                    class="w-full p-2 border border-gray-300 rounded text-sm">
+                <option value="">Select a task</option>
+            </select>
+        </div>
+        
+        <!-- Approfile Dropdown -->
+        <div class="space-y-1">
+            <label class="block text-xs font-medium text-gray-600">Approfile (optional)</label>
+            <select data-answer-appro="${answerId}" 
+                    class="w-full p-2 border border-gray-300 rounded text-sm">
+                <option value="">Select an approfile</option>
+            </select>
+        </div>
+    </div>
+    
+    <div class="mt-2">
+        <label class="block text-xs font-medium text-gray-600">Relationship Type</label>
+        <input type="text" data-answer-relation="${answerId}" placeholder="e.g., member, attendee" 
+               class="w-full p-2 border rounded text-sm" maxlength="50" />
+    </div>
+</div>
         `;
     }
 
@@ -320,41 +339,42 @@ class SurveyEditor {
         
         // Collect all questions and answers
         const questions = [];
-        const questionElements = panel.querySelectorAll('[data-question-id]');
+        const questionElements = panel.querySelectorAll('[data-question-container]');
         
         for (const questionEl of questionElements) {
-            const questionId = questionEl.dataset.questionId;
+            const questionId = questionEl.dataset.questionContainer; // Use the specific container attribute
             const questionText = questionEl.querySelector(`[data-question-text="${questionId}"]`)?.value.trim();
-            
+            console.log("Processing question:", questionId, " ", questionText);
             if (!questionText) {
                 showToast('All questions must have text', 'error');
                 return;
             }
             
             const answers = [];
-            const answerElements = questionEl.querySelectorAll(`[data-answer-id]`);
+            const answerElements = questionEl.querySelectorAll('[data-answer-container]');
             
             for (const answerEl of answerElements) {
-                const answerId = answerEl.dataset.answerId;
+                const answerId = answerEl.dataset.answerContainer; // Updated to match new attribute
                 const answerText = answerEl.querySelector(`[data-answer-text="${answerId}"]`)?.value.trim();
-                
+                console.log("Processing answers:", answerElements.length," ",answerId, " ", answerText);    
                 if (!answerText) {
                     showToast('All answers must have text', 'error');
                     return;
                 }
                 
                 // Get task selection
-                const taskSelect = answerEl.querySelector(`[data-form="taskSelect"]`);
+                const taskSelect = answerEl.querySelector(`[data-answer-task="${answerId}"]`);
                 const taskId = taskSelect?.value || null;
                 const taskName = taskId ? taskSelect.options[taskSelect.selectedIndex]?.dataset.name : null;
                 
                 // Get approfile selection
-                const approfileSelect = answerEl.querySelector(`[data-form="approfileSelect"]`);
+                const approfileSelect = answerEl.querySelector(`[data-answer-appro="${answerId}"]`);
                 const approfileId = approfileSelect?.value || null;
                 const approfileName = approfileId ? approfileSelect.options[approfileSelect.selectedIndex]?.dataset.name : null;
                 
                 // Get relationship type
-                const relationshipType = answerEl.querySelector(`[data-relationship-type="${answerId}"]`)?.value.trim() || 'member';
+                const relationshipInput = answerEl.querySelector(`[data-answer-relation="${answerId}"]`);
+                const relationshipType = relationshipInput?.value.trim() || 'member';
                 
                 const answerData = {
                     text: answerText,
