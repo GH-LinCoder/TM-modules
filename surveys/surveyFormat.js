@@ -146,4 +146,83 @@ surveyFormat =
                                 "is_nullable": "NO",
                                 "column_default": null
                               }
-                            }
+                            },
+
+                                  "automations"= {
+                                    "id": {
+                                      "data_type": "uuid",
+                                      "is_nullable": "NO",
+                                      "column_default": "gen_random_uuid()"
+                                    },
+                                    "name": {
+                                      "data_type": "text",
+                                      "is_nullable": "YES",
+                                      "column_default": null
+                                    },
+                                    "to_step": {
+                                      "data_type": "integer",
+                                      "is_nullable": "YES",
+                                      "column_default": null
+                                    },
+                                    "from_step": {
+                                      "data_type": "integer",
+                                      "is_nullable": "YES",
+                                      "column_default": null
+                                    },
+                                    "created_at": {
+                                      "data_type": "timestamp with time zone",
+                                      "is_nullable": "NO",
+                                      "column_default": "now()"
+                                    },
+                                    "student_id": {
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES",
+                                      "column_default": "gen_random_uuid()"
+                                    },
+                                    "appro_is_id": {
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES",
+                                      "column_default": "gen_random_uuid()"
+                                    },
+                                    "description": {
+                                      "data_type": "text",
+                                      "is_nullable": "YES",
+                                      "column_default": null
+                                    },
+                                    "of_appro_id": {
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES",
+                                      "column_default": "gen_random_uuid()"
+                                    },
+                                    "relationship": {
+                                      "data_type": "text",
+                                      "is_nullable": "YES",
+                                      "column_default": null
+                                    },
+                                    "task_step_id": {
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES",
+                                      "column_default": "gen_random_uuid()"
+                                    },
+                                    "task_header_id": {
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES",
+                                      "column_default": "gen_random_uuid()"
+                                    },
+                                    "last_updated_at": {
+                                      "data_type": "timestamp with time zone",
+                                      "is_nullable": "YES",
+                                      "column_default": null
+                                    },
+                                    "survey_answer_id": {
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES",
+                                      "column_default": "gen_random_uuid()"
+                                    },
+                                    "appro_relations_id": {
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES",
+                                      "column_default": null
+                                    }
+                                  }
+

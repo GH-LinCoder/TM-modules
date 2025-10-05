@@ -17,10 +17,17 @@ export function render(panel, query = {}) {
   console.log('Render Edit Task Form:', panel, query);
   
   panel.innerHTML = getTemplateHTML();
-  attachListeners(panel);
-  
+
   // Initialize clipboard integration
   initClipboardIntegration(panel);
+
+  attachListeners(panel);
+  
+
+
+  taskSelect = panel.querySelector('[data-form="taskSelect"]');
+
+
 }
 
 function initClipboardIntegration(panel) {
@@ -40,9 +47,38 @@ function populateFromClipboard(panel) {
   const tasks = getClipboardItems({ as: 'task', type: 'tasks' });
   
   if (tasks.length === 0) return;
+
+  //new 16:03 oct 4
+  if (tasks.length === 1 && !taskSelect.value) {  //what is this?
+    taskSelect.value = tasks[0].entity.id;
+    informationFeedback.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled task: ${tasks[0].entity.name}</div>`;
+  }
+  addClipboardItemsToDropdown(tasks, taskSelect);
   
-  // Use the most recent one
-  const item = tasks[0];
+
+
+
+  // Use the most recent one      const task_header_id = taskSelect.value;
+ // const item = tasks[0];
+ //const item = taskSelect.value ;
+
+/*
+ console.log('tasks:',tasks); 
+console.log('---');
+console.log('tasks[0]:',tasks[0]); 
+console.log('---');
+console.log('tasks[0].entity:',tasks[0].entity); 
+console.log('---');
+console.log('tasks[0].entity.item:',tasks[0].entity.item); // this contains the row of information:
+//  id, name, description, external_url, author_id, created_at, 
+console.log('---');
+console.log('taskSelect.value:',taskSelect.value);
+*/
+
+//return;
+ const item = taskSelect.value ? tasks.find(t => t.entity.id === taskSelect.value) : tasks[0];
+ if (!item) return;
+ console.log('Using clipboard item:', item);
   state.currentTask = item.entity.item; // full row data
   state.currentTaskId = item.entity.id;
   
@@ -73,6 +109,25 @@ function populateFromClipboard(panel) {
     loadTaskSteps(panel, state.currentTaskId);
   }
 }
+
+function addClipboardItemsToDropdown(items, selectElement) {
+  if (!items || items.length === 0) return;
+  
+  items.forEach(item => {
+    const existingOption = Array.from(selectElement.options).find(opt => opt.value === item.entity.id);
+    if (!existingOption) {
+      const option = document.createElement('option');
+      option.value = item.entity.id;
+      option.textContent = `${item.entity.name} (clipboard)`;
+      option.dataset.source = 'clipboard';
+      selectElement.appendChild(option);
+    }
+  });
+}
+
+
+
+
 
 async function loadTaskSteps(panel, taskId) {
     try {
@@ -152,6 +207,15 @@ function getTemplateHTML() {
             </ul>
           </div>
 
+
+            <div class="space-y-2">
+              <label for="taskSelect" class="block text-sm font-medium text-gray-700">Select Task</label>
+              <select id="taskSelect" data-form="taskSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <option value="">Select a task</option>
+              </select>
+            </div>
+
+
           <div id="editTaskForm" class="space-y-6 bg-gray-50 p-6 rounded-lg">
             <div>
               <label for="taskName" class="block text-sm font-medium text-gray-700 mb-1">
@@ -218,6 +282,10 @@ function getTemplateHTML() {
                 <div id="stepsList" class="space-y-2"></div>
               </div>
             </div>
+                      <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
+            <p class="text-lg font-bold">Information:</p>
+            <p data-task="information-feedback"></p>
+          </div>
           </div>
         </div>
       </div>
@@ -299,6 +367,35 @@ stepSelect?.addEventListener('change', (e) => {
   saveTaskBtn?.addEventListener('click', (e) => handleTaskUpdate(e, panel));
   saveStepBtn?.addEventListener('click', (e) => handleStepUpdate(e, panel));
   panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
+
+
+// new 17:39 oct 4
+
+  const taskSelect = panel.querySelector('#taskSelect');
+
+  taskSelect?.addEventListener('change', (e) => {
+    const selectedId = e.target.value;
+    const tasks = getClipboardItems({ as: 'task', type: 'tasks' });
+    const selectedItem = tasks.find(t => t.entity.id === selectedId);
+    if (!selectedItem) return;
+  
+    const task = selectedItem.entity.item;
+    panel.querySelector('#taskName').value = task.name || '';
+    panel.querySelector('#taskDescription').value = task.description || '';
+    panel.querySelector('#taskUrl').value = task.external_url || '';
+  
+    panel.querySelector('#taskNameCounter').textContent = `${(task.name || '').length}/64 characters`;
+    panel.querySelector('#taskDescriptionCounter').textContent = `${(task.description || '').length}/2000 characters`;
+  
+    state.currentTask = task;
+    state.currentTaskId = selectedItem.entity.id;
+  
+    loadTaskSteps(panel, state.currentTaskId);
+  });
+//end new 17:39 oct 4  
+
+
+
 }
 
 

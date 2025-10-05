@@ -1004,11 +1004,178 @@ handler: async (supabase, userId, payload) => {
   },
 
 
+////////////////////////////////////    SURVEYS   ////////////////////////////////
+
+createSurvey: {
+  metadata: {
+    tables: ['survey_headers'],
+    columns: ['name', 'description', 'external_url', 'author_id'], //WRONG
+    type: 'INSERT',
+    requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields
+  },
+  handler: async (supabase, userId, payload) => {
+    const { surveyName, surveyDescription } = payload;
+
+    // Check for duplicate name
+    const {  existingSurvey, error: fetchError } = await supabase
+      .from('survey_headers')
+      .select('id')
+      .eq('name', encodeURIComponent(surveyName)) // encodeURIComponent(value) for .eq() & .like()
+      .single();
+
+    if (existingSurvey) {
+      throw new Error('A survey with that name exists. Your survey needs a different name.');
+    }
+
+    const { data, error } = await supabase
+      .from('survey_headers')
+      .insert({
+        name: surveyName,
+        description: surveyDescription,
+        //external_url: taskUrl || null,
+        author_id: userId // ← use passed userId
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // ← returns { id, name, description, ... }
+  }
+},
 
 
+createSurveyQuestion: {
+  metadata: {
+    tables: ['survey_questions'],
+    columns: ['name', 'description', 'survey_header_id'], //WRONG?
+    type: 'INSERT',
+    requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields
+  },
+  handler: async (supabase, userId, payload) => {
+    const { surveyId, questionText } = payload;
+
+    // Check for duplicate name  ???
+  /*
+    const {  existingSurveyQuestion, error: fetchError } = await supabase
+      .from('survey_questions')
+      .select('id')
+      .eq('name', encodeURIComponent(surveyQuestionName)) // encodeURIComponent(value) for .eq() & .like()
+      .single();
+
+    if (existingSurveyQuestion) {
+      throw new Error('A survey with that name exists. Your survey needs a different name.');
+    }  
+      
+     surveyId: newSurvey.id, // Use the survey ID from the header save
+                questionText: questionText
+    
+    */
+
+    const { data, error } = await supabase
+      .from('survey_questions')
+      .insert({
+        survey_header_id: surveyId,
+        name: questionText,
+        //external_url: taskUrl || null,
+        author_id: userId // ← use passed userId
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // ← returns { id, name, description, ... }
+  }
+},
+
+createSurveyAnswer: {
+  metadata: {
+    tables: ['survey_answers'],
+    columns: ['name', 'description', 'survey_header_id'], //WRONG?
+    type: 'INSERT',
+    requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
+  },
+  handler: async (supabase, userId, payload) => {
+    const { questionId, answerText } = payload;
+
+    // Check for duplicate name  ???
+  /*
+    const {  existingSurveyQuestion, error: fetchError } = await supabase
+      .from('survey_questions')
+      .select('id')
+      .eq('name', encodeURIComponent(surveyQuestionName)) // encodeURIComponent(value) for .eq() & .like()
+      .single();
+
+    if (existingSurveyQuestion) {
+      throw new Error('A survey with that name exists. Your survey needs a different name.');
+    }  
+      
+     surveyId: newSurvey.id, // Use the survey ID from the header save
+                questionText: questionText
+    
+    */
+
+    const { data, error } = await supabase
+      .from('survey_answers')
+      .insert({
+        survey_question_id: questionId,
+        name: answerText,
+        //external_url: taskUrl || null,
+        //author_id: userId // ← no such column use passed userId
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // ← returns { id, name, description, ... }
+  }
+},
 
 
+createSurveyAutomation: {
+  metadata: {
+    tables: ['automations'],
+    columns: ['name', 'description', 'survey_header_id'], //WRONG?
+    type: 'INSERT',
+    requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
+  },
+  handler: async (supabase, userId, payload) => {
+    const { surveyAnswerId, taskId, taskName, approfileId,relationship } = payload;
 
+    // Check for duplicate name  ???
+  /*
+    const {  existingSurveyQuestion, error: fetchError } = await supabase
+      .from('survey_questions')
+      .select('id')
+      .eq('name', encodeURIComponent(surveyQuestionName)) // encodeURIComponent(value) for .eq() & .like()
+      .single();
+
+    if (existingSurveyQuestion) {
+      throw new Error('A survey with that name exists. Your survey needs a different name.');
+    }  
+      
+     surveyId: newSurvey.id, // Use the survey ID from the header save
+                questionText: questionText
+    
+    */
+
+    const { data, error } = await supabase
+      .from('automations')
+      .insert({
+        survey_answer_id: surveyAnswerId,
+        task_header_id:taskId,
+        name: taskName,
+        appro_is_id: userId, // ← use passed userId ?
+        relationship:relationship,
+        of_appro_id: approfileId 
+        
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // ← returns { id, name, description, ... }
+  }
+},
 
 }//EOF
 // 18:43 sunday 14 Sept added encodeURIComponent(    )  around values in .eq because Supabase has been warning

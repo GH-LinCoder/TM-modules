@@ -17,10 +17,7 @@ class SurveyEditor {
         this.surveyId = null;
         this.questionId = null;
         this.answerId = null;
-        this.steps = []; // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-   this.questionNumber =0;
-   this.answerNumber = 0;
-   this.automationsNumber = 0;
+        this.steps = []; // To track the steps
     }
 
     render(panel, query = {}) {
@@ -39,7 +36,7 @@ class SurveyEditor {
             <div id="surveyEditorDialog" class="survey-editor-dialogue relative z-10 flex flex-col h-full">
                 <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
                     <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-xl font-semibold text-gray-900">Create Survey005</h3>
+                        <h3 class="text-xl font-semibold text-gray-900">Create Survey 004</h3>
                         <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -117,42 +114,35 @@ class SurveyEditor {
                                     When this answer is selected, the following actions will be performed:
                                 </p>
                                 
-                                <!-- Assign Task Section -->
-                                <div class="mt-4 p-3 bg-white rounded border mb-4">
-                                    <h5 class="font-medium text-gray-800 mb-2">Assign a task</h5>
-                                    <div class="flex gap-2">
+                                <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mt-3">
+                                    <!-- Task Dropdown -->
+                                    <div class="space-y-1">
+                                        <label class="block text-xs font-medium text-gray-600">Task (optional)</label>
                                         <select id="taskSelect" 
-                                                class="flex-1 p-2 border border-gray-300 rounded text-sm">
+                                                class="w-full p-2 border border-gray-300 rounded text-sm">
                                             <option value="">Select a task</option>
                                         </select>
-                                        <button type="button" id="saveTaskAutomationBtn" class="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 opacity-50" style="pointer-events: none;">
-                                            Save Task
-                                        </button>
                                     </div>
-                                </div>
-                                
-                                <!-- Relate to Category Section -->
-                                <div class="p-3 bg-white rounded border">
-                                    <h5 class="font-medium text-gray-800 mb-2">Relate to a category</h5>
-                                    <div class="flex gap-2 mb-2">
+                                    
+                                    <!-- Approfile Dropdown -->
+                                    <div class="space-y-1">
+                                        <label class="block text-xs font-medium text-gray-600">Approfile (optional)</label>
                                         <select id="approfileSelect" 
-                                                class="flex-1 p-2 border border-gray-300 rounded text-sm">
+                                                class="w-full p-2 border border-gray-300 rounded text-sm">
                                             <option value="">Select an approfile</option>
                                         </select>
                                     </div>
-                                    <div class="flex gap-2">
-                                        <select id="relationshipSelect" 
-                                                class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                                            <option value="">Select relationship</option>
-                                            <option value="member">member</option>
-                                            <option value="customer">customer</option>
-                                            <option value="explanation">explanation</option>
-                                        </select>
-                                        <button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
-                                            Save Relationship
-                                        </button>
-                                    </div>
                                 </div>
+                                
+                                <div class="mt-2">
+                                    <label class="block text-xs font-medium text-gray-600">Relationship Type</label>
+                                    <input type="text" id="relationshipType" placeholder="e.g., member, attendee" 
+                                           class="w-full p-2 border rounded text-sm" maxlength="50" />
+                                </div>
+                                
+                                <button type="button" id="saveAutomationBtn" class="w-full mt-3 bg-yellow-600 text-white py-2 px-4 rounded hover:bg-yellow-700 opacity-50" style="pointer-events: none;">
+                                    Save Automation
+                                </button>
                             </div>
                         </div>
 
@@ -208,22 +198,12 @@ class SurveyEditor {
             this.handleAddAnswer(e, panel);
         });
 
-        // Save task automation button
-        panel.querySelector('#saveTaskAutomationBtn')?.addEventListener('click', (e) => {
-            this.handleTaskAutomationSubmit(e, panel);
-        });
-
-        // Save relationship automation button
-        panel.querySelector('#saveRelationshipAutomationBtn')?.addEventListener('click', (e) => {
-            this.handleRelationshipAutomationSubmit(e, panel);
-        });
-
         // Close dialog
         panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => {
             panel.remove();
         });
     }
-/*  changed 22:22 Oct 5 2025
+
     addInformationCard(message) {
         const infoSection = document.querySelector('#informationSection');
         const card = document.createElement('div');
@@ -233,71 +213,37 @@ class SurveyEditor {
         
         // Add to steps array
         this.steps.push(message);
-        console.log('steps array:)',this.steps);
     }
-*/
-//new 22:22 Oct 5
-addInformationCard(stepData) {
-    const infoSection = document.querySelector('#informationSection');
-    const card = document.createElement('div');
-    card.className = 'bg-white p-2 rounded border mb-1 text-sm';
+
+ populateFromClipboard(panel) {
+    console.log('SurveyEditor.populateFromClipboard()');
     
-    // Create display text by iterating through all properties
-    let displayText = `Saved`;
+  //  const informationFeedback = panel.querySelector('[data-survey="information-feedback"]');
+  //  informationFeedback.innerHTML = '';
     
-    // Iterate through all properties in the object
-    for (const [key, value] of Object.entries(stepData)) {
-        if (key !== 'timestamp') {
-            displayText += `, ${key}: ${value}`;
-        }
+    // Get clipboard items
+    const tasks = getClipboardItems({ as: 'task' });
+    const approfiles = getClipboardItems({ as: 'other' });
+    
+    console.log('Tasks from clipboard:', tasks);
+    console.log('AppProfiles from clipboard:', approfiles);
+    
+    // Populate task dropdown
+    const taskSelect = panel.querySelector('#taskSelect');
+    if (taskSelect) {
+        console.log('Populating task dropdown with', tasks.length, 'items');
+        this.addClipboardItemsToDropdown(tasks, taskSelect, 'task');
     }
     
-    card.textContent = displayText;
-    infoSection.appendChild(card);
-    
-    // Add to steps array
-    this.steps.push(stepData);
-    console.log('steps array:', this.steps);
+    // Populate approfile dropdown
+    const approfileSelect = panel.querySelector('#approfileSelect');
+    if (approfileSelect) {
+        console.log('Populating approfile dropdown with', approfiles.length, 'items');
+        this.addClipboardItemsToDropdown(approfiles, approfileSelect, 'approfile');
+    }
+    this.addInformationCard(`Clipboard items loaded: ${tasks.length} tasks, ${approfiles.length} approfiles`);
+//    informationFeedback.innerHTML = `Clipboard items loaded: ${tasks.length} tasks, ${approfiles.length} approfiles`;
 }
-
-
-
-
-//end new
-
-
-
-
-
-    populateFromClipboard(panel) {
-        console.log('SurveyEditor.populateFromClipboard()');
-        
-        // Get clipboard items
-        const tasks = getClipboardItems({ as: 'task' });
-        const approfiles = getClipboardItems({ as: 'other' });
-        
-        console.log('Tasks from clipboard:', tasks);
-        console.log('AppProfiles from clipboard:', approfiles);
-        
-        // Populate task dropdown
-        const taskSelect = panel.querySelector('#taskSelect');
-        if (taskSelect) {
-            console.log('Populating task dropdown with', tasks.length, 'items');
-            this.addClipboardItemsToDropdown(tasks, taskSelect, 'task');
-        }
-        
-        // Populate approfile dropdown
-        const approfileSelect = panel.querySelector('#approfileSelect');
-        if (approfileSelect) {
-            console.log('Populating approfile dropdown with', approfiles.length, 'items');
-            this.addClipboardItemsToDropdown(approfiles, approfileSelect, 'approfile');
-        }
-        
-        //// Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-        // Add information card about loaded items
-        //this.addInformationCard(`Clipboard items loaded: ${tasks.length} tasks,  ${approfiles.length} approfiles`);
-    // removed 21:37 Oct 5 because this message is very different to the survey structural messages
-    }
 
     addClipboardItemsToDropdown(items, selectElement, type) {
         if (!items || items.length === 0) return;
@@ -352,8 +298,8 @@ addInformationCard(stepData) {
                 saveQuestionBtn.style.opacity = '1';
                 saveQuestionBtn.style.pointerEvents = 'auto';
                 
-                // Add information card // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-                this.addInformationCard({'type' :'survey' , 'id': `${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 30)}...`});
+                // Add information card
+                this.addInformationCard(`Saved name & description - id: ${result.id.substring(0, 8)}...`);
                 
                 saveBtn.textContent = 'Survey Header Saved';
                 saveBtn.disabled = true; // Disable since header is saved
@@ -394,10 +340,10 @@ addInformationCard(stepData) {
             });
             
             this.questionId = result.id;
-            // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-            // Add information card  this.questionNumber =0;   this.answerNumber = 0;  this.automationsNumber = 0;
-            this.questionNumber++;
-            this.addInformationCard({'type':'Question' , 'number':this.questionNumber, 'id':`${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 8)}...`});            
+            
+            // Add information card
+            this.addInformationCard(`Question saved - id: ${result.id.substring(0, 8)}...`);
+            
             // Disable question input and save button
             panel.querySelector('#questionText').disabled = true;
             saveQuestionBtn.disabled = true;
@@ -453,10 +399,9 @@ addInformationCard(stepData) {
             });
             
             this.answerId = result.id;
-            // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-            // Add information card  this.questionNumber =0;   this.answerNumber = 0;  this.automationsNumber = 0;
-            this.answerNumber++;
-            this.addInformationCard({'type':'Answer','number':this.answerNumber,  'questionnumber':this.questionNumber , 'id':`${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 8)}...`});
+            
+            // Add information card
+            this.addInformationCard(`Answer saved - id: ${result.id.substring(0, 8)}...`);
             
             // Disable answer input and save button
             panel.querySelector('#answerText').disabled = true;
@@ -468,15 +413,10 @@ addInformationCard(stepData) {
             automationsCard.style.opacity = '1';
             automationsCard.style.pointerEvents = 'auto';
             
-            // Enable save task automation button
-            const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
-            saveTaskAutomationBtn.style.opacity = '1';
-            saveTaskAutomationBtn.style.pointerEvents = 'auto';
-            
-            // Enable save relationship automation button
-            const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
-            saveRelationshipAutomationBtn.style.opacity = '1';
-            saveRelationshipAutomationBtn.style.pointerEvents = 'auto';
+            // Enable save automation button
+            const saveAutomationBtn = panel.querySelector('#saveAutomationBtn');
+            saveAutomationBtn.style.opacity = '1';
+            saveAutomationBtn.style.pointerEvents = 'auto';
             
             showToast('Answer saved successfully!');
         } catch (error) {
@@ -491,6 +431,11 @@ addInformationCard(stepData) {
         panel.querySelector('#answerText').value = '';
         panel.querySelector('#answerText').disabled = false;
         
+        // Reset dropdowns and relationship type
+        panel.querySelector('#taskSelect').value = '';
+        panel.querySelector('#approfileSelect').value = '';
+        panel.querySelector('#relationshipType').value = '';
+        
         // Re-enable save answer button
         const saveAnswerBtn = panel.querySelector('#saveAnswerBtn');
         saveAnswerBtn.disabled = false;
@@ -502,103 +447,12 @@ addInformationCard(stepData) {
         automationsCard.style.opacity = '0.2';
         automationsCard.style.pointerEvents = 'none';
         
-        // Disable automation buttons
-        const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
-        saveTaskAutomationBtn.disabled = true;
-        saveTaskAutomationBtn.style.opacity = '0.5';
-        saveTaskAutomationBtn.style.pointerEvents = 'none';
-        
-        const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
-        saveRelationshipAutomationBtn.disabled = true;
-        saveRelationshipAutomationBtn.style.opacity = '0.5';
-        saveRelationshipAutomationBtn.style.pointerEvents = 'none';
+        // Disable save automation button
+        const saveAutomationBtn = panel.querySelector('#saveAutomationBtn');
+        saveAutomationBtn.disabled = true;
+        saveAutomationBtn.style.opacity = '0.5';
+        saveAutomationBtn.style.pointerEvents = 'none';
         
         showToast('Ready to add a new answer');
-    }
-
-    async handleTaskAutomationSubmit(e, panel) {
-        e.preventDefault();
-        
-        const taskSelect = panel.querySelector('#taskSelect');
-        const selectedTaskId = taskSelect?.value;
-        const  cleanName = taskSelect?.text?.replace(' (clipboard)', '');
-
-
-        if (!selectedTaskId) {
-            showToast('Please select a task first', 'error');
-            return;
-        }
-        
-        const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
-        saveTaskAutomationBtn.disabled = true;
-        saveTaskAutomationBtn.textContent = 'Saving...';
-        
-        try { 
-            // Save task automation to database
-            const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
-                surveyAnswerId: this.answerId,
-                taskId: selectedTaskId,
-                name:cleanName   // could send taskName
-            });
-            // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-            // Add information card  this.questionNumber =0;   this.answerNumber = 0;  this.automationsNumber = 0;
-            this.automationsNumber++;
-            this.addInformationCard({'type':'Task automation','number':this.automationsNumber , 'answerNumber':this.answerNumber,  'questionNumber':this.questionNumber, 'id': `${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 8)}...`});
-            
-            showToast('Task automation saved successfully!');
-        } catch (error) {
-            showToast('Failed to save task automation: ' + error.message, 'error');
-        }
-        
-        saveTaskAutomationBtn.disabled = false;
-        saveTaskAutomationBtn.textContent = 'Save Task';
-    }
-
-    async handleRelationshipAutomationSubmit(e, panel) {
-        e.preventDefault();
-        
-        const approfileSelect = panel.querySelector('#approfileSelect');
-        const relationshipSelect = panel.querySelector('#relationshipSelect');
-        
-        const selectedApproleId = approfileSelect?.value;
-        const cleanName = approfileSelect?.text?.replace(' (clipboard)', '');
-
-        const selectedRelationship = relationshipSelect?.value;
-        
-        if (!selectedApproleId) {
-            showToast('Please select an approfile first', 'error');
-            return;
-        }
-        
-        if (!selectedRelationship) {
-            showToast('Please select a relationship type', 'error');
-            return;
-        }
-        
-        const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
-        saveRelationshipAutomationBtn.disabled = true;
-        saveRelationshipAutomationBtn.textContent = 'Saving...';
-        
-        try {  
-            // Save relationship automation to database
-            const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
-                surveyAnswerId: this.answerId,
-                approfileId: selectedApproleId,
-                name:cleanName,// could send appro name
-                relationship: selectedRelationship
-            });
-            
-            // Add information card
-            // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-            // Add information card  this.questionNumber =0;   this.answerNumber = 0;  this.automationsNumber = 0;
-            this.automationsNumber++;
-            this.addInformationCard({'type':'Appro automation', 'number':this.automationsNumber, 'answerNumber':this.answerNumber,  'questionNumber':this.questionNumber ,'id': `${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 8)}...` , 'relationship': `${result.relationship.substring(0, 8)}...`});            
-            showToast('Relationship automation saved successfully!');
-        } catch (error) {
-            showToast('Failed to save relationship automation: ' + error.message, 'error');
-        }
-        
-        saveRelationshipAutomationBtn.disabled = false;
-        saveRelationshipAutomationBtn.textContent = 'Save Relationship';
     }
 }
