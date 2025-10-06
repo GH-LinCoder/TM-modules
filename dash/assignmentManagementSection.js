@@ -27,8 +27,8 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   </div>
 
       <!-- Create -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-assignment">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Create a assignment</h3>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="assign-task-dialogue">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Create an Assignment 👨‍🔧</h3>
     <p class="text-xs text-blue-600">Tasks can be assigned by the app automatically, or by the user choosing a task or by admin assigning a task.</p>
   </div>
     
@@ -44,11 +44,6 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <p class="text-xs text-blue-600">Deletion marks the record as deleted, but does not erase it from the system</p>
   </div>
 
-      <!-- Assign -->
-  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assign-assignment">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Assign to a task</h3>
-    <p class="text-xs text-red-600">This places an approfile on the task.</p>
-  </div>
 
       <!-- relate -->
   <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-assignment">

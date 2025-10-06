@@ -1,3 +1,4 @@
+
 import { appState} from '../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import{executeIfPermitted} from '../registry/executeIfPermitted.js';
@@ -14,22 +15,16 @@ export function render(panel, query = {}) {
 const userId = appState.query.userId;
 
 class SurveyEditor {
-    // ========================================
-    // STATE MANAGEMENT
-    // ========================================
     constructor() {
         this.surveyId = null;
         this.questionId = null;
         this.answerId = null;
         this.steps = []; // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-        this.questionNumber = 0;
-        this.answerNumber = 0;
-        this.automationsNumber = 0;
+   this.questionNumber =0;
+   this.answerNumber = 0;
+   this.automationsNumber = 0;
     }
 
-    // ========================================
-    // UI RENDERING
-    // ========================================
     render(panel, query = {}) {
         console.log('createSurvey.render(', panel, query, ')');
         panel.innerHTML = this.getTemplateHTML();
@@ -41,13 +36,12 @@ class SurveyEditor {
         });
     }
 
-    getTemplateHTML() {
-        console.log('getTemplateHTML()');
+    getTemplateHTML() {console.log('getTemplateHTML()');
         return `
             <div id="surveyEditorDialog" class="survey-editor-dialogue relative z-10 flex flex-col h-full">
                 <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
                     <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-xl font-semibold text-gray-900">Create Survey020</h3>
+                        <h3 class="text-xl font-semibold text-gray-900">Create Survey013</h3>
                         <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -84,7 +78,8 @@ class SurveyEditor {
                             <!-- Question Card -->
                             <div id="questionCard" class="bg-white p-4 rounded-lg border border-gray-300 opacity-50" style="pointer-events: none;">
                                 <div class="flex justify-between items-center mb-3">
-                                    <label class="block texclass 
+                                    <label class="block text-sm font-medium text-gray-700">Question</label>
+                                </div>
                                 <input type="text" id="questionText" placeholder="Enter question text" 
                                        class="w-full p-2 border rounded mb-3" maxlength="500" />
                                 <p class="text-xs text-gray-500 mb-3"><span id="questionTextCounter">0</span>/500 characters</p>
@@ -179,16 +174,12 @@ class SurveyEditor {
         `;
     }
 
-    // ========================================
-    // EVENT HANDLERS
-    // ========================================
-    attachListeners(panel) { 
-        console.log('attachListeners()');
-        
+    attachListeners(panel) { console.log('attachListeners()');
         // Character counters
         panel.querySelector('#surveyName')?.addEventListener('input', e => {
             panel.querySelector('#surveyNameCounter').textContent = `${e.target.value.length}/128 characters`;
         });
+
         panel.querySelector('#surveyDescription')?.addEventListener('input', e => {
             panel.querySelector('#surveyDescriptionCounter').textContent = `${e.target.value.length}/2000 characters`;
         });
@@ -213,10 +204,12 @@ class SurveyEditor {
             this.handleQuestionSubmit(e, panel);
         });
 
-        // Add question button   
-        panel.querySelector('#addQuestionBtn')?.addEventListener('click', (e) => {
-            this.handleAddQuestion(e, panel);
-        });
+        //NEW  10:19 Oct 6
+                // Add question button   
+                panel.querySelector('#addQuestionBtn')?.addEventListener('click', (e) => {
+                    this.handleAddQuestion(e, panel);
+                });
+        // end new
 
         // Save answer button
         panel.querySelector('#saveAnswerBtn')?.addEventListener('click', (e) => {
@@ -243,138 +236,53 @@ class SurveyEditor {
             panel.remove();
         });
     }
-
-    // ========================================
-    // UI STATE MANAGEMENT
-    // ========================================
-    // Reset question card to initial state
-    resetQuestionCard(panel) {
-        panel.querySelector('#questionText').value = '';
-        panel.querySelector('#questionText').disabled = false;
-        
-        const questionCard = panel.querySelector('#questionCard');
-        questionCard.style.opacity = '1';
-        questionCard.style.pointerEvents = 'auto';
-        
-        const saveQuestionBtn = panel.querySelector('#saveQuestionBtn');
-        saveQuestionBtn.disabled = false;
-        saveQuestionBtn.style.opacity = '1';
-        saveQuestionBtn.style.pointerEvents = 'auto';
-        saveQuestionBtn.textContent = 'Save Question';
-    }
-
-    // Reset answer card to initial state
-    resetAnswerCard(panel) {
-        panel.querySelector('#answerText').value = '';
-        panel.querySelector('#answerText').disabled = true;
-        
-        const answerCard = panel.querySelector('#answerCard');
-        answerCard.style.opacity = '0.3';
-        answerCard.style.pointerEvents = 'none';
-        
-        const saveAnswerBtn = panel.querySelector('#saveAnswerBtn');
-        saveAnswerBtn.disabled = true;
-        saveAnswerBtn.style.opacity = '0.5';
-        saveAnswerBtn.style.pointerEvents = 'none';
-        saveAnswerBtn.textContent = 'Save Answer';
-        
-        const addAnswerBtn = panel.querySelector('#addAnswerBtn');
-        addAnswerBtn.disabled = true;
-        addAnswerBtn.style.opacity = '0.5';
-        addAnswerBtn.style.pointerEvents = 'none';
-        addAnswerBtn.textContent = '+ add another answer';
-    }
-
-    // Enable answer card
-    enableAnswerCard(panel) {
-        const answerCard = panel.querySelector('#answerCard');
-        answerCard.style.opacity = '1';
-        answerCard.style.pointerEvents = 'auto';
-        
-        const saveAnswerBtn = panel.querySelector('#saveAnswerBtn');
-        saveAnswerBtn.disabled = false;
-        saveAnswerBtn.style.opacity = '1';
-        saveAnswerBtn.style.pointerEvents = 'auto';
-        saveAnswerBtn.textContent = 'Save Answer';
-        
-        const addAnswerBtn = panel.querySelector('#addAnswerBtn');
-        addAnswerBtn.disabled = false;
-        addAnswerBtn.style.opacity = '1';
-        addAnswerBtn.style.pointerEvents = 'auto';
-        addAnswerBtn.textContent = '+ add another answer';
-
-        panel.querySelector('#answerText').disabled = false; // this gets disabled in 
-        // resetAnswerCard: panel.querySelector('#answerText').disabled = true;
-        // handleAnswerSubmit: panel.querySelector('#answerText').disabled = true;
-    }
-
-    // Reset automation card to initial state
-    resetAutomationCard(panel) {
-        const automationsCard = panel.querySelector('#automationsCard');
-        automationsCard.style.opacity = '0.2';
-        automationsCard.style.pointerEvents = 'none';
-        
-        const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
-        saveTaskAutomationBtn.disabled = true;
-        saveTaskAutomationBtn.style.opacity = '0.5';
-        saveTaskAutomationBtn.style.pointerEvents = 'none';
-        saveTaskAutomationBtn.textContent = 'Save Task';
-        
-        const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
-        saveRelationshipAutomationBtn.disabled = true;
-        saveRelationshipAutomationBtn.style.opacity = '0.5';
-        saveRelationshipAutomationBtn.style.pointerEvents = 'none';
-        saveRelationshipAutomationBtn.textContent = 'Save Relationship';
-    }
-
-    // Enable automation card
-    enableAutomationCard(panel) {
-        const automationsCard = panel.querySelector('#automationsCard');
-        automationsCard.style.opacity = '1';
-        automationsCard.style.pointerEvents = 'auto';
-        
-        const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
-        saveTaskAutomationBtn.disabled = false;
-        saveTaskAutomationBtn.style.opacity = '1';
-        saveTaskAutomationBtn.style.pointerEvents = 'auto';
-        saveTaskAutomationBtn.textContent = 'Save Task';
-        
-        const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
-        saveRelationshipAutomationBtn.disabled = false;
-    }
-
-    // ========================================
-    // INFORMATION DISPLAY
-    // ========================================
-    addInformationCard(stepData) { 
-        console.log('addInformationCard()');
+/*  changed 22:22 Oct 5 2025
+    addInformationCard(message) {
         const infoSection = document.querySelector('#informationSection');
         const card = document.createElement('div');
         card.className = 'bg-white p-2 rounded border mb-1 text-sm';
-        
-        // Create display text by iterating through all properties
-        let displayText = `Saved`;
-        
-        // Iterate through all properties in the object
-        for (const [key, value] of Object.entries(stepData)) {
-            if (key !== 'timestamp') {
-                displayText += `, ${key}: ${value}`;
-            }
-        }
-        
-        card.textContent = displayText;
+        card.textContent = message;
         infoSection.appendChild(card);
         
         // Add to steps array
-        this.steps.push(stepData);
-        console.log('steps array:', this.steps);
+        this.steps.push(message);
+        console.log('steps array:)',this.steps);
     }
+*/
+//new 22:22 Oct 5
+addInformationCard(stepData) { console.log('addInformationCard()');
+    const infoSection = document.querySelector('#informationSection');
+    const card = document.createElement('div');
+    card.className = 'bg-white p-2 rounded border mb-1 text-sm';
+    
+    // Create display text by iterating through all properties
+    let displayText = `Saved`;
+    
+    // Iterate through all properties in the object
+    for (const [key, value] of Object.entries(stepData)) {
+        if (key !== 'timestamp') {
+            displayText += `, ${key}: ${value}`;
+        }
+    }
+    
+    card.textContent = displayText;
+    infoSection.appendChild(card);
+    
+    // Add to steps array
+    this.steps.push(stepData);
+    console.log('steps array:', this.steps);
+}
 
-    // ========================================
-    // CLIPBOARD OPERATIONS
-    // ========================================
-    populateFromClipboard(panel) {
-        console.log('populateFromClipboard()');
+
+
+
+//end new
+
+
+
+
+
+    populateFromClipboard(panel) {console.log('populateFromClipboard()');
                 
         // Get clipboard items
         const tasks = getClipboardItems({ as: 'task' });
@@ -396,10 +304,14 @@ class SurveyEditor {
             console.log('Populating approfile dropdown with', approfiles.length, 'items');
             this.addClipboardItemsToDropdown(approfiles, approfileSelect, 'approfile');
         }
+        
+        //// Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
+        // Add information card about loaded items
+        //this.addInformationCard(`Clipboard items loaded: ${tasks.length} tasks,  ${approfiles.length} approfiles`);
+    // removed 21:37 Oct 5 because this message is very different to the survey structural messages
     }
 
-    addClipboardItemsToDropdown(items, selectElement, type) { 
-        console.log('addClipboardItemsToDropdown()');
+    addClipboardItemsToDropdown(items, selectElement, type) { console.log('addClipboardItemsToDropdown()');
         if (!items || items.length === 0) return;
         
         // Clear existing clipboard options (keep the default option)
@@ -417,11 +329,7 @@ class SurveyEditor {
         });
     }
 
-    // ========================================
-    // DATA OPERATIONS - SURVEY
-    // ========================================
-    async handleSurveySubmit(e, panel) { 
-        console.log('handleSurveySubmit()');
+    async handleSurveySubmit(e, panel) { console.log('handleSurveySubmit()');
         e.preventDefault();
         
         const name = panel.querySelector('#surveyName')?.value.trim();
@@ -456,7 +364,7 @@ class SurveyEditor {
                 saveQuestionBtn.style.opacity = '1';
                 saveQuestionBtn.style.pointerEvents = 'auto';
                 
-                // Add information card 
+                // Add information card // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
                 this.addInformationCard({'type' :'survey' , 'id': `${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 30)}...`});
                 
                 saveBtn.textContent = 'Survey Header Saved';
@@ -471,11 +379,7 @@ class SurveyEditor {
         }
     }
 
-    // ========================================
-    // DATA OPERATIONS - QUESTIONS
-    // ========================================
-    async handleQuestionSubmit(e, panel) { 
-        console.log('handleQuestionSubmit()');
+    async handleQuestionSubmit(e, panel) { console.log('handleQuestionSubmit()');
         e.preventDefault();
         
         const questionText = panel.querySelector('#questionText')?.value.trim();
@@ -492,7 +396,7 @@ class SurveyEditor {
         }
         
         saveQuestionBtn.disabled = true;
-        saveQuestionBtn.textContent = 'Saving Question...';
+        saveQuestionBtn.textContent = 'Saving Question...';  // this message stays - it should be cancelled after save confirmed
         
         try {
             // Save question to database
@@ -502,7 +406,8 @@ class SurveyEditor {
             });
             
             this.questionId = result.id;
-            // Add information card  
+            // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
+            // Add information card  this.questionNumber =0;   this.answerNumber = 0;  this.automationsNumber = 0;
             this.questionNumber++;
             this.addInformationCard({'type':'Question' , 'number':this.questionNumber, 'id':`${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 30)}...`});            
             // Disable question input and save button
@@ -511,53 +416,122 @@ class SurveyEditor {
             saveQuestionBtn.style.opacity = '0.5';
             
             // Enable answer card
-            this.enableAnswerCard(panel);
+            const answerCard = panel.querySelector('#answerCard');
+            answerCard.style.opacity = '1';
+            answerCard.style.pointerEvents = 'auto';
             
-            // Enable add question button
+            // Enable save answer button
+            const saveAnswerBtn = panel.querySelector('#saveAnswerBtn');
+            saveAnswerBtn.style.opacity = '1';
+            saveAnswerBtn.style.pointerEvents = 'auto';
+            
+            //new 11:00 oct 6
+            // Enable add answer button
             const addQuestionBtn = panel.querySelector('#addQuestionBtn');
             addQuestionBtn.style.opacity = '1';
             addQuestionBtn.style.pointerEvents = 'auto';
+            //end new
+
+
+            // Enable add answer button
+            const addAnswerBtn = panel.querySelector('#addAnswerBtn');
+            addAnswerBtn.style.opacity = '1';
+            addAnswerBtn.style.pointerEvents = 'auto';
 
             saveQuestionBtn.textContent = 'Question Saved';
             saveQuestionBtn.disabled = true; // Disable since header is saved
+
+
             
             showToast('Question saved successfully!');
         } catch (error) {
             showToast('Failed to save question: ' + error.message, 'error');
         }
+        
+        //saveQuestionBtn.disabled = false;
     }
 
-    handleAddQuestion(e, panel) { 
-        console.log('handleAddQuestion()');
-        // Reset question fields for a new question
+    //NEW 10:23 Oct 6
+    handleAddQuestion(e, panel) { console.log('handleAddQuestion()');
+        // Reset answer fields for a new answer
         panel.querySelector('#questionText').value = '';
         panel.querySelector('#questionText').disabled = false;
         
-        // Reset answer fields to initial state
-        panel.querySelector('#answerText').value = '';
-        panel.querySelector('#answerText').disabled = true; // Disable since no question saved yet
-        
-        // Disable answer card
-        this.resetAnswerCard(panel);
-        
-        // Disable automations card
-        this.resetAutomationCard(panel);
-        
-        // Re-enable save question button
-        const saveQuestionBtn = panel.querySelector('#saveQuestionBtn');
-        saveQuestionBtn.disabled = false;
-        saveQuestionBtn.style.opacity = '1';
-        saveQuestionBtn.style.pointerEvents = 'auto';
-        saveQuestionBtn.textContent = 'Save Question';
+        // Re-enable save answer button
+        const saveAnswerBtn = panel.querySelector('#saveQuestionBtn');
+        saveAnswerBtn.disabled = false;
+        saveAnswerBtn.style.opacity = '1';
+        saveAnswerBtn.style.pointerEvents = 'auto';
+
         
         showToast('Ready to add a new question');
-    }
+    } //end new
 
-    // ========================================
-    // DATA OPERATIONS - ANSWERS
-    // ========================================
-    async handleAnswerSubmit(e, panel) { 
-        console.log('handleAnswerSubmit()');
+
+//new 19:21 Oct 6  To reset answers and automations when clicked to add new question
+/*
+//NEW 10:23 Oct 6
+handleAddQuestion(e, panel) {
+    // Reset question fields for a new question
+    panel.querySelector('#questionText').value = '';
+    panel.querySelector('#questionText').disabled = false;
+    
+    // Reset answer fields to initial state
+    panel.querySelector('#answerText').value = '';
+    panel.querySelector('#answerText').disabled = true; // Disable since no question saved yet
+    
+    // Disable answer card
+    const answerCard = panel.querySelector('#answerCard');
+    answerCard.style.opacity = '0.3';
+    answerCard.style.pointerEvents = 'none';
+    
+    // Disable save answer button
+    const saveAnswerBtn = panel.querySelector('#saveAnswerBtn');
+    saveAnswerBtn.style.opacity = '0.5';
+    saveAnswerBtn.style.pointerEvents = 'none';
+    saveAnswerBtn.disabled = true;
+    saveAnswerBtn.textContent = 'Save Answer';
+    
+    // Disable add answer button
+    const addAnswerBtn = panel.querySelector('#addAnswerBtn');
+    addAnswerBtn.style.opacity = '0.5';
+    addAnswerBtn.style.pointerEvents = 'none';
+    addAnswerBtn.disabled = true;
+    addAnswerBtn.textContent = '+ add another answer';
+    
+    // Disable automations card
+    const automationsCard = panel.querySelector('#automationsCard');
+    automationsCard.style.opacity = '0.2';
+    automationsCard.style.pointerEvents = 'none';
+    
+    // Disable automation buttons
+    const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
+    saveTaskAutomationBtn.disabled = true;
+    saveTaskAutomationBtn.style.opacity = '0.5';
+    saveTaskAutomationBtn.style.pointerEvents = 'none';
+    saveTaskAutomationBtn.textContent = 'Save Task';
+    
+    const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
+    saveRelationshipAutomationBtn.disabled = true;
+    saveRelationshipAutomationBtn.style.opacity = '0.5';
+    saveRelationshipAutomationBtn.style.pointerEvents = 'none';
+    saveRelationshipAutomationBtn.textContent = 'Save Relationship';
+    
+    // Re-enable save question button
+    const saveQuestionBtn = panel.querySelector('#saveQuestionBtn');
+    saveQuestionBtn.disabled = false;
+    saveQuestionBtn.style.opacity = '1';
+    saveQuestionBtn.style.pointerEvents = 'auto';
+    saveQuestionBtn.textContent = 'Save Question';
+    
+    showToast('Ready to add a new question');
+} //end new
+*/
+//end new
+
+
+
+    async handleAnswerSubmit(e, panel) { console.log('handleAnswerSubmit()');
         e.preventDefault();
         
         const answerText = panel.querySelector('#answerText')?.value.trim();
@@ -574,7 +548,7 @@ class SurveyEditor {
         }
         
         saveAnswerBtn.disabled = true;
-        saveAnswerBtn.textContent = 'Saving Answer...';
+        saveAnswerBtn.textContent = 'Saving Answer...'; // BUG this message stays - it should be cancelled after save confirmed
         
         try {
             // Save answer to database
@@ -584,7 +558,8 @@ class SurveyEditor {
             });
             
             this.answerId = result.id;
-            // Add information card  
+            // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
+            // Add information card  this.questionNumber =0;   this.answerNumber = 0;  this.automationsNumber = 0;
             this.answerNumber++;
             this.addInformationCard({'type':'Answer','number':this.answerNumber,  'questionnumber':this.questionNumber , 'id':`${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 30)}...`});
             
@@ -594,19 +569,36 @@ class SurveyEditor {
             saveAnswerBtn.style.opacity = '0.5';
             
             // Enable automations card
-            this.enableAutomationCard(panel);
+            const automationsCard = panel.querySelector('#automationsCard');
+            automationsCard.style.opacity = '1';
+            automationsCard.style.pointerEvents = 'auto';
+            
+            // Enable save task automation button
+            const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
+            saveTaskAutomationBtn.style.opacity = '1';
+            saveTaskAutomationBtn.style.pointerEvents = 'auto';
+            saveTaskAutomationBtn.disabled = false;
+            
+            // Enable save relationship automation button
+            const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
+            saveRelationshipAutomationBtn.style.opacity = '1';
+            saveRelationshipAutomationBtn.style.pointerEvents = 'auto';
+            saveRelationshipAutomationBtn.disabled = false;
 
             saveAnswerBtn.textContent = 'Answer Saved';
             saveAnswerBtn.disabled = true; // Disable since answer saved
+
+
 
             showToast('Answer saved successfully!');
         } catch (error) {
             showToast('Failed to save answer: ' + error.message, 'error');
         }
+        
+       // saveAnswerBtn.disabled = false;
     }
 
-    handleAddAnswer(e, panel) { 
-        console.log('handleAddAnswer()');
+    handleAddAnswer(e, panel) { console.log('handleAddAnswer()');
         // Reset answer fields for a new answer
         panel.querySelector('#answerText').value = '';
         panel.querySelector('#answerText').disabled = false;
@@ -618,24 +610,36 @@ class SurveyEditor {
         saveAnswerBtn.style.pointerEvents = 'auto';
         
         // Disable automations card
-        this.resetAutomationCard(panel);
+        const automationsCard = panel.querySelector('#automationsCard');
+        automationsCard.style.opacity = '0.2';
+        automationsCard.style.pointerEvents = 'none';
+        
+        // Disable automation buttons
+        const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
+        saveTaskAutomationBtn.disabled = true;
+        saveTaskAutomationBtn.style.opacity = '0.5';
+        saveTaskAutomationBtn.style.pointerEvents = 'none';
+        
+        const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
+        saveRelationshipAutomationBtn.disabled = true;
+        saveRelationshipAutomationBtn.style.opacity = '0.5';
+        saveRelationshipAutomationBtn.style.pointerEvents = 'none';
         
         showToast('Ready to add a new answer');
     }
 
-    // ========================================
-    // DATA OPERATIONS - AUTOMATIONS
-    // ========================================
-    async handleTaskAutomationSubmit(e, panel) {
-        console.log('handleTaskAutomationSubmit()');
+    async handleTaskAutomationSubmit(e, panel) {console.log('handleTaskAutomationSubmit()');
         e.preventDefault();
         
         const taskSelect = panel.querySelector('#taskSelect');
         const selectedTaskId = taskSelect?.value;
-        // Get the selected option text
+        //new 12:22 oct 6
         const selectedOption = taskSelect.options[taskSelect.selectedIndex];
         const cleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
-        
+console.log('cleanName',cleanName);        // worked
+ //    const selectedTaskOption = taskSelect?.options[taskSelect.selectedIndex];
+//        const cleanTaskName = selectedTaskOption?.text?.replace(' (clipboard)', '') || 'unknown';
+//console.log('cleanTaskName',cleanTaskName);//both worked
         if (!selectedTaskId) {
             showToast('Please select a task first', 'error');
             return;
@@ -645,14 +649,15 @@ class SurveyEditor {
         saveTaskAutomationBtn.disabled = true;
         saveTaskAutomationBtn.textContent = 'Saving...';
         
-        try { 
+        try { // surveyAnswerId, taskId, taskName, approfileId,relationship
             // Save task automation to database
             const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
                 surveyAnswerId: this.answerId,
                 taskId: selectedTaskId,
-                itemName:cleanName
+                itemName:cleanName   // send taskName
             });
-            // Add information card  
+            // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
+            // Add information card  this.questionNumber =0;   this.answerNumber = 0;  this.automationsNumber = 0;
             this.automationsNumber++;
             this.addInformationCard({'type':'Task automation','number':this.automationsNumber , 'answerNumber':this.answerNumber,  'questionNumber':this.questionNumber, 'id': `${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 30)}...`});
             
@@ -665,18 +670,20 @@ class SurveyEditor {
         saveTaskAutomationBtn.textContent = 'Save Task';
     }
 
-    async handleRelationshipAutomationSubmit(e, panel) {
-        console.log('handleRelationshipAutomationSubmit()');
+    async handleRelationshipAutomationSubmit(e, panel) {console.log('handleRelationshipAutomationSubmit()');
         e.preventDefault();
         
         const approfileSelect = panel.querySelector('#approfileSelect');
         const relationshipSelect = panel.querySelector('#relationshipSelect');
         
         const selectedApproleId = approfileSelect?.value;
-        // Get the selected option text
-        const selectedOption = approfileSelect.options[approfileSelect.selectedIndex];
-        const cleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
-        
+        //const cleanName = approfileSelect?.text?.replace(' (clipboard)', '');
+//replaced new 12:22 oct 6
+const selectedOption = approfileSelect.options[approfileSelect.selectedIndex];  //
+//        const selectedOption = approfileSelect.options[taskSelect.selectedIndex];
+        const cleanName = selectedOption?.textContent?.replace(' (clipboard)', '');//name= 'select an approfile'  !!! this is the defualt prior to selection
+console.log('cleanName',cleanName);       
+
         const selectedRelationship = relationshipSelect?.value;
         
         if (!selectedApproleId) {
@@ -698,11 +705,13 @@ class SurveyEditor {
             const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
                 surveyAnswerId: this.answerId,
                 approfileId: selectedApproleId,
-                itemName:cleanName,
+                itemName:cleanName,// could send appro name
                 relationship: selectedRelationship
             });
             
             // Add information card
+            // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
+            // Add information card  this.questionNumber =0;   this.answerNumber = 0;  this.automationsNumber = 0;
             this.automationsNumber++;
             this.addInformationCard({'type':'Appro automation', 'number':this.automationsNumber, 'answerNumber':this.answerNumber,  'questionNumber':this.questionNumber ,'id': `${result.id.substring(0, 8)}...`, 'name': `${result.name.substring(0, 30)}...` , 'relationship': `${result.relationship.substring(0, 8)}...`});            
             showToast('Relationship automation saved successfully!');

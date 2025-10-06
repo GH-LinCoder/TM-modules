@@ -1005,7 +1005,7 @@ handler: async (supabase, userId, payload) => {
 
 
 ////////////////////////////////////    SURVEYS   ////////////////////////////////
-
+/*
 createSurvey: {
   metadata: {
     tables: ['survey_headers'],
@@ -1020,7 +1020,7 @@ createSurvey: {
     const {  existingSurvey, error: fetchError } = await supabase
       .from('survey_headers')
       .select('id')
-      .eq('name', encodeURIComponent(surveyName)) // encodeURIComponent(value) for .eq() & .like()
+      .eq('name', surveyName) // encodeURIComponent(value) for .eq() & .like()  ??
       .single();
 
     if (existingSurvey) {
@@ -1042,6 +1042,45 @@ createSurvey: {
     return data; // ← returns { id, name, description, ... }
   }
 },
+*/
+//new 20:23 Oct 6
+createSurvey: {
+  metadata: {
+    tables: ['survey_headers'],
+    columns: ['name', 'description', 'external_url', 'author_id'],
+    type: 'INSERT',
+    requiredArgs: ['surveyName', 'surveyDescription']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { surveyName, surveyDescription } = payload;
+
+    
+    // Check for duplicate name - just check if any records exist
+    const { count, error: fetchError } = await supabase
+      .from('survey_headers')
+      .select('id', { count: 'exact', head: true })  // Only get count, not data
+      .eq('name', surveyName);
+
+    if (count > 0) {
+      throw new Error('A survey with that name exists. Your survey needs a different name.');
+    }
+
+    const { data, error } = await supabase
+      .from('survey_headers')
+      .insert({
+        name: surveyName,
+        description: surveyDescription,
+        author_id: userId
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+
 
 
 createSurveyQuestion: {
@@ -1139,7 +1178,7 @@ createSurveyAutomation: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => {
-    const { surveyAnswerId, taskId, taskName, approfileId,relationship } = payload;
+    const { surveyAnswerId, taskId, itemName, approfileId,relationship } = payload;
 
     // Check for duplicate name  ???
   /*
@@ -1163,7 +1202,7 @@ createSurveyAutomation: {
       .insert({
         survey_answer_id: surveyAnswerId,
         task_header_id:taskId,
-        name: taskName,
+        name: itemName,
         appro_is_id: userId, // ← use passed userId ?
         relationship:relationship,
         of_appro_id: approfileId 
