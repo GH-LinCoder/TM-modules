@@ -1091,7 +1091,7 @@ createSurveyQuestion: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields
   },
   handler: async (supabase, userId, payload) => {
-    const { surveyId, questionText } = payload;
+    const { surveyId, questionText, question_number } = payload;
 
     // Check for duplicate name  ???
   /*
@@ -1109,12 +1109,13 @@ createSurveyQuestion: {
                 questionText: questionText
     
     */
-
+//console.log('Create: question_number', question_number);
     const { data, error } = await supabase
       .from('survey_questions')
       .insert({
         survey_header_id: surveyId,
         name: questionText,
+        question_number:question_number,
         //external_url: taskUrl || null,
         author_id: userId // ← use passed userId
       })
@@ -1134,7 +1135,7 @@ createSurveyAnswer: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => {
-    const { questionId, answerText } = payload;
+    const { questionId, answerText, answer_number } = payload;
 
     // Check for duplicate name  ???
   /*
@@ -1158,6 +1159,7 @@ createSurveyAnswer: {
       .insert({
         survey_question_id: questionId,
         name: answerText,
+        answer_number:answer_number,
         //external_url: taskUrl || null,
         //author_id: userId // ← no such column use passed userId
       })
@@ -1178,7 +1180,7 @@ createSurveyAutomation: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => {
-    const { surveyAnswerId, taskId, itemName, approfileId,relationship } = payload;
+    const { surveyAnswerId, taskId, itemName, approfileId,relationship, automation_number } = payload;
 
     // Check for duplicate name  ???
   /*
@@ -1205,7 +1207,8 @@ createSurveyAutomation: {
         name: itemName,
         appro_is_id: userId, // ← use passed userId ?
         relationship:relationship,
-        of_appro_id: approfileId 
+        of_appro_id: approfileId,
+        automation_number : automation_number, 
         
       })
       .select()
@@ -1215,6 +1218,49 @@ createSurveyAutomation: {
     return data; // ← returns { id, name, description, ... }
   }
 },
+
+//////////////////////////////////////////    READ  SURVEYS   ///////////////////////////
+
+readSurvey: {
+  metadata: {
+    tables: ['survey_headers'],
+    columns: ['name', 'description', 'author_id', 'created_at', 'last_updated_at', 'automations'], // automations not curren
+    type: 'SELECT',
+    requiredArgs: ['surveyId'] // could be either id or name?
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('readSurveyHeaders()');
+    const { surveyId } = payload;
+    const { data, error } = await supabase
+      .from('survey_headers')
+      .select('name, description, author_id, created_at, last_updated_at, automations  ')
+      .eq('id',surveyId);
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+readSurveyView:{    // VIEW   Read only
+  metadata: {
+  tables: ['survey_view'],
+  columns: ['survey_id','survey_name', 'survey_description', 'author_id', 'survey_created_at', 'question_id', 'question_text', 'question_description', 'question_number', 'answer_id', 'answer_text' , 'answer_description', 'answer_number',  'automation_id', 'automation_name', 'automation_number' ],
+  type: 'SELECT',
+  requiredArgs: ['survey_id'] // could be either id or name?
+},
+handler: async (supabase, userId, payload) => {
+  console.log('readSurveyView()');
+  const { survey_id } = payload;
+  const { data, error } = await supabase
+    .from('survey_view')
+    .select('*')
+    .eq('survey_id',survey_id);
+
+  if (error) throw error;
+  return data;
+}
+},
+
 
 }//EOF
 // 18:43 sunday 14 Sept added encodeURIComponent(    )  around values in .eq because Supabase has been warning

@@ -24,6 +24,26 @@ surveyFormat =
     ]
   },
 
+/*  possible TABLE
+  surveyResponses
+  id UUID PRIMARY KEY,
+  respondent_id UUID NOT NULL,
+  survey_id UUID NOT NULL,
+  question_id UUID NOT NULL,
+  answer_id UUID NULL,         -- NULL if feedback-only
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW(),
+
+  response_type TEXT CHECK (response_type IN ('automation', 'feedback')),
+  automation_id UUID NULL,     -- Only for automation responses
+  feedback_text TEXT NULL,     -- Only for feedback responses
+
+  name TEXT NULL,              -- Optional: name of automation or feedback label
+  description TEXT NULL        -- Optional: Markdown-formatted description
+
+  
+*/
+
 
             "survey_headers" = {
               "id": {
@@ -73,8 +93,8 @@ surveyFormat =
                         "is_nullable": "NO",
                         "column_default": null
                       },
-                      "sort_id": {
-                        "data_type": "bigint",
+                      "question_number": {
+                        "data_type": "int",
                         "is_nullable": "NO",
                         "column_default": null
                       },
@@ -224,5 +244,89 @@ surveyFormat =
                                       "is_nullable": "YES",
                                       "column_default": null
                                     }
-                                  }
+                                  },
 
+
+
+                                "survey_view" =  // VIEW read only
+                                    {
+                                      "column_name": "survey_id",
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "survey_name",
+                                      "data_type": "text",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "survey_description",
+                                      "data_type": "text",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "author_id",
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "survey_created_at",
+                                      "data_type": "timestamp with time zone",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "question_id",
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "question_text",
+                                      "data_type": "text",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "question_description",
+                                      "data_type": "text",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "question_number",
+                                      "data_type": "integer",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "answer_id",
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "answer_text",
+                                      "data_type": "text",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "answer_description",
+                                      "data_type": "text",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "answer_number",
+                                      "data_type": "integer",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "automation_id",
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "automation_name",
+                                      "data_type": "text",
+                                      "is_nullable": "YES"
+                                    },
+                                    {
+                                      "column_name": "automation_number",
+                                      "data_type": "integer",
+                                      "is_nullable": "YES"
+                                    }
+                                                                    

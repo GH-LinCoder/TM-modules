@@ -1,25 +1,39 @@
+//  ./registry/iconList.js
 
-
-icons={
+export const icons={
 
 
 approfiles:'🪪' ,
 assignTask:'👨‍🔧',
 
+answer:'💭',
+
+back:'◀️',
+
+cross:'❎',
+
 display:'👁️',
+down:'🔽',
 
 edit:' ✍️ ',
 
+idea:'💡',
+
 moveStudent:'🧑‍🎓',
+
+question:'❔',
 
 relationships: '🖇️',
 
-selectRember:' 📝',
+selectRemember:' 📝',
+search:'🔍',
 surveys:'📜' ,
 
 task:'🔧' ,
+thinking:'🤔',
+tick:'✅',
 
 
-
+up:'🔼',
 
 }
