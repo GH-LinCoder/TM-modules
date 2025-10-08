@@ -12,6 +12,7 @@ back:'◀️',
 
 cross:'❎',
 
+delete:'🗑️',
 display:'👁️',
 down:'🔽',
 

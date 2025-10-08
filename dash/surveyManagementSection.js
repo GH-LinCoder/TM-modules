@@ -8,7 +8,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
 <!-- survey Management section -->
 <div class="bg-green-100 rounded-lg shadow p-6" data-section="survey-management" data-destination="new-panel">
-  <h2 class="text-lg font-semibold mb-2">survey Management  22:50 Oct 7</h2>
+  <h2 class="text-lg font-semibold mb-2">survey Management  15:30 Oct 8</h2>
   <p class="text-sm text-gray-500 mb-4">Click to carryout the action, it opens in a new panel to the right </p>
 <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
 
@@ -28,14 +28,14 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   </div>
 
       <!-- Create -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-survey">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Create a survey</h3>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-survey-dialogue">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Create a survey 📜</h3>
     <p class="text-xs text-blue-600">surveys can be assigned by the app automatically, or by the user choosing a survey or by admin assigning a survey.</p>
   </div>
 
         <!-- Display -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="display-survey">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">View a survey</h3>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="display-survey-dialogue">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">View a survey  👁️📜</h3>
     <p class="text-xs text-blue-600">Surveys can be viwed based on the survey id.</p>
   </div>
     
@@ -59,7 +59,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
       <!-- relate -->
   <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-survey">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Relate an survey to...</h3>
+    <h3 class="text-sm font-medium text-red-700 mb-1">Relate a survey to...</h3>
     
     <p class="text-xs text-red-600">surveys can be related. Each survey has its own approfile.
     The process of relating is between approfiles. A survey can be related to other surveys directly or via a 3rd abstract approfile. </p>

@@ -39,7 +39,7 @@ Create Approfile:
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js'; // modules interact through appState
-
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 console.log('createApprofileForm.js loaded');
 
 const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
@@ -48,6 +48,7 @@ export function render(panel, query = {}) {
   console.log('Render Approfile Form:', panel, query);
   panel.innerHTML = getTemplateHTML();
   attachListeners(panel);
+          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
 
 function getTemplateHTML() {

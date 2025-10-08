@@ -2,7 +2,7 @@
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
-
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 console.log('editApprofileForm.js loaded');
 
 const state = {
@@ -18,6 +18,7 @@ export function render(panel, query = {}) {
   
   // Initialize clipboard integration
   initClipboardIntegration(panel);
+          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
 
 function initClipboardIntegration(panel) {

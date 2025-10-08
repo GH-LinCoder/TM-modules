@@ -2,7 +2,7 @@
 import{executeIfPermitted} from '../../registry/executeIfPermitted.js';
 import{showToast} from '../../ui/showToast.js';
 import{appState} from '../../state/appState.js';
-
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 //A DEV only method of selecting an approfile using a populated dropdown ( from relateApprofiles.js)
 
@@ -11,6 +11,7 @@ console.log('selectApprofiles.js loaded');
 export function render(panel, query = {}) {
     console.log('selectApprofiles.js render() called');  
     const dialog = new SelectDialog();dialog.render(panel, query);
+            panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
   }
 
   class SelectDialog {

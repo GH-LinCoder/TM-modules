@@ -20,38 +20,38 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   </div>
   
   <!-- Search -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="task-search">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Search tasks</h3>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="task-search-dialogue">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Search tasks 🔍🔧  not yet implemented</h3>
     <p class="text-xs text-blue-600">This searches the users. If you want to search all approfiles, try the other section. </p>
   </div>
 
       <!-- Create -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-task">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Create a task</h3>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-task-dialogue">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Create a task 🔧</h3>
     <p class="text-xs text-blue-600">Tasks can be assigned by the app automatically, or by the user choosing a task or by admin assigning a task.</p>
   </div>
     
     <!-- Edit -->
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="edit-task-dialogue">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Edit a task</h3>
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Edit a task ✍️  🔧</h3>
     <p class="text-xs text-blue-600">There may be many things to edit. Not yet defined.</p>
   </div>
 
       <!-- Delete -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="delete-task">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Delete an task</h3>
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="delete-task-dialogue">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Delete an task not implemented 🗑️</h3>
     <p class="text-xs text-blue-600">Deletion marks the record as deleted, but does not erase it from the system</p>
   </div>
 
       <!-- Assign -->
-  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assign-task">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Assign to a task</h3>
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assign-task-dialogue">
+    <h3 class="text-sm font-medium text-red-700 mb-1">Assign to a task 👨‍🔧</h3>
     <p class="text-xs text-red-600">This places an approfile on the task.</p>
   </div>
 
       <!-- relate -->
-  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-task">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Relate an task to...</h3>
+  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-approfiles-dialogue">
+    <h3 class="text-sm font-medium text-red-700 mb-1">Relate a task to...🖇️</h3>
     
     <p class="text-xs text-red-600">Tasks can be related. Each task has its own approfile.
     The process of relating is between approfiles. A task can be related to other tasks directly or via a 3rd abstract approfile. </p>

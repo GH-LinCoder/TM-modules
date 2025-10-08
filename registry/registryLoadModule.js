@@ -20,8 +20,8 @@ export const registry = { // this registry is for loading a new page to the righ
 //'-management-section': ()=> import('../work/dash/ManagementSection.js'),
 'survey-management-section': ()=> import('../dash/surveyManagementSection.js'),
 
-'create-survey': () => import('../surveys/createSurveyQwen.js'),
-'display-survey' : () => import('../surveys/displaySurveyQwen.js'),
+'create-survey-dialogue': () => import('../surveys/createSurveyQwen.js'),
+'display-survey-dialogue' : () => import('../surveys/displaySurveyQwen.js'),
 
 
 // data-action values for admin dashboard

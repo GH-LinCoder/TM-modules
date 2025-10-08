@@ -2,6 +2,7 @@ import { appState} from '../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import{executeIfPermitted} from '../registry/executeIfPermitted.js';
 import{showToast} from '../ui/showToast.js';
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import {icons} from '../registry/iconList.js';
 
 console.log('createSurveyQwen.js loaded');
@@ -40,6 +41,7 @@ class SurveyEditor {
         onClipboardUpdate(() => {
             this.populateFromClipboard(panel);
         });
+        panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
     }
 
     getTemplateHTML() {

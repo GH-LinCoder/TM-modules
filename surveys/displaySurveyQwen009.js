@@ -118,22 +118,21 @@ class SurveyDisplay {
     }
 
     showQuestion(panel) {
-console.log('showQuestion()'); // this logs
         if (!this.surveyData) {
             showToast('No survey data available', 'error');
             return;
         }
-    
+
         // Hide the start survey section
         const startSurveySection = document.getElementById('startSurveySection');
         if (startSurveySection) {
             startSurveySection.style.display = 'none';
         }
-    
+
         const questionAnswerContainer = document.getElementById('question-answer-container'); 
         if(!questionAnswerContainer){console.log('questionAnswerContainer not found'); return;}
         
-    
+
         // Find the unique questions in the data
         const uniqueQuestions = [...new Set(this.surveyData.map(row => row.question_number))];
         if (this.currentQuestionIndex >= uniqueQuestions.length) {
@@ -141,7 +140,7 @@ console.log('showQuestion()'); // this logs
             questionAnswerContainer.innerHTML = this.getCompletionHTML();
             return;
         }
-    
+
         const currentQuestionNumber = uniqueQuestions[this.currentQuestionIndex];
         const questionRows = this.surveyData.filter(row => row.question_number === currentQuestionNumber);
         
@@ -149,9 +148,9 @@ console.log('showQuestion()'); // this logs
             showToast('No data for this question', 'error');
             return;
         }
-    
+
         const progress = `${this.currentQuestionIndex + 1} of ${uniqueQuestions.length}`;
-    
+
         // Replace the content instead of appending
         questionAnswerContainer.innerHTML = this.getQuestionHTML(questionRows, progress);
         
@@ -174,53 +173,8 @@ console.log('showQuestion()'); // this logs
                     }, 400); // Small delay to trigger the transition, they all apear at same time
                 }, index * 500); // then each answer bounces one after another 
             });
-            
-            // Add radio button listeners AFTER the elements are rendered
-            const radioButtons = questionAnswerContainer.querySelectorAll('input[name="question_answer"]');
-console.log('Found radio buttons:', radioButtons.length); // LOGS
-            radioButtons.forEach(radio => {
-                radio.addEventListener('change', (e) => {
-console.log('Radio button changed:', e.target.value); // LOGS on change
-                    // Find the associated answer element to get its automations
-                    const answerElement = e.target.closest('.flex.items-start');
-console.log('Answer element:', answerElement); // LOGS
-                    const automations = JSON.parse(answerElement.dataset.automations || '[]');
-                    
-                    if (automations.length > 0) {
-                        // Determine the appropriate action based on automations
-                        let action = 'auto-execute-all'; // or specific action based on first automation type
-                        if (automations[0].type === 'task') {
-                            action = 'auto-assign-task';
-                        } else if (automations[0].type === 'relationship') {
-                            action = 'auto-relate-appro';
-                        }
-console.log('showQuestion() automations:', automations);   // LOGS  22:22 Oct 8  (had been a missing 's' in name)
-                        // Update the save button with the appropriate action and destination
-                        const nextBtn = document.getElementById('nextQuestionBtn');
-                        if (nextBtn) {
-                            nextBtn.setAttribute('data-action', action);
-                            nextBtn.setAttribute('data-destination', 'background');
-                            
-                            // Build the payload
-                            const payload = {
-                                source: {
-                                    userId: userId, // from appState
-                                    surveyId: this.surveyId,
-                                    questionId: questionRows[0].question_id, // get question id from first row
-                                    answerId: e.target.value
-                                },
-                                automations: automations
-                            };
-                            
-                            // Store in appState
-                            appState.payload = payload;
-console.log('Automation payload set:', appState.payload); // LOGS  22:22 Oct 8  (had been a missing 's' in name)
-                        }
-                    }
-                });
-            });
         }, 400);
-    
+
         // Attach event listener to the next button
         setTimeout(() => {
             const nextBtn = document.getElementById('nextQuestionBtn');
@@ -241,10 +195,35 @@ console.log('Automation payload set:', appState.payload); // LOGS  22:22 Oct 8  
         }, 100);
     }
 
+    encodeRelationshipInHTML(row){
+    // can check that there is a relationship in the row.
+    const relationship = row.relationship;
+    console.log('row.of_approfile:',row.automation_id);
+    const ofApprofile = row.automation_id;
+    const encodedHTML = '';
+let string = 'data-action = ';
+string +=`"relate-${relationship}-${ofApprofile}"` ;
+ console.log('Automation code=', string);
+    
+    return string;
+    }
+
+    encodeTaskInHTML(row){
+        const task_header_id = row.task_header_id;
+        console.log('row.task_header_id:',task_header_id);        
+    let string = 'data-action = ';
+    string +=`"assign-${task_header_id}"` ;
+     console.log('Automation code=', string);        
+        return string;
+    }
+
+
+
     getQuestionHTML(questionRows, progress) {
         const firstRow = questionRows[0]; // Get question info from first row
         
         let answersHTML = '';
+        let encodedHTML='';
         let i = 0;
         
         // Process each answer and its automations
@@ -253,7 +232,6 @@ console.log('Automation payload set:', appState.payload); // LOGS  22:22 Oct 8  
             
             // Start building the answer HTML
             let automationIcons = '';
-            let automationData = []; // Store automation data for this answer
             
             // Look for all automations for this answer (same answer_id)
             let j = i;
@@ -261,31 +239,18 @@ console.log('Automation payload set:', appState.payload); // LOGS  22:22 Oct 8  
                 const row = questionRows[j];
                 // Add icon if this row has an automation
                 if (row.relationship) {
-                    automationIcons += icons.relationships || '🪪';
-                    // Store relationship automation data
-                    automationData.push({
-                        type: 'relationship',
-                        relationship: row.relationship,
-                        ofApprofile: row.automation_id
-                    });
+                    automationIcons += icons.relationships || '?';
+    encodedHTML += this.encodeRelationshipInHTML(row); //
                 } else if (row.task_header_id) {
-                    automationIcons += icons.task || '🔧';
-                    // Store task automation data
-                    automationData.push({
-                        type: 'task',
-                        taskId: row.task_header_id
-                    });
+                    automationIcons += icons.task || '?';
+    encodedHTML += this.encodeTaskInHTML(row); //                
                 }
                 j++;
             }
             
-            // Convert automation data to JSON string for data attribute
-            const automationDataJson = JSON.stringify(automationData);
-            
-            // Add this answer to the HTML with data attribute
+            // Add this answer to the HTML
             answersHTML += `
-                <div class="flex items-start mb-3 p-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-100" 
-                     data-automations='${automationDataJson}'>
+                <div class="flex items-start mb-3 p-3 border border-gray-300 rounded-lg bg-white hover:bg-gray-100   ${encodedHTML}">
                     <label for="answer_${currentRow.answer_id}" class="flex-1">
                         <span class="font-medium">${currentRow.answer_text}</span>
                         ${automationIcons ? `<span class="ml-2 text-blue-600" title="Triggers automation">${automationIcons}</span>` : ''}
@@ -299,29 +264,24 @@ console.log('Automation payload set:', appState.payload); // LOGS  22:22 Oct 8  
             // Move to the next answer
             i = j;
         }
-    // In getQuestionHTML, update the button to have default values:
-return `
-<div class="bg-white p-4 rounded-lg border border-gray-300">
-    <h4 class="font-medium text-gray-800 mb-3">${firstRow.question_text}</h4>
-    ${firstRow.question_description ? `<p class="text-gray-700 mb-4">${firstRow.question_description}</p>` : ''}
     
-    <div class="space-y-2">
-        ${answersHTML}
-    </div>
-    
-    <div class="bg-green-100 p-4 rounded-lg border border-green-300 mt-4 justify-center items-center text-center">
-        <p class="text-green-800 font-medium">Question ${progress}</p>
-        <button id="nextQuestionBtn" 
-                class="mt-3 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700"
-                data-action="save-and-continue"
-                data-destination="background"
-                data-module="survey"
-                data-section="questions">
-            Save & Continue
-        </button>
-    </div>
-</div>
-`;
+        return `
+            <div class="bg-white p-4 rounded-lg border border-gray-300">
+                <h4 class="font-medium text-gray-800 mb-3">${firstRow.question_text}</h4>
+                ${firstRow.question_description ? `<p class="text-gray-700 mb-4">${firstRow.question_description}</p>` : ''}
+                
+                <div class="space-y-2">
+                    ${answersHTML}
+                </div>
+                
+                <div class="bg-green-100 p-4 rounded-lg border border-green-300 mt-4 justify-center items-center text-center">
+                    <p class="text-green-800 font-medium">Question ${progress}</p>
+                    <button id="nextQuestionBtn" class="mt-3 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                        Save & Continue
+                    </button>
+                </div>
+            </div>
+        `;
     }
 
     getCompletionHTML() {

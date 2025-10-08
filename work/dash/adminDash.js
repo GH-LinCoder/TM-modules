@@ -201,14 +201,14 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <!-- ASSIGNMENT -->
     <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action='assignment-management-section'>
       <p class="text-3xl font-bold text-red-900" data-value="assignments-count">?</p>
-      <h3 class="text-sm font-medium text-red-700">Assignments</h3>
+      <h3 class="text-sm font-medium text-red-700">Assignments 👨‍🔧</h3>
       <p class="text-xs text-gray-500">Track and manage task assignments</p>
     </div>
 
 <!-- TASK -->    
     <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-action='task-management-section'>
       <p class="text-3xl font-bold text-yellow-900" data-value="tasks-count">?</p>
-      <h3 class="text-sm font-medium text-yellow-700">Tasks</h3>
+      <h3 class="text-sm font-medium text-yellow-700">Tasks 🔧</h3>
       <p class="text-xs text-gray-500">Create, edit, and organize tasks</p>
     </div>
 

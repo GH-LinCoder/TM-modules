@@ -31,7 +31,7 @@ length: 14
 import{executeIfPermitted} from '../../registry/executeIfPermitted.js';
 import{showToast} from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js'; // modules interact through appState
-
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 export async function render(panel, query = {}) { // stop passing query? use appState?
 console.log('render()',query); // only receiving petitioner not the whole query{}
@@ -45,6 +45,8 @@ console.log('render()',query); // only receiving petitioner not the whole query{
     onAction: (actionType) => {console.log(`Action triggered: ${actionType}`);}
   });
   dialog.render(panel, query);
+  panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+
   }
 
 /////////////////////////////////////          CLASS               ////////////////////////////////////////////

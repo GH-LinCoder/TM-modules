@@ -3,6 +3,7 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 const userId = appState.query.userId;
 
@@ -30,6 +31,7 @@ export function render(panel, query = {}) {
     relateBtn,
     informationFeedback
   });
+          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
 
 function getTemplateHTML() {

@@ -3,6 +3,7 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 import { canAccessFeature } from '../../registry/permissions.js';
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 
 console.log('devDataSelector.js loaded');
@@ -24,8 +25,7 @@ function canUseSelector() {
 export function render(panel, query = {}) {
   console.log('devDataSelector.render()');
 
-
-
+     
 
   if (!canUseSelector()) {
     panel.innerHTML = `
@@ -54,6 +54,8 @@ export function render(panel, query = {}) {
 
   const selector = new DevDataSelector();
   selector.render(panel, query);
+  panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+
 }
 
 class DevDataSelector {

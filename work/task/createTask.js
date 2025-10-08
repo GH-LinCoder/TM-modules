@@ -3,6 +3,7 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 console.log('createTaskForm.js loaded');
 
@@ -29,6 +30,8 @@ function initClipboardIntegration(panel) {
   onClipboardUpdate(() => {
     populateFromClipboard(panel);
   });
+          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+  
 }
 
 function populateFromClipboard(panel) {
