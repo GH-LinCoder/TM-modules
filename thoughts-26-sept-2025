@@ -26,6 +26,9 @@ Design of admin dashboard. Parts that function:
 "Create approfile"
 "Edit approfile"
 "Relate approfiles"
+"Create surveys"
+"Display and respond to surveys"
+"Open more detailed sub-sections of the admin dashboard"
 
 Design of member dashboard. Parts that function:
 Display of member name, email, date when joined, how many tasks currently active, how many completed or abandonded
