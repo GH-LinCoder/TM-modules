@@ -81,7 +81,8 @@ The hierarchy building aspect of approfiles may also eventually become an indepe
 
 "Have your say, do your bit"
 This underlies the app design. To encourage user involvement both in expression and in action. The aim is to build a vibrant self managing organisation out of like minded but isolated individuals.
-
+Surveys can find out what the users prefer, want, believe & can automatically join them to groups within the organisation or assign them to tasks. 
+The survey structure can also create a quiz or a multiple choice test with marking tracke via a task.
 
 Knowledge
 The context specific 'how?' system is expected to grow into a knowledge deliver system with an interface that can cope with knowledge delivery to any of the apps in the system and eventually to outside customers.
@@ -121,6 +122,9 @@ developed create approfile module
 developed edit approfile module
 developed relate approfile module
 developed display relations module
+developed create a survey
+developed display a survey
+developed the insertion of code in the survey for automations
 
 (at each stage, tested and refined the modules)
 
@@ -141,7 +145,7 @@ How does out mental model need to change?
 
 Superstructure
 (list approfiles & tasks and relationships to create)
-Create high level approfiles:
+Created high level approfiles:
 App (the entire web app)  [App IS member of Org]
 Org (the organisation)
 Test Mock (all the things that are for dev test rather than real) [Test Mock IS member OF App]
@@ -156,6 +160,8 @@ Gemini
 Human (for all auth users)  [Human IS member of Org]
 Categories (for any approfile that is itself a category that others belong to)
 
+Not yet implemented:
+
 create the task steps that are needed to teach the app
 
 Check that every approfile is related to something and is part of hierarchy.  
@@ -163,12 +169,7 @@ Check that every approfile is related to something and is part of hierarchy.
 (Need a 'no one is an island' utility to find unmapped approfiles: forEach appro in the app_profiles TABLE search by id in the app_relations table. islandArry.Push[row] || relatedArray.push[row] 
 Then can output the islands or the connected.)
 
-Create the survey module. Should we have an editable survey creator? This would have click options to task assignment or/& to approfile relation
-
-
-
-
-
+Should surveys have an approfile - yes
 
 TECH STACK: HTML, Javascript, CSS (legacy Tailwind), Supabase. Hosted locally in development using VSC and python3 http.server. No public access. Files are coordinated via git and GitHub. 
 
