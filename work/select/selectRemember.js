@@ -54,7 +54,7 @@ export function render(panel, query = {}) {
 
   const selector = new DevDataSelector();
   selector.render(panel, query);
-  panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+  //panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 
 }
 
@@ -67,7 +67,7 @@ class DevDataSelector {
       tasks: null
     };
     this.selectedItem = null;
-    this.selectedAs = null;
+    this.selectedAs = 'other';
     this.currentView = null;
   }
 
@@ -79,27 +79,39 @@ class DevDataSelector {
   getTemplateHTML() {
     return `
       <div class="dev-selector bg-white rounded-lg shadow p-6">
-       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 📝</h3>
+       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 22:00 10 Oct 📝</h3>
         <!-- INSTRUCTIONS -->
         <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
           <p class="text-sm text-blue-800">
             <strong> How to use:</strong><br>
             1. Click a checkbox below to load a list.<br>
             2. Click a name from the list to select it.<br>
-            3. Choose how to remember it (Student, Manager, Other).<br>
-            4. Click "Confirm" to store it for use in forms.
+            3. Choose how to remember it (Student, Manager, Other) or accept the suggestion.<br>
+            4. Click to confirm & store it in the semantic clipboard for use in forms.<br>
+            </p>
+          </div>
+            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
+            <p class="text-sm text-blue-400">
+            <strong> What happens next:</strong><br>
+            A. The stored items will be visible below in the Information section. They can be removed individually.<br>
+            B. Other modules of the App will check the clipboard automatically and load any data they need.
           </p>
+
         </div>
 
         <!-- DATA TYPE SELECTION -->
         <div class="mb-4">
           <h4 class="font-medium mb-2">1. Load List:</h4>
           <div class="space-y-1">
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-human"> APPROFILE (person) for relating 🖇️</label>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-abstract"> APPROFILE (abstract) for relating 🖇️</label>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="app-task"> APPROFILE (task) for relating 🖇️</label>
+            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="app-human"> 👥 Person APPROFILE for relating 🖇️</label>
+            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="app-abstract">🎭 Abstract APPROFILE for relating 🖇️</label>
+            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="app-task"> 📋 APPROFILE of a task for relating 🖇️</label>
+            
             <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="view" value="tasks"> 🔧 Tasks for assignment</label>
+            <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="surveys"> 📜 Surveys</label>
+            <div class="border-t my-2"></div>
+            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="tasks"> 🔧 Tasks for assignment</label>
+
           </div>
         </div>
 
@@ -114,11 +126,17 @@ class DevDataSelector {
         <div class="mb-4">
           <h4 class="font-medium mb-2">2. Remember as:</h4>
           <div class="space-y-1">
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="student"> Student</label>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="manager"> Manager</label>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="other" checked> Other</label>
-            <label class="flex items-center space-x-2 p-2 border rounded hover:bg-gray-200 cursor-pointer"><input type="radio" name="as" value="task"> Task</label>
-          </div>
+            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="student"> 🧑‍🎓 Student</label>
+            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="manager"> 💼 Manager</label>
+            <div class="border-t my-2"></div>
+            <label class="flex items-center space-x-2 p-2 bg-orange-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="other" checked> 🤔 Other</label>
+            <div class="border-t my-2"></div>
+            <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="survey"> 📜 Survey</label>
+            <div class="border-t my-2"></div>
+            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="task"> 🔧 Task</label>
+            
+
+            </div>
         </div>
 
         <!-- CONFIRM BUTTON -->
@@ -136,6 +154,7 @@ class DevDataSelector {
           <p id="informationFeedback" data-task="information-feedback"></p>
         </div>
       </div>
+      ${petitionBreadcrumbs()} 
     `;
   }
 
@@ -165,12 +184,14 @@ class DevDataSelector {
   async onViewChange(e) {
     const view = e.target.value;
     this.currentView = view;
-
+console.log('ViewChange:');
     // Load data if not already loaded
     if (view.startsWith('app-') && !this.loadedData.humanApprofiles) {
       await this.loadApprofiles();
     } else if (view === 'tasks' && !this.loadedData.tasks) {
       await this.loadTasks();
+    } else if (view === 'surveys' && !this.loadedData.surveys)  {
+      await this.loadSurveys();
     }
 
     // Populate list
@@ -199,6 +220,16 @@ class DevDataSelector {
     }
   }
 
+  async loadSurveys() {
+    try {
+      this.loadedData.surveys = await executeIfPermitted(appState.query.userId, 'readSurveyHeaders', {});
+      console.log('Surveys:',this.loadedData.surveys);//works  20:30 Oct 10th 2025
+    } catch (error) {
+      console.error('Error loading surveys:', error);
+      showToast('Failed to load surveys', 'error');
+    }
+  }
+
   populateList(view) {
     // Set container background based on view
     const bgColor = {
@@ -224,6 +255,9 @@ class DevDataSelector {
       case 'tasks':
         items = this.loadedData.tasks || [];
         break;
+      case 'surveys':
+        items = this.loadedData.surveys || [];
+      break;
       default:
         this.listContainer.innerHTML = '<div class="text-gray-500 text-center py-4">Select a type above</div>';
         return;
@@ -236,7 +270,8 @@ class DevDataSelector {
       'app-human': '👥 Human Approfiles',
       'app-abstract': '🎭 Abstract Approfiles',
       'app-task': '📋 Task Approfiles',
-      'tasks': '🚀 Tasks'
+      'tasks': '🔧 Tasks',
+      'surveys' : '📜 Surveys'
     }[view] || 'Select a type above';
 
     this.listContainer.innerHTML = '';
@@ -257,18 +292,48 @@ class DevDataSelector {
     });
   }
 
-  onItemClick(item) {
+  onItemClick(item) {  // set the 'AS' value to defaults that match the type of thing being selected, but user can over ride.
     this.selectedItem = item;
-    this.updateConfirmButton();
+    console.log('onItemClick() this.currentView ===',this.currentView);
+
+    if (this.currentView === 'tasks') {
+      this.selectedAs = 'task';
+      // Check the radio button
+      const taskRadio = this.panel.querySelector('input[name="as"][value="task"]');
+      if (taskRadio) {
+          taskRadio.checked = true;
+      } 
+    }else
+
+    if (this.currentView.startsWith('app-')) {
+      this.selectedAs = 'other';
+      // Check the radio button
+      const taskOther = this.panel.querySelector('input[name="as"][value="other"]');
+      if (taskOther) {
+          taskOther.checked = true;
+      } 
+    }else
+      if (this.currentView === 'surveys') {
+        this.selectedAs = 'survey';
+        // Check the radio button
+        const surveyRadio = this.panel.querySelector('input[name="as"][value="survey"]');
+      //  console.log('surveyRadio:',surveyRadio);
+        if (surveyRadio) {
+            surveyRadio.checked = true;
+        }
+      } //else console.log('NOT surveys');
+          this.updateConfirmButton();
   }
 
+
   onAsChange(e) {
+    console.log('asChange:',e.target);
     this.selectedAs = e.target.value;
     this.updateConfirmButton();
   }
 
   updateConfirmButton() {
-    if (this.selectedItem && this.selectedAs && this.currentView) {
+    if (this.selectedItem && this.currentView) {
       // Truncate long names for button
       const displayName = this.selectedItem.name.length > 30 
         ? this.selectedItem.name.substring(0, 30) + '...' 
@@ -283,7 +348,7 @@ class DevDataSelector {
   }
 
   confirmSelection() {
-    if (!this.selectedItem || !this.selectedAs || !this.currentView) return;
+    if (!this.selectedItem || !this.currentView) return;
 
     const clipboardItem = {
       entity: {
@@ -334,6 +399,7 @@ class DevDataSelector {
           data-remove-index="${index}" 
           class="text-red-500 hover:text-red-700 ml-4 p-1 rounded hover:bg-red-50"
           title="Remove from clipboard"
+          aria-label="Remove item from clipboard"
         >
           ×
         </button>

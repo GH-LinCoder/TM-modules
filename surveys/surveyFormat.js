@@ -174,37 +174,46 @@ surveyFormat =
                                       "is_nullable": "NO",
                                       "column_default": "gen_random_uuid()"
                                     },
-                                    "name": {
+                                    "name": { 
                                       "data_type": "text",
                                       "is_nullable": "YES",
                                       "column_default": null
                                     },
-                                    "to_step": {
+                                    "description": {
+                                      "data_type": "text",
+                                      "is_nullable": "YES",
+                                      "column_default": null
+                                    },
+                                    // task related data
+                                    "to_step": {  // if changing where the student is on the task
                                       "data_type": "integer",
                                       "is_nullable": "YES",
                                       "column_default": null
                                     },
-                                    "from_step": {
+                                    "from_step": {  // if changing where the student is on the task
                                       "data_type": "integer",
                                       "is_nullable": "YES",
                                       "column_default": null
                                     },
-                                    "created_at": {
-                                      "data_type": "timestamp with time zone",
-                                      "is_nullable": "NO",
-                                      "column_default": "now()"
-                                    },
-                                    "student_id": {
+
+                                    "student_id": { // to be able to move or assign a student on a task
                                       "data_type": "uuid",
                                       "is_nullable": "YES",
                                       "column_default": "gen_random_uuid()"
                                     },
+                                    "task_step_id": { //where to put the student
+                                      "data_type": "uuid",
+                                      "is_nullable": "YES",
+                                      "column_default": "gen_random_uuid()"
+                                    },
+
+                                    //relation based data
                                     "appro_is_id": {
                                       "data_type": "uuid",
                                       "is_nullable": "YES",
                                       "column_default": "gen_random_uuid()"
                                     },
-                                    "description": {
+                                    "relationship": { // if creating a relation
                                       "data_type": "text",
                                       "is_nullable": "YES",
                                       "column_default": null
@@ -214,36 +223,37 @@ surveyFormat =
                                       "is_nullable": "YES",
                                       "column_default": "gen_random_uuid()"
                                     },
-                                    "relationship": {
-                                      "data_type": "text",
+
+                                    "appro_relations_id": { // if updating an existing relation
+                                      "data_type": "uuid",
                                       "is_nullable": "YES",
                                       "column_default": null
                                     },
-                                    "task_step_id": {
+
+                                    "survey_answer_id": { // source of trigger if a survey
                                       "data_type": "uuid",
                                       "is_nullable": "YES",
                                       "column_default": "gen_random_uuid()"
                                     },
-                                    "task_header_id": {
+
+                                    "task_header_id": {// source of trigger if a task
                                       "data_type": "uuid",
                                       "is_nullable": "YES",
                                       "column_default": "gen_random_uuid()"
                                     },
+
+                                    "created_at": {
+                                      "data_type": "timestamp with time zone",
+                                      "is_nullable": "NO",
+                                      "column_default": "now()"
+                                    },
+                                                                      
                                     "last_updated_at": {
                                       "data_type": "timestamp with time zone",
                                       "is_nullable": "YES",
                                       "column_default": null
                                     },
-                                    "survey_answer_id": {
-                                      "data_type": "uuid",
-                                      "is_nullable": "YES",
-                                      "column_default": "gen_random_uuid()"
-                                    },
-                                    "appro_relations_id": {
-                                      "data_type": "uuid",
-                                      "is_nullable": "YES",
-                                      "column_default": null
-                                    }
+ 
                                   },
 
 

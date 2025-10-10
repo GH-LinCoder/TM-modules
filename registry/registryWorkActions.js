@@ -1221,7 +1221,7 @@ createSurveyAutomation: {
 
 //////////////////////////////////////////    READ  SURVEYS   ///////////////////////////
 
-readSurvey: {
+readSurveyHeaders: {
   metadata: {
     tables: ['survey_headers'],
     columns: ['name', 'description', 'author_id', 'created_at', 'last_updated_at', 'automations'], // automations not curren
@@ -1230,11 +1230,11 @@ readSurvey: {
   },
   handler: async (supabase, userId, payload) => {
     console.log('readSurveyHeaders()');
-    const { surveyId } = payload;
+   // const { surveyId } = payload;
     const { data, error } = await supabase
       .from('survey_headers')
       .select('name, description, author_id, created_at, last_updated_at, automations  ')
-      .eq('id',surveyId);
+     // .eq('id',surveyId);
 
     if (error) throw error;
     return data;

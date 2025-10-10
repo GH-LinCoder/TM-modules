@@ -2,8 +2,9 @@
 
 export const icons={
 
-
+abstract:'🎭',
 approfiles:'🪪' ,
+approfileTask:'📋',
 assignTask:'👨‍🔧',
 
 answer:'💭',
@@ -18,8 +19,11 @@ down:'🔽',
 
 edit:' ✍️ ',
 
+humans:'👥',
+
 idea:'💡',
 
+manager:'💼',
 moveStudent:'🧑‍🎓',
 
 question:'❔',
