@@ -10,6 +10,9 @@ const userId = appState.query.userId;
 
 let hasInitializedListener = false;
 
+
+
+/*
 function attachDropdownListener(panel) {
 
   console.log('attachDropdownListener()');
@@ -18,17 +21,45 @@ function attachDropdownListener(panel) {
   if (!select) return;
 
   select.addEventListener('change', async (e) => {
-console.log('Dropdown changed:');
+
     const approfileId = e.target.value;
     const selectedName = e.target.options[e.target.selectedIndex].textContent;
     if (approfileId) {
+      console.log('DropdownChange,NameFound calling loadAndRender');
       await loadAndRenderRelationships(panel, approfileId, selectedName);
-    } else {
-      renderRelationships(panel, null, null);
+    } else {      console.log('DropdownChange,NO Name. calling loadAndRender -why?');
+      renderRelationships(panel, null, null);// why?
     }
   });
 }
+*/  //the above changed to below 21:06 Oct 12
 
+function attachDropdownListener(panel) {
+  const select = panel.querySelector('#approfileSelect');
+  if (!select) return;
+
+  // Check if listener already attached
+  if (select.dataset.listenerAttached === 'true') {
+    console.log('Listener already attached, skipping');
+    return;
+  }
+
+  // Add the listener
+  select.addEventListener('change', async (e) => {
+    console.log('DropdownChange,NameFound calling loadAndRender');
+    const approfileId = e.target.value;
+    const selectedName = e.target.options[e.target.selectedIndex].textContent;
+    if (approfileId) {
+      await loadAndRenderRelationships(panel, approfileId, selectedName, 'dropdown');
+    } else {
+      renderRelationships(panel, null, null, 'dropdown-clear');
+    }
+  });
+
+  // Mark as attached AFTER successfully adding listener
+  select.dataset.listenerAttached = 'true';
+  console.log('Dropdown listener attached');
+}
 
 
 
@@ -41,14 +72,36 @@ export function render(panel, query = {}) {
 
 function getTemplateHTML() {
   return `
-    <div class="bg-white rounded-lg shadow p-6">
-      <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 class="text-lg font-semibold text-blue-800 mb-2">Display Relationships 🖇️  16:22 Oct 12</h3>
-        <p class="text-blue-700 text-sm">
-          View all relationships for a selected approfile. 
-          Select an approfile from your clipboard below.
-        </p>
-      </div>
+
+    <div  class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
+      <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
+        <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+          <h3 class="text-xl font-semibold text-gray-900">Display Relations 🖇️  19:15 Oct 12</h3>
+          <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+        </div>
+
+
+
+
+          <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200" data-action="selector-dialogue">
+            <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
+            <p class="text-blue-700 text-sm">
+              Select an approfile from your clipboard below.
+            </p>
+            <ul class="text-blue-700 text-sm mt-2 space-y-1">
+              <li>• You can view how any one appro is related to others</li>
+              <li>• You will probably need to click to open the [Select] module</li>
+              <li>• Then the dropdown will fill with whatever you select in that module</li>
+              <li>If the slection has already been made then the dropdown Auto-fills from the clipboard.</li>
+              <li> Click the [Select] menu button or click here to open the Selector</li>
+            </ul>
+          </div>
+
+
 
       <div class="space-y-4">
         <div>
@@ -67,6 +120,15 @@ function getTemplateHTML() {
         </div>
       </div>
     </div>
+
+        <!-- INFORMATION FEEDBACK -->
+        <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200 mt-6">
+          <p class="text-lg font-bold">Information:</p>
+          <p id="informationFeedback" data-task="information-feedback"></p>
+        </div>
+      </div>
+
+
     ${petitionBreadcrumbs()} 
   `;
 }
@@ -91,21 +153,40 @@ function init(panel, query) {
     if (flowBox && flowBox.dataset.subjectId) {
       const subjectId = flowBox.dataset.subjectId;
       const subjectName = flowBox.textContent.replace(' is', '').replace('of ', '').trim();
-      console.log('Exploring subject:', subjectId, subjectName);
+     // console.log('Exploring subject:', subjectId, subjectName);
+      console.log('FlowBox Clicked - calling laodAndRender');
+
       await loadAndRenderRelationships(panel, subjectId, subjectName);
     }
   });
-  
+  panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
  // Handle approfile selection from dropdown 
  attachDropdownListener(panel);
 
+ informationFeedback = panel.querySelector('#informationFeedback');
+
 }
+
+function showInformation(approName) {
+  informationFeedback.innerHTML += `<div class="my-2 p-3 bg-white border rounded shadow-sm flex items-center justify-between">
+        <div>
+          <div class="font-medium">${approName}</div>
+          
+        </div>
+      </div>
+    `
+  }
+
+
+
 
 async function populateApprofileSelect(panel) {
   const approfiles = getClipboardItems({ type: 'app-human' })
     .concat(getClipboardItems({ type: 'app-task' }))
     .concat(getClipboardItems({ type: 'app-abstract' }));
   
+console.log('lenght:',approfiles.length);
+
   const select = panel.querySelector('#approfileSelect');
   if (!select) return;
   
@@ -131,6 +212,7 @@ async function populateApprofileSelect(panel) {
     await loadAndRenderRelationships(panel, approfiles[0].entity.id, approfiles[0].entity.name);
   }
   attachDropdownListener(panel);
+
 }
 
 async function loadAndRenderRelationships(panel, approfileId, approfileName) {
@@ -142,6 +224,7 @@ async function loadAndRenderRelationships(panel, approfileId, approfileName) {
     showToast('Failed to load relationships: ' + error.message, 'error');
     renderRelationships(panel, { is: [], of: [] }, approfileName);
   }
+  
 }
 
 async function loadRelationships(approfileId) {
@@ -155,13 +238,15 @@ async function loadRelationships(approfileId) {
     approfileId: approfileId 
   });
   
-  console.log('Raw result:', result);
+//  console.log('Raw result:', result);
   return result || { is: [], of: [] };
 }
 
 function renderRelationships(panel, relationshipsData, approfileName) {
   const container = panel.querySelector('#relationshipsContainer');
   if (!container) return;
+
+
 
   // Handle case where no approfile is selected
   if (relationshipsData === null || approfileName === null) {
@@ -315,7 +400,8 @@ html += `
     });
     html += `</div>`;
   }
-  
+  showInformation(approfileName);
+
   container.innerHTML = html;
 
   

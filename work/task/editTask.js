@@ -184,7 +184,7 @@ function populateStepSelect(panel) {
 
 function getTemplateHTML() {
   return `
-    <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new panel">
+    <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 class="text-xl font-semibold text-gray-900">Edit Task</h3>
@@ -196,7 +196,7 @@ function getTemplateHTML() {
         </div>
         
         <div class="p-6">
-          <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+          <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200" data-action="selector-dialogue">
             <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
             <p class="text-blue-700 text-sm">
               Edit the details of this task. The name must remain unique across all tasks.
@@ -205,7 +205,7 @@ function getTemplateHTML() {
               <li>• You can modify the name, description, and URL</li>
               <li>• The name must be unique across all existing tasks</li>
               <li>• Click "Update Task" to save your changes</li>
-              <li>📋 Auto-filled from clipboard if available</li>
+              <li>📋 Auto-filled from clipboard. Click the [Select] menu button </li>
             </ul>
           </div>
 

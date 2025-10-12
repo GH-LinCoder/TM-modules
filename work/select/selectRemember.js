@@ -80,7 +80,7 @@ class DevDataSelector {
   getTemplateHTML() {
     return `
       <div class="dev-selector bg-white rounded-lg shadow p-6">
-       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 22:00 10 Oct 📝</h3>
+       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 21:55 12 Oct 📝</h3>
         <!-- INSTRUCTIONS -->
         <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
           <p class="text-sm text-blue-800">
@@ -505,8 +505,9 @@ console.log('ViewChange:');
       });
     });
 //16:38 sept 23rd addition:
-
+// moved later 21:50 Oct 12
 // After updating the display
+
 document.dispatchEvent(new CustomEvent('clipboard:updated', {
   detail: { clipboard: appState.clipboard }
 }));
@@ -519,6 +520,10 @@ document.dispatchEvent(new CustomEvent('clipboard:updated', {
 
     const removedItem = appState.clipboard.splice(index, 1)[0];
     this.refreshFeedbackDisplay();
+    //moved down from above 21:50 Oct 12
+   // document.dispatchEvent(new CustomEvent('clipboard:updated', {
+   //   detail: { clipboard: appState.clipboard }
+   // }));
     showToast(`Removed: ${removedItem.entity.name}`, 'info');
   }
 }
