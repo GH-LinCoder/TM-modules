@@ -30,7 +30,7 @@ function initClipboardIntegration(panel) {
   onClipboardUpdate(() => {
     populateFromClipboard(panel);
   });
-          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+   //       panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
   
 }
 
@@ -150,7 +150,8 @@ function getTemplateHTML() {
         </div>
       </div>
     </div>
-  `;
+     ${petitionBreadcrumbs()} 
+    `;
 }
 
 function attachListeners(panel) {

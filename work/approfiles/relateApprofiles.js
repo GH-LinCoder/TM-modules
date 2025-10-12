@@ -31,12 +31,12 @@ export function render(panel, query = {}) {
     relateBtn,
     informationFeedback
   });
-          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+     //     panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
 
 function getTemplateHTML() {
   return `
-    <div id="relateDialog" data-form="relateDialog" class="relate-dialog flex items-center justify-center">
+    <div id="relateDialog" data-form="relateDialog" class="relate-dialog   flex flex-col h-full">
     <!-- INSTRUCTIONS -->
         <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
           <p class="text-sm text-blue-800">
@@ -45,7 +45,7 @@ function getTemplateHTML() {
             2. The names will appear in the dropdowns in this mmodule.<br>
             3. Choose one in each dropdown.<br>
             4. Choose the relationship in the middle dropdown.<br>
-            5. Click "Confirm" to store it for use in forms.
+            5. Click "Confirm" to store it for use in forms.<br>
             6. IMPORTANT: To relate tasks make sure you have selected the appro for the task, and not the actual task.
             Only appros can be related. (Tasks can be assigned but not related. Sorry, it is confusing)
           </p>
@@ -99,6 +99,7 @@ function getTemplateHTML() {
         </div>
       </div>
     </div>
+       ${petitionBreadcrumbs()} 
   `;
 }
 

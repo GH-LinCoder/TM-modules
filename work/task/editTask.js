@@ -28,7 +28,7 @@ export function render(panel, query = {}) {
 
   taskSelect = panel.querySelector('[data-form="taskSelect"]');
 
-        panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+  //      panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 
 }
 
@@ -292,6 +292,7 @@ function getTemplateHTML() {
         </div>
       </div>
     </div>
+       ${petitionBreadcrumbs()} 
   `;
 }
 

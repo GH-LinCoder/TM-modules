@@ -18,7 +18,7 @@ export function render(panel, query = {}) {
   
   // Initialize clipboard integration
   initClipboardIntegration(panel);
-          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+       //   panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
 
 function initClipboardIntegration(panel) {
@@ -120,6 +120,7 @@ function getTemplateHTML() {
         </div>
       </div>
     </div>
+       ${petitionBreadcrumbs()} 
   `;
 }
 
@@ -153,6 +154,7 @@ async function handleApprofileUpdate(e) {
   console.log('handleApprofileUpdate');
 
   const name = document.querySelector('#approfileName')?.value.trim();
+  console.log('name:',name);
   const description = document.querySelector('#approfileDescription')?.value.trim();
   const saveBtn = document.querySelector('#saveApprofileBtn');
   const nameError = document.querySelector('#nameError');

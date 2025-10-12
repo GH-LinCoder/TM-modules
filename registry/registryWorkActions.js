@@ -763,10 +763,10 @@ readAllAssignments:{// VIEW  not a table returns all rows )
 },
 handler: async (supabase, userId, payload) => {
   const { assignment_id} = payload;
-console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
+console.log('readAllAssignment{}','id:',assignment_id,'payload:', payload);
   const { data, error } = await supabase
-  .from('task_assignment_view2')
-  .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
+  .from('task_assignment_view')
+  .select('assignment_id, task_header_id, task_name, task_description, student_id, student_name, manager_id, manager_name, step_id, step_order, step_name, step_description, assigned_at,abandoned_at,completed_at')
   //.eq('assignment_id', encodeURIComponent(assignment_id))
   //.eq('task_header_id', encodeURIComponent(task_header_id))
   .select() //Return the inserted row

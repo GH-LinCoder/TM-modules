@@ -5,7 +5,7 @@ import { petitionBreadcrumbs } from'../ui/breadcrumb.js';
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
 <!-- task Management section -->
-<div class="bg-green-100 rounded-lg shadow p-6" data-section="task-management" data-destination="new-panel">
+<div class="bg-green-100 rounded-lg shadow p-6" data-section="task-management" >
   <h2 class="text-lg font-semibold mb-2">task Management</h2>
   <p class="text-sm text-gray-500 mb-4">Click to carryout the action, it opens in a new panel to the right </p>
 <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
@@ -39,15 +39,15 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
       <!-- Delete -->
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="delete-task-dialogue">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Delete an task not implemented 🗑️</h3>
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Delete a task (not implemented yet) 🗑️</h3>
     <p class="text-xs text-blue-600">Deletion marks the record as deleted, but does not erase it from the system</p>
   </div>
 
-      <!-- Assign -->
-  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assign-task-dialogue">
+      <!-- Assign --> <!-- removed. Seems confusing to have in here when assignement has its own section -->
+  <!-- div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assign-task-dialogue">
     <h3 class="text-sm font-medium text-red-700 mb-1">Assign to a task 👨‍🔧</h3>
     <p class="text-xs text-red-600">This places an approfile on the task.</p>
-  </div>
+  </div -->
 
       <!-- relate -->
   <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-approfiles-dialogue">
@@ -61,7 +61,9 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 </div>
-</div>`}
+</div>
+               ${petitionBreadcrumbs()} 
+`}
 
 
 export function render(panel, petition = {}) {
@@ -71,7 +73,7 @@ export function render(panel, petition = {}) {
      //? query.petitioner : 'unknown';
     console.log('Petition:', petition);
     // panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;}
-    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+  //  panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
   }
 //petitioner
 

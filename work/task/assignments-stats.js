@@ -1,48 +1,55 @@
-//  ./work/stask/tasks.js
-console.log('tasks.js loaded');
+//  ./work/data/assignments.js
+console.log('assignments.js loaded');
 
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
-  return `
-<!--  TASKS  -->
+  return `<!--  ASSIGNMENTS  -->
 <div class="bg-white rounded-lg shadow p-6">
-  <div class="tab-section" data-section="tasks-section">
-    <h2  class="text-xl font-bold mb-4" data-title="tasks">
-    Tasks (<span class="text-sm text-gray-500" data-count="tasks">0</span>)
-    </h2>
+  <div class="tab-section" data-section="assignments-section">
 
-  
-    <label class="flex items-center space-x-2">
-        <input type="radio" name="task_with_steps_view" value="unique" data-toggle="taks" />
+    <!-- View Type Toggle -->
+    <div class="flex space-x-4 mb-4">
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="assignmentView" value="all" checked data-toggle="assignments" />
+        <span>All assignments</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="assignmentView" value="unique" data-toggle="assignments" />
         <span>Completed</span>
       </label>
             <label class="flex items-center space-x-2">
-        <input type="radio" name="task_with_steps_view" value="unique" data-toggle="taks" />
+        <input type="radio" name="assignmentView" value="unique" data-toggle="assignments" />
         <span>Abandoned</span>
       </label>
             <label class="flex items-center space-x-2">
-        <input type="radio" name="task_with_steps_view" value="unique" data-toggle="taks" />
-        <span>Average number of steps per task</span>
+        <input type="radio" name="assignmentView" value="unique" data-toggle="assignments" />
+        <span>Average number of students on each assignment</span>
       </label>
       </label>
             <label class="flex items-center space-x-2">
         <input type="radio" name="assignmentView" value="unique" data-toggle="assignments" />
-        <span>Single step tasks</span>
+        <span>Highest number of students on any assignment</span>
       </label>
 
-      <label class="flex items-center space-x-2">
+                  <label class="flex items-center space-x-2">
         <input type="radio" name="assignmentView" value="unique" data-toggle="assignments" />
-        <span>New tasks in last 28 days</span>
+        <span>Assignments with zero students</span>
       </label>
 
 
+    </div>
 
+    <!-- Assignment List Placeholder -->
+    <div data-list="assignments" class="space-y-2 max-h-96 overflow-y-auto">
+    <h2  class="text-xl font-bold mb-4" data-title="assignments">
+      Assignments (<span class="text-sm text-gray-500" data-count="assignments">0</span>)
+    </h2>
+    </div>
   </div>
-</div>  
-`}
+</div>`}
 
 export function render(panel, petition = {}) {
-    console.log('tasks Render(', panel, petition, ')');
+    console.log('HowTo Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
 
      //? query.petitioner : 'unknown';

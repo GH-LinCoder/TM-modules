@@ -59,7 +59,9 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 </div>
-</div>`}
+</div>
+               ${petitionBreadcrumbs()} 
+`}
 
 
 export function render(panel, petition = {}) {
@@ -68,8 +70,7 @@ export function render(panel, petition = {}) {
 
      //? query.petitioner : 'unknown';
     console.log('Petition:', petition);
-   // panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;}
-   panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+
   }
 //petitioner
 

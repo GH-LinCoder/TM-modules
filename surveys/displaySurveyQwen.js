@@ -57,7 +57,7 @@ class SurveyDisplay {
             showToast('Failed to load survey: ' + error.message, 'error');
             console.error('Survey display error:', error);
         }
-        panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+      //  panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
     }
 
     getHeaderHTML(surveyInfo) {
@@ -114,6 +114,7 @@ class SurveyDisplay {
 
                 </div>
             </div>
+               ${petitionBreadcrumbs()} ;
         `;
     }
 

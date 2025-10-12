@@ -74,9 +74,9 @@ let requestType ='QUERY_UPDATE'; // added 18:54 Sept 12 2025
 
 if (typeof petition.Action === 'string' && petition.Action.startsWith('data-')) {
   requestType = 'DATA_REQUEST';
-  console.log(`[DATA] Recognized data request: ${petition.Action}`);
+  console.log(`Recognized data request: ${petition.Action}`);
 } else {
-  console.log(`[MODULE] Recognized module request: ${petition.Action}`);
+  console.log(`Recognized module request: ${petition.Module}`);
 }
 
 /*

@@ -28,13 +28,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <div class="container mx-auto px-4 py-8 space-y-8">
     
   <!-- Quick Stats -->
-  <div class="bg-blue-200 rounded-lg shadow p-6" data-section="quick-stats" data-destination='new-panel'>
+  <div class="bg-blue-200 rounded-lg shadow p-6" data-section="quick-stats" data-destination = "quick-stats">
     <h2 class="text-lg font-semibold mb-2">Quick Stats</h2>
     <p class="text-sm text-gray-500 mb-4">Summaries: Click for details. They open in a new panel to the right. Click card again to close.</p>
   <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
 
     <!-- Approfiles Human -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="members-stats">
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="humans-stats">
       <h3 class="text-sm font-medium text-blue-700 mb-1">Approfiles-Human</h3>
       <p class="text-2xl font-bold text-blue-900" data-value="members-count">?</p>
       <p class="text-xs text-blue-600">Registered users</p>
@@ -86,12 +86,18 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-xs text-blue-400 mt-1" data-delta="members-month">+? new this month</p>
     </div>
 
+        <!-- Approfiles -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="analytics">
+      <h3 class="text-sm font-medium text-blue-700 mb-1">Analytics</h3>
+    </div>
+
+
   </div>
 </div>
 
 
   <!-- Quick Acts -->
-  <div class="bg-red-100 rounded-lg shadow p-6" data-section="quick-acts" data-destination='new-panel'>
+  <div class="bg-red-100 rounded-lg shadow p-6" data-section="quick-acts" data-destination='quick-acts'>
     <h2 class="text-lg font-semibold mb-2">Quick Acts</h2>
     <p class="text-sm text-gray-500 mb-4">Fast access to common admin tasks. They open in a new panel to the right. (Click the card again to close)</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" >
@@ -123,21 +129,21 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- RELATE APPROFILES -->
     <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="relate-approfiles-dialogue">
-      <h3 class="text-sm font-medium text-blue-700">Create a relationship (Approfiles) 🖇️ </h3>
+      <h3 class="text-sm font-medium text-blue-700">Relate one appro to another appro 🖇️ </h3>
       <p class="text-xs text-gray-500">One thing IS [some relationship] OF another thing. Connecting two approfiles, building structure and hierarchy. </p>
     </div>
 
 <!-- VIEW RELATED APPROFILES -->
     <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="display-related-approfiles-dialogue">
-      <h3 class="text-sm font-medium text-blue-700">Display relationships of Approfiles 👁️🖇️</h3>
+      <h3 class="text-sm font-medium text-blue-700">Display related appros 👁️🖇️</h3>
       <p class="text-xs text-gray-500">See how a chosen thing IS [some relationship] OF any other things. Display hierarchy & connections. </p>
     </div>
 
 
 <!-- SELECTOR -->
-    <div class="bg-green-50 border border-indigo-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='selector-dialogue'>
+    <div class="bg-green-50 border border-indigo-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='selector-dialogue' data-destination='new-panel'>
       <h3 class="text-sm font-medium text-indigo-700">Select to remember 📝</h3>
-      <p class="text-xs text-gray-500">List things & click to remember them. Can use to automatically fill-in forms</p>
+      <p class="text-xs text-gray-500">List things & click to remember them. Can use to automatically fill-in forms. (Opens in new panel)</p>
     </div>    
 
   </div>
@@ -185,23 +191,18 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 </div>
 
 
-<!-- Task & Member Management -->
-<div class="bg-green-100 rounded-lg shadow p-6" data-section='t&m-management' data-destination='t&m-management'>
-  <h2 class="text-lg font-semibold mb-2">Task & Member Management</h2>
+<!-- Task Management -->
+<div class="bg-green-100 rounded-lg shadow p-6" data-section='task-management' data-destination='task-management'>
+  <h2 class="text-lg font-semibold mb-2">Task Management</h2>
   <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-<!-- Approfiles -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action='member-management-section'>
-      <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">approfiless 🪪</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage member, task & abstract, approfiles</p>
-    </div>
+
 
 <!-- ASSIGNMENT -->
     <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action='assignment-management-section'>
       <p class="text-3xl font-bold text-red-900" data-value="assignments-count">?</p>
-      <h3 class="text-sm font-medium text-red-700">Assignments 👨‍🔧</h3>
+      <h3 class="text-sm font-medium text-red-700">Assignment of tasks 👨‍🔧</h3>
       <p class="text-xs text-gray-500">Track and manage task assignments</p>
     </div>
 
@@ -215,21 +216,21 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <!-- AUTHORS -->    
     <div class="bg-yellow-50 border border-purple-200 rounded-lg p-4" data-action='author-management-section'>
       <p class="text-3xl font-bold text-purple-900" data-value="authors-count-unique">?</p>
-      <h3 class="text-sm font-medium text-purple-700">Authors</h3>
+      <h3 class="text-sm font-medium text-purple-700">Authors of tasks</h3>
       <p class="text-xs text-purple-500">View and manage task authors</p>
     </div>    
 
 <!-- STUDENT -->
     <div class="bg-red-50 border border-green-200 rounded-lg p-4" data-action='student-management-section'>
       <p class="text-3xl font-bold text-green-900" data-value="students-count-unique">?</p>
-      <h3 class="text-sm font-medium text-green-700">Students</h3>
+      <h3 class="text-sm font-medium text-green-700">Students of tasks</h3>
       <p class="text-xs text-green-500">View and manage students assigned to tasks</p>
     </div>
 
 <!-- MANAGERS -->    
     <div class="bg-red-50 border border-indigo-200 rounded-lg p-4" data-action='manager-management-section'>
       <p class="text-3xl font-bold text-indigo-900" data-value="managers-count-unique">?</p>
-      <h3 class="text-sm font-medium text-indigo-700">Managers</h3>
+      <h3 class="text-sm font-medium text-indigo-700">Managers of tasks</h3>
       <p class="text-xs text-indigo-500">View and manage task managers</p>
     </div>
 
@@ -243,25 +244,28 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-<!-- ALL APPPROFILES-->         
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="approfiles">
+
+<!-- Approfiles -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action='member-management-section'>
       <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">All Approfiles</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage any kind of approfiles</p>
+      <h3 class="text-sm font-medium text-blue-700">Appros 🪪</h3>
+      <p class="text-xs text-gray-500">View, edit, and manage any kind of approfiles: personal, task based or abstract, approfiles</p>
     </div>
 
-<!-- TASK APPROFILES-->
+
+<!-- HUMAN APPROFILES-->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="member_approfiles">
+      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
+      <h3 class="text-sm font-medium text-purple-700">Human approfiles</h3>
+      <p class="text-xs text-gray-500">View and manage the approfiles for members</p>
+    </div>
+
+
+    <!-- TASK APPROFILES-->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="task-approfiles">
       <p class="text-3xl font-bold text-indigo-900" data-value="task-profiles-count">?</p>
       <h3 class="text-sm font-medium text-indigo-700">Task approfiles</h3>
       <p class="text-xs text-gray-500">View and manage the approfiles for tasks</p>
-    </div>
-
-<!-- MEMBER APPROFILES-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="member_approfiles">
-      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-purple-700">Member approfiles</h3>
-      <p class="text-xs text-gray-500">View and manage the approfiles for members</p>
     </div>
 
 <!-- GROUP APPROFILES-->    
@@ -403,7 +407,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
    
 </section>
-
+   ${petitionBreadcrumbs()} 
 `}
 
 export function render(panel, petition = {}) {
@@ -413,7 +417,7 @@ export function render(panel, petition = {}) {
      //? query.petitioner : 'unknown';
  //   console.log('Petition:', petition);
   //  panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;
-    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+   // panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
   }
 //petitioner
 

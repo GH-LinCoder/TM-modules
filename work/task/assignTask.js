@@ -13,7 +13,7 @@ export function render(panel, query = {}) {
   console.log('assignTask.js render() called');
   const dialog = new AssignTaskDialog();
   dialog.render(panel, query);
-          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+    //      panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
   
 }
 
@@ -184,6 +184,7 @@ class AssignTaskDialog {
           </div>
         </div>
       </div>
+         ${petitionBreadcrumbs()} 
     `;
   }
 

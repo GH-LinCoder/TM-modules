@@ -1,24 +1,22 @@
-// ./work/dash/memberDash.js
-console.log('memberDash.js loaded');
+// ./work/dash/myDash.js
+console.log('myDash.js loaded');
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-import { getClipboardItems } from '../../utils/clipboardUtils.js';
+import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { appState } from '../../state/appState.js';
 
-// DEV fallback student ID (replace with real auth later)
-const DEV_STUDENT_ID = '1c8557ab-12a5-4199-81b2-12aa26a61ec5';
 
 function getTemplateHTML() {
   return `
 <!-- DASHBOARD TOGGLE & TITLE -->
 <div class="px-6 py-4 border-b bg-green-200 flex justify-between items-center">
-  <div class="name" title="Toggle between admin & member dashboard">
-    <!--div class="text-sm text-blue-600 hover:underline" data-action="toggle-dash">Member/Admin</div-->
+  <div class="name" title="Toggle between admin & my dashboard">
+    <!--div class="text-sm text-blue-600 hover:underline" data-action="toggle-dash">my/Admin</div-->
   </div>
 
   <div>
-    <h1 class="text-2xl font-bold" data-dash-title="admin">Member Dashboard</h1>
-    <p class="text-sm text-gray-500" data-dash-sub_title="member">Check your tasks, update your details, manage your students...</p>
+    <h1 class="text-2xl font-bold" data-dash-title="admin">My Dashboard</h1>
+    <p class="text-sm text-gray-500" data-dash-sub_title="my">Check my tasks, update my details, manage my students...</p>
   </div>
   <!--button class="text-sm text-blue-600 hover:underline" onclick="signOut()">Sign out</button-->
 </div>
@@ -51,7 +49,7 @@ function getTemplateHTML() {
           class="w-full border border-gray-300 rounded-lg py-2 text-sm font-medium hover:bg-gray-50"
           data-action="edit-profile"
         >
-          Edit <span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm" data-user="role">Member</span> Profile
+          Edit <span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm" data-user="role">my</span> Profile
         </button>
       </div>
     </div>
@@ -123,7 +121,7 @@ function getTemplateHTML() {
     <div class="space-y-6" data-list="my-tasks">
       <!-- Tasks will be loaded here dynamically -->
       <div class="text-center py-8 text-gray-500" data-placeholder="loading">
-        Loading your tasks...
+        My tasks would be loaded here...
       </div>
     </div>
   </div>
@@ -168,20 +166,33 @@ function getTemplateHTML() {
     </div>
   </div>
 </div>
+
 `;
 }
 
-// ✅ GET STUDENT ID FROM CLIPBOARD OR USE DEFAULT
-function getCurrentStudentId() {
+// GET STUDENT ID FROM CLIPBOARD OR USE DEFAULT
+function getCurrentStudentId() {  //If admin has selected an appro as student or as other, use that id
   const clipboardStudents = getClipboardItems({ as: 'student', type: 'app-human' });
+  const clipboardOther = getClipboardItems({ as: 'other', type: 'app-human' });
   
   if (clipboardStudents.length > 0) {
     return clipboardStudents[0].entity.id;
   }
+  if (clipboardOther.length > 0) {
+    return clipboardOther[0].entity.id;
+  }
+  const DEV_STUDENT_ID = '1c8557ab-12a5-4199-81b2-12aa26a61ec5';
+
   
   // Fallback to DEV student ID
-  return DEV_STUDENT_ID;
+  return DEV_STUDENT_ID; // DEV fallback student ID (replace with real auth later)
+//
+
 }
+
+
+
+
 
 // ✅ RENDER SINGLE TASK CARD
 function renderTaskCard(assignment) {
@@ -239,6 +250,7 @@ function renderTaskCard(assignment) {
         </div>
       </div>
     </div>
+       ${petitionBreadcrumbs()} 
   `;
 }
 
@@ -246,6 +258,7 @@ function renderTaskCard(assignment) {
 async function loadStudentProfile(panel, studentId) {
     try {
       // Get student approfile
+      if(!studentId) return;
       const studentProfile = await executeIfPermitted(
         appState.query.userId,
         'readApprofileById',
@@ -290,9 +303,10 @@ async function loadStudentProfile(panel, studentId) {
 
 // ✅ LOAD TASKS FOR CURRENT STUDENT
 async function loadStudentTasks(panel) {
-  const studentId = getCurrentStudentId();
+  let studentId = getCurrentStudentId();
+  if(studentId) {
   const taskList = panel.querySelector('[data-list="my-tasks"]');
-  
+
   try {
     // ✅ USE YOUR EXISTING REGISTRY FUNCTION
     const assignments = await executeIfPermitted(
@@ -300,7 +314,7 @@ async function loadStudentTasks(panel) {
       'readStudentAssignments', 
       { student_id: studentId }
     );
-    
+  
     // Update student ID display
     const studentIdEl = panel.querySelector('[data-user="student-id"]');
     if (studentIdEl) {
@@ -338,6 +352,7 @@ async function loadStudentTasks(panel) {
       </div>
     `;
   }
+ }
 }
 
 // ✅ ADD EVENT LISTENERS FOR TASK ACTIONS
@@ -399,14 +414,20 @@ function openMoveStudent(assignmentId) {
 }
 
 export function render(panel, petition = {}) {
-  console.log('memberDash Render(', panel, petition, ')');
+  console.log('myDash Render(', panel, petition, ')');
   panel.innerHTML = getTemplateHTML();
-  panel.innerHTML += petitionBreadcrumbs();
-  
+ // panel.innerHTML += petitionBreadcrumbs();
+ onClipboardUpdate(() => {
+  let  studentId = getCurrentStudentId();
+  loadStudentProfile(panel, studentId);
+
+    // Load tasks
+    loadStudentTasks(panel);
+    });
   // Load tasks after a brief delay to ensure DOM is ready
   setTimeout(async () => {
     const studentId = getCurrentStudentId();
-    
+
     // ✅ LOAD STUDENT PROFILE
     await loadStudentProfile(panel, studentId);
     

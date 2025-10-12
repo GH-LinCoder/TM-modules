@@ -49,7 +49,9 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 </div>
-</div>`}
+</div>
+               ${petitionBreadcrumbs()} ;
+`}
 
 
 export function render(panel, petition = {}) {

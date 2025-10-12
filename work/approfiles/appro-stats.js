@@ -1,45 +1,58 @@
-//  ./work/data/managers.js
-console.log('managers.js loaded');
+//  ./work/approfiles/appro-stats.js
+console.log('appro-stats.js loaded');
 
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
-  <!--   MEMBERS  -->  
+  <!--   APPROFILES  -->  
 <div class="bg-white rounded-lg shadow p-6" >
-  <div class="tab-section" data-section="members-section"></div>
-  <h2 class="text-xl font-bold mb-4" data-title="members">
-    Members (<span class="text-sm text-gray-500" data-count="members">0</span>)
+  <div class="tab-section" data-section="quick-stats"></div>
+  
+
+ <div class="flex space-x-4 mb-4">
+    <span class="text-sm font-medium">Sort by:</span>
+     
+            <label class="flex items-center space-x-2">
+        <input type="radio" name="approView" value="appros-desc" data-toggle="appros" />
+        <span>abstract  a-z</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="approView" value="appros-asc" data-toggle="appros" />
+        <span>abstract  z-a</span>
+      </label>
+
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="approView" value="appros-asc" data-toggle="appros" />
+        <span>Tasks</span>
+      </label>
+
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="approView" value="appros-asc" data-toggle="appros" />
+        <span>Human a-z (includes mockTest)  See other section for details</span>
+      </label>
+      <label class="flex items-center space-x-2">
+        <input type="radio" name="approView" value="appros-asc" data-toggle="appros" />
+               <span>Human  z-a (includes mockTest)  See other section for details</span>
+      </label>
+
+
+
+
+
+ </div>
+
+  <div class="space-y-2 max-h-96 overflow-y-auto" data-list="appros">
+ <h2 class="text-xl font-bold mb-4" data-title="appros">
+    Approfiles (<span class="text-sm text-gray-500" data-count="approfiles">?</span>)
   </h2>
 
-
-<div class="flex space-x-4 mb-4">
-    <span class="text-sm font-medium">Sort by:</span>
-      <label class="flex items-center space-x-2">
-        <input type="radio" name="memberView" value="members-desc" checked data-toggle="members" />
-        <span>All</span>
-      </label>
-      <label class="flex items-center space-x-2">
-        <input type="radio" name="memberView" value="members-asc" data-toggle="members" />
-        <span>Unique</span>
-      </label>
-            <label class="flex items-center space-x-2">
-        <input type="radio" name="memberView" value="members-alpha-asc" data-toggle="members" />
-        <span>Unique</span>
-      </label>
-            <label class="flex items-center space-x-2">
-        <input type="radio" name="memberView" value="members-alpha-desc" data-toggle="members" />
-        <span>Unique</span>
-      </label>
-    </div>
-
-  <div class="space-y-2 max-h-96 overflow-y-auto" data-list="members">
-    <!-- Member items will be injected here -->
+ 
   </div>
 </div>
 `}
 
 export function render(panel, petition = {}) {
-    console.log('MemberStats Render(', panel, petition, ')');
+    console.log('approStats Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
 
      //? query.petitioner : 'unknown';

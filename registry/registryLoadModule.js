@@ -46,17 +46,18 @@ export const registry = { // this registry is for loading a new page to the righ
 
 'data': () => import('../work/data/dataTables.js'),
 'analytics': () => import('../work/data/analytics.js'),
-'managers-stats':() => import('../work/data/managers-stats.js'),
-'authors-stats':() => import('../work/data/authors-stats.js'),
+'managers-stats':() => import('../work/task/managers-stats.js'),
+'authors-stats':() => import('../work/task/authors-stats.js'),
 'students-stats' :() => import('../work/student/students-stats.js'),
-'assignments-stats':() => import('../work/data/assignments-stats.js'),
-'members-stats' :() => import('../work/data/members-stats.js'),
+'assignments-stats':() => import('../work/task/assignments-stats.js'),
+'humans-stats' :() => import('../work/approfiles/humans-stats.js'),
+'approfiles-stats':()=> import('../work/approfiles/appro-stats.js'),
 'plans' :() => import('../plans.js'),
 'tasks-stats' :() => import('../work/task/tasks-stats.js'),
 'steps-stats' :() => import('../work/task/steps-stats.js'),
 
 'adminDash':()=>import('../work/dash/adminDash.js'),
-'memberDash':()=>import('../work/dash/memberDash.js'),
+'myDash':()=>import('../work/dash/myDash.js'),
 
 'login':()=>import('../auth/login.js'),
 
@@ -81,16 +82,16 @@ export const registry = { // this registry is for loading a new page to the righ
 
 'data.html': () => import('../work/data/dataTables.js'),
 'analytics.html': () => import('../work/data/analytics.js'),
-'managers.html':() => import('../work/data/managers-stats.js'),
-'authors.html':() => import('../work/data/authors-stats.js'),
-'assignments.html':() => import('../work/data/assignments-stats.js'),
+'managers.html':() => import('../work/task/managers-stats.js'),
+'authors.html':() => import('../work/task/authors-stats.js'),
+'assignments.html':() => import('../work/task/assignments-stats.js'),
 'members.html' :() => import('../work/data/memberss.js'),
 'plans.html' :() => import('../plans.js'),
 'tasks.html' :() => import('../work/task/tasks-stats.js'),
 'steps.html' :() => import('../work/task/steps-stats.js'),
 
 'adminDash.html':()=>import('../work/dash/adminDash.js'),
-'memberDash.html':()=>import('../work/dash/memberDash.js'),
+'memberDash.html':()=>import('../work/dash/myDash.js'),
 
 'login.html':()=>import('../auth/login.js'),
 

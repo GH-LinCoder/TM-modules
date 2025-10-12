@@ -1,36 +1,44 @@
-//  ./work/data/assignments.js
-console.log('assignments.js loaded');
+//  ./work/approfiles/human-stats.js// 
+console.log('human-stats.js loaded');
 
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
-  return `<!--  ASSIGNMENTS  -->
-<div class="bg-white rounded-lg shadow p-6">
-  <div class="tab-section" data-section="assignments-section">
-    <h2  class="text-xl font-bold mb-4" data-title="assignments">
-      Assignments (<span class="text-sm text-gray-500" data-count="assignments">0</span>)
-    </h2>
+  return `
+  <!--   MEMBERS  -->  
+<div class="bg-white rounded-lg shadow p-6" >
+  <div class="tab-section" data-section="members-section"></div>
+  
 
-    <!-- View Type Toggle -->
-    <div class="flex space-x-4 mb-4">
+ <div class="flex space-x-4 mb-4">
+    <span class="text-sm font-medium">Sort by:</span>
+     
       <label class="flex items-center space-x-2">
-        <input type="radio" name="assignmentView" value="all" checked data-toggle="assignments" />
-        <span>All</span>
+        <input type="radio" name="memberView" value="members-asc" data-toggle="members" />
+        <span>Real (excludes mockTest)</span>
+      </label>
+            <label class="flex items-center space-x-2">
+        <input type="radio" name="memberView" value="members-asc" data-toggle="members" />
+        <span>Includes mockTest</span>
       </label>
       <label class="flex items-center space-x-2">
-        <input type="radio" name="assignmentView" value="unique" data-toggle="assignments" />
-        <span>Unique</span>
+        <input type="radio" name="memberView" value="members-asc" data-toggle="members" />
+        <span>mockTest Only</span>
       </label>
-    </div>
 
-    <!-- Assignment List Placeholder -->
-    <div data-list="assignments" class="space-y-2 max-h-96 overflow-y-auto">
-      <!-- Assignment items will be injected here -->
-    </div>
+ </div>
+
+  <div class="space-y-2 max-h-96 overflow-y-auto" data-list="members">
+ <h2 class="text-xl font-bold mb-4" data-title="members">
+    Humans (<span class="text-sm text-gray-500" data-count="Humans">?</span>)
+  </h2>
+
+ 
   </div>
-</div>`}
+</div>
+`}
 
 export function render(panel, petition = {}) {
-    console.log('HowTo Render(', panel, petition, ')');
+    console.log('MemberStats Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
 
      //? query.petitioner : 'unknown';

@@ -8,42 +8,18 @@ console.log('displayRelations.js loaded');
 
 const userId = appState.query.userId;
 
-let hasInitializedListener = false;
-
-function attachDropdownListener(panel) {
-
-  console.log('attachDropdownListener()');
-
-  const select = panel.querySelector('#approfileSelect');
-  if (!select) return;
-
-  select.addEventListener('change', async (e) => {
-console.log('Dropdown changed:');
-    const approfileId = e.target.value;
-    const selectedName = e.target.options[e.target.selectedIndex].textContent;
-    if (approfileId) {
-      await loadAndRenderRelationships(panel, approfileId, selectedName);
-    } else {
-      renderRelationships(panel, null, null);
-    }
-  });
-}
-
-
-
-
 export function render(panel, query = {}) {
   console.log('displayRelations.render()', panel, query);
   panel.innerHTML = getTemplateHTML();
   init(panel, query);
-      //    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
 
 function getTemplateHTML() {
   return `
     <div class="bg-white rounded-lg shadow p-6">
       <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-        <h3 class="text-lg font-semibold text-blue-800 mb-2">Display Relationships 🖇️  16:22 Oct 12</h3>
+        <h3 class="text-lg font-semibold text-blue-800 mb-2">Display Relationships 🖇️</h3>
         <p class="text-blue-700 text-sm">
           View all relationships for a selected approfile. 
           Select an approfile from your clipboard below.
@@ -67,7 +43,6 @@ function getTemplateHTML() {
         </div>
       </div>
     </div>
-    ${petitionBreadcrumbs()} 
   `;
 }
 
@@ -85,23 +60,20 @@ function init(panel, query) {
     populateApprofileSelect(panel);
   });
   
-  // ATTACH CLICK LISTENER TO PANEL (persists through re-renders)
-  panel.addEventListener('click', async (e) => {
-    const flowBox = e.target.closest('.flow-box-subject, .flow-box-other');
-    if (flowBox && flowBox.dataset.subjectId) {
-      const subjectId = flowBox.dataset.subjectId;
-      const subjectName = flowBox.textContent.replace(' is', '').replace('of ', '').trim();
-      console.log('Exploring subject:', subjectId, subjectName);
-      await loadAndRenderRelationships(panel, subjectId, subjectName);
+  // Handle approfile selection
+  const select = panel.querySelector('#approfileSelect');
+  select?.addEventListener('change', async (e) => {
+    const approfileId = e.target.value;
+    if (approfileId) {
+      const selectedName = e.target.options[e.target.selectedIndex].textContent;
+      await loadAndRenderRelationships(panel, approfileId, selectedName);
+    } else {
+      renderRelationships(panel, null, null);
     }
   });
-  
- // Handle approfile selection from dropdown 
- attachDropdownListener(panel);
-
 }
 
-async function populateApprofileSelect(panel) {
+function populateApprofileSelect(panel) {
   const approfiles = getClipboardItems({ type: 'app-human' })
     .concat(getClipboardItems({ type: 'app-task' }))
     .concat(getClipboardItems({ type: 'app-abstract' }));
@@ -128,9 +100,8 @@ async function populateApprofileSelect(panel) {
   } else if (approfiles.length === 1) {
     // Auto-select if only one option
     select.value = approfiles[0].entity.id;
-    await loadAndRenderRelationships(panel, approfiles[0].entity.id, approfiles[0].entity.name);
+    loadAndRenderRelationships(panel, approfiles[0].entity.id, approfiles[0].entity.name);
   }
-  attachDropdownListener(panel);
 }
 
 async function loadAndRenderRelationships(panel, approfileId, approfileName) {
@@ -162,7 +133,7 @@ async function loadRelationships(approfileId) {
 function renderRelationships(panel, relationshipsData, approfileName) {
   const container = panel.querySelector('#relationshipsContainer');
   if (!container) return;
-
+  
   // Handle case where no approfile is selected
   if (relationshipsData === null || approfileName === null) {
     container.innerHTML = `
@@ -180,7 +151,6 @@ function renderRelationships(panel, relationshipsData, approfileName) {
     container.innerHTML = `
       <div class="bg-yellow-50 border border-yellow-200 rounded p-4 text-center">
         <p class="text-yellow-800">No relationships found for this approfile.</p>
-        <p class="text-yellow-800">No one is an island; you can use Create a Relationship to connect this lonely appro.</p>
       </div>
     `;
     return;
@@ -210,16 +180,6 @@ function renderRelationships(panel, relationshipsData, approfileName) {
   let html = '';
   
   // IS SECTION
-  // Always show IS section (even if empty)
-  if (groupedIs.length  === 0){
-html += `
-<div class="section" style="margin-bottom: 24px; border: 1px solid #2a0985; border-radius: 24px; padding: 16px;"  data-action="relate-approfiles-dialogue">
-  <div class="section-title" style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #374151; text-align: center;">
-    ${approfileName} is EMPTY no example of what this appro "is" 🏝️
-  </div><p style ="text-align: center;">No one is an island;you can use click to relate this lonely appro.</p>
-  </div>
-`};
-  
   if (groupedIs.length > 0) {
     html += `
       <div class="section" style="margin-bottom: 24px; border: 1px solid #2a0985; border-radius: 24px; padding: 16px;">
@@ -240,19 +200,13 @@ html += `
         const object = rel.of_approfile_name || rel.of_approfile;
         html += `
           <div class="relationship-flow" style="display: flex; justify-content: center; align-items: center; margin: 2rem auto; gap: 1rem;">
-            <div class="flow-box-subject" 
-                 style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-green-400;"
-                 data-subject-id="${rel.approfile_is}"
-                 title="Click to explore ${subject}">
+            <div class="flow-box-subject" style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080;">
               ${subject} is
             </div>
             <div class="flow-box-relation" style="padding: 0.75rem 1.25rem; background-color: #d7e4e2; border: 2px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; font-size: 16px; font-style: italic; color: #4f46e5;">
               ${rel.relationship}
             </div>
-            <div class="flow-box-other" 
-                 style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
-                 data-subject-id="${rel.of_approfile}"
-                 title="Click to explore ${object}">
+            <div class="flow-box-other" style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080;">
               of ${object}
             </div>
           </div>
@@ -263,17 +217,6 @@ html += `
   }
   
   // OF SECTION
-
-  if (groupedOf.length  === 0){
-    html += `
-    <div class="section" style="margin-bottom: 24px; border: 1px solid #2a0985; border-radius: 24px; padding: 16px;" data-action="relate-approfiles-dialogue">
-      <div class="section-title" style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #374151; text-align: center;">
-        ${approfileName} is EMPTY no example of anything being "of" this appro
-      </div><p style ="text-align: center;">No one is an island; 🏝️ you can use Click to relate this lonely appro.</p>
-      </div>
-    `};
-
-
   if (groupedOf.length > 0) {
     html += `
       <div class="section" style="margin-bottom: 24px; border: 1px solid #2a0985; border-radius: 24px; padding: 16px;">
@@ -294,19 +237,13 @@ html += `
         const object = rel.of_approfile_name || rel.of_approfile;
         html += `
           <div class="relationship-flow" style="display: flex; justify-content: center; align-items: center; margin: 2rem auto; gap: 1rem;">
-            <div class="flow-box-other" 
-                 style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
-                 data-subject-id="${rel.approfile_is}"
-                 title="Click to explore ${subject}">
+            <div class="flow-box-other" style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080;">
               ${subject} is
             </div>
             <div class="flow-box-relation" style="padding: 0.75rem 1.25rem; background-color: #d7e4e2; border: 2px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; font-size: 16px; font-style: italic; color: #4f46e5;">
               ${rel.relationship}
             </div>
-            <div class="flow-box-subject" 
-                 style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-green-400;"
-                 data-subject-id="${rel.of_approfile}"
-                 title="Click to explore ${object}">
+            <div class="flow-box-subject" style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080;">
               of ${object}
             </div>
           </div>
@@ -317,7 +254,4 @@ html += `
   }
   
   container.innerHTML = html;
-
-  
-
 }

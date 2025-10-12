@@ -11,7 +11,7 @@ console.log('selectApprofiles.js loaded');
 export function render(panel, query = {}) {
     console.log('selectApprofiles.js render() called');  
     const dialog = new SelectDialog();dialog.render(panel, query);
-            panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+   //         panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
   }
 
   class SelectDialog {
@@ -170,6 +170,7 @@ export function render(panel, query = {}) {
       </div>
     </div>
     </div>
+       ${petitionBreadcrumbs()} 
     `;
     
       }

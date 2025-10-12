@@ -7,7 +7,7 @@ import { petitionBreadcrumbs } from'../ui/breadcrumb.js';
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
 <!-- survey Management section -->
-<div class="bg-green-100 rounded-lg shadow p-6" data-section="survey-management" data-destination="new-panel">
+<div class="bg-green-100 rounded-lg shadow p-6" data-section="survey-management" >
   <h2 class="text-lg font-semibold mb-2">survey Management  15:30 Oct 8</h2>
   <p class="text-sm text-gray-500 mb-4">Click to carryout the action, it opens in a new panel to the right </p>
 <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
@@ -69,7 +69,9 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 </div>
-</div>`}
+</div>
+               ${petitionBreadcrumbs()} 
+`}
 
 
 export function render(panel, petition = {}) {
@@ -79,7 +81,7 @@ export function render(panel, petition = {}) {
      //? query.petitioner : 'unknown';
     console.log('Petition:', petition);
     // panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;}
-    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+ //   panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
   }
 //petitioner
 

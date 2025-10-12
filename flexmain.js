@@ -70,7 +70,7 @@ export const panelsOnDisplay = [];
  @   'Action' comes from the element clicked & is descriptive of the desired result, not of the source
  @  
  @   'adminDash'  // dashboards have preferential treatment. Displaying on left
- @   'memberDash' // & able to close all other open pages by clicking the menu button a 2nd time 
+ @   'myDash' // & able to close all other open pages by clicking the menu button a 2nd time 
 
  @   '404.html', //is a default start page that explains to click menu.
  @   'howTo' //is for context specific instructions
@@ -186,9 +186,9 @@ async function loadPageWithData(pageName) { // pageName without .html
           await loadAdminDashWithData();
           break;
       // Add cases for other pages as needed
-      case 'memberDash':
-          // await loadMemberDashWithData(); // Implement this function similarly
-          console.warn('loadMemberDashWithData() not implemented yet');
+      case 'myDash':
+          // await loadMyDashWithData(); // Implement this function similarly
+          console.warn('loadMyDashWithData() not implemented yet');
           break;
       default:
           console.warn(`No data loader defined for ${pageName}`);
@@ -401,17 +401,17 @@ async function getStubContent(stubName) { // legacy
 
 // === OPEN/CLOSE PANELS BY RULE ===
 export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
-  console.log('openClosePanelsByRule(', stubName, 'fromButtonClick:', fromButtonClick,')');
+ // console.log('openClosePanelsByRule(', stubName, 'fromButtonClick:', fromButtonClick,')');
   
   if(fromButtonClick){document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));}
   
       // Check if this is a 2nd click for an already open page
       const isPageOpen = panelsOnDisplay.some(p => p.stubName === stubName);
-      console.log('isPageOpen:', isPageOpen);
+ //     console.log('isPageOpen:', isPageOpen);
   
       // Special case: dashboards
-      const isDashboard =stubName === 'adminDash.html' || stubName === 'memberDash.html'|| stubName === 'adminDash' || stubName === 'memberDash';
-      console.log('isDashboard:', isDashboard);    
+      const isDashboard =stubName === 'adminDash.html' || stubName === 'myDash.html'|| stubName === 'adminDash' || stubName === 'myDash';
+ //     console.log('isDashboard:', isDashboard);    
   
       // 2nd Click on open dashboard
       if (isDashboard && isPageOpen) {
@@ -449,10 +449,10 @@ export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
   
         // Always keep admin or member active when opening other panels
           const activePanel = panelsOnDisplay.find(p => 
-          p.stubName === 'adminDash.html' || p.stubName === 'memberDash.html');
+          p.stubName === 'adminDash.html' || p.stubName === 'myDash.html');
         
         if (activePanel) {
-          const activeBtn = document.querySelector(`[data-page="${activePanel.stubName === 'adminDash.html' ? 'adminDash' : 'memberDash'}"]`);
+          const activeBtn = document.querySelector(`[data-page="${activePanel.stubName === 'adminDash.html' ? 'adminDash' : 'myDash'}"]`);
           if (activeBtn) activeBtn.classList.add('active');
         }
       }

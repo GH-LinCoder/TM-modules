@@ -41,7 +41,7 @@ class SurveyEditor {
         onClipboardUpdate(() => {
             this.populateFromClipboard(panel);
         });
-        panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+      //  panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
     }
 
     getTemplateHTML() {
@@ -184,6 +184,7 @@ class SurveyEditor {
                     </div>
                 </div>
             </div>
+               ${petitionBreadcrumbs()}; 
         `;
     }
 

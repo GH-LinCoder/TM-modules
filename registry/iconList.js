@@ -18,10 +18,14 @@ display:'👁️',
 down:'🔽',
 
 edit:' ✍️ ',
+empty:'🫗',
+
+gear:'⚙️',
 
 humans:'👥',
 
 idea:'💡',
+island:'🏝️',
 
 manager:'💼',
 moveStudent:'🧑‍🎓',

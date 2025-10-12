@@ -48,7 +48,7 @@ export function render(panel, query = {}) {
   console.log('Render Approfile Form:', panel, query);
   panel.innerHTML = getTemplateHTML();
   attachListeners(panel);
-          panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+          //panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
 
 function getTemplateHTML() {
@@ -96,6 +96,7 @@ function getTemplateHTML() {
         </div>
       </div>
     </div>
+       ${petitionBreadcrumbs()} 
   `;
 }
 

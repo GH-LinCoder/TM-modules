@@ -86,89 +86,27 @@ console.log('render()',query); // only receiving petitioner not the whole query{
         this.rejectPromise = null;
         this.promise = null;
         this.controller = null;
-
-        this.setupClipboardListener();
-
       } //end of constructor
-
-      showError(message) {
-        console.error('Error:', message);
-        if (this.informationFeedback) {
-          this.informationFeedback.innerHTML = `<div class="text-red-500 font-bold">Error: ${message}</div>`;
-        }
-        showToast(message, 'error');
-      }
-
 
 //////////////////////////////////  Clipboard /////////////////////
 
-
-setupClipboardListener() {
-  onClipboardUpdate(async () => {
-    console.log('clipboard update detected in listener');
-    
-    try {
-      // Reload and update the display with new assignment data
-      await this.displayTaskData();
-      console.log('Display updated with new clipboard data');
-    } catch (error) {
-      console.error('Error updating display after clipboard change:', error);
-      if (this.showError) {
-        this.showError('Failed to update display: ' + error.message);
-      }
-    }
-  });
-}
-
-
-
-
 // GET ASSIGNMENT ID FROM CLIPBOARD OR USE DEFAULT
-// Fix the getAssignmentId method to properly extract the assignment ID:
-getAssignmentId() {
-  // Look for clipboard items that represent assignments
-  const clipboardAssignments = getClipboardItems({ as: 'assignment' });
-  const clipboardOther = getClipboardItems({ as: 'other' });
-  
-  console.log('Clipboard assignments:', clipboardAssignments);
-  console.log('Clipboard other:', clipboardOther);
-  
-  if (clipboardAssignments.length > 0) {
-    const clipboardItem = clipboardAssignments[0];
-    console.log('Clipboard item:', clipboardItem);
-    
-    // Access the full row data
-    const rowData = clipboardItem.entity.item;
-    console.log('Row data:', rowData);
-    
-    // Look for assignment_id in the row data
-    if (rowData.assignment_id) {
-      console.log('Found assignment_id:', rowData.assignment_id);
-      return rowData.assignment_id;
-    } else if (rowData.id) {
-      console.log('Found id:', rowData.id);
-      return rowData.id;
-    }
+getAssignmentId() {  //If admin has selected an appro as student or as other, use that id
+  const clipboardAssignment = getClipboardItems({ as: 'assignment', type: 'assignment' });
+  const clipboardOther = getClipboardItems({ as: 'other', type: 'assignment' });
+  console.log('clipboards other/assign:', clipboardOther,  clipboardAssignment);
+  if (clipboardAssignment.length > 0) {
+    return clipboardAssignment[0].entity.id;
   }
-
   if (clipboardOther.length > 0) {
-    const clipboardItem = clipboardOther[0];
-    // Check if the 'other' item is actually an assignment
-    if (clipboardItem.entity.type === 'assignment' || 
-        clipboardItem.entity.type === 'task-assignment') {
-      if (clipboardItem.entity.assignment_id) {
-        return clipboardItem.entity.assignment_id;
-      } else if (clipboardItem.entity.id) {
-        return clipboardItem.entity.id;
-      }
-    }
+    return clipboardOther[0].entity.id;
   }
+  const DEV_ASSIGNMENT_ID = 'acb9283b-1745-4eea-8ec5-62d646cfadb4';
+
   
-  // This assignment is a default one with a default task that can alwasy be used
-  const DEFAULT_ASSIGNMENT_ID = 'cc807827-ff24-4418-bbaa-ffe04e868988';
-  console.log('Using default assignment');
-  return DEFAULT_ASSIGNMENT_ID;
-//need to disabled the advance button
+  // Fallback to DEV student ID
+  return DEV_ASSIGNMENT_ID; // DEV fallback student ID (replace with real auth later)
+//
 
 }
 
@@ -192,7 +130,6 @@ return assignmentObject;
        * @returns {Promise<boolean>} Resolves with true if student was moved, false otherwise
        */
       async render(panel) {
-        console.log('moveStudentStep render()');
         // Inject dialog HTML
         panel.innerHTML = this.getTemplateHTML();
 
@@ -256,8 +193,19 @@ return assignmentObject;
 
         //tried to do clipboard update here - but not detected
         
-  // Initial load of assignment data
-  await this.displayTaskData();
+        onClipboardUpdate(() => {
+          console.log('clipboard update detected');
+          let  assignment_id = this.getAssignmentId();
+  //         this.studentNameEl.innerHTML = 'Student:' + studentId;
+//           this.next_studentNameEl.innerHTML = 'Student:' + studentId;
+         this.readassignmentObject(assignment_id);
+
+           console.log('Clipboard updated, assignemnt_id:', assignment_id);
+         
+            });
+
+
+        this.displayTaskData();
 
 
         return this.promise;
@@ -393,93 +341,71 @@ displayAbandoned(currentStep,taskSteps){
 
 async displayTaskData() {
   console.log('displayTaskData');
+
+  const student_id = null; // "1c8557ab-12a5-4199-81b2-12aa26a61ec5";//DEV id for user 'noomwild'
+  let task_header_id = null; //'dc9a0e71-4adf-42e7-8649-3620089e4df8';//DEV id for task 'Welcome' but isn't the assignment id
+
+// problem: there may be several different assignments of this task. 
   
-  try {
-    const assignment_id = this.getAssignmentId();
-    console.log('assignment_id:', assignment_id);
-    
-    // Validate that we have a valid assignment ID
-    if (!assignment_id || assignment_id === 'undefined') {
-      this.showError('Invalid assignment ID. Please select a valid assignment from the clipboard.');
-      return;
-    }
+  const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
 
-    // Store the assignment_id for later use
-    this.assignment_id = assignment_id;
-    
-    // There is a default assignment and task that gives instructions. Use when no selection made.
-if(this.assignment_id === 'cc807827-ff24-4418-bbaa-ffe04e868988') {
-            // Disable the arrow button
-            this.advanceButton.disabled = true;
-            this.advanceButton.style.opacity = '0.5';
-            this.advanceButton.style.cursor = 'not-allowed';
-          } else{ //enable the arrow button
-            this.advanceButton.disabled = false;
-            this.advanceButton.style.opacity = '1';
-            this.advanceButton.style.cursor = 'pointer';
+  // not yet sure how going to get student & task id
+  
+  //what args? need student_id, task_id  
+  // read task_assignment_view to get details
+  const assignment_id = this.getAssignmentId();
+  console.log('assignemnt_id', assignment_id);
+  const assignmentObject = await this.readassignmentObject(assignment_id); // object ? not array?
+  console.log('assignemntObject', assignmentObject);
+  
+  if(assignmentObject){ console.log('MoveStudent... assignmentObject from db:', assignmentObject); } else console.log('not found assignment data');
+  this.taskNameEl.innerHTML=assignmentObject.task_name; 
 
-          }
+  const currentStep = assignmentObject.step_order;
+  this.displayCurrentStep(currentStep, assignmentObject);
 
 
-    // Load the assignment data
-    const assignmentArray = await executeIfPermitted(this.userId, 'readThisAssignment', {
-      assignment_id: assignment_id
-    });
-    
-    if (!assignmentArray || assignmentArray.length === 0) {
-      this.showError('No assignment found');
-      return;
-    }
-    
-    const assignmentObject = assignmentArray[0];
-    console.log('Assignment object:', assignmentObject);
-    
-    // Update the UI with assignment data
-    this.taskNameEl.innerHTML = assignmentObject.task_name || 'Unknown Task';
-    this.studentNameEl.innerHTML = 'Student: ' + (assignmentObject.student_name || 'Unknown Student');
-    this.next_studentNameEl.innerHTML = 'Student: ' + (assignmentObject.student_name || 'Unknown Student');
-    
-    const currentStep = assignmentObject.step_order;
-    this.displayCurrentStep(currentStep, assignmentObject);
-    
-    // Load task steps for navigation
-    const taskSteps = await this.findTaskSteps(this.userId, assignmentObject.task_header_id);
-    const numberOfSteps = taskSteps.length;
-    
-    // Update information feedback
-    this.informationFeedback.innerHTML = `There are ${numberOfSteps} steps in this task.`;
-    this.informationFeedback.innerHTML += `<p>The current step is [${currentStep}]</p>`;
-    
-    // Handle different step scenarios
-    if (currentStep === 1) {
-      this.informationFeedback.innerHTML += '<p>The current step of [1] means abandoned</p>';
-      this.displayAbandoned(currentStep, taskSteps);
-    } else if (currentStep === 2) {
-      this.informationFeedback.innerHTML += '<p>The current step is [2] which means completed</p>';
-      this.displayCompletedAssignment(currentStep, taskSteps);
-    } else if (currentStep === numberOfSteps) {
-      this.informationFeedback.innerHTML += `<p>The current step is [${currentStep}] which is the final step. That means advancing to completion.</p>`;
-      this.displayCompletionStep(currentStep, taskSteps);
-    }
-    
-    // Display navigation steps
-    if (currentStep > 3) {
-      this.previous_stepEl.hidden = false;
-      this.displayPreviousStep(currentStep, taskSteps);
-    } else {
-      this.previous_stepEl.hidden = true;
-    }
-    
-    if (this.abandonedClicked) {
-      this.displayAbandonedNextStep(currentStep, taskSteps);
-    } else if (numberOfSteps > currentStep) {
-      this.displayNextStep(currentStep, taskSteps);
-    }
-    
-  } catch (error) {
-    console.error('Error loading assignment data:', error);
-    this.showError('Failed to load assignment data: ' + error.message);
-  }
+
+  /////////////////// NEXT STEP     ////////////////////
+this.next_studentNameEl.innerHTML='Student:'+ assignmentObject.student_name;
+
+ task_header_id = assignmentObject.task_header_id;
+const taskSteps = await this.findTaskSteps(userId,task_header_id);// an array of objects of length = number of steps
+// taskSteps[0] = abandoned,
+// taskSteps[1] = completed,
+//taskSteps[3] = initial position when first on the task
+const numberOfSteps = taskSteps.length;
+console.log('numberOfSteps:', numberOfSteps);
+let previousStepVisible = true; 
+
+this.informationFeedback.innerHTML =`There are ${numberOfSteps} steps in this task.`;
+this.informationFeedback.innerHTML +=`<p>The current step is [${currentStep}]`;
+
+if(currentStep === 1) {this.informationFeedback.innerHTML += '<p>The current step of [1] means abandoned</p>';
+  this.displayAbandoned(currentStep,taskSteps);
+}
+else
+if(currentStep === 2) this.informationFeedback.innerHTML += '<p>The current step is [2] which means completed</p>';
+else
+if(currentStep === numberOfSteps) this.informationFeedback.innerHTML += `<p>The current step is [${currentStep}] which is the final step. That means advancing to completion.</p>`;
+if(currentStep === 3) {this.informationFeedback.innerHTML += `<p>(Every task starts on step 3)</p>`;
+previousStepVisible = false; this.previous_stepEl.hidden=true} 
+else if(currentStep>3) {previousStepVisible =true; this.previous_stepEl.hidden=false;} 
+// there is no rational previous step as steps 1 & 2 are final steps not starting steps
+
+if(currentStep===2) {this.displayCompletedAssignment(currentStep,taskSteps); 
+  this.informationFeedback.innerHTML += `<p>(Step 2 is the Completed step.)</p> <div class="top-2 right-2 text-2xl animate-bounce">🎉</div>'` ; }
+
+if(currentStep===numberOfSteps) {this.displayCompletionStep(currentStep,taskSteps);}
+
+if (currentStep>3)this.displayPreviousStep(currentStep,taskSteps); 
+console.log('this.abandonedClicked',this.abandonedClicked);
+if (this.abandonedClicked) this.displayAbandonedNextStep(currentStep,taskSteps);
+else if (numberOfSteps>currentStep) this.displayNextStep(currentStep,taskSteps);
+
+
+
+
 }
 
 
@@ -620,35 +546,20 @@ if(this.assignment_id === 'cc807827-ff24-4418-bbaa-ffe04e868988') {
    ${petitionBreadcrumbs()} 
     `;} // end of html
 
-async writeToDb(step_id) {
-  console.log('writeToDb - step_id:', step_id, 'assignment_id:', this.assignment_id);
- 
-  if (!this.assignment_id) {
-    console.error('No assignment ID available');
-    this.showError('No assignment selected');
-    return;
-  }
-  
-  try {
-    const data = await executeIfPermitted(this.userId, 'assignmentUpdateStep', {
-      step_id: step_id,
-      assignment_id: this.assignment_id   
-    });
-    
-    console.log('WriteToDb return:', data);
-    
-    // Refresh the display after successful update
-    await this.displayTaskData();
-    this.revertStudent();
-    this.currentStepCheckmark.classList.add('hidden');
-    this.hideBackArrow();
-    
-    showToast('Assignment updated successfully!', 'success');
-    
-  } catch (error) {
-    console.error('Error updating assignment:', error);
-    this.showError('Failed to update assignment: ' + error.message);
-  }
+async writeToDb(step_id){
+  const userId =appState.query.userId;
+  console.log('writeToDb( step_id:',step_id,'this.assignment_id:',this.assignment_id);// both okay 13:03 Sept 17  '90ef...' 'acb9...'
+  const data = await executeIfPermitted(userId, 'assignmentUpdateStep', {
+    step_id:step_id,
+    assignment_id:this.assignment_id   
+  });
+//what does it return? An empty array. Length 0.
+console.log('WriteToDb return:',data);
+this.displayTaskData();
+this.revertStudent();//put student on middle card
+this.currentStepCheckmark.classList.add('hidden');//remove the green tick from current step
+this.hideBackArrow();//remove the clickable arrow. Means you can't do anything more (you have to refresh page to restore arrow)
+
 }
 
 routeAction(actionType) {

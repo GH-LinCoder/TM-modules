@@ -1,5 +1,5 @@
 // ./dash/members.js
-import { readAllMembers } from '../db/dataReader.js';
+//import { readAllMembers } from '../db/dataReader.js';
 
 let members = [];
 let sortedMembers = [];
@@ -32,7 +32,7 @@ export async function renderMembers() {
 
   // Update title
   if (title) {
-    title.textContent = `Members (${members.length})`;
+    title.textContent = `Humans (${members.length})`;
   }
 
   // Update refresh button state
@@ -43,12 +43,12 @@ export async function renderMembers() {
 
   // Render list
   if (loading) {
-    list.innerHTML = '<p class="text-center text-gray-500 py-8">Loading members...</p>';
+    list.innerHTML = '<p class="text-center text-gray-500 py-8">Loading...</p>';
     return;
   }
 
   if (sortedMembers.length === 0) {
-    list.innerHTML = '<p class="text-center text-gray-500 py-8">No members found.</p>';
+    list.innerHTML = '<p class="text-center text-gray-500 py-8">No one found.</p>';
     return;
   }
 
@@ -123,8 +123,8 @@ async function loadMemberData() {
     members = await readAllMembers();
     sortMembers(members, sortOrder);
   } catch (error) {
-    console.error('Error loading member ', error);
-    list.innerHTML = '<p class="text-red-600">Error loading member data</p>';
+    console.error('Error loading ', error);
+    list.innerHTML = '<p class="text-red-600">Error loading data</p>';
   } finally {
     loading = false;
     renderMembers();
