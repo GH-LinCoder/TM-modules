@@ -705,42 +705,17 @@ styleCardByType(type){
         saveTaskAutomationBtn.disabled = true;
         saveTaskAutomationBtn.textContent = 'Saving...';
         this.automationsNumber++;        
-        
         try { 
-            // LOOK UP ALL STEPS FOR THIS TASK
-            console.log('Looking up steps for task:', selectedTaskId);
-            const steps = await executeIfPermitted(userId, 'readTaskSteps', {
-                taskId: selectedTaskId
-            });
-            
-            // FIND STEP 3 (initial step)
-            let stepId = null;
-            const initialStep = steps.find(step => step.step_order === 3);
-            if (initialStep) {
-                stepId = initialStep.id;
-                console.log('Found initial step_id:', stepId);  // c83496a0-8c5e-47e5-bcee-19b121191c68  (For DEFAULT task) this is correct for step 3
-            } else {
-                throw new Error('No initial step (step 3) found for task');
-            }
-            
-            // Save task automation to database WITH step_id
+            // Save task automation to database
             const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
                 surveyAnswerId: this.answerId,
                 taskId: selectedTaskId,
-                task_step_id : stepId, // changed to match db in automations Table. BUT registry function being called didn't use task_step_id at all. Changed that 19:14 oct 13
-                itemName: cleanName,
+                itemName:cleanName,
                 automation_number: this.automationsNumber
             });
-            
             // Add information card  
-            this.addInformationCard({
-                'name': `${result.name.substring(0, 60)}...`,
-                'type': 'Task automation',
-                'number': this.automationsNumber, 
-                'answerNumber': this.answerNumber,  
-                'questionNumber': this.questionNumber, 
-                'id': `${result.id.substring(0, 8)}...`
-            });
+
+            this.addInformationCard({'name': `${result.name.substring(0, 60)}...`,'type':'Task automation','number':this.automationsNumber , 'answerNumber':this.answerNumber,  'questionNumber':this.questionNumber, 'id': `${result.id.substring(0, 8)}...`});
             
             showToast('Task automation saved successfully!');
         } catch (error) {

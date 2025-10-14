@@ -208,11 +208,15 @@ const panel = document.createElement('div');
 panel.className = 'page-panel';
 panel.dataset.pageName = stubName; //what is this?
 //
-// <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 //moved here  9.42 sep 10
+
+const destination = appState.query.petitioner.Destination;
+console.log('destination:',destination);
+if(destination!='background'){
 displayArea.appendChild(panel);
 panelsOnDisplay.push({ stubName, panel, query });// why using stubName?? legacy - should use .petitioner.Module
-//
+
 
 try {
 selectedModule.render(panel,query); // use the function that was obtained from the registry
@@ -239,7 +243,7 @@ selectedModule.render(panel,query); // use the function that was obtained from t
     updatePanelLayout();
   }
   ///end of conditional on 'new-panel'
-
+}
 }
 
 function renderSection(query, selectedModule,displayArea){// new 10:41 sept 10 2025
@@ -258,50 +262,6 @@ function renderSection(query, selectedModule,displayArea){// new 10:41 sept 10 2
       */
 
 }
-/* my original verions
-async function backgroundProcess() {
-    const action = appState.query.petitioner.Action;
-    let registryEntry = await registry[action]; //send string to lookup object, get a pointer to a function (don't need await)
-
-    if(!registryEntry) { console.log('Registry unknown', action, ' not here');}
-    else  console.log('Registry recognises', action);
-    
-    
-    const selectedModule = await registryEntry(); // Use the pointer to get the function
-    //console.log('Loaded module functions:', selectedModule);
-    
-    try {
-        selectedModule.render(panel,query); // use the function that was obtained from the registry
-        } catch (error) {
-          console.error('Failed to load module:', error);
-          console.log('Available exports:', Object.keys(selectedModule));
-        }
-}
-replaced with below */ 
-
-async function backgroundProcess() {
-    
-    const action = appState.query.petitioner.Action;
-    console.log('background process', action);
-    let registryEntry = await registry[action];
-    if (!registryEntry) { 
-        console.log('Registry unknown', action, ' not here');
-        return false;
-    }
-    
-    console.log('Registry recognises', action);
-    const selectedModule = await registryEntry();
-    
-    try {
-        await selectedModule.render(null, appState.query); // Execute with null panel
-        console.log('Background module executed successfully');
-        return true;
-    } catch (error) {
-        console.error('Failed to execute background module:', error);
-        return false;
-    }
-}
-
 
 export async function renderPanel(query) {// need change name from renderPanel to renderSomewhere ?
   console.log('RenderPanel(', query, ')');
@@ -325,58 +285,22 @@ const stubName = appState.query.petitioner.Action; //legacy html to be phased-ou
 
 
 //console.log('about to check registry(',stubName,')',stubName.length);
-// extracting these  4 lines to a new function - failed
 
 let registryEntry = await registry[stubName]; //send string to lookup object, get a pointer to a function (don't need await)
 
+
 if(!registryEntry) { console.log('Registry unknown', stubName, ' not here');}
+
 if(registryEntry) { console.log('Registry recognises', stubName, 'push details in array')
   
  // console.log('registryEntry is:', registryEntry);
 
 const selectedModule = await registryEntry(); // Use the pointer to get the function
 //console.log('Loaded module functions:', selectedModule);
-
-if(true) renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); //was a test but never changed the if??
-else renderSection(query, selectedModule,displayArea);
-///below conditional on 'new-panel
-/*
-//moved here 9.44 Sep 10
-const panel = document.createElement('div');
-panel.className = 'page-panel';
-panel.dataset.pageName = stubName; //what is this?
-//
-
-//moved here  9.42 sep 10
-displayArea.appendChild(panel);
-panelsOnDisplay.push({ stubName, panel, query });
-//
-
-try {
-selectedModule.render(panel,query); // use the function that was obtained from the registry
-} catch (error) {
-  console.error('Failed to load module:', error);
-  console.log('Available exports:', Object.keys(selectedModule));
-}
-
-}else  try {
-    // Load html content from a file
-    console.log('Registry does not recognise', stubName, 'append panel, push details in array, then load html content instead');
-    displayArea.appendChild(panel);
-    panelsOnDisplay.push({ stubName, panel, query });
-    const html = await getStubContent(stubName);
-    panel.innerHTML = html;
-    //set Module?
-
-    // Update layout based on number of panels
-    updatePanelLayout();
-  } catch (error) {
-    console.error(`Error loading ${stubName}:`, error);
-    panel.innerHTML = `<div class="text-red-700 p-4">Error loading ${stubName}</div>`;
-    displayArea.appendChild(panel);
-    updatePanelLayout();
-    */
-  ///end of conditional on 'new-panel'
+const destination = appState.query.petitioner.Destination;
+console.log('destination:',destination);
+if(destination!='background') renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); 
+else console.log('background process - no panel needed');
 
     }
 
@@ -485,18 +409,9 @@ export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
   
         {  console.log('Panel NOT open:', stubName);  // 1st Click for an ordinary page
           // Open new panel - this is to display a new side page that is not admin or member & not already open
-//changed 22:11 Oct 13
-
-const destination = appState.query.petitioner.Destination;
-console.log('destination:',destination);
-if(destination==='background') await backgroundProcess(); else
-{
           await renderPanel({...appState.query.petitioner, 'Action': stubName});
           await loadPageWithData(appState.query.petitioner.Action.replace('.html','')); 
-}
-//end of change
-
-          // where do we check and connect input forms to the database? Here or in loadPageWithData? 17:10 Sept 2 2025
+         // where do we check and connect input forms to the database? Here or in loadPageWithData? 17:10 Sept 2 2025
         }
   
         // Always keep admin or member active when opening other panels

@@ -5,6 +5,10 @@
  * a reference to the actual function for some work process.
  * (There is a separate registry for loading modules as pages or section mutations)
  */
+
+// Possibly better to order by table. If done could split into smaller files ? Not sure how this file is loaded. Is there a better arrangement?
+
+
 export const registryWorkActions = {
 
 
@@ -31,10 +35,66 @@ readGenericTable: {
 },
 
 
+// For auto-assign-task
+autoAssignTask: {
+  metadata: {
+    tables: ['task_assignments'],
+    columns: ['id', 'step_id', 'sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'assigned_by_automation'],
+    type: 'INSERT',
+    requiredArgs: ['task_header_id', 'step_id', 'student_id', 'assigned_by_automation']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { task_header_id, step_id, student_id, manager_id, assigned_by_automation } = payload;
+    console.log('autoAssignTask()', payload);
+    
+    const { data, error } = await supabase
+      .from('task_assignments')
+      .insert({
+        student_id: student_id,
+        manager_id: manager_id, // or derive from context
+        task_header_id: task_header_id,
+        step_id: step_id,
+        assigned_by_automation: assigned_by_automation // Your audit trail column
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data.id;
+  }
+},
+
+// For auto-relate-appro
+autoRelateAppro: {
+  metadata: {
+    tables: ['approfile_relations'],
+    columns: ['id', 'sort_int', 'approfile_is', 'relationship', 'of_approfile', 'created_at', 'assigned_by_automation'],
+    type: 'INSERT',
+    requiredArgs: ['approfile_is', 'relationship', 'of_approfile', 'assigned_by_automation']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfile_is, relationship, of_approfile, assigned_by_automation } = payload;
+    console.log('autoRelateAppro()', payload);
+
+    const { data, error } = await supabase
+      .from('approfile_relations')
+      .insert([{ 
+        approfile_is: approfile_is,
+        relationship: relationship,
+        of_approfile: of_approfile,
+        assigned_by_automation: assigned_by_automation // Your audit trail column
+      }]);
+
+    if (error) throw error;
+    return data;
+  }
+},
 
 
-//////////////////////////   COUNTING   ///////////////////////
 
+
+/////////////////////////////////////   COUNT   ///////////////////////
+//APPRO
 approfilesCount:{
   metadata: {
     tables: ['app_profiles'],
@@ -58,7 +118,7 @@ approfilesCount:{
 },
 
 
-
+//ASSIGNMENT
 assignmentsCount:{
   // Metadata for the permissions system
   metadata: {
@@ -83,7 +143,7 @@ handler: async  (supabase, userId) =>{
   return count// if use {count} it would be in form  {count: 23}
 }
 },
-
+//ASSIGNMENT
 authorsCount:{
   // Metadata for the permissions system
   metadata: {
@@ -108,7 +168,7 @@ handler: async  (supabase, userId) =>{
   return count// if use {count} it would be in form  {count: 23}
 }
 },
-
+//ASSIGNMENT
 managersCount:{
   // Metadata for the permissions system
   metadata: {
@@ -134,7 +194,7 @@ handler: async  (supabase, userId) =>{
 }
 },
 
-
+//PROFILES
   membersCount:{
     // Metadata for the permissions system
     metadata: {
@@ -161,7 +221,7 @@ handler: async  (supabase, userId) =>{
 },
 
 
-
+//ASSIGNMENT
 studentsCount:{
   // Metadata for the permissions system
   metadata: {
@@ -186,7 +246,7 @@ handler: async  (supabase, userId) =>{
   return count// if use {count} it would be in form  {count: 23}
 }
 },
-
+//TASKS
 tasksCount:{
   // Metadata for the permissions system
   metadata: {
@@ -214,8 +274,8 @@ handler: async  (supabase, userId) =>{
 
 
 
- /////////////     CREATING  (INSERTING)    ///////////////////
-
+/////////////////////////////////////   CREATE  INSERT    ///////////////////
+//APPRO
  createApprofile:{
   metadata: {
     tables: ['app_profiles'],
@@ -237,7 +297,7 @@ handler: async  (supabase, userId) =>{
   }
  },
 
-
+//ASSIGNMENT
 createAssignment:{
   metadata: {
   tables: ['task_assignments'],
@@ -267,7 +327,7 @@ console.log('createAssignment()');
 
 
 
-
+//TASK
 createTask: {
   metadata: {
     tables: ['task_headers'],
@@ -305,6 +365,7 @@ createTask: {
   }
 },
 
+//TASKS
 readTaskSteps: {
   metadata: {
     tables: ['task_steps'],
@@ -324,9 +385,64 @@ readTaskSteps: {
   }
 },
 
+//TASKS
+createTaskStep: {
+  metadata: {
+    tables: ['task_steps'],
+    columns: ['name', 'description', 'external_url', 'step_order', 'task_header_id', 'author_id'],
+    type: 'INSERT',
+    requiredArgs: ['taskId', 'stepOrder', 'stepName', 'stepDescription']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
 
-////////////////////////////////  UPDATE   /////////////////////
+    const { error } = await supabase
+      .from('task_steps')
+      .insert({
+        name: stepName,
+        description: stepDescription,
+        external_url: stepUrl || null,
+        step_order: stepOrder,
+        task_header_id: taskId,
+        author_id: userId
+      });
 
+    if (error) throw error;
+    return { success: true };
+  }
+},
+
+//APPRO
+createApprofileRelation: {
+  metadata: {
+    tables: ['approfile_relations'],
+    columns: ['id' ,'sort_int', 'approfile_is', 'relationship', 'of_approfile', 'created_at'],
+    type: 'INSERT',
+    requiredArgs: ['supabase', 'userId', 'approfile_is', 'relationship', 'of_approfile']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfile_is, relationship, of_approfile } = payload;
+    console.log('writeApprofileRelation()', payload);
+
+    const { data, error } = await supabase
+      .from('approfile_relations')
+      .insert([{ 
+        approfile_is:approfile_is, 
+        relationship:relationship, 
+        of_approfile: of_approfile }]);
+
+    if (error) throw error;
+    return data;
+
+  }
+},
+
+
+
+
+///////////////////////////////////// UPDATE   /////////////////////
+
+//TASKS
 updateTaskStep: {
   metadata: {
     tables: ['task_steps'],
@@ -353,6 +469,7 @@ updateTaskStep: {
   }
 },
 
+//TASKS
 assignmentUpdateStep:{
   // Metadata for the permissions system
   metadata: {
@@ -379,6 +496,7 @@ handler: async  (supabase, userId, payload) =>{
 }
 },
 
+//APPRO
 updateApprofile: {
   metadata: {
     tables: ['app_profiles'],
@@ -388,7 +506,7 @@ updateApprofile: {
   },
   handler: async (supabase, userId, payload) => {
     console.log('updateApprofile()');
-    const { id, name, description } = payload; //// id is required for update & name same as sent
+    const { id, name, description } = payload; // id is required for update & name same as sent
 
     if (!id) {
       throw new Error('id is required for update');
@@ -436,7 +554,7 @@ updateTaskHeader: {// not used ?
   }
 },
 */
-
+//TASKS
 updateTask: {
   metadata: {
     tables: ['task_headers'],
@@ -467,61 +585,9 @@ updateTask: {
 
 
 
+/////////////////////////////////////  SELECT  READ DATA   ///////////////////////
 
-
-//////////////////////////////// INSERT   ///////////////////////////////
-createTaskStep: {
-  metadata: {
-    tables: ['task_steps'],
-    columns: ['name', 'description', 'external_url', 'step_order', 'task_header_id', 'author_id'],
-    type: 'INSERT',
-    requiredArgs: ['taskId', 'stepOrder', 'stepName', 'stepDescription']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
-
-    const { error } = await supabase
-      .from('task_steps')
-      .insert({
-        name: stepName,
-        description: stepDescription,
-        external_url: stepUrl || null,
-        step_order: stepOrder,
-        task_header_id: taskId,
-        author_id: userId
-      });
-
-    if (error) throw error;
-    return { success: true };
-  }
-},
-
-///////////////////  READING DATA   /////////////////////////
-
-/*
-readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_id"
-  //if !null an entry in one of those columns tells us what kind of approfile it is.
-  //humans would have an entry in "auth_user_id". Tasks would have an entry in "task_header_id"
-  // grpups or abstract would be null in both. (Groups may end up having their own column?)
-  metadata: {
-    tables: ['app_profiles'],
-    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
-    type: 'SELECT',
-    requiredArgs: []
-  },
-  handler: async (supabase, userId, payload) => {
-    console.log('readApp_profiles()');
-    const { data, error } = await supabase
-      .from('app_profiles')
-      .select('id, name, email, notes, phone, sort_int, avatar_url, created_at, updated_at, description, auth_user_id, external_url, task_header_id')
-      .order('name');
-
-    if (error) throw error;
-    return data; // ✅ Return the array of task headers
-  }
-}, */
-
-
+//APPRO
 readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_id"
   //if !null an entry in one of those columns tells us what kind of approfile it is.
   //humans would have an entry in "auth_user_id". Tasks would have an entry in "task_header_id"
@@ -565,7 +631,7 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
   }
 }, 
 
-
+//APPRO
 readProfilesByIds:{// possibly not used
   metadata: {
     tables: ['app_profiles'],
@@ -587,6 +653,7 @@ handler: async (supabase, userId, payload) => {
  }
 },
 
+//APPRO
 readApprofileByName:{
   metadata: {
     tables: ['app_profiles'],
@@ -608,7 +675,7 @@ handler: async (supabase, userId, payload) => {
  }
 },
 
-// Add to your registry
+// APPRO
 readApprofileById:{
   metadata: {
     tables: ['app_profiles'],
@@ -629,6 +696,7 @@ readApprofileById:{
   }
 },
 
+//APPRO
 readApprofileRelationships: {
   metadata: {
     tables: ['approfile_relationships_view'],
@@ -658,7 +726,7 @@ readApprofileRelationships: {
   }
 },
 
-//*
+// GENERIC
 readThisColumnIdFromThatTable:{
 metadata:{
   tables:['any_table'], //
@@ -682,53 +750,7 @@ handler: async (supabase, userId, payload) =>{
 },
 //*/
 
-////////////////////////////////  the below don't call the db  they call other functions.
-////////////////////////////////  I don't think this can work from the registry
-
-readAllStudent:{
-  metadata:{
-    tables:['task_assignments'], //
-    columns:['student_id'],
-    type: 'SELECT',
-    requiredArgs:[],
-    },
-handler: async(supabase, userId) => {
-    console.log('readAllStudent');
-    return await readThisColumnIdFromThatTable('task_assignments', 'student_id');
- }
-},
-
-readAllManager:{
-  metadata:{
-    tables:['task_assignments'], //
-    columns:['manager_id'],
-    type: 'SELECT',
-    requiredArgs:[],
-    },
-handler: async(supabase, userId) => {
-  console.log('readAllManagers');
-  return await readAllRelatedIds('task_assignments', 'manager_id');
- }
-},
-
-readAllAuthor:{
-  metadata:{
-    tables:['task_headers'], //
-    columns:['author_id'],
-    type: 'SELECT',
-    requiredArgs:[],
-    },
-handler: async(supabase, userId) => {
-    console.log('readAllAuthors');
-    return await readThisColumnIdFromThatTable('task_assignments', 'author_id');
- }
-},
-
-///////////////////////////  end of functions that call functions
-
-
-
-
+//TASK_ASSIGMENT
 readThisAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
   metadata: {
   tables: ['task_assignment_view'],  //VIEW not a table
@@ -753,7 +775,7 @@ console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   } 
 },
 
-
+//TASK_ASSIGMENT
 readAllAssignments:{// VIEW  not a table returns all rows )
   metadata: {
   tables: ['task_assignment_view2'],  //VIEW not a table
@@ -779,7 +801,7 @@ console.log('readAllAssignment{}','id:',assignment_id,'payload:', payload);
 },
 
 
-
+//TASK_ASSIGMENT
 readAssignmentExists:{ //requires the task_header_id could return ZERO rows ONE row or MANY rows
   metadata: {
   tables: ['task_assignment_view2'],  //VIEW not a table
@@ -804,7 +826,7 @@ console.log('readAssignment2Exists()');
   } 
 },
 
-
+//TASK_ASSIGMENT
 readStudentAssignments: {
   metadata: {
     tables: ['task_assignment_view'],
@@ -826,7 +848,7 @@ readStudentAssignments: {
 },
 
 
-
+//RELATIONSHIPS
 readRelationships: {
   metadata: {
     tables: ['relationships'],
@@ -847,9 +869,10 @@ readRelationships: {
   }
 },
 
+//RELATIONSHIPS
 readRelationshipExists:{
   metadata: {
-    tables: ['approfile_relations'],  //VIEW not a table
+    tables: ['approfile_relations'], 
     columns: ['rel_name', 'created_at', 'relation_id', 'approfile_is', 'of_approfile', 'relationship', 'rel_description','approfile_is_name', 'of_approfile.name'],
     type: 'SELECT',
     requiredArgs: ['approfile_is', 'of_approfile', 'relationship'] 
@@ -872,7 +895,7 @@ readRelationshipExists:{
     } 
   },
 
-
+//APPRO
 readApprofile_relations_view:{
   metadata: {
     tables: ['approfile_relations'],  //VIEW not a table
@@ -894,29 +917,7 @@ readApprofile_relations_view:{
     }
 },
 
-createApprofileRelation: {
-  metadata: {
-    tables: ['approfile_relations'],
-    columns: ['id', 'approfile_is', 'relationship', 'of_approfile', 'created_at'],
-    type: 'INSERT',
-    requiredArgs: ['supabase', 'userId', 'approfile_is', 'relationship', 'of_approfile']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { approfile_is, relationship, of_approfile } = payload;
-    console.log('writeApprofileRelation()', payload);
-
-    const { data, error } = await supabase
-      .from('approfile_relations')
-      .insert([{ approfile_is:approfile_is, relationship:relationship, of_approfile: of_approfile }]);
-
-    if (error) throw error;
-    return data;
-  }
-},
-
-
-
-
+//TASKS
 readTaskHeaders: {
   metadata: {
     tables: ['task_headers'],
@@ -936,6 +937,7 @@ readTaskHeaders: {
   }
 },
 
+//TASKS
 readStep3Id:{ //find the id of step 3 of a given task
   metadata: {
   tables: ['task_steps'],
@@ -959,7 +961,7 @@ handler: async (supabase, userId, payload) => {
 },    
 
 
-  // Function to read a task and all its steps
+  //TASKS
   readTaskWithSteps: {
     metadata: {
       tables: ['task_with_steps_view'], // VIEW not a table
@@ -980,9 +982,8 @@ handler: async (supabase, userId, payload) => {
     }
   },// end of read Task with steps
 
-
-  readAllSteps:{ //is this useful??
-   
+//TASKS
+  readAllSteps:{ //is this useful?? 
     metadata: {
       tables: ['task_steps'],
       columns: ['id', 'task_header_id', 'name', 'step_order', 'created_at', 'description', 'external_url', 'author_id'],
@@ -1004,46 +1005,57 @@ handler: async (supabase, userId, payload) => {
   },
 
 
-////////////////////////////////////    SURVEYS   ////////////////////////////////
-/*
-createSurvey: {
-  metadata: {
-    tables: ['survey_headers'],
-    columns: ['name', 'description', 'external_url', 'author_id'], //WRONG
-    type: 'INSERT',
-    requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields
-  },
-  handler: async (supabase, userId, payload) => {
-    const { surveyName, surveyDescription } = payload;
 
-    // Check for duplicate name
-    const {  existingSurvey, error: fetchError } = await supabase
-      .from('survey_headers')
-      .select('id')
-      .eq('name', surveyName) // encodeURIComponent(value) for .eq() & .like()  ??
-      .single();
-
-    if (existingSurvey) {
-      throw new Error('A survey with that name exists. Your survey needs a different name.');
-    }
-
-    const { data, error } = await supabase
-      .from('survey_headers')
-      .insert({
-        name: surveyName,
-        description: surveyDescription,
-        //external_url: taskUrl || null,
-        author_id: userId // ← use passed userId
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data; // ← returns { id, name, description, ... }
-  }
+// the below don't call the db  they call other functions.
+//  I don't think this can work from the registry
+//TASK_ASSIGNMENTS
+readAllStudent:{
+  metadata:{
+    tables:['task_assignments'], //
+    columns:['student_id'],
+    type: 'SELECT',
+    requiredArgs:[],
+    },
+handler: async(supabase, userId) => {
+    console.log('readAllStudent');
+    return await readThisColumnIdFromThatTable('task_assignments', 'student_id');
+ }
 },
-*/
-//new 20:23 Oct 6
+//TASK_ASSIGNMENTS
+readAllManager:{
+  metadata:{
+    tables:['task_assignments'], //
+    columns:['manager_id'],
+    type: 'SELECT',
+    requiredArgs:[],
+    },
+handler: async(supabase, userId) => {
+  console.log('readAllManagers');
+  return await readAllRelatedIds('task_assignments', 'manager_id');
+ }
+},
+//TASK_ASSIGNMENTS
+readAllAuthor:{
+  metadata:{
+    tables:['task_headers'], //
+    columns:['author_id'],
+    type: 'SELECT',
+    requiredArgs:[],
+    },
+handler: async(supabase, userId) => {
+    console.log('readAllAuthors');
+    return await readThisColumnIdFromThatTable('task_assignments', 'author_id');
+ }
+},
+
+///////  end of functions that call functions
+
+
+
+
+/////////////////////////////////////   SURVEYS   //////////////////////
+
+//SURVEYS new 20:23 Oct 6
 createSurvey: {
   metadata: {
     tables: ['survey_headers'],
@@ -1080,9 +1092,7 @@ createSurvey: {
   }
 },
 
-
-
-
+//SURVEYS
 createSurveyQuestion: {
   metadata: {
     tables: ['survey_questions'],
@@ -1127,6 +1137,7 @@ createSurveyQuestion: {
   }
 },
 
+//SURVEYS
 createSurveyAnswer: {
   metadata: {
     tables: ['survey_answers'],
@@ -1171,7 +1182,7 @@ createSurveyAnswer: {
   }
 },
 
-
+//AUTOMATIONS
 createSurveyAutomation: {
   metadata: {
     tables: ['automations'],
@@ -1180,7 +1191,7 @@ createSurveyAutomation: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => {
-    const { surveyAnswerId, taskId, itemName, approfileId,relationship, automation_number } = payload;
+    const { surveyAnswerId, taskId, itemName, approfileId,relationship, automation_number, task_step_id, approfile_is_id } = payload;
 
     // Check for duplicate name  ???
   /*
@@ -1204,8 +1215,9 @@ createSurveyAutomation: {
       .insert({
         survey_answer_id: surveyAnswerId,
         task_header_id:taskId,
+        task_step_id: task_step_id,  //added this 19:14 oct 13
         name: itemName,
-        appro_is_id: userId, // ← use passed userId ?
+        appro_is_id: approfile_is_id, // ← use passed userId ?  //THIS IS WRONG. At moment of creating surveu this would be the id of the admin author. 
         relationship:relationship,
         of_appro_id: approfileId,
         automation_number : automation_number, 
@@ -1219,8 +1231,10 @@ createSurveyAutomation: {
   }
 },
 
-//////////////////////////////////////////    READ  SURVEYS   ///////////////////////////
 
+/////////////////////////////////////    READ  SURVEYS   //////////////////////
+
+//SURVEYS
 readSurveyHeaders: {
   metadata: {
     tables: ['survey_headers'],
@@ -1241,6 +1255,7 @@ readSurveyHeaders: {
   }
 },
 
+//SURVEYS
 readSurveyView:{    // VIEW   Read only
   metadata: {
   tables: ['survey_view'],

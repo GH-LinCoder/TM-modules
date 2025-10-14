@@ -15,7 +15,10 @@ const userId = appState.query.userId;
 
 class SurveyDisplay {
     constructor() {
-        this.surveyId = 'efc9f836-504f-44e7-95be-cda9107f9fea';
+        this.surveyId = 'efc9f836-504f-44e7-95be-cda9107f9fea';  //DEV ONLY  -'efc...' is 'Have your say, do your bit.choose involvement' use to test relate approfiles: user to 'activist' 'passive' etc
+        this.surveyId= "df26336d-13cc-4208-b25c-35d271e6b90a";// "name":"TEST 006 - 1 task automation","description":"This has one attached automation of the default task. 
+                        // Use to test survey. See if when clicking the answer the user is placed on step 3 of the default task ",
+                       // "author_id":"06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df","created_at":"2025-10-13 18:08:37.598553+00","last_updated_at":null,"automations":null}'
         this.surveyData = null;
         this.currentQuestionIndex = 0;
     }
@@ -80,7 +83,7 @@ class SurveyDisplay {
 
                      <!-- NAME of SURVEY -->    
                      <div class="p-6 border-b border-gray-200 justify-center items-center text-center">
-                        <h2 class="text-xl font-semibold text-gray-900">${surveyInfo.survey_name || 'Survey'}</h2>
+                        <h2 class="text-xl font-semibold text-gray-900">${surveyInfo.survey_name || 'Survey'}  13:39 Oct 14 2025</h2>
                      </div>
 
                     <!--   CONTAINER for DESCRPTION & BUTTON -->
@@ -185,7 +188,15 @@ console.log('Radio button changed:', e.target.value); // LOGS on change
                     // Find the associated answer element to get its automations
                     const answerElement = e.target.closest('.flex.items-start');
 console.log('Answer element:', answerElement); // LOGS
-                    const automations = JSON.parse(answerElement.dataset.automations || '[]');
+console.log('answerElement.dataset.automations',answerElement.dataset.automations);
+                    const automations = JSON.parse(answerElement.dataset.automations || '[]');  
+                    //This module reads the database for the information, puts it into the HTML and then reads it from the HTML when clicked.
+                    //That seems odd. Why not keep the data in an object, just put a label in the HTML and read from the stored object?
+                    //For some reason thre seem to be weird errors that I can't explain. 
+                    // 1) The console log of automations has no approfile
+                    // 2) The later stages do have that approfile
+                    // 3) The later stage do not have the automation id
+
                     
                     if (automations.length > 0) {
                         // Determine the appropriate action based on automations
@@ -195,7 +206,7 @@ console.log('Answer element:', answerElement); // LOGS
                         } else if (automations[0].type === 'relationship') {
                             action = 'auto-relate-appro';
                         }
-console.log('showQuestion() automations:', automations);   // LOGS  22:22 Oct 8  (had been a missing 's' in name)
+console.log('showQuestion() automations:', automations);   // LOGS  11:00 Oct 14 2025   relationship:    automationID: (note spelling)  type: BUT no of_approfile ! ?
                         // Update the save button with the appropriate action and destination
                         const nextBtn = document.getElementById('nextQuestionBtn');
                         if (nextBtn) {
@@ -208,7 +219,8 @@ console.log('showQuestion() automations:', automations);   // LOGS  22:22 Oct 8 
                                     userId: userId, // from appState
                                     surveyId: this.surveyId,
                                     questionId: questionRows[0].question_id, // get question id from first row
-                                    answerId: e.target.value
+                                    answerId: e.target.value,
+                                  
                                 },
                                 automations: automations
                             };
@@ -244,7 +256,7 @@ console.log('Automation payload set:', appState.payload); // LOGS  22:22 Oct 8  
 
     getQuestionHTML(questionRows, progress) {
         const firstRow = questionRows[0]; // Get question info from first row
-        
+         
         let answersHTML = '';
         let i = 0;
         
@@ -260,21 +272,34 @@ console.log('Automation payload set:', appState.payload); // LOGS  22:22 Oct 8  
             let j = i;
             while (j < questionRows.length && questionRows[j].answer_id === currentRow.answer_id) {
                 const row = questionRows[j];
-                // Add icon if this row has an automation
+        ///////////////////////////////////////////////////////////  TEST       
+//                console.log('Row contents:', row);
+ //       console.log('Row keys:', Object.keys(row)); 
+ //       return;
+               
+        
+        // Add icon if this row has an automation
                 if (row.relationship) {
                     automationIcons += icons.relationships || '🪪';
                     // Store relationship automation data
+console.log('automation id ? Here is row:',row); //automation_id: "5054804f-460f-4c64-b19f-c82fd5d99173"
+
                     automationData.push({
                         type: 'relationship',
+                        approfileIs: row.appro_is_id, //often this is irrelevant as the appro_is would normally be the respondant to the survey, not something recorded at time of authoring the survey
                         relationship: row.relationship,
-                        ofApprofile: row.automation_id
+                        ofApprofile: row.of_appro_id,  // corrected 11:57 Oct 14 
+                        automationId: row.automation_id  
                     });
+                
                 } else if (row.task_header_id) {
                     automationIcons += icons.task || '🔧';
                     // Store task automation data
                     automationData.push({
                         type: 'task',
-                        taskId: row.task_header_id
+                        taskId: row.task_header_id,
+                        stepId:row.task_step_id,
+                        automationId:row.automation_id
                     });
                 }
                 j++;
@@ -335,3 +360,86 @@ return `
         `;
     }
 }
+
+/*   SQL defining the survey_view that is read to get the automations data. Edited 11:50 Oct 14 2025 to inlclude more data
+
+CREATE OR REPLACE VIEW survey_view AS
+SELECT 
+    sh.id as survey_id,
+    sh.name as survey_name,
+    sh.description as survey_description,
+    sh.author_id,
+    sh.created_at as survey_created_at,
+    sq.id as question_id,
+    sq.name as question_text,
+    sq.description as question_description,
+    sq.question_number,
+    sa.id as answer_id,
+    sa.name as answer_text,
+    sa.description as answer_description,
+    sa.answer_number,
+    a.id as automation_id,
+    a.name as automation_name,
+    
+    a.automation_number,
+    a.task_header_id,
+    a.relationship,
+    a.appro_is_id,
+    a.of_appro_id,
+    a.task_step_id
+    
+
+FROM survey_headers sh
+JOIN survey_questions sq ON sh.id = sq.survey_header_id
+JOIN survey_answers sa ON sq.id = sa.survey_question_id
+LEFT JOIN automations a ON sa.id = a.survey_answer_id  -- LEFT JOIN to include answers without automations
+ORDER BY sh.id, sq.question_number, sa.answer_number, a.automation_number;
+
+
+*/
+
+/*  example of what the row returns and is logged at line 281
+
+answer_description: null
+​
+answer_id: "bac35a2c-727c-4135-811e-af35e8e91e8f"
+​
+answer_number: 5
+​
+answer_text: "ADMIN: Helps to run the organisation, learns how to use the app, spends some time every week using the admin dashboard."
+​
+appro_is_id: "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df"
+​
+author_id: "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df"
+​
+automation_id: "5054804f-460f-4c64-b19f-c82fd5d99173"
+​
+automation_name: "Admin"
+​
+automation_number: 1
+​
+of_appro_id: "5d7108c4-fdcc-4a22-841b-c39a43a90fc1"
+​
+question_description: null
+​
+question_id: "736c15aa-e5da-4526-b042-5371b416fba2"
+​
+question_number: 2
+​
+question_text: "Which of the following best suits your interest and time available for involvement?"
+​
+relationship: "member"
+​
+survey_created_at: "2025-10-06T15:22:15.466669+00:00"
+​
+survey_description: "We are building an organisation. \n\nEach person involved in this can be involved in this. \n\nTo have your say and to do your bit here is a survey where  you can choose how involved you want to be.\n\nYou can change your mind later, you can take the survey again and change your choices.\n\nThis first question is about how much time and interest you have for being involved.\n\nThe second question will be about specific topics and which ones are important to you. It will be in a later survey.\n\nPlease take time to think about the questions before answering."
+​
+survey_id: "efc9f836-504f-44e7-95be-cda9107f9fea"
+​
+survey_name: "Have your say, do your bit."
+​
+task_header_id: null
+​
+task_step_id: null
+
+*/
