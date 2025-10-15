@@ -16,6 +16,8 @@ clipboard:[],
 
       //userId: null, // as at 15:00 sept 16 not used
       userId: "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df", //DEV id for user 'profilia' 15:03 trial
+      defaultManagerId:'9066554d-1476-4655-9305-f997bff43cbb',
+      defaultMangerName:'Lin Coder',
       
       //stubName: null,//obsolescent - phasing-out
       //recordId: null, //not sure if needed

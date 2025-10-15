@@ -386,6 +386,7 @@ readTaskSteps: {
 },
 
 //TASKS
+/*
 createTaskStep: {
   metadata: {
     tables: ['task_steps'],
@@ -408,7 +409,35 @@ createTaskStep: {
       });
 
     if (error) throw error;
-    return { success: true };
+    return { success: true }; // why not return the NEW.id?
+  }
+},  */ // changed to below 10:13 Oct 15
+
+createTaskStep: {
+  metadata: {
+    tables: ['task_steps'],
+    columns: ['name', 'description', 'external_url', 'step_order', 'task_header_id', 'author_id'],
+    type: 'INSERT',
+    requiredArgs: ['taskId', 'stepOrder', 'stepName', 'stepDescription']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
+
+    const { data, error } = await supabase
+      .from('task_steps')
+      .insert({
+        name: stepName,
+        description: stepDescription,
+        external_url: stepUrl || null,
+        step_order: stepOrder,
+        task_header_id: taskId,
+        author_id: userId
+      })
+      .select()  // Returns the inserted record
+      .single(); // Returns single object, not array
+
+    if (error) throw error;
+    return data; // Return full object, not just ID
   }
 },
 
@@ -1191,7 +1220,9 @@ createSurveyAutomation: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => {
-    const { surveyAnswerId, taskId, itemName, approfileId,relationship, automation_number, task_step_id, approfile_is_id } = payload;
+    const { surveyAnswerId,source_task_step_id , taskId, manager_id, student_id, task_step_id, itemName, approfile_is_id, relationship, approfileId, automation_number   } = payload;
+
+console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id); // 22:40 Oct 14  UNDEFINED    10:58 Oct 15 NULL 
 
     // Check for duplicate name  ???
   /*
@@ -1213,13 +1244,21 @@ createSurveyAutomation: {
     const { data, error } = await supabase
       .from('automations')
       .insert({
-        survey_answer_id: surveyAnswerId,
+        survey_answer_id: surveyAnswerId, // this is either valid or null
+        source_task_step_id:source_task_step_id, //this is either null or valid //new 22;09 Oct 14
+
         task_header_id:taskId,
-        task_step_id: task_step_id,  //added this 19:14 oct 13
+        task_step_id: task_step_id,  
+        manager_id:manager_id,  //new 22;09 Oct 14
+        student_id:student_id,   //new 22;09 Oct 14
+
+
         name: itemName,
+
         appro_is_id: approfile_is_id, // ← use passed userId ?  //THIS IS WRONG. At moment of creating surveu this would be the id of the admin author. 
         relationship:relationship,
         of_appro_id: approfileId,
+
         automation_number : automation_number, 
         
       })
