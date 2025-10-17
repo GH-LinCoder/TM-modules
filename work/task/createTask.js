@@ -10,7 +10,7 @@ console.log('createTaskForm.js loaded');
 
 const userId = appState.query.userId;
 let automationsNumber = 0;
-let currentStep = 3;  // this was "currentStepId = 3" which was a stupid name.  A step id is :uuid not an integer.
+//let currentStep = 3;  // this was "currentStepId = 3" which was a stupid name.  A step id is :uuid not an integer.
 let  currentStepId = null;
 // Module-level state (instead of class properties)
 let taskId = null;
@@ -29,11 +29,11 @@ export function render(panel, query = {}) {
 function styleCardByType(type){
     console.log('styleCardByType()',type);
     switch(type){
-        case 'survey':return 'bg-white p-2 rounded border mb-3 text-lg font-bold';
-        case 'Question':return 'bg-yellow-100 p-2 rounded border mb-1 text-sm font-bold';
-        case 'Answer':return 'bg-orange-100 p-2 rounded border mb-1 text-sm font-style: italic ml-4';
-        case 'Task automation':return 'bg-blue-100 p-2 border-dotted border-blue-500 rounded border mb-1 text-sm ml-6';    
-        case 'Appro automation':return 'bg-green-100 p-2 border-dotted border-green-500 rounded border mb-1 text-sm ml-6';
+        case 'task':return 'bg-white p-2 rounded border mb-3 text-lg font-bold';
+        case 'step':return 'bg-yellow-100 p-2 rounded border mb-1 text-sm font-bold';
+        case 'manager':return 'bg-orange-100 p-2 rounded border mb-1 text-sm font-style: italic ml-4';
+        case 'automation_task':return 'bg-blue-100 p-2 border-dotted border-blue-500 rounded border mb-1 text-sm ml-6';    
+        case 'automation_appro':return 'bg-green-100 p-2 border-dotted border-green-500 rounded border mb-1 text-sm ml-6';
     default:return 'bg-gray-100 p-2 rounded border mb-1 text-sm';
     }   
 }
@@ -41,11 +41,15 @@ function styleCardByType(type){
 function getIconByType(type) {
     switch(type){
       case 'task': return icons.task;
-      //case 'Question': return icons.question
-      //case 'Answer': return icons.answer;
-      //case assignTask: return icons.assignTask;
-      //case 'Task automation': return icons.task;
-      //case 'Appro automation': return icons.relationships;
+      case 'step': return icons.step;
+      case 'step-create': return icons-step_create;
+      case 'step-update': return icons.step_update;
+      case 'manager': return icons.manager;
+      case 'manager-assigned': return icons.manager_assigned;
+      case 'assignTask': return icons.assignTask;
+      case 'automation_task': return icons.task;
+      case 'automation_appro': return icons.relationships;
+      case 'Task automation': return icons.automation_task;
       default: return icons.display;
     }
   }
@@ -58,7 +62,7 @@ function initClipboardIntegration(panel) {
   onClipboardUpdate(() => {
     populateFromClipboard(panel);
   });
-   //       panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+
   
 }
 function populateFromClipboard(panel) {
@@ -135,7 +139,7 @@ function getTemplateHTML() {
       <div id="createTaskDialog" class="create-task-dialogue relative z-10 flex flex-col h-full">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
           <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="text-xl font-semibold text-gray-900">Create New Task  17:00 Oct 15</h3>
+            <h3 class="text-xl font-semibold text-gray-900">Create New Task  21:33 Oct 17</h3>
             <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -156,28 +160,34 @@ function getTemplateHTML() {
                         <li> You can build your own tasks and attach automations</li>
                         <li> The first step is to have a unique and meaningful name for your new task</li>
                         </li><li>For more guidance click [How?] </li>
-                       </ul>  
+                             </ul>  
                     </div>
 
 
 
-          <div class="p-6">
+
             <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-              <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
-              <p class="text-blue-700 text-sm">
-                . 
-                First check if a suitable task already exists. 
-                Plan your task. You may want to copy paste from an editor.
-                Try to have a name that has obvious meaning and appeal.
-              </p>
+              <h4 class="font-medium text-blue-500 mb-2">Instructions:</h4>
+                <lu class="list-disc list-inside mt-2 text-sm text-blue-500">
+                 <li>First check if a suitable task already exists</li>
+                 <li>Plan your task. You may want to copy paste from an editor.</li>
+                 <li>Try to have a name that has obvious meaning and appeal.</li>
+                 <li> </li>
+                 <li>NOTE: You will be the manager of the task you are creating. </li>
+                 <li>If you want to appoint someone else as manager clcik the [Select] menu</li>
+                 <li>Then use the drop down at the top of the form to appoint the manager</li>
+                </lu>
+                
+
+              
               <p class="text-blue-700 text-sm mt-2">
-                📋 Managers from your clipboard are available for assignment when you create steps.
+                📋 Managers may also available for assignment to manage individual steps.
               </p>
             </div>
-  
+          <div class="p-6">  
             <!--  Manager Select  -->
             <div class="space-y-2">
-              <label for="managerSelect" class="block text-sm font-medium text-gray-700">Select Manager</label>
+              <label for="managerSelect" class="block text-sm font-medium text-gray-700">You will be the manager of the task. If you want someone else to be the manager you need to user the Select module to choose the manager</label>
               <select id="managerSelect" data-form="managerSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                 <option value="">Select a manager (optional)</option>
               </select>
@@ -311,7 +321,7 @@ function getTemplateHTML() {
 
 <!--  INSTRUCTIONS  APPRO -->                           
                     <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                       <h4 class="text-ml font-bold text-blue-500 mb-4">Surveys</h4>
+                       <h4 class="text-ml font-bold text-blue-500 mb-4">Appro automations</h4>
                        <ul class="list-disc list-inside mt-2 text-sm text-blue-500">
                         <li> Another kind of automation is to relate the student with some group or an abstract concept</li>
                         <li> If you attach a 'relate' automatic events this will happen when a person moves to this step</li>
@@ -406,6 +416,14 @@ async function handleTaskSubmit(e, panel) {
   const taskUrl = panel.querySelector('#taskUrl')?.value.trim();
   const saveBtn = panel.querySelector('#saveTaskBtn');
 
+  const managerSelect = panel.querySelector('#managerSelect');
+  
+  const managerData = getManagerName(managerSelect);
+  //const selectedManagerId = managerSelect?.value || userId; // Default to author
+  //const selectedManagerOption = managerSelect?.options[managerSelect.selectedIndex];
+  //const cleanManagerName = selectedManagerOption?.textContent?.replace(' (clipboard)', '') || 'Author';
+  
+
   if (!taskName || !taskDescription) {
     showToast('Task name and description are required', 'error');
     return;
@@ -418,11 +436,24 @@ async function handleTaskSubmit(e, panel) {
     const newTask = await executeIfPermitted(userId, 'createTask', {
       taskName: taskName,
       taskDescription: taskDescription,
-      taskUrl: taskUrl
+      taskUrl: taskUrl,
+      defaultManagerId: managerData.managerId
     });
 
     taskId = newTask.id;
     
+
+
+
+
+// In handleTaskSubmit - already working!
+addInformationCard({
+  'name': `${taskName?.substring(0, 60) || 'Unknown'}...`,
+  'type': 'task',
+  'manager': managerData.managerName,  // ✅ Include manager name
+  'id': `${newTask.id?.substring(0, 8) || 'unknown'}...`
+});
+
     // Enable steps section
     const stepsSection = panel.querySelector('#stepsSection');
     if (stepsSection) {
@@ -453,7 +484,7 @@ async function handleTaskSubmit(e, panel) {
   saveBtn.textContent = 'Save Task';
 }
 
-// In your handleStepSubmit function, after successfully saving a step:
+
 async function handleStepSubmit(e, panel) {
     console.log('handleStepSubmit()');
     e.preventDefault();
@@ -486,8 +517,8 @@ async function handleStepSubmit(e, panel) {
       let result;
       const existingStep = steps.find(s => s.step_order === stepOrder);
       
-      if (existingStep) {  // I don't know why this is here
-        // Update existing step
+      if (existingStep) {  
+        // Update existing step   {taskId, stepOrder, stepName, stepDescription, stepUrl}
         result = await executeIfPermitted(userId, 'updateTaskStep', {
           taskId: taskId,
           stepOrder: stepOrder,
@@ -495,6 +526,17 @@ async function handleStepSubmit(e, panel) {
           stepDescription: stepDescription,
           stepUrl: stepUrl
         });
+console.log('result:',result);
+        addInformationCard({
+          'name': `${stepName?.substring(0, 60) || 'Unknown'}...`,
+          'type': 'step-update',
+          'number': stepOrder,
+          'id': `${result.id?.substring(0, 8) || 'unknown'}...`, 
+          'taskId': `${taskId?.substring(0, 8) || 'unknown'}...`,
+          'action': 'updated'
+        });
+
+
       } else {
         // Create new step
         result = await executeIfPermitted(userId, 'createTaskStep', {  // this has been duplicated
@@ -506,18 +548,27 @@ async function handleStepSubmit(e, panel) {
         });
 
         addInformationCard({
-          'name': `${result.name?.substring(0, 60) || cleanName?.substring(0, 60) || 'Unknown'}...`,
-          'with id': `${result.id?.substring(0, 8) || 'unknown'}...`,
-          'This is a': 'Task automation ',
-          'autoNumber':  automationsNumber, 
-          'stepNumber':  currentStepId 
-      });
-
-
+          'name': `${stepName?.substring(0, 60) || 'Unknown'}...`,
+          'type': 'step-create',
+          'number': stepOrder,
+          'id': `${result.id?.substring(0, 8) || 'unknown'}...`,
+          'taskId': `${taskId?.substring(0, 8) || 'unknown'}...`,
+          'action': 'created'
+        });
       }
-      console.log('result:',result); // just says success 22:48 Oct 14
-      // Store current step ID for automations
-//      currentStepId = result.id || result.step_id;   //<--- used to be impossible as the function was not returning data
+      console.log('result:',result); // just says success 22:48 Oct 14  // 22:39 Oct 15 Tried to change the function so it would return data but returns null
+  
+/*
+addInformationCard({
+  'name': `${stepName?.substring(0, 60) || 'Unknown'}...`,
+  'type': 'step',
+  'number': stepOrder,
+  'id': `${result.id?.substring(0, 8) || 'unknown'}...`,
+  'taskId': `${taskId?.substring(0, 8) || 'unknown'}...`
+}); */
+
+
+
 
       // Reload steps to get updated data
       const loadedSteps = await executeIfPermitted(userId, 'readTaskSteps', { taskId: taskId });
@@ -528,16 +579,13 @@ async function handleStepSubmit(e, panel) {
       // Reset form + increment step order
       panel.querySelector('#createStepForm')?.reset();
       panel.querySelector('#stepOrder').value = stepOrder + 1;
-      panel.querySelector('#stepName').value = 'Name...';
-      panel.querySelector('#stepDescription').value = 'Description...';
+      panel.querySelector('#stepName').value = '';
+      panel.querySelector('#stepDescription').value = '';
       
       console.log('Step saved successfully, enabling automations card');
-      console.log('Current step ID:', currentStep);  // 22:44 Oct 14 UNDEFINED because line 445 was junk and this was logging currentStepId
+      //console.log('Current step number:', currentStep);
       console.log('Panel element:', panel);
 
-
-
-      // ENABLE AUTOMATIONS CARD HERE - This is the key addition!
       enableAutomationsCard(panel);
       
       showToast(existingStep ? 'Step updated!' : 'New step created!');
@@ -655,6 +703,7 @@ function updateStepsList(panel) {
   }
 }
 
+
 function addInformationCard(stepData) { 
   console.log('addInformationCard()');
   const infoSection = document.querySelector('#informationSection');
@@ -663,7 +712,7 @@ function addInformationCard(stepData) {
  const style = styleCardByType(stepData.type);
  console.log('style:',style);
  card.className= style;
-//       card.className = this.styleCardByType(stepData.type); //not calling the function
+//       card.className = styleCardByType(stepData.type); //not calling the function
   // Create display text by iterating through all properties
   let displayText = ''; // used to be 'Saved' but seems redundant
   
@@ -673,6 +722,7 @@ function addInformationCard(stepData) {
           displayText += `, ${key}: ${value}`;
       }
   }
+  console.log('type',stepData.type);
   const icon = getIconByType(stepData.type);
   card.textContent = icon + displayText;
   infoSection.appendChild(card);
@@ -681,6 +731,36 @@ function addInformationCard(stepData) {
   steps.push(stepData);
   console.log('steps array:', steps);
 }
+
+function getManagerName(managerSelect) {
+  // BETTER MANAGER SELECTION:
+  let managerId, managerName;
+  
+  // Check if we have a valid selection first
+  if (managerSelect && managerSelect.value && managerSelect.selectedIndex > 0) {
+      // Valid selection made
+      const selectedOption = managerSelect.options[managerSelect.selectedIndex];
+      const rawName = selectedOption?.textContent;
+      
+      // Only process if we got a real name
+      if (rawName && rawName !== 'Select a manager (optional)' && rawName !== 'Select a manager') {
+          managerName = rawName.replace(' (clipboard)', '');
+          managerId = selectedOption.value;
+      } else {
+          // Got placeholder text or empty - use default
+          managerId = userId;
+          managerName = 'The Author';
+      }
+  } else {
+      // No selection or invalid selection - use default
+      managerId = userId;
+      managerName = 'The Author';
+  }
+  
+  console.log('Selected manager:', managerId, managerName);
+  return { managerName: managerName, managerId: managerId };
+}
+
     // ========================================
     // DATA OPERATIONS - AUTOMATIONS
     // ========================================
@@ -700,70 +780,33 @@ async function handleTaskAutomationSubmit(e, panel) {
     
     // Get the selected option text
     const selectedOption = taskSelect?.options[taskSelect.selectedIndex];
-    const cleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
+    const taskCleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
     
-    if (!selectedTaskId) {
-        showToast('Please select a task first', 'error');
+    const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
+    if (!saveTaskAutomationBtn) {
+        showToast('Save button not found', 'error');
         return;
     }
     
-    const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
     saveTaskAutomationBtn.disabled = true;
-    saveTaskAutomationBtn.textContent = 'Saving...';
-    automationsNumber++;   
+    saveTaskAutomationBtn.textContent = 'Saving...'; //? 
+    automationsNumber++;    
     
-    
-// ADD MANAGER SELECTION:
-const managerSelect = panel.querySelector('#managerAutomationSelect');
-console.log('Manager select element:', managerSelect);
+    const managerSelect = panel.querySelector('#managerAutomationSelect'); 
+const managerData = getManagerName(managerSelect);
 
-const manager_id = managerSelect?.value || null;  // null 13:40 oct 15
-const selectedManagerOption = managerSelect?.options[managerSelect.selectedIndex]; // why? getting the task name didn't do this Line 628
-const cleanManagerName = selectedManagerOption?.textContent?.replace(' (clipboard)', '') || null; 
-
-
-
-
-
-
-console.log('Selected manager:', manager_id, cleanManagerName);  //null null  13:40 oct 15
-
+const stepOrder = currentStepId ? currentStepId.substring(0, 8) : 'unknown'; //unknown  23:12 Oct 17
+// Instead of just showing manager info, show complete context:
 addInformationCard({
-  'name': `${cleanManagerName}`,
-  'with id': `${manager_id}`,
-  'type': 'Manager',
-  'autoNumber':  automationsNumber, 
-  'stepNumber':  currentStepId 
-   
-
+  'name': `${managerData.managerName}`,
+  'id': `${managerData.managerId?.substring(0, 8) || 'unknown'}`,
+  'type': 'manager-assigned',
+  'for-task': `${taskCleanName?.substring(0, 30) || 'Unknown Task'}`,  // Show which task
+  'on-step': stepOrder || 3,  // Show current step number
+  'autoNumber': automationsNumber 
 });
 
-
-// we had currentStepId which isn't an id.  It is an integer, but is it used properly anywhere? 
-// the following was added 10:50? Oct 15.  It was an atempt to solve a problem, but the problem was use of wrong variable names. Not sure that 
-//this is in the right place , Perhaps it is duplicated somewhere else in the module
-
-if (stepOrder > 3) {
-  // Manual creation - get ID from return value
-  const result = await executeIfPermitted(userId, 'createTaskStep', {
-      taskId: taskId,
-      stepOrder: stepOrder,
-      stepName: stepName,
-      stepDescription: stepDescription,
-      stepUrl: stepUrl
-  });
-  currentStepId = result.id; // ✅ Direct from return object
-} else if (stepOrder === 3) {
-  // Auto-created - must query for ID
-  const step3Result = await executeIfPermitted(userId, 'readStep3Id', {
-      task_header_id: taskId
-  });
-  currentStepId = step3Result.id; // ✅ From separate query
-}
-
-
-
-    
+    //We need to find the id of step3 of the task we are applying as automation. 
     try { 
         // LOOK UP ALL STEPS FOR THIS TASK
         console.log('Looking up steps for task:', selectedTaskId);
@@ -782,24 +825,25 @@ if (stepOrder > 3) {
         }
         console.log('currentStepId:', currentStepId);  // NULL  10:58 Oct 15  Different name !
 //        console.log('source_task_step_id:', source_task_step_id);
-        // Save task automation to database WITH step_id
+        // Save task automation to database
         const result = await executeIfPermitted(userId, 'createSurveyAutomation', { 
        //     surveyAnswerId: answerId,  <---------  we need the current task step id
        source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
        student_id: userId, //the person being assigned to the task
-       manager_id: manager_id, // needs to be from the dropdown    
+       manager_id: managerData.managerId, // needs to be from the dropdown    
        taskId: selectedTaskId,
-            task_step_id: stepId, // Ensure this matches your DB column name
-            itemName: cleanName || 'Unknown Task', // BETTER: Default fallback
+            task_step_id: stepId, // 
+            itemName: taskCleanName || 'Unknown Task', // 
             automation_number: automationsNumber
         });
         
-  addInformationCard({
-            'name': `${result.name?.substring(0, 60) || cleanName?.substring(0, 60) || 'Unknown'}...`,
-            'with id': `${result.id?.substring(0, 8) || 'unknown'}...`,
-            'This is a': 'Task automation ',
-            'autoNumber':  automationsNumber, 
-            'stepNumber':  currentStepId 
+        
+        addInformationCard({
+          'name': `${taskCleanName?.substring(0, 60) || 'Unknown Task'}...`,
+          'type': 'Task automation',
+          'step': stepOrder,  // unknown  23:13  Oct 17
+          'taskId': `${selectedTaskId?.substring(0, 8) || 'unknown'}...`,
+          'id': `${result.id?.substring(0, 8) || 'unknown'}...`
         });
         
         showToast('Task automation saved successfully!');
@@ -812,6 +856,21 @@ if (stepOrder > 3) {
     saveTaskAutomationBtn.disabled = false;
     saveTaskAutomationBtn.textContent = 'Save Task';
 }
+
+
+function saveRelationsAutomation () {
+
+
+  addInformationCard({
+    'name': `${cleanApprofileName?.substring(0, 60) || 'Unknown Appro'}...`,
+    'type': 'Appro automation',
+    'relationship': selectedRelationship,
+    'step': stepOrder,
+    'id': `${result.id?.substring(0, 8) || 'unknown'}...`
+  });
+}
+
+
 
 /*
 
@@ -844,7 +903,7 @@ create table public.automations (
   constraint automations_student_id_fkey foreign KEY (student_id) references app_profiles (id) on update CASCADE on delete CASCADE,
   constraint automations_survey_answer_id_fkey foreign KEY (survey_answer_id) references survey_answers (id) on update CASCADE on delete CASCADE,
   constraint automations_task_assignment_id_fkey foreign KEY (task_assignment_id) references task_assignments (id) on update CASCADE on delete CASCADE,
-  constraint automations_task_header_id_fkey foreign KEY (task_header_id) references task_headers (id),
+  constraint automations_task_header_id_fkey foreign KEY (task_header_id) references task_headers (id) on update CASCADE on delete CASCADE,
   constraint automations_appro_is_id_fkey foreign KEY (appro_is_id) references app_profiles (id) on update CASCADE on delete CASCADE,
   constraint automations_task_step_id_fkey foreign KEY (task_step_id) references task_steps (id) on update CASCADE on delete CASCADE
 ) TABLESPACE pg_default;

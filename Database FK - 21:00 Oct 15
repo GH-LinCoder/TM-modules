@@ -1,0 +1,250 @@
+[
+  {
+    "table_name": "user_permissions",
+    "column_name": "columnid",
+    "foreign_table_name": "columns",
+    "foreign_column_name": "id",
+    "on_update": "NO ACTION",
+    "on_delete": "NO ACTION"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "task_step_id",
+    "foreign_table_name": "task_steps",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "survey_answer_id",
+    "foreign_table_name": "survey_answers",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "student_id",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "appro_is_id",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "relationship",
+    "foreign_table_name": "relationships",
+    "foreign_column_name": "name",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "survey_questions",
+    "column_name": "author_id",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "RESTRICT"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "of_appro_id",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "appro_relations_id",
+    "foreign_table_name": "approfile_relations",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "approfile_relations",
+    "column_name": "assigned_by_automation",
+    "foreign_table_name": "automations",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "manager_id",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "app_profiles",
+    "column_name": "task_header_id",
+    "foreign_table_name": "task_headers",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "task_header_id",
+    "foreign_table_name": "task_headers",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "task_steps",
+    "column_name": "task_header_id",
+    "foreign_table_name": "task_headers",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "approfile_relations",
+    "column_name": "approfile_is",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "survey_questions",
+    "column_name": "survey_header_id",
+    "foreign_table_name": "survey_headers",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "task_assignments",
+    "column_name": "assigned_by_person",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "app_profiles",
+    "column_name": "auth_user_id",
+    "foreign_table_name": "profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "RESTRICT"
+  },
+  {
+    "table_name": "approfile_relations",
+    "column_name": "relationship",
+    "foreign_table_name": "relationships",
+    "foreign_column_name": "name",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "survey_answers",
+    "column_name": "survey_question_id",
+    "foreign_table_name": "survey_questions",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "texts",
+    "column_name": "author_id",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "NO ACTION",
+    "on_delete": "NO ACTION"
+  },
+  {
+    "table_name": "task_assignments",
+    "column_name": "assigned_by_automation",
+    "foreign_table_name": "automations",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "source_task_step_id",
+    "foreign_table_name": "task_steps",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "automations",
+    "column_name": "task_assignment_id",
+    "foreign_table_name": "task_assignments",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "task_headers",
+    "column_name": "default_manager_id",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "task_assignments",
+    "column_name": "task_header_id",
+    "foreign_table_name": "task_headers",
+    "foreign_column_name": "id",
+    "on_update": "NO ACTION",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "task_assignments",
+    "column_name": "step_id",
+    "foreign_table_name": "task_steps",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "approfile_relations",
+    "column_name": "of_approfile",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "survey_headers",
+    "column_name": "author_id",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "RESTRICT"
+  },
+  {
+    "table_name": "app_profiles",
+    "column_name": "survey_header_id",
+    "foreign_table_name": "survey_headers",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  },
+  {
+    "table_name": "approfile_relations",
+    "column_name": "assigned_by_person",
+    "foreign_table_name": "app_profiles",
+    "foreign_column_name": "id",
+    "on_update": "CASCADE",
+    "on_delete": "CASCADE"
+  }
+]

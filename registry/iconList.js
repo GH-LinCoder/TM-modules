@@ -7,10 +7,15 @@ approfiles:'🪪' ,
 approfileTask:'📋',
 assignTask:'👨‍🔧',
 
+automation_appro:'',
+automation_task:'🚂',
+
 answer:'💭',
 
 back:'◀️',
 
+clock:'🕰️',
+computer:'💻',
 cross:'❎',
 
 delete:'🗑️',
@@ -28,6 +33,7 @@ idea:'💡',
 island:'🏝️',
 
 manager:'💼',
+manager_assigned:'💼',
 moveStudent:'🧑‍🎓',
 
 question:'❔',
@@ -36,6 +42,9 @@ relationships: '🖇️',
 
 selectRemember:' 📝',
 search:'🔍',
+step:'🪜',
+step_create:'🪜',
+step_update:'✍️ 🪜',
 surveys:'📜' ,
 
 task:'🔧' ,

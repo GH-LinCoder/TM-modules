@@ -342,7 +342,7 @@ createTask: {
     const {  existingTask, error: fetchError } = await supabase
       .from('task_headers')
       .select('id')
-      .eq('name', encodeURIComponent(taskName)) // encodeURIComponent(value) for .eq() & .like()
+      .eq('name', taskName) // encodeURIComponent(value) was removed 22:22 oct 17  for .eq() & .like()
       .single();
 
     if (existingTask) {
@@ -482,7 +482,7 @@ updateTaskStep: {
   handler: async (supabase, userId, payload) => {
     const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
 
-    const { error } = await supabase
+    const {data, error } = await supabase
       .from('task_steps')
       .update({
         name: stepName,
@@ -490,11 +490,13 @@ updateTaskStep: {
         step_order:stepOrder,
         external_url: stepUrl || null
       })
-      .eq('task_header_id', encodeURIComponent(taskId)) // encodeURIComponent(value) for .eq() & .like()
-      .eq('step_order', encodeURIComponent(stepOrder)); // encodeURIComponent(value) for .eq() & .like()
-
+      .eq('task_header_id', taskId) 
+      .eq('step_order',stepOrder)  
+      .select() 
+      .single()
     if (error) throw error;
-    return { success: true };
+    
+    return data;
   }
 },
 
@@ -1219,7 +1221,7 @@ createSurveyAutomation: {
     type: 'INSERT',
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase, userId, payload) => { // itemName 
     const { surveyAnswerId,source_task_step_id , taskId, manager_id, student_id, task_step_id, itemName, approfile_is_id, relationship, approfileId, automation_number   } = payload;
 
 console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id); // 22:40 Oct 14  UNDEFINED    10:58 Oct 15 NULL 
