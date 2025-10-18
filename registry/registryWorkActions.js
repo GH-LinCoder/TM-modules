@@ -304,7 +304,7 @@ createAssignment:{
   columns: ['id', 'step_id','sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id'],
   type: 'INSERT',
   requiredArgs: ['task_header_id','step_id', 'student_id','manager_id'] // ← payload fields
-},
+}, // Should this check for duplicate assignment???
 handler: async (supabase, userId, payload) => {
   const { task_header_id, step_id, student_id, manager_id } = payload;
 console.log('createAssignment()');
@@ -323,7 +323,6 @@ console.log('createAssignment()');
     return data.id; //
   } 
 },
-
 
 
 

@@ -15,6 +15,7 @@ let  currentStepId = null;
 // Module-level state (instead of class properties)
 let taskId = null;
 let steps = [];
+let stepOrder = 3;
 
 export function render(panel, query = {}) {
   console.log('Render(', panel, query, ')');
@@ -31,7 +32,7 @@ function styleCardByType(type){
     switch(type){
         case 'task':return 'bg-white p-2 rounded border mb-3 text-lg font-bold';
         case 'step':return 'bg-yellow-100 p-2 rounded border mb-1 text-sm font-bold';
-        case 'manager':return 'bg-orange-100 p-2 rounded border mb-1 text-sm font-style: italic ml-4';
+        case 'manager-assigned':return 'bg-orange-100 p-2 rounded border mb-1 text-sm font-style: italic ml-4';
         case 'automation_task':return 'bg-blue-100 p-2 border-dotted border-blue-500 rounded border mb-1 text-sm ml-6';    
         case 'automation_appro':return 'bg-green-100 p-2 border-dotted border-green-500 rounded border mb-1 text-sm ml-6';
     default:return 'bg-gray-100 p-2 rounded border mb-1 text-sm';
@@ -42,7 +43,7 @@ function getIconByType(type) {
     switch(type){
       case 'task': return icons.task;
       case 'step': return icons.step;
-      case 'step-create': return icons-step_create;
+      case 'step-create': return icons.step_create;
       case 'step-update': return icons.step_update;
       case 'manager': return icons.manager;
       case 'manager-assigned': return icons.manager_assigned;
@@ -173,15 +174,15 @@ function getTemplateHTML() {
                  <li>Plan your task. You may want to copy paste from an editor.</li>
                  <li>Try to have a name that has obvious meaning and appeal.</li>
                  <li> </li>
-                 <li>NOTE: You will be the manager of the task you are creating. </li>
-                 <li>If you want to appoint someone else as manager clcik the [Select] menu</li>
+                 <li>NOTE: You will be the manager 💼 of the task you are creating. </li>
+                 <li>If you want to appoint someone else as manager click the [Select] menu</li>
                  <li>Then use the drop down at the top of the form to appoint the manager</li>
                 </lu>
                 
 
               
               <p class="text-blue-700 text-sm mt-2">
-                📋 Managers may also available for assignment to manage individual steps.
+                💼 Managers may also become available for assignment to manage individual steps.
               </p>
             </div>
           <div class="p-6">  
@@ -352,9 +353,7 @@ function getTemplateHTML() {
                     <option value="member">member</option>
                     <option value="customer">customer</option>
                     <option value="explanation">explanation</option>
-                    <option value="trainer">trainer</option>
-                    <option value="trainee">trainee</option>
-                  </select>
+                    </select>
                   <button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
                     Save Relationship automation
                   </button>
@@ -401,7 +400,7 @@ function attachListeners(panel) {   //managerAutomationSelect
 
         // Save task automation button
   panel.querySelector('#saveTaskAutomationBtn')?.addEventListener('click', (e) => handleTaskAutomationSubmit(e, panel));
- // panel.relationshipBtn.addEventListener('click', (e) => handleRelationshipAutomationSubmit(e, panel));
+  panel.querySelector('#saveRelationshipAutomationBtn')?.addEventListener('click', (e) => handleRelationshipAutomationSubmit(e, panel));
 
 
 
@@ -488,8 +487,9 @@ addInformationCard({
 async function handleStepSubmit(e, panel) {
     console.log('handleStepSubmit()');
     e.preventDefault();
-    
-    const stepOrder = parseInt(panel.querySelector('#stepOrder')?.value);
+    //making global 14:17 Oct 18
+    //const stepOrder = parseInt(panel.querySelector('#stepOrder')?.value);
+     stepOrder = parseInt(panel.querySelector('#stepOrder')?.value);
     const stepName = panel.querySelector('#stepName')?.value.trim();
     const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
     const stepUrl = panel.querySelector('#stepUrl')?.value.trim();
@@ -547,6 +547,8 @@ console.log('result:',result);
           stepUrl: stepUrl
         });
 
+
+
         addInformationCard({
           'name': `${stepName?.substring(0, 60) || 'Unknown'}...`,
           'type': 'step-create',
@@ -557,20 +559,10 @@ console.log('result:',result);
         });
       }
       console.log('result:',result); // just says success 22:48 Oct 14  // 22:39 Oct 15 Tried to change the function so it would return data but returns null
-  
-/*
-addInformationCard({
-  'name': `${stepName?.substring(0, 60) || 'Unknown'}...`,
-  'type': 'step',
-  'number': stepOrder,
-  'id': `${result.id?.substring(0, 8) || 'unknown'}...`,
-  'taskId': `${taskId?.substring(0, 8) || 'unknown'}...`
-}); */
 
+      currentStepId = result.id; //update the global
+      console.log('currentStepId', currentStepId);
 
-
-
-      // Reload steps to get updated data
       const loadedSteps = await executeIfPermitted(userId, 'readTaskSteps', { taskId: taskId });
       steps = loadedSteps || [];
       
@@ -598,6 +590,8 @@ addInformationCard({
     saveBtn.textContent = 'Save Step';
   }
   
+
+
   // Add this new function to enable the automations card:
   function enableAutomationsCard(panel) {
     console.log('enableAutomationsCard()', panel);
@@ -761,6 +755,14 @@ function getManagerName(managerSelect) {
   return { managerName: managerName, managerId: managerId };
 }
 
+
+function findStep3Id(){
+
+
+}
+
+
+
     // ========================================
     // DATA OPERATIONS - AUTOMATIONS
     // ========================================
@@ -775,7 +777,7 @@ async function handleTaskAutomationSubmit(e, panel) {
   //      return;
    // }
     
-    const taskSelect = panel.querySelector('#taskAutomationSelect'); // FIXED: Correct ID
+    const taskSelect = panel.querySelector('#taskAutomationSelect');
     const selectedTaskId = taskSelect?.value;
     
     // Get the selected option text
@@ -795,7 +797,9 @@ async function handleTaskAutomationSubmit(e, panel) {
     const managerSelect = panel.querySelector('#managerAutomationSelect'); 
 const managerData = getManagerName(managerSelect);
 
-const stepOrder = currentStepId ? currentStepId.substring(0, 8) : 'unknown'; //unknown  23:12 Oct 17
+//making global 14:18 Oct 18
+//const stepOrder = currentStepId ? currentStepId.substring(0, 8) : 'unknown'; //unknown  23:12 Oct 17
+//cstepOrder = currentStepId ? currentStepId.substring(0, 8) : 'unknown'; //unknown  23:12 Oct 17
 // Instead of just showing manager info, show complete context:
 addInformationCard({
   'name': `${managerData.managerName}`,
@@ -827,7 +831,7 @@ addInformationCard({
 //        console.log('source_task_step_id:', source_task_step_id);
         // Save task automation to database
         const result = await executeIfPermitted(userId, 'createSurveyAutomation', { 
-       //     surveyAnswerId: answerId,  <---------  we need the current task step id
+      
        source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
        student_id: userId, //the person being assigned to the task
        manager_id: managerData.managerId, // needs to be from the dropdown    
@@ -840,7 +844,7 @@ addInformationCard({
         
         addInformationCard({
           'name': `${taskCleanName?.substring(0, 60) || 'Unknown Task'}...`,
-          'type': 'Task automation',
+          'type': 'automation_task',
           'step': stepOrder,  // unknown  23:13  Oct 17
           'taskId': `${selectedTaskId?.substring(0, 8) || 'unknown'}...`,
           'id': `${result.id?.substring(0, 8) || 'unknown'}...`
@@ -858,17 +862,88 @@ addInformationCard({
 }
 
 
-function saveRelationsAutomation () {
+/*function saveRelationsAutomation () {
 
-
-  addInformationCard({
+ addInformationCard({
     'name': `${cleanApprofileName?.substring(0, 60) || 'Unknown Appro'}...`,
     'type': 'Appro automation',
     'relationship': selectedRelationship,
     'step': stepOrder,
     'id': `${result.id?.substring(0, 8) || 'unknown'}...`
   });
+}  */
+
+
+  async function handleRelationshipAutomationSubmit(e, panel) {
+    console.log('handleRelationshipAutomationSubmit()');
+    e.preventDefault();
+    
+    const approfileSelect = panel.querySelector('#approfileAutomationSelect'); // Changed ID to match task module
+    const relationshipSelect = panel.querySelector('#relationshipAutomationSelect'); // Changed ID to match task module
+    
+    const selectedApproleId = approfileSelect?.value;
+    // Get the selected option text
+    const selectedOption = approfileSelect?.options[approfileSelect.selectedIndex];
+    const cleanName = selectedOption?.textContent?.replace(' (clipboard)', '') || 'Unknown Approfile';
+    
+    const selectedRelationship = relationshipSelect?.value;
+    
+    if (!selectedApproleId) {
+        showToast('Please select an approfile first', 'error');
+        return;
+    }
+    
+    if (!selectedRelationship) {
+        showToast('Please select a relationship type', 'error');
+        return;
+    }
+    
+    e.target.disabled = true;
+    e.target.textContent = 'Saving...';
+
+    automationsNumber++;        
+    
+    try {  
+        // Save relationship automation to database - ADAPTED FOR TASKS
+        const result = await executeIfPermitted(userId, 'createSurveyAutomation', { // Same function name?
+            source_task_step_id:  currentStepId,    // NULL
+          //  student_id: userId,                         // Not relevant
+            approfileId: selectedApproleId,            
+            itemName: cleanName,                        
+            relationship: selectedRelationship,         
+            automation_number: automationsNumber   
+        });
+        
+        // Add information card - ADAPTED FOR TASKS
+         addInformationCard({
+            'name': `${result.name?.substring(0, 60) || cleanName?.substring(0, 60) || 'Unknown'}...`,
+            'relationship': `${result.relationship?.substring(0, 8) || selectedRelationship?.substring(0, 8) || 'unknown'}...`,
+            'type': 'automation_appro', 
+            'number':  automationsNumber, 
+           'step':  stepOrder,  // 
+          
+            'id': `${result.id?.substring(0, 8) || 'unknown'}...`,
+            'stepId':  currentStepId?.substring(0, 8) || 'unknown'  //
+        });            
+        
+
+
+
+        showToast('Relationship automation saved successfully!');
+        
+    } catch (error) {
+        showToast('Failed to save relationship automation: ' + error.message, 'error');
+         automationsNumber--; // Rollback on error
+    }
+    
+     // Re-enable the button:
+     e.target.disabled = false;
+     e.target.textContent = 'Save Relationship';
 }
+
+
+
+ 
 
 
 

@@ -48,6 +48,8 @@ type: "task"
 
 */
 
+
+/*               !!!!!!!!!!!!!!!!!!!!!!!!!     Needs to check if assignment already exists, and only go ahead if adbandoned or completed             !!!!!!!!!!!!!!!!!!!!!!!!!!!!                             */
             
             // Extract required data  // 12:46 Oct 14 'automations' only contains type:'task', taskId: , missing stepId and needs to get userId from payload.source.userId
             const { taskId, stepId, automationId, managerId } = automation; // Get automation row ID  

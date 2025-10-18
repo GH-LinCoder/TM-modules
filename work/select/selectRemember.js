@@ -111,7 +111,7 @@ class DevDataSelector {
             <div class="border-t my-2"></div>
             <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="surveys"> 📜 Surveys</label>
             <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="tasks"> 🔧 Tasks to be assignment</label>
+            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="tasks"> 🔧 Tasks for assignment</label>
  <div class="border-t my-2"></div>
             <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="assignments"> 👨‍🔧 Existing Assignments of tasks</label>
           </div>
