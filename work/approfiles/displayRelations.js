@@ -67,7 +67,7 @@ export function render(panel, query = {}) {
   console.log('displayRelations.render()', panel, query);
   panel.innerHTML = getTemplateHTML();
   init(panel, query);
-      //    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+
 }
 
 function getTemplateHTML() {
@@ -76,7 +76,7 @@ function getTemplateHTML() {
     <div  class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-xl font-semibold text-gray-900">Display Relations 🖇️  19:15 Oct 12</h3>
+          <h3 class="text-xl font-semibold text-gray-900">Display Relations 🖇️  19:51 Oct 21</h3>
           <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -135,37 +135,53 @@ function getTemplateHTML() {
 
 function init(panel, query) {
   console.log('displayRelations.init()');
-  
-  // Initialize with empty state
-  renderRelationships(panel, null, null);
-  
-  // Load approfiles from clipboard
-  populateApprofileSelect(panel);
-  
-  // Listen for clipboard updates
-  onClipboardUpdate(() => {
+
+  const moduleContext = panel.closest('[data-module]')?.dataset.module || 'standalone';
+
+  if (moduleContext === 'myDash' && query.student) {
+    // Use the student ID from myDash
+    const approfileId = query.student;
+
+    // Get the name from the dashboard DOM
+    //const nameEl = document.querySelector('[data-user="name"]');
+    //const approfileName = nameEl?.textContent?.trim() || 'Current Student';
+    const approfileName = null;
+
+    // Load and render relationships using the ID and name
+    loadRelationships(approfileId)
+      .then(data => {
+        renderRelationships(panel, data, approfileName);
+      })
+      .catch(error => {
+        console.error('Error loading relationships:', error);
+        renderRelationships(panel, null, approfileName);
+      });
+
+  } else {
+    // Default behavior: wait for dropdown selection
+    renderRelationships(panel, null, null);
     populateApprofileSelect(panel);
-  });
-  
-  // ATTACH CLICK LISTENER TO PANEL (persists through re-renders)
+    onClipboardUpdate(() => {
+      populateApprofileSelect(panel);
+    });
+    attachDropdownListener(panel);
+  }
+
+  // Shared listeners (work in both modes)
   panel.addEventListener('click', async (e) => {
     const flowBox = e.target.closest('.flow-box-subject, .flow-box-other');
     if (flowBox && flowBox.dataset.subjectId) {
       const subjectId = flowBox.dataset.subjectId;
       const subjectName = flowBox.textContent.replace(' is', '').replace('of ', '').trim();
-     // console.log('Exploring subject:', subjectId, subjectName);
-      console.log('FlowBox Clicked - calling laodAndRender');
-
       await loadAndRenderRelationships(panel, subjectId, subjectName);
     }
   });
+
   panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
- // Handle approfile selection from dropdown 
- attachDropdownListener(panel);
 
- informationFeedback = panel.querySelector('#informationFeedback');
-
+  informationFeedback = panel.querySelector('#informationFeedback');
 }
+
 
 function showInformation(approName) {
   informationFeedback.innerHTML += `<div class="my-2 p-3 bg-white border rounded shadow-sm flex items-center justify-between">
@@ -242,11 +258,24 @@ async function loadRelationships(approfileId) {
   return result || { is: [], of: [] };
 }
 
-function renderRelationships(panel, relationshipsData, approfileName) {
+function renderRelationships(panel, relationshipsData, approfileName) {  // the name may not be known yet if it isn't from a dropdown.  It is found out line 338
   const container = panel.querySelector('#relationshipsContainer');
   if (!container) return;
 
 
+  
+  const isRelationships = relationshipsData.is || [];
+  const ofRelationships = relationshipsData.of || [];
+  
+//new 19;43 Oct 21
+
+if (!approfileName) {
+  approfileName =
+    isRelationships[0]?.approfile_is_name ||
+    ofRelationships[0]?.of_approfile_name ||
+    'Current Student';
+}
+console.log('approfileName:',approfileName,)
 
   // Handle case where no approfile is selected
   if (relationshipsData === null || approfileName === null) {
@@ -257,10 +286,9 @@ function renderRelationships(panel, relationshipsData, approfileName) {
     `;
     return;
   }
-  
-  const isRelationships = relationshipsData.is || [];
-  const ofRelationships = relationshipsData.of || [];
-  
+
+
+
   if (isRelationships.length === 0 && ofRelationships.length === 0) {
     container.innerHTML = `
       <div class="bg-yellow-50 border border-yellow-200 rounded p-4 text-center">
@@ -312,7 +340,7 @@ html += `
           ${approfileName} is
         </div>
     `;
-    
+    //line 326 the name is null, we don't know the name until line 338.  Can the below code be put first? Or can we inject the name here after finding our what the name is?
     groupedIs.forEach(group => {
       html += `
         <div class="relationship-type" style="font-size: 16px; font-weight: bold; margin-bottom: 4px; color: #4f46e5; padding-bottom: 4px;">
@@ -321,7 +349,7 @@ html += `
       `;
       
       group.items.forEach(rel => {
-        const subject = rel.approfile_is_name || rel.approfile_is;
+        const subject = rel.approfile_is_name || rel.approfile_is;  //<---------------------------------------------------- we find the name of the appro here, 
         const object = rel.of_approfile_name || rel.of_approfile;
         html += `
           <div class="relationship-flow" style="display: flex; justify-content: center; align-items: center; margin: 2rem auto; gap: 1rem;">

@@ -41,6 +41,15 @@ export const registry = { // this registry is for loading a new page to the righ
 //'selector-dialogue' :()=> import('../work/universal/selectAnyRow.js'),
 'selector-dialogue' :()=> import('../work/select/selectRemember.js'),
 
+//'display-tasks' :()=> import('../work/task/displayTasks.js'), // changed 20:29 Oct 21
+'display-tasks' :()=> import('../work/task/studentBased.js'),
+
+'display-surveys' :()=> import('../surveys/displaySurveys.js'),
+'display-relations' :()=> import('../work/approfiles/displayRelations.js'),
+
+
+
+
 
 'howTo': () => import('../work/how/howTo.js'),
 

@@ -856,6 +856,8 @@ console.log('readAssignment2Exists()');
   } 
 },
 
+
+/*
 //TASK_ASSIGMENT
 readStudentAssignments: {
   metadata: {
@@ -876,6 +878,114 @@ readStudentAssignments: {
     return data;
   }
 },
+*/  //Replaced with combined function below 23:39 Oct 19
+
+
+// TASK_ASSIGNMENT + SURVEY_ASSIGNMENT
+/*
+readStudentAssignments: {
+  metadata: {
+    tables: ['task_assignment_view', 'survey_assignment_view'], // Add survey view
+    columns: [
+      'assignment_id', 'student_id', 'task_header_id', 'task_name', 'task_description', 
+      'step_order', 'step_name', 'step_description', 'manager_id', 'manager_name', 'assigned_at',
+      'survey_id', 'survey_name', 'survey_description' // Add survey columns
+    ],
+    type: 'SELECT',
+    requiredArgs: ['student_id']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { student_id } = payload;
+    
+    // Get task assignments
+    const { data: taskData, error: taskError } = await supabase
+      .from('task_assignment_view')
+      .select(`
+        assignment_id, student_id, task_header_id, task_name, task_description, 
+        step_order, step_name, step_description, manager_id, manager_name, assigned_at
+        
+      `)
+      .eq('student_id', student_id)
+      .order('assigned_at', { ascending: false });
+    
+    if (taskError) throw taskError;
+    
+    // Get survey assignments (you'll need to create this view)
+    const { data: surveyData, error: surveyError } = await supabase
+      .from('survey_assignment_view') // Create this view
+      .select(`
+        assignment_id, student_id, survey_header_id, survey_name, survey_description,
+        assigned_at
+    
+      `)
+      .eq('student_id', student_id)
+      .order('assigned_at', { ascending: false });
+    
+    if (surveyError) throw surveyError;
+    
+    // Combine and sort by assignment date
+    const combinedData = [...taskData, ...surveyData].sort((a, b) => 
+      new Date(b.assigned_at) - new Date(a.assigned_at)
+    );
+    
+    return combinedData;
+  }
+},  */  // replaced by version with arg to choose type of assignment
+
+readStudentAssignments: {
+  metadata: {
+    tables: ['task_assignment_view', 'survey_assignment_view'],
+    columns: [
+      'assignment_id', 'student_id', 'task_header_id', 'task_name', 'task_description', 
+      'step_order', 'step_name', 'step_description', 'manager_id', 'manager_name', 'assigned_at',
+      'survey_id', 'survey_name', 'survey_description'
+    ],
+    type: 'SELECT',
+    requiredArgs: ['student_id'],
+    optionalArgs: ['type'] // Add 'type' as an optional argument
+  },
+  handler: async (supabase, userId, payload) => {
+    const { student_id, type } = payload;
+
+    let taskData = [];
+    let surveyData = [];
+
+    if (!type || type === 'task') {
+      const { data, error } = await supabase
+        .from('task_assignment_view')
+        .select(`
+          assignment_id, student_id, student_name, task_header_id, task_name, task_description, 
+          step_order, step_name, step_description, manager_id, manager_name, assigned_at
+        `)
+        .eq('student_id', student_id)
+        .order('assigned_at', { ascending: false });
+
+      if (error) throw error;
+      taskData = data;
+    }
+
+    if (!type || type === 'survey') {
+      const { data, error } = await supabase
+        .from('survey_assignment_view')
+        .select(`
+          assignment_id, student_id, survey_header_id, survey_name, survey_description,
+          assigned_at
+        `)
+        .eq('student_id', student_id)
+        .order('assigned_at', { ascending: false });
+
+      if (error) throw error;
+      surveyData = data;
+    }
+
+    const combinedData = [...taskData, ...surveyData].sort((a, b) =>
+      new Date(b.assigned_at) - new Date(a.assigned_at)
+    );
+
+    return combinedData;
+  }
+},
+
 
 
 //RELATIONSHIPS
