@@ -42,13 +42,14 @@ export const registry = { // this registry is for loading a new page to the righ
 'selector-dialogue' :()=> import('../work/select/selectRemember.js'),
 
 //'display-tasks' :()=> import('../work/task/displayTasks.js'), // changed 20:29 Oct 21
-'display-tasks' :()=> import('../work/task/studentBased.js'),
+'display-tasks' :()=> import('../work/task/displayTasksStudent.js'),
 
-'display-surveys' :()=> import('../surveys/displaySurveys.js'),
+'display-this-survey' :()=> import('../surveys/displaySurveyQwen.js'), //changed 19:30 Oct 22
 'display-relations' :()=> import('../work/approfiles/displayRelations.js'),
 
+'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),
 
-
+'display-students':()=> import('../work/task/displayTasksManager.js'),
 
 
 'howTo': () => import('../work/how/howTo.js'),

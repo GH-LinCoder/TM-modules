@@ -53,10 +53,10 @@ function getTemplateHTML() {
                     <div class="flex-1 space-y-4">
                         <div class="space-y-3 text-sm text-gray-600">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span data-user="email">john.doe@example.com</span>
-                                <span data-user="mid"><b>ID:</b> <span data-user="student-id">1c8557ab...</span></span>       
-                                <span data-user="join-date"><b>Joined:</b> 24 August 2025</span>
-                                <span data-user="last-login"><b>Last login:</b> 2:30 PM 24 August 2025</span>
+                                <span data-user="email">????.???@example.com</span>
+                                <span data-user="mid"><b>ID:</b> <span data-user="student-id">???</span></span>       
+                                <span ><b>Joined:</b><span data-user="join-date"> ???? ?? ??</span></span>
+                                <span data-user="last-login"><b>Last login:</b> ??:?? PM ???? ?? ??</span>
                             </div>
                             
                             <button 
@@ -68,6 +68,25 @@ function getTemplateHTML() {
                     </div>
                 </div>
                 
+
+<!--  INSTRUCTIONS   -->                           
+                    <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                       <h4 class="text-ml font-bold text-blue-500 mb-4">my Dashboard</h4>
+                       <ul class="list-disc list-inside mt-2 text-sm text-blue-500">
+                       <li>At the top are your basic details which you can edit. 'My profile'</li>
+                       <li>Next are some summary statistics of things you have done or are doing. 'Quick Stats'</li>
+                       <li>next are things that you may want to do often 'Quick Acts'</li>
+                        <li> One of our mottoes is: "Have your say, do your bit."</li>
+                        <li> We use surveys as a key part of both those things. 'Have your say'</li>
+                        <li> You may see surveys in the section below</li>
+                        <li> Doing your bit often involves tasks in another section below. 'Do your bit' </li>
+                        <li>The other motto is 'No one is an island'. You can see your relations with groups, volunteers, events & organisations. </li>
+                      <li>If you are on a task you are referred to as 'the student'. If you manage a task looking after another student you are referred to as 'the manager'</li>
+                      <li>There is a section for any tasks where you are the manager. </li>
+                        </ul>  
+                    </div>
+
+
                 <!-- QUICK STATS -->
                 <div class="bg-blue-200 rounded-lg shadow p-6" data-section="quick-stats" data-destination="quick-stats">
                     <h2 class="text-lg font-semibold mb-2">Quick Stats</h2>
@@ -168,25 +187,45 @@ function getTemplateHTML() {
                 </div>
                 
                 <!-- SURVEYS SECTION -->
-                <div data-section="surveys-section">
+                <div data-section="surveys-section" class="bg-gray-50 rounded-lg shadow p-6 border border-gray-500">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">Surveys (have your say)</h2>
-                        <div class="flex gap-2" class="border border-red-200"></div>
-                    </div>
+                        <h2 class="text-2xl font-bold">Have your say (surveys)</h2>
+                        <div class="flex gap-2" class="border border-red-200" data-action="display-student-surveys" >
+                        </div>
+                    
                     <div class="bg-orange-100 space-y-6" data-list="my-surveys">
                         <!-- Surveys will be loaded here dynamically -->
-                        <div class="text-center py-8 text-gray-500" data-placeholder="loading">
-                            Surveys that I can reply to would be loaded here...
-                        </div>
+                    </div>
+
                     </div>
                 </div>
                 
                 <!-- TASKS SECTION -->
-                <div data-section="tasks-section">
+                <div data-section="tasks-section" class="bg-blue-100 rounded-lg shadow p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">Tasks (do your bit)</h2>
+                        <h2 class="text-2xl font-bold">Do your bit (tasks)</h2>
                         <div class="flex gap-2"></div>
+                        <!--  INSTRUCTIONS   -->                           
+                    <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                       <h4 class="text-ml font-bold text-blue-500 mb-4">Doing my bit through tasks</h4>
+                       <ul class="list-disc list-inside mt-2 text-sm text-blue-500">
+                       <li>If you have been assigned a task it will apear here</li>
+                       <li>You can see what step of the task you are on, and what you have already done.</li>
+                       <li>You can message the manager of the task</li>
+                        <li> The manager can message you</li>
+                        <li> If the task is self-managed you will find how to do that in the other section. You can't move between steps of a task in this section</li>
+                        <li> If you have lost all hope you can mark the task as abandoned. This cannot be reversed except by being assigned to the task again.</li>
+                        <li> Some tasks are self managed (see below). Some are automated. Some tasks are fully self-contained and some are just a record of some process taking place externally</li>
+                        <li> Completion is reached step by step.</li>
+                        <li></li>
+                      <li>If you are on a task you are referred to as 'the student'. If you also manage the task you are on, that will be shown here, but managed in the other section</li>
+                      <li>Moving yourself through a task is done in that other section</li>
+                      <li></li>
+                        </ul>  
                     </div>
+
+                    </div>
+
                     <div class="bg-indigo-100 space-y-6" data-list="my-tasks">
                         <!-- Tasks will be loaded here dynamically -->
                                             </div>
@@ -195,8 +234,26 @@ function getTemplateHTML() {
                 <!-- RELATIONS SECTION -->
                 <div data-section="relations-section">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">Relations (no one is an island)</h2>
+                        <h2 class="text-2xl font-bold">No one is an island (relations)</h2>
                         <div class="flex gap-2" class="border border-red-200"></div>
+                         <!--  INSTRUCTIONS   -->                           
+                    <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                       <h4 class="text-ml font-bold text-blue-500 mb-4">How I relate to others</h4>
+                       <ul class="list-disc list-inside mt-2 text-sm text-blue-500">
+                       <li>If you have been related to another person or a group or a task or some abstract concept here is where you can explore</li>
+                       <li>You can see who you have been related to. This may be a person or an interest group or a branch or an unlimited number of things</li>
+                       <li>Clicking on whatever you are related to shows who else is connected to that</li>
+                        <li>If you find that you aren't connected to much or you seem to be oddly connected to something here is what to do...</li>
+                        <li> If you want to be more connected try seeking out surveys to have your say, or assigning yourself to tasks to do your bit. These surveys and tasks are likely to automatically connect you to others</li>
+                        <li> If you see connections that you don't think are appropriate, please message an admin.</li>
+                        <li> Some relations are automated and may produce unexpected results. Some tasks and many surveys have 'automations' that relate the student based on steps in the task or answers to questions. Everyone should check their relations</li>
+                        <li> </li>
+                        <li></li>
+                      <li>Note that you may have been 'related' to a task. This is different to being assinged to the task. If you are on a task you are referred to as 'the student' and you move through it step by step. However, you could be related to a task because it covers a subject dear to you, or because it is a task that you created, or have completed.</li>
+                      <li></li>
+                      <li></li>
+                        </ul>  
+                    </div>
                     </div>
                     <div class="bg-orange-100 space-y-6" >
                         <!-- Relations will be loaded here dynamically -->
@@ -209,13 +266,31 @@ function getTemplateHTML() {
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-2xl font-bold">My Students</h2>
                     </div>
-                    <div class="bg-green-100 rounded-lg shadow p-12 text-center" data-placeholder="no-students">
-                        <h3 class="text-lg font-semibold mb-2">No Students Assigned</h3>
-                        <p class="text-gray-500 mb-4">I could become a manager to monitor student tasks.</p>
+
+<!--  INSTRUCTIONS   -->                           
+                    <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+                       <h4 class="text-ml font-bold text-blue-500 mb-4">Doing my bit as a manager</h4>
+                       <ul class="list-disc list-inside mt-2 text-sm text-blue-500">
+                       <li>If you have been appointed as a manger of a task, all those tasks and students will appear here</li>
+                       <li>You can see what step of the task each student is on.</li>
+                       <li>You can message the student</li>
+                        <li> The student can message you</li>
+                        <li> You can move the student to the next step of the task</li>
+                        <li> You can mark the task as abandoned by that student</li>
+                        <li> When you judge that the student has finished the final step, moving forward marks the task as completed</li>
+                        <li>You can't jump straight to 'completed,' this can only be reached step by step.</li>
+                        <li>Once abandoned, the only way to recover is to assign the task again</li>
+                      <li>If you are on a task you are referred to as 'the student'. If you also manage the task you are on, that will be shown here</li>
+                      <li>Moving yourself through a task is done in this section</li>
+                      <li></li>
+                        </ul>  
                     </div>
-                </div>
-            </div>
-        </div>
+
+<!--the module injects cards here on a white background -->
+
+        </div>        
+    </div>
+</div>
         
         ${petitionBreadcrumbs()}
     `;
@@ -263,7 +338,7 @@ class MyDashboard {
         }
         
         // Fallback to DEV student ID
-        return '1c8557ab-12a5-4199-81b2-12aa26a61ec5';
+        return  appState.query.userId;
     }
     
     async loadStudentProfile(panel) {
@@ -281,11 +356,15 @@ class MyDashboard {
             const emailEl = panel.querySelector('[data-user="email"]');
             const initialsEl = panel.querySelector('[data-user="initials"]');
             const studentIdEl = panel.querySelector('[data-user="student-id"]');
+            const studentJoinedEl = panel.querySelector('[data-user="join-date"]');
+
+            //Needs joined
+            //needs last login - not got sessions yet oct 23
             
             if (nameEl) nameEl.textContent = studentProfile.name || 'Unknown';
             if (emailEl) emailEl.textContent = studentProfile.email || 'No email';
             if (studentIdEl) studentIdEl.textContent = this.currentStudentId.substring(0, 8) + '...';
-            
+            if (studentJoinedEl) studentJoinedEl.textContent = studentProfile.created_at.substring(0, 10) || 'error';
             // Set initials
             if (initialsEl && studentProfile.name) {
                 const initials = studentProfile.name
@@ -418,11 +497,11 @@ async getStudentRelations() {
         // Store student ID in clipboard for child modules
         appState.clipboard = [{
             entity: {
-                id: this.currentStudentId,
-                name: 'Current Student',
-                type: 'app-human'
+                id: this.currentStudentId, // Why refering to this person as currentStudent???
+                name: 'Current Person',   // this should be the actual current student name shouldn't it?
+                type: 'app-human'  
             },
-            as: 'student',
+            as: 'student',  // WHY ???  This may be okay for listing tasks, but not so good for when treating as manager
             meta: {
                 timestamp: Date.now(),
                 source: 'myDash'

@@ -27,11 +27,11 @@ async function execute(userId, action, payload) {
   try {
     result = await funcEntry.handler(supabase, userId, payload);
   } catch (error) {
-    console.error(`funcEntry.handler:`, error);
+    //console.error(`funcEntry.handler:`, error);
     throw error; // optional: rethrow to bubble up
   }
 
-  console.log('result:', result);
+  //console.log('result:', result);
   return result || [];
 }
 

@@ -57,7 +57,7 @@ if (!registryWorkActions[functionName]) {
 }
 const metadata = registryWorkActions[functionName]?.metadata;
   if(!metadata)  throw new Error(`No metadata found - check ${functionName} in registry`);  
-  console.log('metaData:',metadata);
+ // console.log('metaData:',metadata);
   // do something with metadata and user id, to determine if permitted
 //const args = ({supabase,userId,taskId});
 

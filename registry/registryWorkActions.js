@@ -986,6 +986,35 @@ readStudentAssignments: {
   }
 },
 
+readManagerAssignments: {
+  metadata: {
+    tables: ['task_assignment_view'],
+    columns: [
+      'assignment_id', 'student_id', 'student_name', 'task_header_id', 'task_name', 'task_description', 
+      'step_order', 'step_name', 'step_description', 'manager_id', 'manager_name', 'assigned_at'
+    ],
+    type: 'SELECT',
+    requiredArgs: ['manager_id']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { manager_id } = payload;
+
+    const { data, error } = await supabase
+      .from('task_assignment_view')
+      .select(`
+        assignment_id, student_id, student_name, task_header_id, task_name, task_description, 
+        step_order, step_name, step_description, manager_id, manager_name, assigned_at
+      `)
+      .eq('manager_id', manager_id)
+      .order('task_name', { ascending: true })
+      .order('student_name');
+
+    if (error) throw error;
+    return data;
+  }
+}
+,
+
 
 
 //RELATIONSHIPS

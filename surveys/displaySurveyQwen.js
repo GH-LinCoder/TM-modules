@@ -3,6 +3,8 @@ import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../ui/showToast.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import { icons } from '../registry/iconList.js'; 
+import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
+
 
 // Export function as required by the module loading system
 export function render(panel, query = {}) {
@@ -13,14 +15,36 @@ export function render(panel, query = {}) {
 
 const userId = appState.query.userId;
 
+
+
+
 class SurveyDisplay {
     constructor() {
-        this.surveyId = 'efc9f836-504f-44e7-95be-cda9107f9fea';  //DEV ONLY  -'efc...' is 'Have your say, do your bit.choose involvement' use to test relate approfiles: user to 'activist' 'passive' etc
-        this.surveyId= "df26336d-13cc-4208-b25c-35d271e6b90a";// "name":"TEST 006 - 1 task automation","description":"This has one attached automation of the default task. 
+
+//        const clipboard = appState.query.clipboard || {};
+//const surveyId = clipboard.surveyId;
+
+
+//new 20:15 Oct 22  the clipboard replaces the following hard coded
+
+//        this.surveyId = 'efc9f836-504f-44e7-95be-cda9107f9fea';  //DEV ONLY  -'efc...' is 'Have your say, do your bit.choose involvement' use to test relate approfiles: user to 'activist' 'passive' etc
+//        this.surveyId= "df26336d-13cc-4208-b25c-35d271e6b90a";// "name":"TEST 006 - 1 task automation","description":"This has one attached automation of the default task. 
                         // Use to test survey. See if when clicking the answer the user is placed on step 3 of the default task ",
                        // "author_id":"06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df","created_at":"2025-10-13 18:08:37.598553+00","last_updated_at":null,"automations":null}'
-        this.surveyData = null;
+  
+                       this.surveyData = null;
         this.currentQuestionIndex = 0;
+console.log('appState.query:',appState.query);
+
+        this.surveyId = this.getCurrentSurveyId(appState.query); //this param is pointless as the function can call this directly
+console.log('this.surveyId', this.surveyId);  //undefined  20:42 Oct 22
+        if (!this.surveyId) {
+            showToast('No survey selected', 'error');
+            return;
+          }
+
+         // Failed to load survey: invalid input syntax for type uuid: "undefined" //I assume undefined survey id
+// supabase.co/rest/v1/survey_view?select=*&survey_id=eq.undefined
     }
 
     async render(panel, query = {}) {
@@ -60,8 +84,29 @@ class SurveyDisplay {
             showToast('Failed to load survey: ' + error.message, 'error');
             console.error('Survey display error:', error);
         }
-      //  panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+        onClipboardUpdate(() => {
+            const newSurveyId = this.getCurrentSurveyId(query);
+            if (newSurveyId !== this.surveyId) {
+              this.surveyId = newSurveyId;
+              this.render(panel, query); // re-render with new survey
+            }
+          });
+          
     }
+
+    getCurrentSurveyId(query = {}) {
+        if (query.clipboard.surveyId) return query.clipboard.surveyId;
+      
+        const clipboardSurveys = getClipboardItems({ as: 'survey' });
+        if (clipboardSurveys.length > 0) {
+          return clipboardSurveys[0].entity.id;
+        }
+      
+        return null;
+      }
+      
+
+
 
     getHeaderHTML(surveyInfo) {
         return `
@@ -117,7 +162,7 @@ class SurveyDisplay {
 
                 </div>
             </div>
-               ${petitionBreadcrumbs()} ;
+               ${petitionBreadcrumbs()} 
         `;
     }
 

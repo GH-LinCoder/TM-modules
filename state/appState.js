@@ -13,9 +13,24 @@ clipboard:[],
 
     query: {
 
+// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
+//const userId : '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df',//profilia  step 3 1 task
+//const userId :'e44dfc8a-1ded-4c39-aa3b-957c15fa2cf7',//hwbdygg  step 3 1 task
+//const userId : '6004dc44-a451-417e-80d4-e9ac53265beb',//cannie step 3 1 task New Welcome
 
-      //userId: null, // as at 15:00 sept 16 not used
-      userId: "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df", //DEV id for user 'profilia' 15:03 trial
+//const userId:'e9b82fd0-067e-43f1-b514-c2dbbfd10cba',//Jubbul  step 3  2 tasks
+//const 
+userId :'ca1e9188-b3d6-4752-a4ed-d0cbdd62c044',//Keki  step 3 2 tasks  Has students
+//const userId:'a42c8756-a0ef-41e6-b073-bf20fbd8b7fb',// Tetsi Memoria step 3 2 tasks
+
+//const userId : '87a90183-88b6-450a-94d2-7838ffbbf61b',//girdenjeeko dmin dasboard step 3 - completion
+
+//const userId : '51cf02e4-a69c-41f3-bcff-52d0208df529',//Adam Adminium step 3 2 tasks one task has step 4 other next:completed No students
+
+//const userId:'1c8557ab-12a5-4199-81b2-12aa26a61ec5',// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
+
+//const userId : '6518fbf6-bf22-436b-8960-8af94edecb83',//john cartlin no assignments
+    //  userId:'1c8557ab-12a5-4199-81b2-12aa26a61ec5', // noomwild who has lots of task assignments BUT not a manager
       defaultManagerId:'9066554d-1476-4655-9305-f997bff43cbb',
       defaultMangerName:'Lin Coder',
       
@@ -28,8 +43,8 @@ clipboard:[],
       DELETE_request: false,
       UPDATE_request: false,
       
-      petitioner:{},  // moduleName, sectionName, element (card or button) data-* attribute, 
-      // destination 'a section' || 'new-panel' , 
+      petitioner:{},  // Module: name, Section: name, Action: name Destination: name  as data-* attributes, 
+      // destination 'a section by name' || 'new-panel' , 
       // key word: if action begins with 'data' it is treated differently as a db request instead of a module load
       petitionHistory: [], // so howTo can offer context related instructions. The current petition will be dash-menu-howto-new-panel
       //purpose: null, //not needed? next item covers this

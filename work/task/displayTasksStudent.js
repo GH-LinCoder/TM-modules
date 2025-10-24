@@ -5,14 +5,25 @@ import { appState } from '../../state/appState.js';
 export async function render(panel, query = {}) {
   console.log('displayAllStudentTasks.js render() called');
 
- // const userId = appState.query.userId;
- //const userId='e9b82fd0-067e-43f1-b514-c2dbbfd10cba';//Jubbul
-const userId ='ca1e9188-b3d6-4752-a4ed-d0cbdd62c044';//Keki
-//const userId ='e44dfc8a-1ded-4c39-aa3b-957c15fa2cf7';//hwbdygg
-//const userId='a42c8756-a0ef-41e6-b073-bf20fbd8b7fb';//
-//const userId = '87a90183-88b6-450a-94d2-7838ffbbf61b';//girdenjeeko dmin dasboard 3 - completion
+const userId = appState.query.userId;  // noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
+//const userId = '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df';//profilia  step 3 1 task
+//const userId ='e44dfc8a-1ded-4c39-aa3b-957c15fa2cf7';//hwbdygg  step 3 1 task
+//const userId = '6004dc44-a451-417e-80d4-e9ac53265beb';//cannie step 3 1 task New Welcome
 
- const studentId = userId;
+//const userId='e9b82fd0-067e-43f1-b514-c2dbbfd10cba';//Jubbul  step 3  2 tasks
+//const userId ='ca1e9188-b3d6-4752-a4ed-d0cbdd62c044';//Keki  step 3 2 tasks
+//const userId='a42c8756-a0ef-41e6-b073-bf20fbd8b7fb';// Tetsi Memoria step 3 2 tasks
+
+//const userId = '87a90183-88b6-450a-94d2-7838ffbbf61b';//girdenjeeko dmin dasboard step 3 - completion
+
+//const userId = '51cf02e4-a69c-41f3-bcff-52d0208df529';//Adam Adminium step 3 2 tasks one task has step 4 other next=completed
+
+//const userId='1c8557ab-12a5-4199-81b2-12aa26a61ec5';// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
+
+//const userId = '6518fbf6-bf22-436b-8960-8af94edecb83';//john cartlin no assignments
+
+const studentId = userId;
+
 
   try {
     const assignments = await executeIfPermitted(userId, 'readStudentAssignments', {
@@ -39,17 +50,33 @@ const userId ='ca1e9188-b3d6-4752-a4ed-d0cbdd62c044';//Keki
       const currentStepName = assignment.step_name || 'Unnamed Step';
       const currentStepDescription = assignment.step_description || 'No description available';
 
-      const previousStep = currentStep >= 4
+      const previousStep = currentStep === 3   // new 14:09 Oct 22
+      ? {
+          step_name: 'New assignment',
+          step_description: 'All tasks start on step 3. The previous steps are reserved to mark the assignment as abandoned (step 1) or completed (step 2).'
+        }
+        : currentStep === 2
+    ? taskSteps.reduce((max, step) => step.step_order > max.step_order ? step : max, taskSteps[0])
+      : currentStep > 3
         ? taskSteps.find(s => s.step_order === currentStep - 1)
         : null;
 
-      const nextStep = (() => {
-        if (currentStep === 1) return taskSteps.find(s => s.step_order === 1);
-        if (currentStep === 2) return taskSteps.find(s => s.step_order === 2);
-        if (currentStep === numberOfSteps) return taskSteps.find(s => s.step_order === 2);
-        if (currentStep < numberOfSteps) return taskSteps.find(s => s.step_order === currentStep + 1);
-        return null;
-      })();
+        const nextStep = (() => {
+          if (currentStep === 1 || currentStep === 2) return null; // prevent duplicate abandoned/completed card
+          if (currentStep === numberOfSteps) return taskSteps.find(s => s.step_order === 2);
+          if (currentStep < numberOfSteps) return taskSteps.find(s => s.step_order === currentStep + 1);
+          return null;
+        })();
+
+        const showAbandonButton = currentStep !== 1 && currentStep !== 2;
+
+        const buttonGroup = showAbandonButton ? `
+          <button data-button="abandoned" class="flex-1 py-3 px-6 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
+            Abandoned
+          </button>` : '';
+        
+
+
 
       const card = document.createElement('div');
       card.classList.add('bg-white', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200');
@@ -62,12 +89,12 @@ const userId ='ca1e9188-b3d6-4752-a4ed-d0cbdd62c044';//Keki
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-          ${renderStepCard('Previous Step', previousStep, 'gray')}
+          ${renderStepCard('Previous Step', previousStep,studentName , true, 'gray')}
 
           ${renderStepCard('Current Step', {
             step_name: currentStepName,
             step_description: currentStepDescription
-          }, 'blue', studentName, true, currentStep)}
+          }, currentStep === 1 ? 'red' : currentStep === 2 ? 'green' : 'blue', studentName, false, currentStep)}
 
           ${renderStepCard(
             currentStep === 2 ? 'Completed' :
@@ -79,13 +106,16 @@ const userId ='ca1e9188-b3d6-4752-a4ed-d0cbdd62c044';//Keki
           )}
         </div>
 
-        <div class="mt-6 flex flex-col md:flex-row justify-center gap-4 border-t border-gray-200 pt-4">
-          <button data-button="abandoned" class="flex-1 py-3 px-6 bg-red-600 text-white rounded-lg hover:bg-red-700 transition">
-            Abandoned
-          </button>
-          <button data-button="message-manager" class="flex-1 py-3 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+  <div class="mt-6 flex flex-col md:flex-row justify-center gap-4 border-t border-gray-200 pt-4">
+    ${buttonGroup}
+    <button data-button="message-manager" class="flex-1 py-3 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+      Message Manager
+    </button>
+  </div>
+
+          <!--button data-button="message-manager" class="flex-1 py-3 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
             Message Manager
-          </button>
+          </button-->
         </div>
 
         <div class="mt-4 bg-green-100 rounded-lg p-4 border border-green-200">
@@ -117,7 +147,8 @@ function renderStepCard(title, step, color, studentName = null, showCheckmark = 
     const bgColor = {
       gray: 'bg-gray-50 border-gray-200',
       blue: 'bg-blue-50 border-blue-200',
-      green: 'bg-green-50 border-green-200'
+      green: 'bg-green-50 border-green-200',
+       red: 'bg-red-50 border-red-200'
     }[color] || 'bg-white border-gray-200';
   
     return `
@@ -131,7 +162,7 @@ function renderStepCard(title, step, color, studentName = null, showCheckmark = 
             <div class="absolute -top-4 -left-4 bg-white rounded-full p-2 text-xs font-medium text-gray-700 shadow border border-gray-200">
               Student: ${studentName}
             </div>` : ''}
-                  ${showCheckmark ? `
+                  ${showCheckmark && stepNumber !== 1 ? `
           <div class="absolute top-2 right-2 text-green-500">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2l4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
