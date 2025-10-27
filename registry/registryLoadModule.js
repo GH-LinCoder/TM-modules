@@ -6,54 +6,24 @@ console.log('Imported: registry.js');
 //15:00 sept 22  the .html are now legacy, probably never used. Change made in menuListeners.js
 
 export const registry = { // this registry is for loading a new page to the right of the dashboard. 
-
-// test modules
-'quick-stats-section.html': ()=> import('../dash/quickStatsSection.js'),
-'member-management-section.html': ()=> import('../dash/approfileManagementSection.js'),// from button has .html
-'member-management-section': ()=> import('../dash/approfileManagementSection.js'), //from card
-'assignment-management-section': ()=> import('../dash/assignmentManagementSection.js'),
-'task-management-section': ()=> import('../dash/taskManagementSection.js'),
-'author-management-section': ()=> import('../dash/authorManagementSection.js'),
-'student-management-section': ()=> import('../dash/studentManagementSection.js'),
-'manager-management-section': ()=> import('../dash/managerManagementSection.js'),
-'task&member-management-section': ()=> import('../dash/task&memberManagementSection.js'),
-//'-management-section': ()=> import('../work/dash/ManagementSection.js'),
-'survey-management-section': ()=> import('../dash/surveyManagementSection.js'),
-
-'create-survey-dialogue': () => import('../surveys/createSurveyQwen.js'),
-'display-survey-dialogue' : () => import('../surveys/displaySurveyQwen.js'),
-
-
 // data-action values for admin dashboard
-'assign-task-dialogue': () => import('../work/task/assignTask.js'),
-'create-task-dialogue': () => import('../work/task/createTask.js'),
-'edit-task-dialogue': () => import('../work/task/editTask.js'),
 
-'move-student-dialogue': () => import('../work/student/moveStudent.js'),
 
-"create-approfile-dialogue":()=> import('../work/approfiles/createApprofile.js'),
-'edit-approfile-dialogue':()=> import('../work/approfiles/editApprofile.js'),
-'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
-'display-related-approfiles-dialogue': () => import('../work/approfiles/displayRelations.js'),
-
-'money-management-section': () => import('../dash/moneyManagementSection.js'),
-
+//////////          MENU           /////////
+'adminDash':()=>import('../work/dash/adminDash.js'),
+'myDash':()=>import('../work/dash/myDash.js'),           
+'howTo': () => import('../work/how/howTo.js'),
 //'selector-dialogue' :()=> import('../work/universal/selectAnyRow.js'),
 'selector-dialogue' :()=> import('../work/select/selectRemember.js'),
-
-//'display-tasks' :()=> import('../work/task/displayTasks.js'), // changed 20:29 Oct 21
-'display-tasks' :()=> import('../work/task/displayTasksStudent.js'),
-
-'display-this-survey' :()=> import('../surveys/displaySurveyQwen.js'), //changed 19:30 Oct 22
-'display-relations' :()=> import('../work/approfiles/displayRelations.js'),
-
-'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),
-
-'display-students':()=> import('../work/task/displayTasksManager.js'),
+'plans' :() => import('../plans.js'),
+'login':()=>import('../auth/login.js'),
 
 
-'howTo': () => import('../work/how/howTo.js'),
 
+//////////          QUICK STATS   AdminDash           /////////                 
+'quick-stats-section.html': ()=> import('../dash/quickStatsSection.js'),
+
+//  connected to Quick-stats, display but no actual data
 'data': () => import('../work/data/dataTables.js'),
 'analytics': () => import('../work/data/analytics.js'),
 'managers-stats':() => import('../work/task/managers-stats.js'),
@@ -62,29 +32,106 @@ export const registry = { // this registry is for loading a new page to the righ
 'assignments-stats':() => import('../work/task/assignments-stats.js'),
 'humans-stats' :() => import('../work/approfiles/humans-stats.js'),
 'approfiles-stats':()=> import('../work/approfiles/appro-stats.js'),
-'plans' :() => import('../plans.js'),
+
 'tasks-stats' :() => import('../work/task/tasks-stats.js'),
 'steps-stats' :() => import('../work/task/steps-stats.js'),
 
+
+
+
+//////////          TASK MANAGEMENT    AdminDash       /////////                 
+'assignment-management-section': ()=> import('../dash/assignmentManagementSection.js'),
+'task-management-section': ()=> import('../dash/taskManagementSection.js'),
+'author-management-section': ()=> import('../dash/authorManagementSection.js'),
+'student-management-section': ()=> import('../dash/studentManagementSection.js'),
+'manager-management-section': ()=> import('../dash/managerManagementSection.js'),
+'task&member-management-section': ()=> import('../dash/task&memberManagementSection.js'),
+
+'assign-task-dialogue': () => import('../work/task/assignTask.js'),
+'assignTaskForm': () => import('../work/task/assignTask.js'), //legacy?
+
+'create-task-dialogue': () => import('../work/task/createTask.js'),
+'createTaskForm': () => import('../work/task/createTask.js'), //legacy?
+'edit-task-dialogue': () => import('../work/task/editTask.js'),
+'editTask': () => import('./editTask.js'), //legacy?
+//'-management-section': ()=> import('../work/dash/ManagementSection.js'),
+
+'display-students':()=> import('../work/task/displayTasksManager.js'),
+'move-student-dialogue': () => import('../work/student/moveStudent.js'),
+'moveStudent': () => import('../student/moveStudent.js'),//legacy?
+
+
+//'display-tasks' :()=> import('../work/task/displayTasks.js'), // changed 20:29 Oct 21
+'display-tasks' :()=> import('../work/task/displayTasksStudent.js'),
+
+
+//////////          APPRO MANAGEMENT    AdminDash       /////////                 
+'approfile-management-section': ()=> import('../dash/approfileManagementSection.js'),// from button has .html
+
+"create-approfile-dialogue":()=> import('../work/approfiles/createApprofile.js'),
+'createApprofile': () => import('./createApprofile.js'), // legacy?
+'edit-approfile-dialogue':()=> import('../work/approfiles/editApprofile.js'),
+'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
+'relateApprofile': () => import('../work/approfiles/relateApprofile.js'), //legacy?
+'display-related-approfiles-dialogue': () => import('../work/approfiles/displayRelations.js'),
+
+'member-management-section': ()=> import('../dash/approfileManagementSection.js'), //???
+
+
+//////////          RELATIONS & HIERARCHY MANAGEMENT      AdminDash     /////////     
+'display-relations' :()=> import('../work/approfiles/displayRelations.js'),
+
+
+
+//////////          KNOWLEDGE MANAGEMENT         AdminDash  /////////           //Confusing naming      
+'survey-management-section': ()=> import('../dash/surveyManagementSection.js'),
+
+'create-survey-dialogue': () => import('../surveys/createSurveyQwen.js'),
+'display-survey-dialogue' : () => import('../surveys/displaySurveyQwen.js'),
+'display-this-survey' :()=> import('../surveys/displaySurveyQwen.js'), //changed 19:30 Oct 22
+//'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),  
+'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
+
+
+//////////          SETTINGS            AdminDash      /////////                 
+'money-management-section': () => import('../dash/moneyManagementSection.js'),
+
+
+
+
+
+//////////          AUTO-BACKGROUND                  /////////
 'auto-assign-task' :() => import('../work/task/autoAssignTasks.js'),
 'auto-relate-appro': () => import('../work/approfiles/autoRelateAppro.js'),
 
-'adminDash':()=>import('../work/dash/adminDash.js'),
-'myDash':()=>import('../work/dash/myDash.js'),
 
-'login':()=>import('../auth/login.js'),
 
-// sort buttons?  statsCard? 
-// old html stub versions for admin dashboard
 
-'assignTaskForm.html': () => {
-  console.log('Loading assignTask.js');
-  return import('../work/task/assignTask.js');
-},
-'createTaskForm.html': () => {
-  console.log('Loading createTask.js');
-  return import('../work/task/createTask.js');
-},
+
+
+//possible further modules for admin dashboard
+
+'editStep': () => import('./editStep.js'),
+'editMember': () => import('./editMember.js'),
+'editAssignment': () => import('./editAssignment.js'),
+'editApprofile': () => import('./editApprofile.js'),
+'editHowto': () => import('./editHowto.js'),
+
+'createHowto': () => import('./createHowto.js'),
+'viewHowto': () => import('./viewHowto.js'),
+
+
+
+
+
+
+
+
+
+// old html stub versions for admin dashboard Probably can be deleted
+
+'assignTaskForm.html': () => import('../work/task/assignTask.js'),
+'createTaskForm.html': () => import('../work/task/createTask.js'),
 
 
 //'createTaskForm.html': () => import('../work/task/createTask.js'),
@@ -108,32 +155,12 @@ export const registry = { // this registry is for loading a new page to the righ
 
 'login.html':()=>import('../auth/login.js'),
 
-'assignTaskForm': () => import('../work/task/assignTask.js'),
-'createTaskForm': () => import('../work/task/createTask.js'),
-'moveStudent': () => import('../student/moveStudent.js'),
-'relateApprofile': () => import('../work/approfiles/relateApprofile.js'),
 
-//possible further modules for admin dashboard
-'editTask': () => import('./editTask.js'),
-'editStep': () => import('./editStep.js'),
-'editMember': () => import('./editMember.js'),
-'editAssignment': () => import('./editAssignment.js'),
-'editApprofile': () => import('./editApprofile.js'),
-'editHowto': () => import('./editHowto.js'),
-
-'createHowto': () => import('./createHowto.js'),
-'viewHowto': () => import('./viewHowto.js'),
-
-
-'createApprofile': () => import('./createApprofile.js'),
 //'editApprofile:() => import('./editApprofile.js'),
 
-
-
-
-
-
 };
+
+
 /* other admin dashboard data-* values
 data-value=
 

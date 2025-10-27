@@ -65,7 +65,7 @@ const metadata = registryWorkActions[functionName]?.metadata;
 
 
 
-  console.log(`[Security] Checking if user '${userId}' can perform a '${metadata.type}' operation on tables: ${metadata.tables.join(', ')}...`);
+//  console.log(`[Security] Checking if user '${userId}' can perform a '${metadata.type}' operation on tables: ${metadata.tables.join(', ')}...`);
 //this also will check permissions by column not just by table.
   
   // placeholder response:

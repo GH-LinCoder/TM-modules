@@ -19,7 +19,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <!-- DASHBOARD TITLE + DESCRIPTION-->   
    <div>
       <h1 class="text-2xl font-bold" data-dash-title="admin">Admin Dashboard</h1>
-      <p class="text-sm text-gray-500" data-dash-sub_title="admin">See data, manage members, tasks, relationships & knowledge.</p>
+      <p class="text-sm text-gray-500" data-dash-sub_title="admin">See data, manage members, tasks, relations & knowledge.</p>
       <p class="text-sm text-gray-500" data-dash-sub_title="admin">Click the menu <em>How?</em> button for help</p>
     </div>
     <!-- button class="text-sm text-blue-600 hover:underline" data-action="sign-out">Sign out</button -->
@@ -238,15 +238,15 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 </div>
 
 
-<!-- Relationship & hierarchy Management -->
+<!-- Relations & hierarchy Management -->
   <div class="bg-orange-100 rounded-lg shadow p-6" data-section='r&h-management' data-destination='r&h-management'>
-    <h2 class="text-lg font-semibold mb-2">Relationship & hierarchy Management</h2>
+    <h2 class="text-lg font-semibold mb-2">Relations & hierarchy Management</h2>
     <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
 
 <!-- Approfiles -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action='member-management-section'>
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action='approfile-management-section'>
       <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
       <h3 class="text-sm font-medium text-blue-700">Appros 🪪</h3>
       <p class="text-xs text-gray-500">View, edit, and manage any kind of approfiles: personal, task based or abstract, approfiles</p>

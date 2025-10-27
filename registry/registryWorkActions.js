@@ -469,6 +469,12 @@ createApprofileRelation: {
 
 
 ///////////////////////////////////// UPDATE   /////////////////////
+// edit task is sending:  14:00 Oct 25 2025
+// taskId: state.currentTaskId,
+//stepOrder: order, // This should be a number
+//stepName,
+//stepDescription,
+//stepUrl
 
 //TASKS
 updateTaskStep: {
@@ -480,7 +486,7 @@ updateTaskStep: {
   },
   handler: async (supabase, userId, payload) => {
     const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
-
+console.log('updtaeTaskStep:', stepDescription);
     const {data, error } = await supabase
       .from('task_steps')
       .update({
@@ -1087,12 +1093,14 @@ readApprofile_relations_view:{
 },
 
 //TASKS
+/*
 readTaskHeaders: {
   metadata: {
     tables: ['task_headers'],
     columns: ['id', 'name', 'sort_int', 'author_id', 'created_at', 'description', 'external_url'],
     type: 'SELECT',
-    requiredArgs: []
+    requiredArgs: [],
+    optionalArg:[taskName]
   },
   handler: async (supabase, userId, payload) => {
     console.log('readTaskHeaders()');
@@ -1105,6 +1113,37 @@ readTaskHeaders: {
     return data; // ✅ Return the array of task headers
   }
 },
+*/  // replaced by below 13:27 Oct 25
+
+readTaskHeaders: {
+  metadata: {
+    tables: ['task_headers'],
+    columns: ['id', 'name', 'sort_int', 'author_id', 'created_at', 'description', 'external_url'],
+    type: 'SELECT',
+    requiredArgs: [],
+    optionalArg: ['taskName'] // 
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('readTaskHeaders()', payload);
+
+    let query = supabase
+      .from('task_headers')
+      .select('id, name, sort_int, author_id, created_at, description, external_url');
+
+    if (payload?.taskName) {
+      query = query.eq('name', payload.taskName);
+    }
+
+    query = query.order('name');
+
+    const { data, error } = await query;
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+
 
 //TASKS
 readStep3Id:{ //find the id of step 3 of a given task
@@ -1140,7 +1179,7 @@ handler: async (supabase, userId, payload) => {
     },
     handler: async (supabase, userId, taskId) => {// assume receive {task_header_id:task_header_id}
       taskId = taskId.task_header_id;
-      console.log('taskId;',taskId);
+  //  console.log('readTaskWithSteps for taskId;',taskId);
       const { data, error } = await supabase
         .from('task_with_steps_view')
         .select('task_name, step_id, step_order, step_name, step_description')
@@ -1160,7 +1199,7 @@ handler: async (supabase, userId, payload) => {
       requiredArgs:['supabase', 'userId']
     }, 
     handler: async (supabase,userId)=>{
-    console.log('readAllSteps()');
+  //  console.log('readAllSteps()');
     const { data, error } = await supabase
       .from('task_steps')
       .select('id, task_header_id, name, step_order, created_at, description, external_url, author_id')
@@ -1186,7 +1225,7 @@ readAllStudent:{
     requiredArgs:[],
     },
 handler: async(supabase, userId) => {
-    console.log('readAllStudent');
+ //   console.log('readAllStudent');
     return await readThisColumnIdFromThatTable('task_assignments', 'student_id');
  }
 },
@@ -1426,7 +1465,7 @@ readSurveyHeaders: {
    // const { surveyId } = payload;
     const { data, error } = await supabase
       .from('survey_headers')
-      .select('name, description, author_id, created_at, last_updated_at, automations  ')
+      .select('id, name, description, author_id, created_at, last_updated_at, automations  ')
      // .eq('id',surveyId);
 
     if (error) throw error;
@@ -1435,7 +1474,7 @@ readSurveyHeaders: {
 },
 
 //SURVEYS
-readSurveyView:{    // VIEW   Read only
+readSurveyView:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 
   metadata: {
   tables: ['survey_view'],
   columns: ['survey_id','survey_name', 'survey_description', 'author_id', 'survey_created_at', 'question_id', 'question_text', 'question_description', 'question_number', 'answer_id', 'answer_text' , 'answer_description', 'answer_number',  'automation_id', 'automation_name', 'automation_number' ],

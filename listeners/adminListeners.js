@@ -29,7 +29,7 @@ function handleCardClick(action, moduleName) {
 // so that we know which module (page), which section of that module and the specific action that has been clicked
 //All of this is called the 'petition' and it will be stored in appState.query.petitioner{}
 function readPetition(e){
-  console.log('readPetition (', e, ')');  //
+//  console.log('readPetition (', e, ')');  //
 
   const actionEl = e.target.closest('[data-action]');
     if (!actionEl) {    console.log('fails !target (', actionEl, ')');  return;}
@@ -63,7 +63,7 @@ return petition;
  */
 export function adminListeners(container) {
   // Listen for clicks on the container
-   console.log('adminListeners add Listeners or respond');//this is the entire html div being passed !
+  // console.log('adminListeners add Listeners or respond');//this is the entire html div being passed !
  
    container.addEventListener('click', (e) => {
 

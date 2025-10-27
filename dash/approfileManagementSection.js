@@ -1,5 +1,5 @@
 //  ./dash/approfileManagementSection.js
-console.log('approfileManagementSection.js loaded');
+console.log('approfileManagementSection.js loaded 19:15Oct25');
 import { petitionBreadcrumbs } from'../ui/breadcrumb.js';
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
@@ -24,6 +24,12 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <h3 class="text-sm font-medium text-blue-700 mb-1">Search Approfiles</h3>
     <p class="text-xs text-blue-600">This searches the users. If you want to search all approfiles, try the other section. </p>
   </div>
+
+  <!-- VIEW RELATED APPROFILES -->
+    <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="display-related-approfiles-dialogue">
+      <h3 class="text-sm font-medium text-blue-700">Display related appros 👁️🖇️</h3>
+      <p class="text-xs text-gray-500">See how a chosen thing IS [some relationship] OF any other things. Display hierarchy & connections. </p>
+    </div>
 
       <!-- Create -->
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-approfile-dialogue">

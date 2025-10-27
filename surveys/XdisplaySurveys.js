@@ -18,7 +18,7 @@ class SurveyDisplay {  // This code doesn't know the format of the data that is 
         console.log('SurveyDisplay.render()', panel, query);
         
         // GET STUDENT ID FROM CLIPBOARD OR QUERY:
-        const studentId = query.student || this.getCurrentStudentId();
+        const studentId = query.student || this.getCurrentStudentId(); //that function isn't in tthis file
         
         try {
             // READ ASSIGNED SURVEYS FROM task_assignments:

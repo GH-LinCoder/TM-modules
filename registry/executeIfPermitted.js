@@ -21,7 +21,7 @@ const supabase = createSupabaseClient();
 
 async function execute(userId, action, payload) {
   const funcEntry = registryWorkActions[action];
-  console.log(`[Executor] Executing '${action}'...`);
+ // console.log(`[Executor] Executing '${action}'...`);
   let result;
 
   try {
@@ -56,7 +56,7 @@ async function execute(userId, action, payload) {
 
 
 export async function executeIfPermitted(userId, action, payload={}) {
-  console.log('executIfPermitted()action=',action);
+ // console.log('executIfPermitted()action=',action);
 
   const funcEntry = registryWorkActions[action];
 

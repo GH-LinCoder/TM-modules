@@ -423,7 +423,7 @@ async function handleTaskUpdate(e, panel) {
     try {
       // Check for duplicates only if name has changed
       if (!state.currentTask || state.currentTask.name !== name) {
-        const existing = await executeIfPermitted(state.user, 'readTaskByName', { taskName: name });
+        const existing = await executeIfPermitted(state.user, 'readTaskHeaders', { taskName: name });
         console.log('checkIfExists:', existing);
         
         if (existing && existing.length > 0) {
@@ -502,7 +502,7 @@ async function handleTaskUpdate(e, panel) {
       
       if (existingStep) {
         // ✅ Update existing step
-        console.log('Updating existing step:', order);
+        console.log('Updating existing step:', order, 'stepName:', stepName, 'stepDescription:', stepDescription);
         await executeIfPermitted(state.user, 'updateTaskStep', {
           taskId: state.currentTaskId,
           stepOrder: order, // This should be a number

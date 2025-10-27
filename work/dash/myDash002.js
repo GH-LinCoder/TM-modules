@@ -6,10 +6,20 @@ import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { icons } from '../../registry/iconList.js';
 
+console.log('myDash.js loaded');
 
-//  ./work/dash/adminDash.js
-console.log('myDash.js loaded version 10:22 Oct 27');
+const userId = appState.query.userId;
 
+export function render(panel, query = {}) {
+    console.log('myDash.render(', panel, query, ')');
+    
+    // Render the container structure
+    panel.innerHTML = getTemplateHTML();
+    
+    // Initialize the dashboard
+    const display = new MyDashboard();
+    display.init(panel, query);
+}
 
 function getTemplateHTML() {
     return `
@@ -321,25 +331,306 @@ function getTemplateHTML() {
     `;
 }
 
-export function render(panel, petition = {}) {
-    console.log('adminDash Render(', panel, petition, ')');
-   panel.innerHTML = getTemplateHTML(); // 
+// adminDash doesn't have any inline javascript. Why is myDash different?
 
-     //? query.petitioner : 'unknown';
- //   console.log('Petition:', petition);
-  //  panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;
-   // panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
-  }
-//petitioner
+class MyDashboard {
+    constructor() {
+        this.currentStudentId = null;
+    }
+    
+    init(panel, query = {}) {
+        console.log('MyDashboard.init()', panel, query);
+        
+        // Get current student ID
+        this.currentStudentId = this.getCurrentStudentId();
+        console.log('Current student ID:', this.currentStudentId);
+        
+        // Load profile data
+        this.loadStudentProfile(panel);
+        
+        // Load all sections via petition system
+        this.loadDashboardSections(panel);
+     //* test removed the update 22:35 oct 26  
+     //I think it is wrong to reload these modules. 
+     //The module should internally monitor onClipboardUpdate
+     
+        // Set up clipboard update listener
+        onClipboardUpdate(() => {
+            this.currentStudentId = this.getCurrentStudentId();
+            this.loadStudentProfile(panel);
+            this.loadDashboardSections(panel);
+            
+        });
+        
+        // Attach event listeners  // Should this happen here? Why?
+        this.attachListeners(panel);
+    }
+    
+    getCurrentStudentId() {
+        const clipboardStudents = getClipboardItems({ as: 'student', type: 'app-human' });
+        const clipboardOther = getClipboardItems({ as: 'other', type: 'app-human' });
+        console.log('getCurrentStudentId() Clipboard contents:', appState.clipboard);
+        if (clipboardStudents.length > 0) {
+            return clipboardStudents[0].entity.id;
+        }
+        if (clipboardOther.length > 0) {
+            return clipboardOther[0].entity.id;
+        }
+        
+        // Fallback to DEV student ID
+        console.log ('getCurrentStudentId() appstate.userId',appState.query.userId)
+        return  appState.query.userId;
+    }
+    
+    async loadStudentProfile(panel) {
+        try {
+            const studentProfile = await executeIfPermitted(
+                userId,
+                'readApprofileById',
+                { approfileId: this.currentStudentId }
+            );
+            
+            if (!studentProfile) return;
+            
+            // Update profile card
+            const nameEl = panel.querySelector('[data-user="name"]');
+            const emailEl = panel.querySelector('[data-user="email"]');
+            const initialsEl = panel.querySelector('[data-user="initials"]');
+            const studentIdEl = panel.querySelector('[data-user="student-id"]');
+            const studentJoinedEl = panel.querySelector('[data-user="join-date"]');
 
-// is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
-//it has to be called prior to passing it in the query{} object when we call this module
-//in adminListeners.js, when we call appState.setQuery(), we need to have added petitioner: petition
-//then we can access it here in the render() function
-//we can also add a default value of 'unknown' if it is not passed
-//so we can see where we are when we open the a new page
+            //Needs joined
+            //needs last login - not got sessions yet oct 23
+            
+            if (nameEl) nameEl.textContent = studentProfile.name || 'Unknown';
+            if (emailEl) emailEl.textContent = studentProfile.email || 'No email';
+            if (studentIdEl) studentIdEl.textContent = this.currentStudentId.substring(0, 8) + '...';
+            if (studentJoinedEl) studentJoinedEl.textContent = studentProfile.created_at.substring(0, 10) || 'error';
+            // Set initials
+            if (initialsEl && studentProfile.name) {
+                const initials = studentProfile.name
+                    .split(' ')
+                    .map(word => word[0])
+                    .join('')
+                    .substring(0, 2)
+                    .toUpperCase();
+                initialsEl.textContent = initials;
+            }
+            
+        } catch (error) {
+            console.error('Error loading student profile:', error);
+        }
 
-//the call here isn't from adminListeners it is from the menu button in the dashboard
-//so we need to also assign petitioner: {Module:'dashboard', Section:'menu', Action:'howTo'} when we call this module from the menu button
-//we can do this in the dashboardListeners.js file
-//we can also add a default value of 'unknown' if it is not passed
+          // Update stats after profile loads
+    await this.updateQuickStats(panel);
+    }
+    
+//async readStduentAssignments()
+
+
+
+    async updateQuickStats(panel) {
+        console.log('updateQuickStats()');
+        
+        try {
+            // Get all assignments for current student
+            const assignments = await executeIfPermitted(
+                userId, 
+                'readStudentAssignments', 
+                { student_id: this.currentStudentId }
+            );
+            
+            if (!assignments || assignments.length === 0) {
+                this.setStatsValues(panel, 0, 0, 0, 0, 0, 0);
+                return;
+            }
+            
+            // Count different assignment types
+            const activeTasks = assignments.filter(a => a.step_order >= 3).length;
+            const completedTasks = assignments.filter(a => a.step_order === 2).length;
+            const abandonedTasks = assignments.filter(a => a.step_order === 1).length;
+            
+            // Get surveys (when implemented)
+            
+            const surveys = await this.getAssignedSurveys();
+            const availableSurveys = surveys?.length || 0;
+        
+
+            // Get relations (when implemented)    // THIS CAN'T WORK. NO SUCH FUNCTION. displayRelations handles this as a loadable module.
+  //          const relations = await this.getStudentRelations();
+  //          const availableRelations = relations?.length || 0;
+            
+            // Update stats display
+            this.setStatsValues(panel, activeTasks, completedTasks, abandonedTasks, availableSurveys, 0);
+            
+        } catch (error) {
+            console.error('Error updating quick stats:', error);
+            this.setStatsValues(panel, 0, 0, 0, 0, 0, 0);
+        }
+    }
+    
+
+    // In displaySurveys.js:
+async getAssignedSurveys() {
+    try {
+        const studentId = this.getCurrentStudentId();
+        if (!studentId) return [];
+        
+        // Read from task_assignments where survey_header_id is not null
+        const { data, error } = await executeIfPermitted(
+            appState.query.userId,
+            'readStudentAssignments', 
+            { student_id: studentId }
+        );
+        
+        if (error) throw error;
+        return data || [];
+        
+    } catch (error) {
+        console.error('Error getting assigned surveys:', error);
+        return [];
+    }
+}
+
+// In displayTasks.js:  NO SUCH FUNCTION  - the module that knows how to do this is displayRelations and it loads. It isn't a callable function
+async getStudentRelations() {
+    try {
+        const studentId = this.getCurrentStudentId();
+        if (!studentId) return { is: [], of: [] };
+        
+        // Read relationships for this student
+        const { data, error } = await executeIfPermitted(
+            appState.query.userId,
+            'readApprofileRelationships',
+            { student_id: studentId }
+        );
+        
+        if (error) throw error;
+        return data || { is: [], of: [] };
+        
+    } catch (error) {
+        console.error('Error getting student relations:', error);
+        return { is: [], of: [] };
+    }
+}
+
+
+    setStatsValues(panel, active, completed, abandoned, surveys, relations, rewards) {
+        const stats = {
+            'active-tasks': active,
+            'completed-tasks': completed, 
+            'abandoned-tasks': abandoned,
+            'available-surveys': surveys,
+            'available-relations': relations,
+            'available-rewards': rewards
+        };
+        
+        Object.entries(stats).forEach(([statId, value]) => {
+            const el = panel.querySelector(`[data-value="${statId}"]`);
+            if (el) el.textContent = value;
+        });
+    }
+
+
+    loadDashboardSections(panel) {
+        console.log('loadDashboardSections()');
+        appState.query.id = this.currentStudentId
+        // Store student ID in clipboard for child modules
+/*        appState.clipboard = [{
+            entity: {
+                id: this.currentStudentId, // Why refering to this person as currentStudent???
+                name: 'Current Person',   // this should be the actual current student name shouldn't it?
+                type: 'app-human'  
+            },
+            as: 'student',  // WHY ???  This may be okay for listing tasks, but not so good for when treating as manager
+            meta: {
+                timestamp: Date.now(),
+                source: 'myDash'
+            }
+        }];
+  */  // test removed the write to clipboard. What will the result be?      
+        // Load each section via petition system
+/* test 22:55 oct 26
+        this.loadSection('surveys', panel); 
+        this.loadSection('tasks', panel);
+        this.loadSection('relations', panel);
+        this.loadSection('students', panel);
+*/
+//probably makes no difference:
+        setTimeout(() => this.loadSection('tasks', panel), 0);
+       // setTimeout(() => this.loadSection('surveys', panel), 100);
+       // setTimeout(() => this.loadSection('relations', panel), 200);
+       // setTimeout(() => this.loadSection('students', panel), 300);
+    }
+
+
+    
+    loadSection(sectionName, panel) {
+        console.log('loadSection()', sectionName);
+        
+        // Create petition for this section
+        const petition = {
+            Module: 'myDash',
+            Section: sectionName,
+            Action: `display-${sectionName}`,
+            Destination: `${sectionName}-section`,
+            student: this.currentStudentId
+        };
+        
+        // Signal state change to load module
+        appState.setPetitioner(petition);
+        console.log(`Loading ${sectionName} section via petition:`, petition);
+    }
+    
+    attachListeners(panel) {
+        console.log('attachListeners()');
+        
+        // Quick action buttons  // Whjy is this called 'quick actions?
+        panel.querySelectorAll('[data-action]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const action = e.target.closest('[data-action]')?.dataset.action;
+                if (action) {
+                    this.handleQuickAction(action, panel);
+                }
+            });
+        });
+        
+        // Profile edit button
+        panel.querySelector('[data-action="edit-profile"]')?.addEventListener('click', () => {
+            this.handleEditProfile(panel);
+        });
+    }
+    
+    handleQuickAction(action, panel) {
+        console.log('handleQuickAction()', action);
+        
+        // Create petition for quick action
+        const petition = {
+            Module: 'myDash',
+            Section: 'quick-acts',
+            Action: action,
+            Destination: 'dialog'
+        };
+        
+        // Signal state change to load module
+        appState.setPetitioner(petition);
+        console.log(`Loading quick action via petition:`, petition);
+    }
+    
+    handleEditProfile(panel) {
+        console.log('handleEditProfile()');
+        
+        // Create petition for profile editing
+        const petition = {
+            Module: 'myDash',
+            Section: 'profile',
+            Action: 'edit-profile',
+            Destination: 'dialog',
+            student: this.currentStudentId
+        };
+        
+        // Signal state change to load module
+        appState.setPetitioner(petition);
+        console.log(`Loading profile edit via petition:`, petition);
+    }
+}

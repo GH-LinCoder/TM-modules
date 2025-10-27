@@ -2,9 +2,44 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
+import { icons } from '../../registry/iconList.js'; 
+import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
+import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
+
+
+
+console.log('displayTasksManager.js loaded 12:45 Oct 26');
+
+
+let manager = resolveSubject();
+let managerId = manager.id;
+let managerName = manager.name;
+
+const userId = appState.query.userId;
+let panelEl = null;
+ 
+onClipboardUpdate(() => {
+  console.log('onClipboardUpdate');
+ let manager = resolveSubject();
+ managerId =manager.id;
+ managerName = manager.name;
+ 
+  render(panelEl);  // I made it a global to have the onclick outside the render function
+//  if (!isMyDash) populateApprofileSelect(panel); // optional
+});
+
+//if (!isMyDash) { // do stuff if this module has an admin user version
+//   populateApprofileSelect(panel);
+//   attachDropdownListener(panel);
+//   attachClickItemListener(panel); //allows click on the display to change subject of display
+//}
+
+
+
 export async function render(panel, query = {}) {
     const userId = appState.query.userId;
-    
+    panelEl = panel;
     // Fix HTML duplication:
     panel.innerHTML = `
         <style>
@@ -25,10 +60,10 @@ export async function render(panel, query = {}) {
         </style>
 
         <div class="bg-indigo-50 p-4 rounded-lg border border-indigo-200 mb-6">
-            <h3 class="text-xl font-bold mb-4 text-indigo-800">Tasks You Manage</h3>
-         
+            <h3 class="text-xl font-bold mb-4 text-indigo-800">Tasks You Manage </h3>
+        <div class="text-xl font-bold mb-4 text-indigo-800" data-manager='manager-name'> Manager:${managerName} id: ${managerId} version 20:20 Oct 27</div>
             <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                <h4 class="text-ml font-bold text-blue-500 mb-4">Moving the student</h4>
+                <h4 class="text-ml font-bold text-blue-500 mb-4">Moving the student -</h4>
                 <ul class="list-disc list-inside mt-2 text-sm text-blue-500">
                     <li>As a manager of a task, you can move the student to the next step</li>
                     <li>To move the student to the next step click on the arrow between the current => and next step</li>
@@ -50,7 +85,7 @@ export async function render(panel, query = {}) {
 
     try {
         const assignments = await executeIfPermitted(userId, 'readManagerAssignments', {
-            manager_id: userId
+            manager_id: managerId
         });
 
         if (!assignments || assignments.length === 0) {
@@ -69,6 +104,7 @@ export async function render(panel, query = {}) {
             const currentStep = taskSteps.find(s => s.step_order === currentStep_order);
             const numberOfSteps = taskSteps.length;
             const abandonStep = taskSteps.find(s => s.step_order === 1);
+            //const taskDescription = assignment.task_description;
 
             const previousStep = currentStep_order > 3
                 ? taskSteps.find(s => s.step_order === currentStep_order - 1)
@@ -95,6 +131,7 @@ export async function render(panel, query = {}) {
                     <div class="text-sm text-gray-500">Student: ${assignment.student_name}</div>
                 </div>
 
+    <div class="rounded-lg p-6 shadow-md border relative"> ${assignment.task_description}</div 
                 <div class="flex flex-row items-center justify-center gap-6">
                     ${renderStepCard(previousStep, 'gray', 'Previous Step')}
                     ${renderStepCard(currentStep, 'blue', 'Current Step', assignment.student_name)}
@@ -168,7 +205,7 @@ export async function render(panel, query = {}) {
 }
 
 function renderStepCard(theStep, color, title, studentName) {
-    console.log('renderCardStep', theStep, ' ', color, ' ', title, ' ', studentName);
+  //  console.log('renderCardStep', theStep, ' ', color, ' ', title, ' ', studentName);
 
     if (!theStep) return '';
 

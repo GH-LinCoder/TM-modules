@@ -20,7 +20,14 @@ clipboard:[],
 
 //const userId:'e9b82fd0-067e-43f1-b514-c2dbbfd10cba',//Jubbul  step 3  2 tasks
 //const 
+//default DEV values
 userId :'ca1e9188-b3d6-4752-a4ed-d0cbdd62c044',//Keki  step 3 2 tasks  Has students
+userName:'Keki Surveyor',
+
+defaultManagerId:'9066554d-1476-4655-9305-f997bff43cbb',
+defaultManagerName:'Lin Coder',
+
+
 //const userId:'a42c8756-a0ef-41e6-b073-bf20fbd8b7fb',// Tetsi Memoria step 3 2 tasks
 
 //const userId : '87a90183-88b6-450a-94d2-7838ffbbf61b',//girdenjeeko dmin dasboard step 3 - completion
@@ -31,8 +38,7 @@ userId :'ca1e9188-b3d6-4752-a4ed-d0cbdd62c044',//Keki  step 3 2 tasks  Has stude
 
 //const userId : '6518fbf6-bf22-436b-8960-8af94edecb83',//john cartlin no assignments
     //  userId:'1c8557ab-12a5-4199-81b2-12aa26a61ec5', // noomwild who has lots of task assignments BUT not a manager
-      defaultManagerId:'9066554d-1476-4655-9305-f997bff43cbb',
-      defaultMangerName:'Lin Coder',
+
       
       //stubName: null,//obsolescent - phasing-out
       //recordId: null, //not sure if needed
@@ -70,7 +76,7 @@ userId :'ca1e9188-b3d6-4752-a4ed-d0cbdd62c044',//Keki  step 3 2 tasks  Has stude
       if (petition.Action !== currentAction) {
         // Clone current petitioner and push to history
         this.query.petitionHistory.push({ ...this.query.petitioner });
-        console.log('setPetionioer() History:',this.query.petitionHistory); /////////////
+    //    console.log('setPetionioer() History:',this.query.petitionHistory); /////////////
         // Optional: limit history length
         if (this.query.petitionHistory.length > 10) {
           this.query.petitionHistory.shift();
@@ -91,9 +97,9 @@ let requestType ='QUERY_UPDATE'; // added 18:54 Sept 12 2025
 
 if (typeof petition.Action === 'string' && petition.Action.startsWith('data-')) {
   requestType = 'DATA_REQUEST';
-  console.log(`Recognized data request: ${petition.Action}`);
+//  console.log(`Recognized data request: ${petition.Action}`);
 } else {
-  console.log(`Recognized module request: ${petition.Module}`);
+//  console.log(`Module data- request is not known: ${petition.Action}`);
 }
 
 /*
@@ -126,7 +132,7 @@ replaced 21:57 sept 10 2025 to use petitionHistory[]*/
 
     // Methods to update state
     setQuery(updates) {
-      console.log('appState.setQuery updates:', updates);
+//      console.log('appState.setQuery updates:', updates);
       // Merge updates into the existing query object
       Object.assign(this.query, updates);
       // Dispatch event for subscribers
@@ -137,7 +143,7 @@ replaced 21:57 sept 10 2025 to use petitionHistory[]*/
     
     // Reset to initial state
     resetQuery() {
-      console.log('appState.resetQuery');
+ //     console.log('appState.resetQuery');
       this.query = {
         userId: this.query.userId, // preserve userId
         stubName: null,
@@ -162,7 +168,7 @@ replaced 21:57 sept 10 2025 to use petitionHistory[]*/
   
   // Export a function to initialize with user ID
   export function initializeState(userId) {
-console.log('initializeState with userId:', userId);
+// console.log('initializeState with userId:', userId);
     appState.query.userId = userId;
   }
 

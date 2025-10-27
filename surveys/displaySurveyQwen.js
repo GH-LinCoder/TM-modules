@@ -4,58 +4,96 @@ import { showToast } from '../ui/showToast.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import { icons } from '../registry/iconList.js'; 
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
-
+import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
 
 // Export function as required by the module loading system
-export function render(panel, query = {}) {
+export function render(panel, query = {}) { //is query relevant???
+    console.log('displaySureveyQwen.render query:',query);
     const display = new SurveyDisplay();
     display.render(panel, query);
     
 }
 
+let subject = null; // in other modules this is set to resolveSubject but that defaults to a person id and name
+let subjectId = null;
+let subjectName = null;
+console.log
 const userId = appState.query.userId;
+let panelEl = null;
 
+console.log('subjectName', subjectName);
+const assignments = await executeIfPermitted(userId, 'readStudentAssignments', {
+    student_id: subject.id,
+    type: 'survey'
+  });
+  // to be used to display surveys based on subjectId rather than clipboard AS 'survey'
+// not yet used 23:00 Oct 27
+/*
+if (assignments.length > 0) {
+  this.surveyId = assignments[0].survey_header_id;
+  this.render(panel); // don't know where to put this
+}
 
-
+*/
 
 class SurveyDisplay {
     constructor() {
+onClipboardUpdate(() => {
+  console.log('onClipboardUpdate  SURVEYS');
+ let subject = resolveSubject();
+ subjectId =subject.id;
+ subjectName = subject.name;
+ console.log('subjectName',subjectName);  //correct here 21:51 Oct 27
+  render(panelEl);  // I made it a global to have the onclick outside the render function
+//  if (!isMyDash) populateApprofileSelect(panel); // optional
 
+});
+
+//if (!isMyDash) { // do stuff if this module has an admin user version
+//   populateApprofileSelect(panel);
+//   attachDropdownListener(panel);
+//   attachClickItemListener(panel); //allows click on the display to change subject of display
+//}
 //        const clipboard = appState.query.clipboard || {};
 //const surveyId = clipboard.surveyId;
 
 
-//new 20:15 Oct 22  the clipboard replaces the following hard coded
 
-//        this.surveyId = 'efc9f836-504f-44e7-95be-cda9107f9fea';  //DEV ONLY  -'efc...' is 'Have your say, do your bit.choose involvement' use to test relate approfiles: user to 'activist' 'passive' etc
-//        this.surveyId= "df26336d-13cc-4208-b25c-35d271e6b90a";// "name":"TEST 006 - 1 task automation","description":"This has one attached automation of the default task. 
+
+//     this.surveyId = 'efc9f836-504f-44e7-95be-cda9107f9fea';  //DEV ONLY  -'efc...' is 'Have your say, do your bit.choose involvement' use to test relate approfiles: user to 'activist' 'passive' etc
+//this.surveyId= "df26336d-13cc-4208-b25c-35d271e6b90a";// "name":"TEST 006 - 1 task automation","description":"This has one attached automation of the default task. 
                         // Use to test survey. See if when clicking the answer the user is placed on step 3 of the default task ",
                        // "author_id":"06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df","created_at":"2025-10-13 18:08:37.598553+00","last_updated_at":null,"automations":null}'
   
-                       this.surveyData = null;
+        this.surveyData = null;
         this.currentQuestionIndex = 0;
-console.log('appState.query:',appState.query);
+//console.log('appState.query:',appState.query);
 
-        this.surveyId = this.getCurrentSurveyId(appState.query); //this param is pointless as the function can call this directly
-console.log('this.surveyId', this.surveyId);  //undefined  20:42 Oct 22
-        if (!this.surveyId) {
+ //       this.surveyId = this.getCurrentSurveyId(appState.query); //this param is pointless as the function can call this directly
+//console.log('this.surveyId', this.surveyId);  //undefined  20:42 Oct 22
+/*
+if (!this.surveyId) {
             showToast('No survey selected', 'error');
-            return;
-          }
+            return; }
+ */
+ 
+
 
          // Failed to load survey: invalid input syntax for type uuid: "undefined" //I assume undefined survey id
 // supabase.co/rest/v1/survey_view?select=*&survey_id=eq.undefined
     }
 
     async render(panel, query = {}) {
-        console.log('SurveyDisplay.render(', panel, query, ')');
-        
+        panelEl=panel;
+        if(subjectId) this.surveyId = subjectId ;
+        console.log('SurveyDisplay.render(', panel,'name:', subjectName,'id:', subjectId );
+        // just fails if no id.  No way for it to display "No survey id selected"
         if (!this.surveyId) {
             showToast('Survey ID is required', 'error');
             return;
         }
         
-
+console.log('surveyId',this.surveyId);
         try {
             // Load sorted survey data
             const surveyData = await executeIfPermitted(userId, 'readSurveyView', { survey_id: this.surveyId });
@@ -94,8 +132,9 @@ console.log('this.surveyId', this.surveyId);  //undefined  20:42 Oct 22
           
     }
 
-    getCurrentSurveyId(query = {}) {
-        if (query.clipboard.surveyId) return query.clipboard.surveyId;
+    getCurrentSurveyId(query = {}) {  //trash. no such thing as .surveyId  clipboard has entries in the form: value AS type
+        // so need to look for any entry listed AS 'survey' inside clipboard
+        //if (query.clipboard.surveyId) return query.clipboard.surveyId;
       
         const clipboardSurveys = getClipboardItems({ as: 'survey' });
         if (clipboardSurveys.length > 0) {

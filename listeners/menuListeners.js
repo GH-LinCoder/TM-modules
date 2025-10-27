@@ -3,10 +3,10 @@
 import { appState } from '../state/appState.js'; // modules interact through appState
 
 export function menuListeners() {//unlike admiListeners navListeners have not been loading petition by reading html
-    console.log('Setting up navigation listeners');
+//    console.log('Setting up navigation listeners');
 
     document.addEventListener('click', async (e) => {
-    console.log('Navigation click event:', e.target);
+//    console.log('Navigation click event:', e.target);
     
     const btn = e.target.closest('.nav-btn');
     if (!btn) return;

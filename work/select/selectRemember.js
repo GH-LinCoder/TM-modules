@@ -80,7 +80,7 @@ class DevDataSelector {
   getTemplateHTML() {
     return `
       <div class="dev-selector bg-white rounded-lg shadow p-6">
-       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 21:55 12 Oct 📝</h3>
+       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 22:00 10 Oct 📝</h3>
         <!-- INSTRUCTIONS -->
         <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
           <p class="text-sm text-blue-800">
@@ -111,7 +111,7 @@ class DevDataSelector {
             <div class="border-t my-2"></div>
             <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="surveys"> 📜 Surveys</label>
             <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="tasks"> 🔧 Tasks for assignment</label>
+            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="tasks"> 🔧 Tasks top be assignment</label>
  <div class="border-t my-2"></div>
             <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="assignments"> 👨‍🔧 Existing Assignments of tasks</label>
           </div>
@@ -248,27 +248,27 @@ console.log('ViewChange:');
     }
   }
 
-  sortAssignmentsByStudent(assignments) {
-    if (!assignments || assignments.length === 0) return [];
-    
-    // Sort by student name, then by task name
-    return [...assignments].sort((a, b) => {
-      const studentA = a.student_name || '';
-      const studentB = b.student_name || '';
-      const taskA = a.task_name || '';
-      const taskB = b.task_name || '';
-      
-      // First sort by student name
-      if (studentA.toLowerCase() !== studentB.toLowerCase()) {
-        return studentA.toLowerCase().localeCompare(studentB.toLowerCase());
-      }
-      
-      // Then sort by task name
-      return taskA.toLowerCase().localeCompare(taskB.toLowerCase());
-    });
-  }
 
-  populateList(view) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    populateList(view) {
     // Set container background based on view
     const bgColor = {
       'app-human': 'bg-blue-50',
@@ -298,13 +298,13 @@ console.log('ViewChange:');
         items = this.loadedData.surveys || [];
       break;
       case 'assignments':
-        // Sort assignments by student name
-        items = this.loadedData.assignments || [];
-        if (items.length > 0) {
-          items = this.sortAssignmentsByStudent(items);
-        }
-        break;
+        items = this.loadedData.assignments || []; // PROBLEM  this view has task_name not name.
+      break;
 
+
+      
+      
+      
       default:
         this.listContainer.innerHTML = '<div class="text-gray-500 text-center py-4">Select a type above</div>';
         return;
@@ -329,83 +329,85 @@ console.log('ViewChange:');
       this.listContainer.innerHTML += '<div class="text-gray-500 text-center py-4">No items found</div>';
       return;
     }
-    if (view === 'assignments') {
-        const groupedByStudent = {};
-        
-        items.forEach(item => {
-          const studentName = item.student_name || 'Unknown Student';
-          if (!groupedByStudent[studentName]) {
-            groupedByStudent[studentName] = [];
-          }
-          groupedByStudent[studentName].push(item);
-        });
-        
-        // Display grouped by student
-        Object.keys(groupedByStudent).forEach(studentName => {
-          // Add student header
-          const studentHeader = document.createElement('div');
-          studentHeader.className = 'font-bold bg-gray-100 p-2 mt-2 mb-1 rounded';
-          studentHeader.textContent = `🧑‍🎓 ${studentName}`;
-          this.listContainer.appendChild(studentHeader);
-          
-          // Add student's assignments
-          groupedByStudent[studentName].forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'p-2 pl-6 hover:bg-gray-200 cursor-pointer border-b border-gray-200 last:border-b-0';
-            div.textContent = `🔧 ${item.task_name || '[Unnamed Task]'}`;
-            div.dataset.json = JSON.stringify(item);
-            div.addEventListener('click', () => this.onItemClick(item));
-            this.listContainer.appendChild(div);
-          });
-        });
-      } else {
-        items.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'p-2 hover:bg-gray-200 cursor-pointer border-b border-gray-200 last:border-b-0';
-            div.textContent = item.name || item.task_name || `[${item.id}]`;
-            div.dataset.json = JSON.stringify(item);
-            div.addEventListener('click', () => this.onItemClick(item));
-            this.listContainer.appendChild(div);
-          });
-        }
-    }
 
-    onItemClick(item) {
-        this.selectedItem = item;
-        console.log('onItemClick() this.currentView ===', this.currentView);
-      
-        if (this.currentView === 'tasks') {
-          this.selectedAs = 'task';
-          const taskRadio = this.panel.querySelector('input[name="as"][value="task"]');
-          if (taskRadio) {
-            taskRadio.checked = true;
-          } 
-        } else if (this.currentView.startsWith('app-')) {
-          this.selectedAs = 'other';
-          const taskOther = this.panel.querySelector('input[name="as"][value="other"]');
-          if (taskOther) {
-            taskOther.checked = true;
-          } 
-        } else if (this.currentView === 'surveys') {
-          this.selectedAs = 'survey';
-          const surveyRadio = this.panel.querySelector('input[name="as"][value="survey"]');
-          if (surveyRadio) {
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+    
+    items.forEach(item => {
+      const div = document.createElement('div');
+      div.className = 'p-2 hover:bg-gray-200 cursor-pointer border-b border-gray-200 last:border-b-0';
+      div.textContent = item.name || item.task_name; //assignment view has differentiated names, This isn't going to work 
+      div.dataset.json = JSON.stringify(item);
+      div.addEventListener('click', () => this.onItemClick(item));
+      this.listContainer.appendChild(div);
+    });
+  }
+
+
+  onItemClick(item) {  // set the 'AS' value to defaults that match the type of thing being selected, but user can over ride.
+    this.selectedItem = item;
+    console.log('onItemClick() this.currentView ===',this.currentView); // recognises assignments view 
+
+    if (this.currentView === 'tasks') {
+      this.selectedAs = 'task';
+      // Check the radio button
+      const taskRadio = this.panel.querySelector('input[name="as"][value="task"]');
+      if (taskRadio) {
+          taskRadio.checked = true;
+      } 
+    }else if (this.currentView.startsWith('app-')) {
+      this.selectedAs = 'other';
+      // Check the radio button
+      const taskOther = this.panel.querySelector('input[name="as"][value="other"]');
+      if (taskOther) {
+          taskOther.checked = true;
+      } 
+    }else if (this.currentView === 'surveys') {
+        this.selectedAs = 'survey';
+        // Check the radio button
+        const surveyRadio = this.panel.querySelector('input[name="as"][value="survey"]');
+        if (surveyRadio) {
             surveyRadio.checked = true;
-          }
-        } else if (this.currentView === 'assignments') {
+        }
+      } else if (this.currentView === 'assignments') { // no log 
           console.log('assignment view recognised');
           this.selectedAs = 'assignment';
           // Check the radio button
           const assignmentRadio = this.panel.querySelector('input[name="as"][value="assignment"]');
-          console.log('assignmentRadio:', assignmentRadio);
+         console.log('assignmentRadio:',assignmentRadio); // but not recognised here
           if (assignmentRadio) {
-            assignmentRadio.checked = true;
+              assignmentRadio.checked = true;
           }
-        }
-        
-        this.updateConfirmButton();
-      }
-      
+      } else console.log('currenView', this.currentView);
+
+      this.updateConfirmButton();  
+}
 
 
   onAsChange(e) {
@@ -432,19 +434,19 @@ console.log('ViewChange:');
 
   confirmSelection() {
     if (!this.selectedItem || !this.currentView) return;
-  
-    // Handle different field names for assignments
-    let itemName = '';
-    if (this.currentView === 'assignments') {
-      itemName = `${this.selectedItem.task_name || this.selectedItem.name} - ${this.selectedItem.student_name || 'Unknown Student'}`;
-    } else {
-      itemName = this.selectedItem.name || this.selectedItem.task_name || `[${this.selectedItem.id}]`;
-    }
-  
-    const clipboardItem = {
+
+
+
+
+
+
+
+
+
+        const clipboardItem = {
       entity: {
         id: this.selectedItem.id,
-        name: itemName, // Use the properly formatted name
+        name: this.selectedItem.name,
         type: this.currentView,
         item: this.selectedItem
       },
@@ -452,23 +454,23 @@ console.log('ViewChange:');
       meta: {
         timestamp: Date.now(),
         source: 'dev-data-selector',
-        id: `clipboard-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`  //why does this have an id? What purpose?
+        id: `clipboard-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       }
     };
-  
+
     // Store
     if (!appState.clipboard) appState.clipboard = [];
     appState.clipboard.push(clipboardItem);
-  
+
     // Refresh feedback display
     this.refreshFeedbackDisplay();
-  
+
     // Notify
     if (document) {
       document.dispatchEvent(new CustomEvent('clipboard:item-added', { detail: clipboardItem }));
     }
-  
-    showToast(`Stored: ${itemName} as ${this.selectedAs}`, 'success');
+
+    showToast(`Stored: ${clipboardItem.entity.name} as ${clipboardItem.as}`, 'success');
   }
 
   refreshFeedbackDisplay() {
@@ -505,14 +507,11 @@ console.log('ViewChange:');
       });
     });
 //16:38 sept 23rd addition:
-// moved later 21:50 Oct 12
-// After updating the display
 
+// After updating the display
 document.dispatchEvent(new CustomEvent('clipboard:updated', {
   detail: { clipboard: appState.clipboard }
 }));
-
-
   }
 
   removeClipboardItem(index) {
@@ -520,10 +519,6 @@ document.dispatchEvent(new CustomEvent('clipboard:updated', {
 
     const removedItem = appState.clipboard.splice(index, 1)[0];
     this.refreshFeedbackDisplay();
-    //moved down from above 21:50 Oct 12
-   // document.dispatchEvent(new CustomEvent('clipboard:updated', {
-   //   detail: { clipboard: appState.clipboard }
-   // }));
     showToast(`Removed: ${removedItem.entity.name}`, 'info');
   }
 }

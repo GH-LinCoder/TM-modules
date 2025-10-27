@@ -39,10 +39,12 @@ import { registry } from './registry/registryLoadModule.js'; // stores page (mod
 
 // === Data from database
 import { loadAdminDashWithData } from './dash/loadAdminDashWithData.js';
+import { loadMyDashWithData } from './dash/loadMyDashWithData.js';
+
 
 // === UTILITY: Get main display area ===
 function getDisplayArea() {
-console.log('GetDisplayArea()');
+//console.log('GetDisplayArea()');
 
 const destination=appState.query.petitioner.Destination;
 console.log('destination:',destination);
@@ -180,15 +182,15 @@ menuListeners();//add listener to menu buttons, and respond to their being click
 
 // === LOAD PAGE WITH DATA ===
 async function loadPageWithData(pageName) { // pageName without .html
-  console.log('LoadPageWithData(', pageName,')');
+ // console.log('LoadPageWithData(', pageName,')');
   switch(pageName) {
       case 'adminDash':
           await loadAdminDashWithData();
           break;
       // Add cases for other pages as needed
       case 'myDash':
-          // await loadMyDashWithData(); // Implement this function similarly
-          console.warn('loadMyDashWithData() not implemented yet');
+           await loadMyDashWithData(); // Implement this function similarly
+         // console.warn('loadMyDashWithData() not implemented yet');
           break;
       default:
           console.warn(`No data loader defined for ${pageName}`);
@@ -218,7 +220,7 @@ try {
 selectedModule.render(panel,query); // use the function that was obtained from the registry
 } catch (error) {
   console.error('Failed to load module:', error);
-  console.log('Available exports:', Object.keys(selectedModule));
+//  console.log('Available exports:', Object.keys(selectedModule));
 }
 
 }else  try {
@@ -245,7 +247,7 @@ selectedModule.render(panel,query); // use the function that was obtained from t
 function renderSection(query, selectedModule,displayArea){// new 10:41 sept 10 2025
   
   displayArea = document.querySelector('[data-section="t&m-management"]');
-  console.log('renderSection(',displayArea,')');
+ // console.log('renderSection(',displayArea,')');
   
   displayArea.innerHTML+='TO BE DELETED';
   /*
@@ -282,14 +284,14 @@ replaced with below */
 async function backgroundProcess() {
     
     const action = appState.query.petitioner.Action;
-    console.log('background process', action);
+ //   console.log('background process', action);
     let registryEntry = await registry[action];
     if (!registryEntry) { 
-        console.log('Registry unknown', action, ' not here');
+ //       console.log('Registry unknown', action, ' not here');
         return false;
     }
     
-    console.log('Registry recognises', action);
+//    console.log('Registry recognises', action);
     const selectedModule = await registryEntry();
     
     try {

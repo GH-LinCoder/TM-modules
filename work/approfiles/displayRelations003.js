@@ -4,8 +4,6 @@ import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
-import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
-
 console.log('displayRelations.js loaded 12:45 Oct 26');
 
 const userId = appState.query.userId;
@@ -16,8 +14,7 @@ let currentSelection=defaultId;
 
 
 function attachDropdownListener(panel) {
-    const select = panel.querySelector('[data-role="subject-dropdown"]'); //change 16:17 Oct 27
-
+  const select = panel.querySelector('#approfileSelect');
   if (!select) return;
 
   // Check if listener already attached
@@ -32,9 +29,9 @@ function attachDropdownListener(panel) {
     const approfileId = e.target.value;
     const selectedName = e.target.options[e.target.selectedIndex].textContent;
     if (approfileId) { console.log('approfileId:',approfileId); 
-      await loadAndRenderRelationships(panel, approfileId, selectedName); 
+      await loadAndRenderRelationships(panel, approfileId, selectedName); //what is 'dropdown - the function doesn't accept a 4th arg
     } else {
-      renderRelationships(panel, null, null); 
+      renderRelationships(panel, null, null); //what was 'dropdown - the function doesn't accept a 4th arg Deleted 15:30 Oct 27
     }
   });
 
@@ -43,22 +40,7 @@ function attachDropdownListener(panel) {
   console.log('Dropdown listener attached');
 }
 
-function attachClickItemListener(panel) {
-  // ATTACH CLICK LISTENER TO PANEL (persists through re-renders)
-  panel.addEventListener('click', async (e) => {
-    const flowBox = e.target.closest('.flow-box-subject, .flow-box-other');
-    if (flowBox && flowBox.dataset.subjectId) {
-      const subjectId = flowBox.dataset.subjectId;
-      const subjectName = flowBox.textContent.replace(' is', '').replace('of ', '').trim();
-     // console.log('Exploring subject:', subjectId, subjectName);
-      console.log('FlowBox Clicked - calling laodAndRender');
 
-      await loadAndRenderRelationships(panel, subjectId, subjectName);
-    }
-  });
-
-
-}
 
 export function render(panel, query = {}) {
   console.log('displayRelations.render()', panel, query);
@@ -105,8 +87,7 @@ function getTemplateHTML() {
           <label class="block text-sm font-medium text-gray-700 mb-2">loadAndRenderRelationships
             Select Approfile:
           </label>
-<select data-role="subject-dropdown" class="w-full p-2 border rounded border-gray-300 focus:ring-2 focus:ring-blue-500">
-
+          <select id="approfileSelect" class="w-full p-2 border rounded border-gray-300 focus:ring-2 focus:ring-blue-500">
             <option value="">Select an approfile from clipboard...</option>
           </select>
         </div>
@@ -133,6 +114,57 @@ function getTemplateHTML() {
 
 
 
+/*
+async function init(panel, query) {
+  console.log('displayRelations.init()');
+//set defualt values if nothing else used
+
+
+  //////////  myDASH change behaviour  // data-module='myDash' is in the myDash HTML
+const moduleContext = panel.closest('[data-module]')?.dataset.module || 'standalone';// standalone?? what is that? - never used
+const isMyDash = moduleContext === 'myDash';
+console.log('moduleContext:', moduleContext);
+if (isMyDash) {
+    const instructions = panel.querySelector('[data-action="selector-dialogue"]');
+    const dropdownContainer = panel.querySelector('#approfileSelect')?.closest('div');
+    if (instructions) instructions.style.display = 'none';
+    if (dropdownContainer) dropdownContainer.style.display = 'none';
+  }
+  else console.log('not myDash');
+  // Initialize with empty state
+  renderRelationships(panel, null, null);
+  
+  // Load approfiles from clipboard
+  const approfileLength= populateApprofileSelect(panel);
+if (isMyDash && approfileLength<1){loadAndRenderRelationships(panel,defaultId,defaultName);}
+  
+  // Listen for clipboard updates
+  onClipboardUpdate(() => {
+    populateApprofileSelect(panel);
+  });
+  
+  // ATTACH CLICK LISTENER TO PANEL (persists through re-renders)
+  panel.addEventListener('click', async (e) => {
+    const flowBox = e.target.closest('.flow-box-subject, .flow-box-other');
+    if (flowBox && flowBox.dataset.subjectId) {
+      const subjectId = flowBox.dataset.subjectId;
+      const subjectName = flowBox.textContent.replace(' is', '').replace('of ', '').trim();
+     // console.log('Exploring subject:', subjectId, subjectName);
+      console.log('FlowBox Clicked - calling laodAndRender');
+
+      await loadAndRenderRelationships(panel, subjectId, subjectName);
+    }
+  });
+//  if (isMyDash))
+  panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
+ // Handle approfile selection from dropdown 
+ attachDropdownListener(panel);
+
+ informationFeedback = panel.querySelector('#informationFeedback');
+
+}
+*/
+
 function showInformation(approName) {
   informationFeedback.innerHTML += `<div class="my-2 p-3 bg-white border rounded shadow-sm flex items-center justify-between">
         <div>
@@ -142,8 +174,8 @@ function showInformation(approName) {
       </div>
     `
   }
- 
-/*
+
+
   // new functions to find data - these should be in external file to be imported by each module
   function detectContext(panel) {
     let context = panel.closest('[data-module]')?.dataset.module === 'myDash'
@@ -172,7 +204,7 @@ function showInformation(approName) {
   
 
   function applyPresentationRules(panel, isMyDash) {
-    const dropdownContainer = panel.querySelector('[data-role="subject-dropdown"]')?.closest('div');
+    const dropdownContainer = panel.querySelector('#approfileSelect')?.closest('div');
     const instructions = panel.querySelector('[data-action="selector-dialogue"]');
     if (isMyDash) {
       if (dropdownContainer) dropdownContainer.style.display = 'none';
@@ -182,9 +214,7 @@ function showInformation(approName) {
     //  if (instructions) instructions.style.display = '';
     //}
     
-  } */
-//moved the above to own file 16:47 Oct 27
-
+  }
 
   function init(panel) {
     const isMyDash = detectContext(panel);
@@ -203,7 +233,6 @@ function showInformation(approName) {
     if (!isMyDash) {
       populateApprofileSelect(panel);
       attachDropdownListener(panel);
-      attachClickItemListener(panel); //allows click on the display to change subject of display
     }
   }
     
@@ -216,7 +245,7 @@ async function populateApprofileSelect(panel) {
   
 console.log('length:',approfiles.length);
 
-  const select = panel.querySelector('[data-role="subject-dropdown"]');
+  const select = panel.querySelector('#approfileSelect');
   if (!select) {currentSelection = defaultId } // previously return    changed 12:00 Oct 27
 else  currentSelection = select.value;
 

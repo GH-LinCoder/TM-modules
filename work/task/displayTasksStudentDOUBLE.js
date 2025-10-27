@@ -5,51 +5,71 @@ import { appState } from '../../state/appState.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import { icons } from '../../registry/iconList.js'; 
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
-import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
+console.log('displayTasksStudent.js loaded 20:05 Oct 26');
 
+let initDone=false;
 
-console.log('displayTasksStudent.js loaded 19:54 Oct 27');
+function init(panel){
+  // Listen for clipboard updates
+  onClipboardUpdate(() => {
+    render(panel);
+    return true
+  });
 
-let student = resolveSubject();
-let studentId = student.id;
-const userId = appState.query.userId;
-let panelEl = null;
- 
-onClipboardUpdate(() => {
-//  console.log('onClipboardUpdate');
- let student = resolveSubject();
- studentId =student.id;
- 
-  render(panelEl);  // I made it a global to have the onclick outside the render function
-//  if (!isMyDash) populateApprofileSelect(panel); // optional
-});
+  //////////  myDASH change behaviour  // data-module='myDash' is in the myDash HTML
+//  const moduleContext = panel.closest('[data-module]')?.dataset.module || 'standalone';// standalone?? what is that? - never used
+//  const isMyDash = moduleContext === 'myDash';
+//  if (isMyDash) {
+//      const instructions = panel.querySelector('[data-action="selector-dialogue"]');
+//      const dropdownContainer = panel.querySelector('#approfileSelect')?.closest('div');
+//      if (instructions) instructions.style.display = 'none';
+//      if (dropdownContainer) dropdownContainer.style.display = 'none';}
+  
 
-//if (!isMyDash) { // do stuff if this module has an admin user version
-//   populateApprofileSelect(panel);
-//   attachDropdownListener(panel);
-//   attachClickItemListener(panel); //allows click on the display to change subject of display
-//}
-
-
-
+}
 export async function render(panel, query = {}) {
   console.log('displayAllStudentTasks.js render() called');
-panelEl=panel;
+
+const userId = appState.query.userId;  // noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
+//const userId = '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df';//profilia  step 3 1 task
+//const userId ='e44dfc8a-1ded-4c39-aa3b-957c15fa2cf7';//hwbdygg  step 3 1 task
+//const userId = '6004dc44-a451-417e-80d4-e9ac53265beb';//cannie step 3 1 task New Welcome
+
+//const userId='e9b82fd0-067e-43f1-b514-c2dbbfd10cba';//Jubbul  step 3  2 tasks
+//const userId ='ca1e9188-b3d6-4752-a4ed-d0cbdd62c044';//Keki  step 3 2 tasks
+//const userId='a42c8756-a0ef-41e6-b073-bf20fbd8b7fb';// Tetsi Memoria step 3 2 tasks
+
+//const userId = '87a90183-88b6-450a-94d2-7838ffbbf61b';//girdenjeeko dmin dasboard step 3 - completion
+
+//const userId = '51cf02e4-a69c-41f3-bcff-52d0208df529';//Adam Adminium step 3 2 tasks one task has step 4 other next=completed
+
+//const userId='1c8557ab-12a5-4199-81b2-12aa26a61ec5';// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
+
+//const userId = '6518fbf6-bf22-436b-8960-8af94edecb83';//john cartlin no assignments
 
 
+const allItems = getClipboardItems();
+const match = allItems.find(i => i.as === 'student' || i.as === 'other');
+const studentId = match?.entity?.id || userId;
+console.log('Resolved studentId:', studentId);
+console.log('Clipboard contents:', allItems);
 
-try {
+
+if(!initDone) initDone = init(panel); //setup the on clipboard change
+
+
+  try {
     const assignments = await executeIfPermitted(userId, 'readStudentAssignments', {
       student_id: studentId,
       type: 'task'
     });
-//console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
+console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok
     if (!assignments || assignments.length === 0) {
       panel.innerHTML = `<div class="text-gray-500 text-center py-8">No task assignments found.</div>`;
       return;
-    } // does not display
-//console.log('panel:',panel); // logs a div "page-panel" 22:39 oct 27
-    panel.innerHTML = ''; // Clear panel 
+    } // does not dsiplay
+console.log('panel:',panel); // logs a div "page-panel"
+    panel.innerHTML = ''; // Clear panel - word not visible
 
     for (const assignment of assignments) {
       const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', { // this happens
@@ -96,7 +116,7 @@ try {
 
       const card = document.createElement('div');
       card.classList.add('bg-white', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200');
-     console.log('checking consoleflow', card);  // 
+      console.log('checking flow', card);  // 
       //confirmed that program flows to here on first save & card =  <div class="bg-white rounded-lg shad… border border-gray-200">      
       
       card.innerHTML = `
