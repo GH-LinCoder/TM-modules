@@ -26,15 +26,7 @@ let subjectName = subject.name;
 let subjectType = subject.type;
 
 const userId = appState.query.userId;
-
 let panelEl = null;
-
-let  surveyIds =[];
-
-let surveys=[];
-
-
-
 
 console.log('subject:', subjectName, subjectId, subjectType);
 
@@ -45,19 +37,16 @@ console.log('subject:', subjectName, subjectId, subjectType);
 
 // Logic needed:
 // 1) getResolved
+// 2) test isMyDash =>  read assignments to see if there are any surveys => display surveys or issue message
+       //if isMyDash and the resolved subject is a survey or other it results in the above. Only displays assigned surveys
 
-// isMyDash = detectContext() ?
-
-// 2) test isMyDash =>  check if 'app-human' read assignments to see if there are any surveys => display surveys or issue message
-       //ignore other types 
-
-//ELSE  (is not myDash)  A) if type=='survey' look in the surveys table for a survey to display. else if 'app-human' B) look in assignments and get survey id
+//ELSE  (is not myDash) => getResolved A) look in the surveys table for a survey to display. If fails try B) look in assignments and get survey id
 
 //Therefore need these functions:
 
 // function findAssignedSurvey() {return array of survey ids}
 
-// function findThisSurvey(arrayOfSurveyIds){return array of all the survey details}
+// function findTheseSurveys(arrayOfSurveyIds){return array of all the survey details}
 
 // The above function may also work for a single id
 
@@ -92,14 +81,11 @@ onClipboardUpdate(() => {
  let subject = resolveSubject();
  subjectId =subject.id;
  subjectName = subject.name;
- subjectType=subject.type;
- surveys=[];
- surveyIds=[]
  console.log('SURVEYS subjectName',subjectName);  //correct here 21:51 Oct 27
-  this.render(panelEl);  // I made it a global to have the onclick outside the render function
+  render(panelEl);  // I made it a global to have the onclick outside the render function
+//  if (!isMyDash) populateApprofileSelect(panel); // optional
 
 });
-
 
 //if (!isMyDash) { // do stuff if this module has an admin user version
 //   populateApprofileSelect(panel);
@@ -129,77 +115,45 @@ if (!this.surveyId) {
             return; }
  */
  
-    }
 
-    async  findAssignedSurveys(subjectId) {
-        try{
-        const surveyIds = await executeIfPermitted(userId, 'readStudentAssignments', {
-            student_id: subjectId,
-            type: 'survey'
-          });
-          
-          return surveyIds.map(a => a.survey_header_id) || []
-        } catch (error) {
-//        showToast('No surveys assigned here: ' + error.message, 'error');
-        console.error('No assigned surveys:', error);
-    }
-}
 
-            
-        
-    async  findThisSurvey(surveyId) {
-           // const surveys = [];
-//            for (const id of surveyIds) {
-try{
-              const result = await executeIfPermitted(userId, 'readSurveyView', { survey_id: surveyId });
-           //   if (result && result.length > 0) surveys.push(result);
-  //          }
-            return result;
-        } catch (error) {
-            showToast('Failed to load survey: ' + error.message, 'error');
-            console.error('Survey display error:', error);
-        }
-}
+         // Failed to load survey: invalid input syntax for type uuid: "undefined" //I assume undefined survey id
+// supabase.co/rest/v1/survey_view?select=*&survey_id=eq.undefined
+    }
 
     async render(panel, query = {}) {
         if (!panel || !panel.isConnected) {
             console.warn('Render target not found or disconnected');
             return;
-          } else panelEl=panel;
-
-          panel.innerHTML = ''; // Clear previous content
-          this.surveyData = null;
-          this.currentQuestionIndex = 0;
-          
-
-
-console.log('subjectType:',subjectType);
-          if (subjectType==='app-human') {surveyIds = await this.findAssignedSurveys(subjectId);
-                 //surveyIds here could have 0, 1 or many entries
-
-                }        
-                  
-          this.isMyDash = detectContext(panel); 
-          if(!this.isMyDash  && subjectType==='surveys') surveyIds.push (subjectId); // just one entry    
-
-          console.log('surveyIds',surveyIds); //surveyIds here could have 0, 1 or many uuid in an array
-
-          if (surveyIds.length === 0) {
-            panel.innerHTML = `<div class="text-gray-500 text-center py-8">No surveys assigned to ${subjectName}.</div>`;
-            return;
           }
+          
+console.log('subjectId', subjectId);
 
-          for (const surveyId of surveyIds) {  // loop throught the 0,1 or many uuid in the array surveyIds
-            const surveyData = await this.findThisSurvey(surveyId);
-            console.log('surveyId', surveyId);  // log each one
-            if (!surveyData || surveyData.length === 0) continue;
-            surveys= await this.findThisSurvey(surveyId); //get this one survey
-            console.log('surveys',surveys);  // 19:41 Oct 28 adminDash - seems to work. Keki 0, noomwild 1 (correct survey)
-            this.surveyData = surveys;  
-
-
-
-            panel.innerHTML = this.getHeaderHTML(this.surveyData[0]);  // this is an array with each answer having its own object
+        panelEl=panel;
+        if(subjectId) this.surveyId = subjectId ;
+        console.log('SurveyDisplay.render(', panel,'name:', subjectName,'id:', subjectId );
+        // just fails if no id.  No way for it to display "No survey id selected"
+        if (!this.surveyId) {
+            showToast('Survey ID is required', 'error');
+            return;
+        }
+        
+console.log('surveyId',this.surveyId);
+        try {
+            // Load sorted survey data
+            const surveyData = await executeIfPermitted(userId, 'readSurveyView', { survey_id: this.surveyId });
+            
+            if (!surveyData || surveyData.length === 0) {
+                showToast('Survey not found', 'error');
+                return;
+            }
+            
+            this.surveyData = surveyData;
+            
+            // Display the header information
+            panel.innerHTML = this.getHeaderHTML(surveyData[0]);
+            
+            // Attach event listener to the start button
             setTimeout(() => {
                 const startBtn = document.getElementById('startSurveyBtn');
                 if (startBtn) {
@@ -208,23 +162,21 @@ console.log('subjectType:',subjectType);
                     });
                 }
             }, 100);
-          };
-
-
-
-
- 
- 
-          
-
-
-//          console.log('subjectId', subjectId);
-
-
+            
+        } catch (error) {
+            showToast('Failed to load survey: ' + error.message, 'error');
+            console.error('Survey display error:', error);
         }
+        onClipboardUpdate(() => {
+            const newSurveyId = this.getCurrentSurveyId(query);
+            if (newSurveyId !== this.surveyId) {
+              this.surveyId = newSurveyId;
+              this.render(panel, query); // re-render with new survey
+            }
+          });
+          
+    }
 
-
-/*
     getCurrentSurveyId(query = {}) {  //trash. no such thing as .surveyId  clipboard has entries in the form: value AS type
         // so need to look for any entry listed AS 'survey' inside clipboard
         //if (query.clipboard.surveyId) return query.clipboard.surveyId;
@@ -236,7 +188,7 @@ console.log('subjectType:',subjectType);
       
         return null;
       }
-  */    
+      
 
 
 

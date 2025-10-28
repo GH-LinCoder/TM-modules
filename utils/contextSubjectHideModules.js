@@ -2,7 +2,8 @@ import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 
 
-// new functions to find data - these should be in external file to be imported by each module
+// new functions to find data - External file to be imported by each module
+
 export function detectContext(panel) {
     let context = panel.closest('[data-module]')?.dataset.module === 'myDash'
     console.log('context', context);
@@ -10,6 +11,7 @@ export function detectContext(panel) {
 
   }
 
+  // Return the latest item from the clipboard. If nothing there return the default value from appState (which is a person's id and name)
 export  function resolveSubject() {
     const clipboardItems = getClipboardItems(); // no type filter
     console.log('clipboardItems', clipboardItems);
@@ -18,13 +20,15 @@ export  function resolveSubject() {
       const entity = clipboardItems[0].entity;
       return {
         id: entity.id,
-        name: entity.name || entity.id // fallback to ID if name is missing
+        name: entity.name || entity.id, // fallback to ID if name is missing
+        type: entity.type || ''
       };
     }
   
     return {
       id: appState.query.userId,
-      name: appState.query.userName
+      name: appState.query.userName,
+      type: appState.query.userType
     };
   }
   

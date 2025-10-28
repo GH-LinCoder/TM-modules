@@ -62,6 +62,14 @@ function attachClickItemListener(panel) {
 
 export function render(panel, query = {}) {
   console.log('displayRelations.render()', panel, query);
+  if (!panel || !panel.isConnected) {
+    console.warn('Render target not found or disconnected');
+    return;
+  }
+  
+
+
+
   panel.innerHTML = getTemplateHTML();
   init(panel, query);
       //    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel

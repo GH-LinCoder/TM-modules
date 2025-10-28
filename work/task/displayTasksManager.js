@@ -38,6 +38,12 @@ onClipboardUpdate(() => {
 
 
 export async function render(panel, query = {}) {
+    if (!panel || !panel.isConnected) {
+        console.warn('Render target not found or disconnected');
+        return;
+      }
+      
+
     const userId = appState.query.userId;
     panelEl = panel;
     // Fix HTML duplication:

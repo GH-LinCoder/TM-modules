@@ -99,6 +99,8 @@
         
         // Your login form submission logic would go here
         const loginForm = document.getElementById('login-form');
+
+
         loginForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const email = document.getElementById('email-input').value;
@@ -107,7 +109,32 @@
               //window.location.href = 'https://preview--stage-master-hub.lovable.app/admin';
               window.location.href = '/flexload.html';  //calls the script that creates the menus and containers and loads the initial main page
         });
-    </script>
+/* the above loginForm.add can be replaced with
+
+loginForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = document.getElementById('email-input').value;
+  const password = document.getElementById('password-input').value;
+
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email,
+    password
+  });
+
+  if (error) {
+    document.getElementById('login-message').textContent = error.message;
+    return;
+  }
+
+  // Optional: store session or redirect
+  window.location.href = '/flexload.html';
+});
+//needs to import & create client at top of script
+import{createSupabaseClient} from './supabase.js'; //const supabase = createSupabaseClient();
+*/
+
+
+</script>
 
 </body>
 </html>

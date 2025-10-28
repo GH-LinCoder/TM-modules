@@ -34,6 +34,14 @@ onClipboardUpdate(() => {
 
 export async function render(panel, query = {}) {
   console.log('displayAllStudentTasks.js render() called');
+
+  if (!panel || !panel.isConnected) {
+    console.warn('Render target not found or disconnected');
+    return;
+  }
+  
+
+
 panelEl=panel;
 
 

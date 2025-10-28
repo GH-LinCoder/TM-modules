@@ -23,6 +23,7 @@ clipboard:[],
 //default DEV values
 userId :'ca1e9188-b3d6-4752-a4ed-d0cbdd62c044',//Keki  step 3 2 tasks  Has students
 userName:'Keki Surveyor',
+userType: 'app-human',
 
 defaultManagerId:'9066554d-1476-4655-9305-f997bff43cbb',
 defaultManagerName:'Lin Coder',

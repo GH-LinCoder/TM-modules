@@ -118,7 +118,7 @@ function  getCurrentSubjectId() {
             );
             
             if (!assignments || assignments.length === 0) {
-                //setStatsValues(0, 0, 0, 0, 0, 0);
+                setStatsValues(0, 0, 0, 0, 0, 0);
                 return;
             }
             
