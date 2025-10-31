@@ -83,7 +83,9 @@ autoRelateAppro: {
         relationship: relationship,
         of_approfile: of_approfile,
         assigned_by_automation: assigned_by_automation // Your audit trail column
-      }]);
+      }])
+      .select()
+      .single();
 
     if (error) throw error;
     return data;
@@ -1399,8 +1401,8 @@ createSurveyAutomation: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => { // itemName 
-    const { surveyAnswerId,source_task_step_id , taskId, manager_id, student_id, task_step_id, itemName, approfile_is_id, relationship, approfileId, automation_number   } = payload;
-
+    const { surveyAnswerId,source_task_step_id , taskId, manager_id, student_id, task_step_id, itemName, approfile_is_id, relationship, ofApprofileId, automation_number   } = payload;
+//what is   approfile_is_id  and approfileId at moment of creating an automation in a survey or task???  
 console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id); // 22:40 Oct 14  UNDEFINED    10:58 Oct 15 NULL 
 
     // Check for duplicate name  ???
@@ -1434,9 +1436,9 @@ console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id)
 
         name: itemName,
 
-        appro_is_id: approfile_is_id, // ← use passed userId ?  //THIS IS WRONG. At moment of creating surveu this would be the id of the admin author. 
+        appro_is_id: approfile_is_id, //At moment of creating survey this is unlikely to be specified. 
         relationship:relationship,
-        of_appro_id: approfileId,
+        of_appro_id: ofApprofileId,
 
         automation_number : automation_number, 
         

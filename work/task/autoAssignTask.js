@@ -4,7 +4,7 @@ import { showToast } from '../../ui/showToast.js';
 
 console.log('autoAssignTask.js loaded');
 
-export async function render(panel, query = {}) {
+export async function autoAssignTask(panel, query = {}) {
     console.log('autoAssignTask.render() - Background automation execution');
     
     try {

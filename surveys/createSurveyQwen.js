@@ -758,14 +758,14 @@ styleCardByType(type){
         const approfileSelect = panel.querySelector('#approfileSelect');
         const relationshipSelect = panel.querySelector('#relationshipSelect');
         
-        const selectedApproleId = approfileSelect?.value;
+        const selectedOfApprofile = approfileSelect?.value;  //what is this selected as? 
         // Get the selected option text
         const selectedOption = approfileSelect.options[approfileSelect.selectedIndex];
         const cleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
         
         const selectedRelationship = relationshipSelect?.value;
         
-        if (!selectedApproleId) {
+        if (!selectedOfApprofile) {
             showToast('Please select an approfile first', 'error');
             return;
         }
@@ -783,7 +783,7 @@ styleCardByType(type){
             // Save relationship automation to database
             const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
                 surveyAnswerId: this.answerId,
-                approfileId: selectedApproleId,
+                ofApprofileId: selectedOfApprofile,  // What is this ? of_approfile? approfile_is ? what? Must be of_approfile
                 itemName:cleanName,
                 relationship: selectedRelationship,
                 automation_number: this.automationsNumber

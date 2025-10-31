@@ -21,7 +21,7 @@ const supabase = createSupabaseClient();
 
 async function execute(userId, action, payload) {
   const funcEntry = registryWorkActions[action];
- // console.log(`[Executor] Executing '${action}'...`);
+ console.log(`Execute( '${action}'...`);
   let result;
 
   try {
@@ -31,7 +31,7 @@ async function execute(userId, action, payload) {
     throw error; // optional: rethrow to bubble up
   }
 
-  //console.log('result:', result);
+  console.log('result:', result);
   return result || [];
 }
 
@@ -56,7 +56,7 @@ async function execute(userId, action, payload) {
 
 
 export async function executeIfPermitted(userId, action, payload={}) {
- // console.log('executIfPermitted()action=',action);
+ console.log('executIfPermitted()action&payload:',action, payload);
 
   const funcEntry = registryWorkActions[action];
 

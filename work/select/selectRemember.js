@@ -493,6 +493,7 @@ console.log('ViewChange:');
           class="text-red-500 hover:text-red-700 ml-4 p-1 rounded hover:bg-red-50"
           title="Remove from clipboard"
           aria-label="Remove item from clipboard"
+           onclick="removeClipboardItem(${index})"
         >
           ×
         </button>

@@ -7,6 +7,7 @@ abstract:'🎭',
 approfiles:'🪪' ,
 approfileTask:'📋',
 assignTask:'👨‍🔧',
+asignSurvey:'🎆📜' ,
 
 automation_appro:'🚂🖇️',
 automation_task:'🚂🔧',

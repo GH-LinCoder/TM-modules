@@ -91,7 +91,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'display-this-survey' :()=> import('../surveys/displaySurveyQwen.js'), //changed 19:30 Oct 22
 //'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),  
 'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
-
+'assign-survey-dialogue' :()=> import('../surveys/assignSurvey.js'),
 
 //////////          SETTINGS            AdminDash      /////////                 
 'money-management-section': () => import('../dash/moneyManagementSection.js'),
@@ -101,8 +101,9 @@ export const registry = { // this registry is for loading a new page to the righ
 
 
 //////////          AUTO-BACKGROUND                  /////////
-'auto-assign-task' :() => import('../work/task/autoAssignTasks.js'),
-'auto-relate-appro': () => import('../work/approfiles/autoRelateAppro.js'),
+'auto-assign-task' :() => import('../work/task/autoAssignTasks.js'),  //? not directly loaded?
+'auto-relate-appro': () => import('../work/approfiles/autoRelateAppro.js'), //?not directly loaded
+'auto-execute-automations':() => import('../utils/autoExecuteAutomations.js'), //this imports the above 2
 
 
 

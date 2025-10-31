@@ -61,8 +61,18 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     this.attachCommonListeners(panel); // two buttons in assignmentBase
     
     // Attach task-specific listeners
-    this.attachTaskListeners(panel);
-    }
+   // this.attachTaskListeners(panel);
+    
+//new 17:56 Oct 31 removed TaskListener call, replaced with
+
+this.attachDropdownListeners(panel, [1, 2, 3]);
+
+
+
+    // Load task-specific data  NO!  The data has already been loaded in assignmentBase
+   // this.loadTaskHeaders(panel);
+  //  this.loadApprofiles(panel);
+  }
 
   attachTaskListeners(panel) {
     console.log('attachTaskListeners()');
@@ -83,31 +93,55 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     });
   }
 
+  async loadTaskHeaders(panel) {  //NO!
+    console.log('loadTaskHeaders()');
+    
+    try {
+      const taskHeaders = await executeIfPermitted(userId, 'readTaskHeaders', {});
+      this.taskHeaders = taskHeaders || [];
+      this.populateTaskDropdown(panel);
+    } catch (error) {
+      console.error('Error fetching task headers:', error);
+    }
+  }
+
+  async loadApprofiles(panel) {  //NO!
+    console.log('loadApprofiles()');
+    
+    try {
+      const approfiles = await executeIfPermitted(userId, 'readApprofiles', {});
+      this.approfiles = approfiles || [];
+      this.populateUserDropdowns(panel);
+    } catch (error) {
+      console.error('Error fetching approfiles:', error);
+    }
+  }
+
   populateTaskDropdown(panel) { // NO!
     console.log('populateTaskDropdown()');
     
-    const dropdown01 = panel.querySelector('#dropdown001');
+    const dropdown01 = panel.querySelector('#dropdown01');
     if (!dropdown01) return;
     
     dropdown01.innerHTML = '<option value="">Select a task</option>';
-    /*
     this.taskHeaders.forEach(task => {
       const option = document.createElement('option');
       option.value = task.id;
       option.textContent = task.name;
       dropdown01.appendChild(option);
-    }); */
+    });
   }
 
-  populateUserDropdowns(panel) { //NO!
+  populateUserDropdowns(panel) { //not used ? could do to change text on the dropdowns
     console.log('populateUserDropdowns()');
     
-    const dropdown01 = panel.querySelector('#dropdown001');
+    const dropdown01 = panel.querySelector('#dropdown01');
     const dropdown02 = panel.querySelector('#dropdown02');
     const dropdown03 = panel.querySelector('#dropdown03');
     
     if (!dropdown02 || !dropdown03) return;
-    dropdown01.innerHTML = '<option value="">Select survey</option>';
+    
+    dropdown01.innerHTML = '<option value="">Select a task</option>';    
     dropdown02.innerHTML = '<option value="">Select a student</option>';
     dropdown03.innerHTML = '<option value="">Select a manager</option>';
     
@@ -127,9 +161,9 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
   }
 
   updateSubmitButtonState(panel) {
-    const dropdown01 = panel.querySelector('#dropdown01');
-    const dropdown02 = panel.querySelector('#dropdown02');
-    const dropdown03 = panel.querySelector('#dropdown03');
+    const dropdown01 = panel.querySelector('#dropdown001');
+    const dropdown02 = panel.querySelector('#dropdown002');
+    const dropdown03 = panel.querySelector('#dropdown003');
     const assignBtn = panel.querySelector('#assignBtn');
     
     if (!dropdown01 || !dropdown02 || !dropdown03 || !assignBtn) return;
@@ -141,7 +175,8 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     assignBtn.disabled = !(dropdown01ed && dropdown02ed);
     assignBtn.textContent = dropdown01ed && dropdown02ed
     ? 'Assign Task'
-    : 'Select task and student first';  
+    : 'Select task and student first';
+  
   }
 // the below isn't called but runs. Why is it passed args when it collects them from dropdowns?
   async processAssignment(panel) { // ✅ Override parent method

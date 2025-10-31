@@ -115,6 +115,12 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-xs text-gray-500">Put a person or a thing on a task. Could be a training course, could be a soft production line</p>
     </div>
 
+<!-- ASSIGN SURVEY -->    
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='assign-survey-dialogue'>
+      <h3 class="text-sm font-medium text-yellow-700">Assign Survey 🎆📜 </h3>
+      <p class="text-xs text-gray-500">Put a person or a thing on a task. Could be a training course, could be a soft production line</p>
+    </div>    
+
 <!-- MOVE STUDENT -->    
     <div class="bg-red-50 border border-green-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='move-student-dialogue'>
       <h3 class="text-sm font-medium text-green-700">Move Student 🧑‍🎓</h3>
@@ -123,13 +129,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- CREATE APPROFILE -->    
     <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="create-approfile-dialogue">
-      <h3 class="text-sm font-medium text-yellow-500">Create Appro 🪪</h3>
+      <h3 class="text-sm font-medium text-yellow-500">Create Appro 🎆🪪</h3>
       <p class="text-xs text-gray-500">Create a new approfile, probably an abstract one to represent a concept or an aim or a person.</p>
 </div>    
 
 <!-- RELATE APPROFILES -->
     <div class="bg-green-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="relate-approfiles-dialogue">
-      <h3 class="text-sm font-medium text-blue-700">Relate one appro to another appro 🖇️ </h3>
+      <h3 class="text-sm font-medium text-blue-700">Relate one appro to another appro 🎆🖇️ </h3>
       <p class="text-xs text-gray-500">One thing IS [some relationship] OF another thing. Connecting two approfiles, building structure and hierarchy. </p>
     </div>
 
