@@ -391,7 +391,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </div>
 
     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" data-action="money-management-section">
-      <h3 class="text-sm font-medium text-gray-800">Money</h3>
+      <h3 class="text-sm font-medium text-gray-800">Money💷💵💶</h3>
       <p class="text-xs text-gray-500">Setting-up and managing membership fees , subscriptions, donations</p>
     </div>
 

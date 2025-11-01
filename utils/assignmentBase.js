@@ -144,7 +144,7 @@ if (this.assignmentType=='task') { // when === the value does not update from cl
 } else
 if (this.assignmentType=='survey') {
     dropdown01Items = getClipboardItems({as:'survey'});
-    dropdown02Items = getClipboardItems({ as: 'other' });
+    dropdown02Items = getClipboardItems({ as: 'respondent' });
     dropdown03Items  = []; // not used in surveys
     
 }

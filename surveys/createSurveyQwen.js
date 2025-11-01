@@ -783,7 +783,7 @@ styleCardByType(type){
             // Save relationship automation to database
             const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
                 surveyAnswerId: this.answerId,
-                ofApprofileId: selectedOfApprofile,  // What is this ? of_approfile? approfile_is ? what? Must be of_approfile
+                ofApprofileId: selectedOfApprofile,
                 itemName:cleanName,
                 relationship: selectedRelationship,
                 automation_number: this.automationsNumber

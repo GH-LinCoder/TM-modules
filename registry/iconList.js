@@ -19,14 +19,17 @@ back:'◀️',
 clock:'🕰️',
 computer:'💻',
 create:'🎆',
+credit_card:'💳',
 cross:'❎',
 
 delete:'🗑️',
 display:'👁️',
+dollar:'💵',
 down:'🔽',
 
 edit:' ✍️ ',
 empty:'🫗',
+euro:'💶',
 
 gear:'⚙️',
 
@@ -38,6 +41,8 @@ island:'🏝️',
 manager:'💼',
 manager_assigned:'🎆💼',
 moveStudent:'🛼🧑‍🎓',
+
+pound:'💷',
 
 question:'❔',
 

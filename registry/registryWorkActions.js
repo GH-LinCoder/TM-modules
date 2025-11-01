@@ -35,7 +35,7 @@ readGenericTable: {
 },
 
 
-// For auto-assign-task
+// For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
 autoAssignTask: {
   metadata: {
     tables: ['task_assignments'],
@@ -303,13 +303,40 @@ handler: async  (supabase, userId) =>{
 createAssignment:{
   metadata: {
   tables: ['task_assignments'],
-  columns: ['id', 'step_id','sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id'],
+  columns: ['id', 'step_id','sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'survey_header_id', 'survey_question_id'],
   type: 'INSERT',
-  requiredArgs: ['task_header_id','step_id', 'student_id','manager_id'] // ← payload fields
+  requiredArgs: [ 'student_id'], 
+  optionalArgs: ['task_header_id','step_id','manager_id', 'survey_header_id', 'survey_question_id'] // depends on task or survey
 }, // Should this check for duplicate assignment???
 handler: async (supabase, userId, payload) => {
-  const { task_header_id, step_id, student_id, manager_id } = payload;
-console.log('createAssignment()');
+  const { task_header_id, step_id, student_id, manager_id, survey_header_id, survey_question_id } = payload;
+console.log('registry -createAssignment()');
+//this says duolicate even when no such thing 
+
+let existing=null;
+
+if (task_header_id) {
+  existing = await supabase
+    .from('task_assignments')
+    .select('id')
+    .eq('student_id', student_id)
+    .eq('task_header_id', task_header_id)
+    .limit (1);
+} else if (survey_header_id) {
+  existing = await supabase
+    .from('task_assignments')
+    .select('id')
+    .eq('student_id', student_id)
+    .eq('survey_header_id', survey_header_id)
+    .limit (1);
+}
+
+if (existing && existing.data.length > 0) { console.log (existing);
+  throw new Error('Assignment already exists for this student');
+}
+
+
+if(task_header_id) { console.log('task_header_id:', task_header_id);
   const { data, error } = await supabase
   .from('task_assignments')
   .insert({
@@ -320,10 +347,25 @@ console.log('createAssignment()');
   })
   .select() //Return the inserted row
   .single(); //Return single object
-
   if (error) throw error;
     return data.id; //
   } 
+  else 
+  if (survey_header_id) { console.log('survey_header_id:', survey_header_id);
+    const { data, error } = await supabase
+  .from('task_assignments')
+  .insert({
+    student_id: student_id,
+    survey_header_id: survey_header_id,
+    survey_question_id: survey_question_id
+  })
+  .select() //Return the inserted row
+  .single(); //Return single object
+  if (error) throw error;
+  return data.id; //
+
+  } 
+}  
 },
 
 
@@ -640,7 +682,7 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
     console.log('readApp_profiles()');
     const { data, error } = await supabase
       .from('app_profiles')
-      .select('id, name, email, notes, phone, sort_int, avatar_url, created_at, updated_at, description, auth_user_id, external_url, task_header_id')
+      .select('id, name, email, notes, phone, sort_int, avatar_url, created_at, updated_at, description, auth_user_id, external_url, task_header_id, survey_header_id')
       .order('name');
   
     if (error) throw error;
@@ -648,6 +690,7 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
     // Separate into three groups
     const humanApprofiles = [];
     const taskApprofiles = [];
+    const surveyApprofiles = []; //added 9:22 Nov 1 2025
     const abstractApprofiles = [];
   
     data.forEach(profile => {
@@ -655,15 +698,18 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
         humanApprofiles.push(profile);
       } else if (profile.task_header_id) {
         taskApprofiles.push(profile);
+      } else if (profile.survey_header_id){
+        surveyApprofiles.push(profile); //added 9:22 Nov 1 2025
       } else {
         abstractApprofiles.push(profile);
-      }
+      } 
     });
 
     if (error) throw error;
     return {
       humanApprofiles,
       taskApprofiles,
+      surveyApprofiles, //added 9:22 Nov 1 2025
       abstractApprofiles
     }; 
   }
@@ -1095,27 +1141,6 @@ readApprofile_relations_view:{
 },
 
 //TASKS
-/*
-readTaskHeaders: {
-  metadata: {
-    tables: ['task_headers'],
-    columns: ['id', 'name', 'sort_int', 'author_id', 'created_at', 'description', 'external_url'],
-    type: 'SELECT',
-    requiredArgs: [],
-    optionalArg:[taskName]
-  },
-  handler: async (supabase, userId, payload) => {
-    console.log('readTaskHeaders()');
-    const { data, error } = await supabase
-      .from('task_headers')
-      .select('id, name, sort_int, author_id, created_at, description, external_url')
-      .order('name');
-
-    if (error) throw error;
-    return data; // ✅ Return the array of task headers
-  }
-},
-*/  // replaced by below 13:27 Oct 25
 
 readTaskHeaders: {
   metadata: {
@@ -1123,7 +1148,7 @@ readTaskHeaders: {
     columns: ['id', 'name', 'sort_int', 'author_id', 'created_at', 'description', 'external_url'],
     type: 'SELECT',
     requiredArgs: [],
-    optionalArg: ['taskName'] // 
+    optionalArgs: ['taskName'] // 
   },
   handler: async (supabase, userId, payload) => {
     console.log('readTaskHeaders()', payload);
