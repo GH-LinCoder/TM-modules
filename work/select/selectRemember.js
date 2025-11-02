@@ -81,15 +81,19 @@ class DevDataSelector {
   getTemplateHTML() {
     return `
       <div class="dev-selector bg-white rounded-lg shadow p-6">
-       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 22:00 10 Oct 📝</h3>
+       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 20:40 1 Nov 📝</h3>
         <!-- INSTRUCTIONS -->
         <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
           <p class="text-sm text-blue-800">
             <strong> How to use:</strong><br>
             1. Click a checkbox below to load a list.<br>
             2. Click a name from the list to select it.<br>
-            3. Choose how to remember it (Student, Manager, Other) or accept the suggestion.<br>
+            3. Choose how to remember it (Student, Manager, Other) or accept the automated suggestion.<br>
             4. Click to confirm & store it in the semantic clipboard for use in forms.<br>
+            5. You can store any number of items <br>
+            6. Assigning a task requires saving an appro AS student <br>
+            7. Assigning a survey requires saving a person AS respondent <br>
+            8. Relating requires at least 2 appros (Appros are different to tasks and surveys)<br>
             </p>
           </div>
             <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
@@ -97,6 +101,7 @@ class DevDataSelector {
             <strong> What happens next:</strong><br>
             A. The stored items will be visible below in the Information section. They can be removed individually.<br>
             B. Other modules of the App will check the clipboard automatically and load any data they need.
+           
           </p>
 
         </div>
@@ -106,29 +111,36 @@ class DevDataSelector {
           <h4 class="font-medium mb-2">1. Click to load a List:</h4>
           <div class="space-y-1">
              <div title= "This is a link to the actual task. It needs an appro assigned as a student to the task, it also needs a manager">
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="tasks"> 🔧 Tasks to be assigned</label>
+            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="view" value="tasks"> 🔧 Tasks to assign or edit</label>
             </div>  
             <div title= "Can relate to other appros. This shows up on myDash ralations map. This is like an index card for the task, or a name sticker, it isn't the actual task">
-            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="app-task"> 🖇️🔧 APPRO of a task for relating 🖇️</label>
+            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="view" value="app-task"> 🖇️🔧 APPRO of a task for relating 🖇️</label>
             </div>
             <div class="border-t my-2" ></div>
             <div title="This is for selecting a survey to edit it or read it or assign it to someone. When assigned the survey will show-up on that person's myDash">            
-              <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="surveys" > 📜 Surveys to be assigned</label>
+              <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer">
+              <input type="radio" name="view" value="surveys" > 📜 Surveys to assign or edit</label>
             </div>
             <div title="This is for putting the survey in a group or category. It will show-up on the relations map. This is an 'appro' (a name sticker) that is used to represent the survey in relations.">
-              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer" ><input type="radio" name="view" value="app-survey" > 🖇️📜 APPRO of a survey for relating</label> <!--NEW Nov 1 2025 -->
+              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer" >
+              <input type="radio" name="view" value="app-survey" > 🖇️📜 APPRO of a survey edit or relate</label> <!--NEW Nov 1 2025 -->
             </div>
             <div class="border-t my-2"></div>
             <div title= "Can assign to a task as student or manager, or a survey as respondent, or relate to another appro. It represents the authenicated users of the app. It is like their name tag. ">           
-              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer" ><input type="radio" name="view" value="app-human" > 👥 Human APPRO 👨‍🔧, 🎆📜 , 🖇️</label>  
+              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer" >
+              <input type="radio" name="view" value="app-human" > 👥 Human APPRO  👨‍🔧, 🎆📜 , 🖇️</label>  
             </div>
             <div title= "Can relate to other appros. This shows up on myDash ralations map. It is an appro that represents ideas or groups or outside things. Can be assigned as a student to a task, but not as a manager. Cannot be respondent to survey.">
-              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="view" value="app-abstract" >🎭 Abstract APPROFILE 👨‍🔧, 🎆📜 , 🖇️</label>
+              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer">
+              <input type="radio" name="view" value="app-abstract" >🎭 Abstract APPRO 👨‍🔧, 🖇️</label>
             </div>                 
             
             <div class="border-t my-2"></div>
             <div title="See what tasks and surveys have already been assigned.">     
-              <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer" ><input type="radio" name="view" value="assignments"> 👨‍🔧 Existing Assignments</label>
+              <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer" >
+              <input type="radio" name="view" value="assignments"> 👨‍🔧 Existing Assignments</label>
             </div>
         </div>
       </div>
@@ -145,17 +157,23 @@ class DevDataSelector {
         <div class="mb-4">
           <h4 class="font-medium mb-2">3 Click to remember the item AS...:</h4>
           <div class="space-y-1"  title='The code will automatically set the 'AS' value if it is obvious such as when a task or survey is recognised, but you need to choose when assigning things to something not obvious such as 'student'>
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="task"> 🔧 Task</label>
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="student"> 🧑‍🎓 Student - for a task</label>
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="manager"> 💼 Manager - for a task</label>
+            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="as" value="task"> 🔧 Task</label>
+            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="as" value="student"> 🧑‍🎓 Student - for a task</label>
+            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="as" value="manager"> 💼 Manager - for a task</label>
             <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="survey"> 📜 Survey</label>                    
-            <div class="border-t my-2"></div>            
-            <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="respondent" checked> 🤔 Respondent for a survey</label>
-            
-            <label class="flex items-center space-x-2 p-2 bg-gray-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="other" checked> ❔ Other - no specific meaning</label>
+            <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="as" value="survey"> 📜 Survey</label>                                
+            <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="as" value="respondent" checked> 🤔 Respondent for a survey</label>
             <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer"><input type="radio" name="as" value="assignment"> 👨‍🔧 Assignment</label>
+            <label class="flex items-center space-x-2 p-2 bg-gray-100 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="as" value="other" checked> ❔ Other - no specific meaning</label>
+            <div class="border-t my-2"></div>
+            <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="as" value="assignment"> 👨‍🔧 Assignment</label>
 
 
             </div>

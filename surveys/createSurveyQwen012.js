@@ -50,7 +50,7 @@ class SurveyEditor {
             <div id="surveyEditorDialog" class="survey-editor-dialogue relative z-10 flex flex-col h-full">
                 <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
                     <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-xl font-semibold text-gray-900">Create Survey 17:40 Nov 2</h3>
+                        <h3 class="text-xl font-semibold text-gray-900">Create Survey030</h3>
                         <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -501,47 +501,14 @@ styleCardByType(type){
                     surveyName: name,
                     surveyDescription: description,
                 });
+                
                 this.surveyId = result.id;
-
-// NEW 14:00 Nov 2 2025 - the database utomatically creats question 1 and answer 1 to question 1
-// find question number 1 and answer number 1 so can update them
-//could read them directly (functions exist) or use survey view                
-               let survey;
-                try{  // there is a single row in survey_view because it has just been created
-                    survey = await executeIfPermitted(userId,'readSurveyView',{survey_id:this.surveyId})
-                    
-                    }catch (error) {
-                     console.error('Error reading survey:', error)
-                        showToast('Failed to read survey: ' + error.message, 'error');
-                    }
-                    survey = survey[0]; //returned an array of a single object
-                    console.log('survey', survey);
-                    this.questionId = survey.question_id;
-                    const question01Text=survey.question_text;
-                    const question01Description=survey.question_description;
-
-                    this.answerId  = survey.answer_id;
-                    const answer01Text = survey.answer_text;
-                    const answerDescription = survey.answer_description;
-
-                    this.questionNumber =1; this.answerNumber= 1;
-                    
-                    console.log('Q1:',this.questionId,'A1:', this.answerId);
-
-                    //need to inject question01 and answer01 in the HTML.  questionText
-                    const questionTextEl = panel.querySelector('#questionText');
-                    questionTextEl.value = question01Text;
-
-                    const answerTextEl = panel.querySelector('#answerText');
-                    answerTextEl.value = answer01Text;
-// end of new
-
                 
                 // Enable question card
                 const questionCard = panel.querySelector('#questionCard');
                 questionCard.style.opacity = '1';
                 questionCard.style.pointerEvents = 'auto';
-
+                
                 // Enable save question button
                 const saveQuestionBtn = panel.querySelector('#saveQuestionBtn');
                 saveQuestionBtn.style.opacity = '1';
@@ -555,7 +522,6 @@ styleCardByType(type){
                 
                 showToast('Survey header saved successfully!');
             } catch (error) {
-                console.error('Creating survey header', error);
                 showToast('Failed to create survey header: ' + error.message, 'error');
             }
             
@@ -585,24 +551,14 @@ styleCardByType(type){
         
         saveQuestionBtn.disabled = true;
         saveQuestionBtn.textContent = 'Saving Question...';
-        
-        try { let result,questionDescription;
-// NEW 14:00 Nov 2 2025  What if Q1 doesn't exist?  this.questionId
-            if (this.questionNumber === 1) { // exsiting auto-created Q1 needs updating
-                result = await executeIfPermitted(userId, 'updateSurveyQuestion', {
-                    questionId: this.questionId,
-                    questionName: questionText,
-                    questionDescription: questionDescription || null
-                });                
-            }  
-            else { // New question to be inserted
-                this.questionNumber++;
-             result = await executeIfPermitted(userId, 'createSurveyQuestion', {
+        this.questionNumber++;
+        try {
+            // Save question to database
+            const result = await executeIfPermitted(userId, 'createSurveyQuestion', {
                 surveyId: this.surveyId,
                 questionText: questionText,
                 question_number: this.questionNumber
             });
-            }
             
             this.questionId = result.id;
             // Add information card  
@@ -678,24 +634,15 @@ styleCardByType(type){
         
         saveAnswerBtn.disabled = true;
         saveAnswerBtn.textContent = 'Saving Answer...';
- 
-        
-        try { let result, answerDescription;   // NEW 14:00 Nov 2 2025   what if A1 doesn't exist this.answerId
-            if (this.answerNumber === 1) { // exsiting auto-created A1 needs updating
-                result = await executeIfPermitted(userId, 'updateSurveyAnswer', {
-                  answerId: this.answerId,
-                  answerName: answerText,
-                  answerDescription: answerDescription || null
-                });
-            } else
-        {            //New answer so insert
-            this.answerNumber++;
-                result = await executeIfPermitted(userId, 'createSurveyAnswer', {
+        this.answerNumber++;
+        try {
+            // Save answer to database
+            const result = await executeIfPermitted(userId, 'createSurveyAnswer', {
                 questionId: this.questionId,
                 answerText: answerText,
                 answer_number: this.answerNumber
             });
-        }           
+            
             this.answerId = result.id;
             // Add information card  
             

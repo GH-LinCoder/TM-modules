@@ -1300,7 +1300,7 @@ createSurvey: {
   },
   handler: async (supabase, userId, payload) => {
     const { surveyName, surveyDescription } = payload;
-
+console.log('create survey:','userId:',userId, 'payload;', payload);
     
     // Check for duplicate name - just check if any records exist
     const { count, error: fetchError } = await supabase
@@ -1373,6 +1373,36 @@ createSurveyQuestion: {
 },
 
 //SURVEYS
+updateSurveyQuestion: {
+  metadata: {
+    tables: ['survey_questions'],
+    columns: ['name', 'description'], 
+    type: 'UPDATE',
+    requiredArgs: ['questionName', 'questionId'] // ← payload fields
+  },
+  handler: async (supabase, userId, payload) => {
+
+    const { questionId, questionName, questionDescription} = payload;
+    console.log('UpdateQuestion:',questionName, 'userId:',userId, 'questionId:',questionId);
+    const { data, error } = await supabase
+
+    .from('survey_questions')
+      .update({
+        name: questionName,
+        description :  questionDescription || null,
+      //  author_id: userId 
+      })
+      .eq('id', questionId) 
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // ← returns { id, name, description, ... }
+  }
+},
+
+
+//SURVEYS
 createSurveyAnswer: {
   metadata: {
     tables: ['survey_answers'],
@@ -1409,6 +1439,33 @@ createSurveyAnswer: {
         //external_url: taskUrl || null,
         //author_id: userId // ← no such column use passed userId
       })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // ← returns { id, name, description, ... }
+  }
+},
+
+//SURVEYS
+updateSurveyAnswer: {
+  metadata: {
+    tables: ['survey_answers'],
+    columns: ['id', 'name', 'description', 'automations', 'created_at', 'last_updated_at', 'survey_question_id' ], 
+    type: 'UPDATE',
+    requiredArgs: ['answerName', 'answerId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { answerId, answerName, answerDescription} = payload;
+    const { data, error } = await supabase
+      .from('survey_answers')
+      .update({
+        name: answerName,
+        description:answerDescription || null
+        //external_url: taskUrl || null,
+        //author_id: userId // ← no such column use passed userId
+      })
+      .eq('id', answerId)
       .select()
       .single();
 
@@ -1499,6 +1556,50 @@ readSurveyHeaders: {
     return data;
   }
 },
+
+//SURVEYS
+readSurveyQuestion: {
+  metadata: {
+    tables: ['survey_questions'],
+    columns: ['name', 'description', 'author_id', 'created_at', 'last_updated_at'], //?
+    type: 'SELECT',
+    requiredArgs: ['surveyId'] 
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('readSurveyHeaders()');
+   const { surveyId } = payload;
+    const { data, error } = await supabase
+      .from('survey_questions')
+      .select('id, name, description, author_id, created_at, last_updated_at, question_number')
+     .eq('survey_header_id',surveyId);
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+//SURVEYS
+readSurveyAnswers: {
+  metadata: {
+    tables: ['survey_answers'],
+    columns: ['name', 'description', 'author_id', 'created_at', 'last_updated_at'], //?
+    type: 'SELECT',
+    requiredArgs: ['questionId'] 
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('readSurveyHeaders()');
+   const { questionId } = payload;
+    const { data, error } = await supabase
+      .from('survey_answers')
+      .select('id, name, description, author_id, created_at, last_updated_at, answer_number')
+     .eq('survey_question_id',questionId);
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+
 
 //SURVEYS
 readSurveyView:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 
