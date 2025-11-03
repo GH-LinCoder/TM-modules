@@ -1,12 +1,16 @@
 PROJECT: Web app: To help loosely associated humans to organise, to build an organisation around a shared interest or aim. The app to eventually be a suite of semi-autonomous apps which communicate by API. Current plan has apps to handle:  
 
-Membership/subscriptions/donations
-Task creation, assignment and management
+
+Task creation, assignment and management where moving through a task causes code branching
 Relationship creation, tracking, & display (allowing hierarchy management)
 Bug reporting
 User communication (messaging and discussion)
 Survey creation & display with answers causes code branching (how someone replies to a survey determines how the app reacts)
+Visualisation of hierarchy
+Visulaisation of task & survey functional flow
 Recruitment and promotions
+Delegation of Membership/subscriptions/donations
+The app as an organisational Operating System
 
 Any of these key apps functionality could be fulfilled by subcontracting the process to external API driven established platforms.
 
@@ -27,12 +31,17 @@ Design of admin dashboard. Parts that function:
 "Edit approfile"
 "Relate approfiles"
 "Create surveys"
-"Display and respond to surveys"
+"Display and respond to surveys with automations that assigntasks or create relations"
+"Visualisation of relations"
+
 "Open more detailed sub-sections of the admin dashboard"
 
 Design of member dashboard. Parts that function:
 Display of member name, email, date when joined, how many tasks currently active, how many completed or abandonded
-Detail display of current active tasks.
+Detail display of current active tasks where the user is assigned as student
+Visual map of relations
+Assigned surveys displayed and fully interactive
+Any tasks where the user is assigned as manager
 
 Registry as JSON with metadata on every function that interacts with the database API. The metadata is to be crawled by the permission system to determine if the current user has permission to carr-out the database query.
 
@@ -70,7 +79,7 @@ There are two mottos involved here:
 "Have your say, do your bit,"  Users are repeatedly invited to express views and to become involved in the management of the organisation.
 
 "No one is an island" - Explaining approfiles
-All the users are represented by an 'approfile' ( a contraction of app profile, or 'appro'). In addition all tasks are also represented by an appro. In addition the App is represented by an appro, but so is the database, and the organisation that the users are building. More than that any abstract notion or grouping can become part of the system by creating an appro to represent it.  [Try to avoid using approfiles for things that change like 'newbies']
+All the users are represented by an 'approfile' or 'appro' ( a contraction of app profile). In addition all tasks and surveys are also represented by an appro. In addition the App is represented by an appro, but so is the database, and the organisation that the users are building. More than that any abstract notion or grouping can become part of the system by creating an appro to represent it.  [Try to avoid using approfiles for things that change like 'newbies']
 
 Relating appros
 Any appro can be related to any other using one of the enumerated relationships such as 'member'. (Technically these are all taxons and the appros are nodes while the relationships are edges.) Every new user is automatically related to the appro 'Human' and 'Organisation'. If the user wants to join a group that is done by relating to the 'Name of Group' appro. The 'Name of group' appro is automatically related to the 'Groups' appro and the 'Organisation' appro. Any tasks which are specifically related to that group have their appros related to that group appro.  In this way searching for 'Groups' will lead to that group and eventually to everyone and every task related to that group.  In addition to the automatic relating described here, admin users can relate approfiles manually.
@@ -96,7 +105,7 @@ Admin users can select some items from the database, classify them as being 'stu
 (list items already done)
 
 create initial db tables for tasks/steps/ assignments
-mock-up adminDash & memberDash
+adminDash & memberDash
 added display of quick stats from db
 added create task
 added asign task
@@ -125,6 +134,7 @@ developed display relations module
 developed create a survey
 developed display a survey
 developed the insertion of code in the survey for automations
+developed the execution of automations when the respondent answers the questions
 
 (at each stage, tested and refined the modules)
 
@@ -169,7 +179,7 @@ Check that every approfile is related to something and is part of hierarchy.
 (Need a 'no one is an island' utility to find unmapped approfiles: forEach appro in the app_profiles TABLE search by id in the app_relations table. islandArry.Push[row] || relatedArray.push[row] 
 Then can output the islands or the connected.)
 
-Should surveys have an approfile - yes
+Should surveys have an approfile - yes - this has been implemented
 
 TECH STACK: HTML, Javascript, CSS (legacy Tailwind), Supabase. Hosted locally in development using VSC and python3 http.server. No public access. Files are coordinated via git and GitHub. 
 
