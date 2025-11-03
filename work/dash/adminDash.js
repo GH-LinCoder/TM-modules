@@ -18,7 +18,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- DASHBOARD TITLE + DESCRIPTION-->   
    <div>
-      <h1 class="text-2xl font-bold" data-dash-title="admin">Admin Dashboard</h1>
+      <h1 class="text-2xl font-bold" data-dash-title="admin">Admin Dashboard  -version 21:50 Nov 3</h1>
       <p class="text-sm text-gray-500" data-dash-sub_title="admin">See data, manage members, tasks, relations & knowledge.</p>
       <p class="text-sm text-gray-500" data-dash-sub_title="admin">Click the menu <em>How?</em> button for help</p>
     </div>
@@ -29,7 +29,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     
   <!-- Quick Stats -->
   <div class="bg-blue-200 rounded-lg shadow p-6" data-section="quick-stats" data-destination = "quick-stats">
-    <h2 class="text-lg font-semibold mb-2">Quick Stats</h2>
+    <h2 class="text-lg font-semibold mb-2">Quick Stats 🧮</h2>
     <p class="text-sm text-gray-500 mb-4">Summaries: Click for details. They open in a new panel to the right. Click card again to close.</p>
   <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
 
@@ -98,7 +98,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
   <!-- Quick Acts -->
   <div class="bg-red-100 rounded-lg shadow p-6" data-section="quick-acts" data-destination='quick-acts'>
-    <h2 class="text-lg font-semibold mb-2">Quick Acts</h2>
+    <h2 class="text-lg font-semibold mb-2">Quick Acts 🌀</h2>
     <p class="text-sm text-gray-500 mb-4">Fast access to common admin tasks. They open in a new panel to the right. (Click the card again to close)</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" >
 
@@ -158,7 +158,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- Recent Activity -->
 <div class="bg-white rounded-lg shadow p-6" data-destination='new-panel'>
-  <h2 class="text-lg font-semibold mb-2">Recent Activity</h2>
+  <h2 class="text-lg font-semibold mb-2">Recent Activity 🫣</h2>
   <p class="text-sm text-gray-500 mb-4">Latest system events and user actions</p>
   <div class="space-y-4" id="activity-list">
 
@@ -199,7 +199,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- Task Management -->
 <div class="bg-green-100 rounded-lg shadow p-6" data-section='task-management' data-destination='task-management'>
-  <h2 class="text-lg font-semibold mb-2">Task Management</h2>
+  <h2 class="text-lg font-semibold mb-2">Task Management 🔧</h2>
   <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -246,7 +246,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- Relations & hierarchy Management -->
   <div class="bg-orange-100 rounded-lg shadow p-6" data-section='r&h-management' data-destination='r&h-management'>
-    <h2 class="text-lg font-semibold mb-2">Relations & hierarchy Management</h2>
+    <h2 class="text-lg font-semibold mb-2">Relations & hierarchy Management 🏯</h2>
     <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -308,7 +308,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- KNOWLEDGE MANAGEMENT -->
   <div class="bg-indigo-200 rounded-lg shadow p-6" data-section='knowledge-management' data-destination='knowledge-management'>
-    <h2 class="text-lg font-semibold mb-2">Knowledge Management</h2>
+    <h2 class="text-lg font-semibold mb-2">Knowledge Management 📚</h2>
     <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
@@ -373,10 +373,77 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 </div>
 
 
+<!-- AUTOMATION MANAGEMENT -->
+  <div class="bg-yellow-50 rounded-lg shadow p-6" data-section='automation-management' data-destination='automation-management'>
+    <h2 class="text-lg font-semibold mb-2">Automation Management 🚂</h2>
+    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+    <!-- Surveys & Quiz-->         
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation" data-action="automation-survey">
+      <p class="text-3xl font-bold text-blue-900" data-value="surveys-count">?</p>
+      <h3 class="text-sm font-medium text-blue-700">Surveys & Quiz automations </h3>
+      <p class="text-xs text-gray-500">View, edit, and manage any survey or quiz including automations</p>
+    </div>
+
+    <!-- TASK automation-->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-task">
+      <p class="text-3xl font-bold text-indigo-900" data-value="task-automation-count">?</p>
+      <h3 class="text-sm font-medium text-indigo-700">Task automations</h3>
+      <p class="text-xs text-gray-500">View and manage the automation for tasks</p>
+    </div>
+
+    <!-- HOWTOS-->         
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-knowledge">
+      <p class="text-3xl font-bold text-blue-900" data-value="howto-count">?</p>
+      <h3 class="text-sm font-medium text-blue-700">How to automation</h3>
+      <p class="text-xs text-gray-500">View, edit, and manage any of the training or instructional automation</p>
+    </div>
+
+
+
+<!-- MEMBER automation-->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-member">
+      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
+      <h3 class="text-sm font-medium text-purple-700">Member automation</h3>
+      <p class="text-xs text-gray-500">View and manage the automation for members</p>
+    </div>
+
+<!-- GROUP automation-->    
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-group">
+      <p class="text-3xl font-bold text-blue-900" data-value="profiles-count">?</p>
+      <h3 class="text-sm font-medium text-blue-700">Group automation</h3>
+      <p class="text-xs text-gray-500">View, edit, and manage  the automation for groups</p>
+    </div>
+
+<!-- ABSTRACT automation-->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-abstract">
+      <p class="text-3xl font-bold text-pink-900" data-value="abstract-approfiles-count">?</p>
+      <h3 class="text-sm font-medium text-pink-700">Abstract automation</h3>
+      <p class="text-xs text-gray-500">View and manage abstract automation</p>
+    </div>
+
+<!-- RELATE automation-->    
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="automation-relations">
+      <p class="text-3xl font-bold text-yellow-900" data-value="relationships-count">?</p>
+      <h3 class="text-sm font-medium text-yellow-700">Relationship automation</h3>
+      <p class="text-xs text-gray-500">Assign and organize automation about relationships between approfiles</p>
+    </div>
+
+<!-- RELATIONSHIPS automation-->    
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="automation-relationships">
+      <p class="text-3xl font-bold text-red-900" data-value="relations-count">?</p>
+      <h3 class="text-sm font-medium text-red-700">Relations</h3>
+      <p class="text-xs text-gray-500">Create and edit the automation on the concept of a relationship that can be applied to any two approfiles</p>
+    </div>
+
+  </div>
+</div>
+
 
 <!-- Settings -->
 <div class="bg-gray-100 rounded-lg shadow p-6" data-section='settings' data-destination='settings'>
-  <h2 class="text-lg font-semibold mb-2">Settings</h2>
+  <h2 class="text-lg font-semibold mb-2">Settings  ⚙️  ⚙️</h2>
   <p class="text-sm text-gray-500 mb-4">System configuration and administrative settings</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 

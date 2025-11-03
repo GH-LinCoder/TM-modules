@@ -2,6 +2,7 @@
 
 export const icons={
 
+abacus: '🧮',    
 abstract:'🎭',
 //admin:'📋', //duplicate
 approfiles:'🪪' ,
@@ -11,6 +12,7 @@ asignSurvey:'🎆📜' ,
 
 automation_appro:'🚂🖇️',
 automation_task:'🚂🔧',
+automation_survey:'🚂📜',
 
 answer:'💭',
 
@@ -28,19 +30,29 @@ dollar:'💵',
 down:'🔽',
 
 edit:' ✍️ ',
+email:'📧',
 empty:'🫗',
 euro:'💶',
 
+fast: '🌀',
+
 gear:'⚙️',
 
+hierarchy:'🏯',
 humans:'👥',
 
 idea:'💡',
+index:'📇',
 island:'🏝️',
+
+
+knowledge:'📚',
 // other possible manager icon 📋
 manager:'💼',
 manager_assigned:'🎆💼',
 moveStudent:'🛼🧑‍🎓',
+
+news: '🫣',
 
 pound:'💷',
 
@@ -50,7 +62,10 @@ relate: '🎆🖇️',
 relationships: '🖇️',
 
 selectRemember:' 📝',
+
 search:'🔍',
+settings:'⚙️',
+statistics: '🧮',
 step:'🪜',
 step_create:'🎆🪜',
 step_update:'✍️ 🪜',

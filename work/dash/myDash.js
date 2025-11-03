@@ -23,7 +23,7 @@ function getTemplateHTML() {
                 </div>
                 
                 <div>
-                    <h1 class="text-2xl font-bold" data-dash-title="admin">My Dashboard -version 10:50 Oct 26</h1>
+                    <h1 class="text-2xl font-bold" data-dash-title="admin">My Dashboard -version 21:50 Nov 3</h1>
                     <p class="text-sm text-gray-500" data-dash-sub_title="my">Check my tasks, update my details, manage my students...</p>
                 </div>
                 <!--button class="text-sm text-blue-600 hover:underline" onclick="signOut()">Sign out</button-->
@@ -43,8 +43,8 @@ function getTemplateHTML() {
                     <div class="flex-1 space-y-4">
                         <div class="space-y-3 text-sm text-gray-600">
                             <div class="flex items-center gap-2 flex-wrap">
-                                <span data-user="email">????.???@example.com</span>
-                                <span data-user="mid"><b>ID:</b> <span data-user="student-id">???</span></span>       
+                                📧<span data-user="email">????.???@example.com</span>
+                                <span data-user="mid"><b>🆔</b> <span data-user="student-id">???</span></span>       
                                 <span ><b>Joined:</b><span data-user="join-date"> ???? ?? ??</span></span>
                                 <span data-user="last-login"><b>Last login:</b> ??:?? PM ???? ?? ??</span>
                             </div>
@@ -52,7 +52,7 @@ function getTemplateHTML() {
                             <button 
                                 class="w-full border border-gray-300 rounded-lg py-2 text-sm font-medium hover:bg-gray-50"
                                 data-action="edit-profile">
-                                Edit <span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm" data-user="role">my</span> Profile
+                                Edit <span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm" data-user="role">my</span>🪪 Profile
                             </button>
                         </div>
                     </div>
@@ -79,7 +79,7 @@ function getTemplateHTML() {
 
                 <!-- QUICK STATS -->
                 <div class="bg-blue-200 rounded-lg shadow p-6" data-section="quick-stats" data-destination="quick-stats">
-                    <h2 class="text-lg font-semibold mb-2">Quick Stats</h2>
+                    <h2 class="text-lg font-semibold mb-2">Quick Stats 🧮</h2>
                     <p class="text-sm text-gray-500 mb-4">Summaries: Click for details. Click card again to close.</p>
                     <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
                         <div class="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center" data-stat="active-tasks">
@@ -146,7 +146,7 @@ function getTemplateHTML() {
                 
                 <!-- QUICK ACTS -->
                 <div class="bg-red-100 rounded-lg shadow p-6" data-section="quick-acts" data-destination="quick-acts">
-                    <h2 class="text-lg font-semibold mb-2">Quick Acts</h2>
+                    <h2 class="text-lg font-semibold mb-2">Quick Acts 🌀</h2>
                     <p class="text-sm text-gray-500 mb-4">Fast access to common tasks. (Click the card again to close)</p>
                     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
                         <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action="invite-friend-dialogue">
@@ -179,7 +179,7 @@ function getTemplateHTML() {
                 <!-- SURVEYS SECTION -->
                 <div data-section="surveys-section" class="bg-gray-50 rounded-lg shadow p-6 border border-gray-500">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">Have your say (surveys)</h2>
+                        <h2 class="text-2xl font-bold">Have your say (surveys) 📜</h2>
                         <div class="flex gap-2" class="border border-red-200" data-action="display-student-surveys" >
                         </div>
                     
@@ -193,7 +193,7 @@ function getTemplateHTML() {
                 <!-- TASKS SECTION -->
                 <div data-section="tasks-section" class="bg-blue-100 rounded-lg shadow p-6">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">Do your bit (tasks)</h2>
+                        <h2 class="text-2xl font-bold">Do your bit (tasks) 🔧</h2>
                         <div class="flex gap-2"></div>
                         <!--  INSTRUCTIONS   -->                           
                     <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -224,7 +224,7 @@ function getTemplateHTML() {
                 <!-- RELATIONS SECTION -->
                 <div data-section="relations-section">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">No one is an island (relations)</h2>
+                        <h2 class="text-2xl font-bold">No one is an island 🏝️ (relations) 🖇️</h2>
                         <div class="flex gap-2" class="border border-red-200"></div>
                          <!--  INSTRUCTIONS   -->                           
                     <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -254,7 +254,7 @@ function getTemplateHTML() {
                 <!-- STUDENTS SECTION -->
                 <div data-section="students-section">
                     <div class="flex items-center justify-between mb-6">
-                        <h2 class="text-2xl font-bold">My Students</h2>
+                        <h2 class="text-2xl font-bold">My Students 🧑‍🎓</h2>
                     </div>
 
 <!--  INSTRUCTIONS   -->                           
@@ -282,7 +282,7 @@ function getTemplateHTML() {
         
         <!-- Settings -->
 <div class="bg-gray-100 rounded-lg shadow p-6" data-section='settings' data-destination='settings'>
-  <h2 class="text-lg font-semibold mb-2">Settings</h2>
+  <h2 class="text-lg font-semibold mb-2">Settings  ⚙️</h2>
   <p class="text-sm text-gray-500 mb-4">System configuration and settings</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
