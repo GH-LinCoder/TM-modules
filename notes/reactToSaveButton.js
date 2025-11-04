@@ -2,8 +2,8 @@
 console.log('reactToSaveButton.js');
 
 import { collectUserChoices } from './collectUserChoices.js';
-import { saveNoteWithTags } from '../db/saveNoteWithTags.js';
-import { createSupabaseClient } from '../db/client.js';
+import { saveNoteWithTags } from './saveNoteWithTags.js';
+//import { createSupabaseClient } from '../db/client.js';
 
 // Get a single instance of the Supabase client.
 const supabase = createSupabaseClient();
