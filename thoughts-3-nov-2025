@@ -1,28 +1,45 @@
-PROJECT: Web app: To help loosely associated humans to organise, to build an organisation around a shared interest or aim. The app to eventually be a suite of semi-autonomous apps which communicate by API. Current plan has apps to handle:  
+PROJECT: An Organisation Operating System. 
+
+A web app based on javascript and Supabase to help any loosely associated set of humans to organise, to build an organisation around a shared interest.
+
+This shared interest could be anything from a local sports club, a national social movement, a keep fit group, a neighbourhood watch, a sobriety group,
+an animal welfare organisation, a political party, a start-up, a fan club, a charity, a book club, a youber channel that wants to become a community, a writer who wants a fanclub, 
+and anything where one ore more humans wants to turn a vaguely shared interest into a commumity or an organised entity.
+
+The app is designed with several pronciples:
+Self management by breaking complex processes into smaller simpler tasks
+That those involved should be able to express their views and influence what happens
+That many of those involved will take some responsibility for making things work
+That everyone will be part of the community and no one will be forgotten
+
+As the operating system of an organisation, the app is an ambitious and possibly unique project which will require massive amounts of programming to fully
+implement
+
+It will have to eventually be either funded to pay for development or require recruitment via open source collaboration, but initially it is being developed
+under very strict control and limited access. Much of the core functionality has been built and tested. The stages completed and yet to be implemented are listed below. 
+
+The app to eventually be a suite of semi-autonomous apps which communicate by API. Current plan has apps to handle:  
 
 
 Task creation, assignment and management where moving through a task causes code branching
+These tasks and code branching are under admin control and do not require coding
 Relationship creation, tracking, & display (allowing hierarchy management)
 Bug reporting
 User communication (messaging and discussion)
 Survey creation & display with answers causes code branching (how someone replies to a survey determines how the app reacts)
-Visualisation of hierarchy
-Visulaisation of task & survey functional flow
+This is by selection in a dropdown of tasks and realtionships and surveys. No coding involved.
+Visualisation of hierarchy, interactive mapping and travessing of relationsips and hierarchies
+Visulaisation of task & survey functional flow interactively by clicking on named icons
 Recruitment and promotions
 Delegation of Membership/subscriptions/donations
 The app as an organisational Operating System
 
 Any of these key apps functionality could be fulfilled by subcontracting the process to external API driven established platforms.
 
-Development stage: Early design, partial implementation. The design is iteractive based on testing each stage.
+Development stage: Partial implementation, iteration and updating design. The design is based on testing each stage & reviewing concepts.
 
-Partially implemented: 
-Bug reporting and tracking in an autonmous app "The Lab notebook".
 
-Database schema, tables built and used, schema in JSON available for reading. 
-Some triggers & functions for automation at the database. 
-
-Design of admin dashboard. Parts that function: 
+Design of admin dashboard. Implemented & tested: 
 "Quick Stats" reads the db and displays general numbers in several categories.
 "Create task"
 "Edit task"
@@ -33,34 +50,64 @@ Design of admin dashboard. Parts that function:
 "Create surveys"
 "Display and respond to surveys with automations that assigntasks or create relations"
 "Visualisation of relations"
+"Open more detailed sub-sections of the admin dashboard
 
-"Open more detailed sub-sections of the admin dashboard"
 
-Design of member dashboard. Parts that function:
-Display of member name, email, date when joined, how many tasks currently active, how many completed or abandonded
-Detail display of current active tasks where the user is assigned as student
-Visual map of relations
-Assigned surveys displayed and fully interactive
-Any tasks where the user is assigned as manager
+myDash (the member dashboard, for more than just members) has sections:
+Profile info that is editable. Display of member name, email, date when joined, how many tasks currently active, how many completed or abandonded
+Surveys where the member can 'Have your say...' Assigned surveys displayed and fully interactive
+Tasks where the member can 'do your bit' Detail display of current active tasks where the user is assigned as student
+Relations map where the member can see the groups, tasks, surveys, and other persons that are related to the member. Visual map of relations
+If the member is managing any tasks those are in the next section where the member can move the student to the next step, message the student or message admin.Any tasks where the user is assigned as manager
+(Current development 4 Nov 2025, all sections exist. The messaging not yet implemented. The task management should be completed within 2 weeks. The rest is implemented)
+
+Note: myDash can also display non-human appros. This is an admin tool to display any apsect of the App that is capable of being assigned to a task or have a relation.
+Bear in mind that almost everything in the app can be assigned to a task or have a relation. Therefore myDash is more than a member portal. It is a window into the system.
+
+adminDash (only available to admin - which is something different to being a 'manager' anyone can be a manager and use the myDash to manage tasks)
+Sections include
+Quick Stats 
+Quick Acts 
+Task management (sometimes confused with being a manager of a task which is a different thing, sorry, but naming things is hard) 
+Knowledge management
+Hierarchy & relations management
+Automations management
+Settings
+
+(If the dash card has an icon that means it is implemented. No icon means planned but not yet live)
+In the admin dash access to the Selection module allows the storing of any data and classifiying it 'AS' some standrd classifiction. 
+This means that all module that are 'clipboard aware' will automatically recognise that data and its classficiation such that the form auto-fills. 
+The admin can, for example, select a person's appro as 'student' or 'other'  and then click myDash and will see that webpage as if the admin were that person.
+This myDash display is not limited to human subjects. Admin could select, say, "Introductory" (which is an abstract concept) and myDash will display that abstract concept
+including if it has been placed on any tasks and its relationship to other appros.
+Admin can click any part of the relations map to explore deeper and wider. 
+
+T&M means topology mapping... this is implemented and available in depth for admin. It is implemented but in more restricted form in myDash for normal users due to data protection
+
+This topology mapping is to be extended to automations, making it possible to traverse and dig into what tasks trigger what events and how surveys can trigger tasks.
+Note: Surveys when responded to can trigger automations. They can spawn new surveys or new tasks or move a student to another step
+Tasks (to be implemenyed very soon) will have the same ability to spawn tasks or assign surveys when a student lands ona new step.
+The Automations section will include the tool to visulaise all these links and step through them. (The code to be adapted from the relations viewer which already functions)
 
 Registry as JSON with metadata on every function that interacts with the database API. The metadata is to be crawled by the permission system to determine if the current user has permission to carr-out the database query.
-
 Registry (lazy loader) for all modules that are the pages of the website.
-
 Registry (lazy loader) for utility functions
-
 Lazy loading of webpages in response to clicks on the menu or on cards inside the admin/member dashboards. The listeners read a data-* from the html & set a request (called the petition) and then stop. A change of state triggers the reading of that request and the loading of the page module.
+Modules that require data from the DB or to write to the DB know nothing about the database. They don't even know the name of the function. What they do know is a meaningful label of what they want to do (ie 'open-edit-dialogue' or 'open-create-task-dialogue') this is passed as a petition to a registry.
+The reigistry knows these names and connects them to the function that can perform the action (ie edit.js or createTask.js ) that will carry out the action. All actions on the database pass through a signle permissions system via ifPermittedExecute(action). That reads the metadata for the function at the registry and will determine permissions. (During development this is a placeholder that always replies 'permitted').
 
-Modules that require data from the DB or to write to the DB know nothing about the database, but they do know the name of the function that will carry out the action. They pass this function to the permissions system via ifPermittedExecute(action). That reads the metadata for the function and will determine permissions but is currently a placeholder that always replies 'permitted'.
+The app is made of many modules which are generally independent classes, but the loader always calls an exported function render(panel, payload). Therefore the file of the class also has that function which instantiates the class & passes on the args to its method 'render(panel,payload). This means that the loader doesn't nhy6jm7ueed to know the name or needs of the Class. [Some of the current modules, written prior to this specification are functions and not classes, but will be refactored]
 
-Modules should be independent classes, but the loader always calls an exported function render(panel, payload). Therefore the file of the class also has that function which instantiates the class & passes on the args to its method 'render(panel,payload).  [Some of the current modules, written prior to this specification are functions and not classes, but will be refactored]
-
-Clicking the [how?] button opens a module to supply context specific help / instructions. It uses the stored petition to know what the user has recently clicked and will search for pre-written help for that context. It currently just displays what the help should be. [The actual help has not yet been written]
+Context specific instructions are always available via the main menu [How?] button. This single button launches the 'how.js' module which reads the petition and the loadedPage sections of appState.
+That tells the module what you have visible on the screen and what you have been asking to do (each click of an active card on the dash or button on the menu refreshes the 'petition' and these are stored in petitionHistory)
+The context is explicitly shown on the How? module in the form of 'breadcrumbs' and this info is used to look-up in the database for context help on that specific topic.
+(Context tracking and breadcrumb display are implemented, but the database of knowledge is not yet filled with instructions/help)
 
 AppState is the global through which the system communicates from module to module. The definition/declaration is in the appstate/appState.js file.
 
-Design aims:
-From the moment of signing up to the app, the user is encouraged to become an active participant in building the organisation. The member dashboard will show 2 or 3, perhaps more 'tasks' that the new person is automatically on. Also there will be other tasks that the new user is on without being aware.
+
+From the moment of signing up to the app, the user is encouraged to become an active participant in building the organisation. 
+
 
 
 Tasks: an explanation.
@@ -79,11 +126,15 @@ There are two mottos involved here:
 "Have your say, do your bit,"  Users are repeatedly invited to express views and to become involved in the management of the organisation.
 
 "No one is an island" - Explaining approfiles
-All the users are represented by an 'approfile' or 'appro' ( a contraction of app profile). In addition all tasks and surveys are also represented by an appro. In addition the App is represented by an appro, but so is the database, and the organisation that the users are building. More than that any abstract notion or grouping can become part of the system by creating an appro to represent it.  [Try to avoid using approfiles for things that change like 'newbies']
+All the users are represented by an 'approfile' or 'appro' ( a contraction of Application profile). In addition all tasks and surveys are also represented by an appro. 
+In addition the App is represented by an appro, but so is the database, and the organisation that the users are building. More than that any abstract notion or grouping can become part of the system by creating an appro to represent it.  [Try to avoid using approfiles for things that change like 'newbies']
+
+Almost anything represented by an appro can be placed on a task and is then referred to as the 'student' of that task. 
+A human can be assigned as the manager of a task when the task is created or assigned, and if no one is deliberately assigned then there is a default manager who is likely to be the most seniour admin.
+Executable code is also capable of being the manager.
 
 Relating appros
 Any appro can be related to any other using one of the enumerated relationships such as 'member'. (Technically these are all taxons and the appros are nodes while the relationships are edges.) Every new user is automatically related to the appro 'Human' and 'Organisation'. If the user wants to join a group that is done by relating to the 'Name of Group' appro. The 'Name of group' appro is automatically related to the 'Groups' appro and the 'Organisation' appro. Any tasks which are specifically related to that group have their appros related to that group appro.  In this way searching for 'Groups' will lead to that group and eventually to everyone and every task related to that group.  In addition to the automatic relating described here, admin users can relate approfiles manually.
-
 
 The hierarchy building aspect of approfiles may also eventually become an independent system connected by API with possible use by customers.
 
@@ -92,19 +143,24 @@ The hierarchy building aspect of approfiles may also eventually become an indepe
 This underlies the app design. To encourage user involvement both in expression and in action. The aim is to build a vibrant self managing organisation out of like minded but isolated individuals.
 Surveys can find out what the users prefer, want, believe & can automatically join them to groups within the organisation or assign them to tasks. 
 The survey structure can also create a quiz or a multiple choice test with marking tracke via a task.
+Some surveys are part of the default templates, but they can be edited. Admin can create new surveys. Any survey answer can have atteched to it automations which will be implemented when the respondent clicks an answer. 
+Nov 4 2025 survey automations are Placing the respondent on a task and/or relating the respondent to some existing appro.
+Planned automations include moving the respondent to a different step in a task, sending a message, assigning a survey.
+
+Nov 4 2025 The automation system is implemented for surveys and has been tested. Implementing a similar system within tasks is now due.
 
 Knowledge
 The context specific 'how?' system is expected to grow into a knowledge deliver system with an interface that can cope with knowledge delivery to any of the apps in the system and eventually to outside customers.
 
 
 Semantic clipboard
-Admin users can select some items from the database, classify them as being 'student' 'manager' 'task' 'other' which is then stored on the appState.clipboard object. This is used to auto-populate any form that is open or opened. If that form expects an input of the type 'student' it will collect the data from the clipboard and display it (subject to user override). 
+Admin users can select some items from the database, classify them as being 'student' 'manager' 'task' 'other' 'survey' 'respondent'  which is then stored on the appState.clipboard object. 
+This is used to auto-populate any form that is open or opened. If that form expects an input of the type 'student' it will collect the data from the clipboard and display it (subject to user override). 
+If, for example, only a single 'student' is on the clipboard any form that needs a student will load that immediately into the form. If there are 2 or more students on the clipboard, the form will load them all into a dropdown.
 
+1) Hostorical list of App implementation
 
-1) App code written as part of the infrastructure
-(list items already done)
-
-create initial db tables for tasks/steps/ assignments
+initial db tables for tasks/steps/ assignments
 adminDash & memberDash
 added display of quick stats from db
 added create task
@@ -124,23 +180,42 @@ added how? using breadcrumb to know context for instructions
 added ability to 'transmute/mutate' dashboard sections when card is clicked to open more detailed cards
 developed create task module
 developed assign task module
-develo[ed edit task module
+developed edit task module
 developed task display for member dash
 developed move student module
-developed create approfile module
-developed edit approfile module
-developed relate approfile module
-developed display relations module
-developed create a survey
-developed display a survey
-developed the insertion of code in the survey for automations
-developed the execution of automations when the respondent answers the questions
+added petition history
+added 'breadcrumb' display of petition
+added create approfile module
+added edit approfile module
+added relate approfile module
+added display relations module
+added create a survey
+added display a survey
+added the insertion of code in the survey for automations
+added the execution of automations when the respondent answers the questions
+developed the myDash and adminDash to display the various sections
+developed 'clipboard awareness' in existing modules
 
 (at each stage, tested and refined the modules)
+
+Next steps in development:
+Apply the automations system of surveys to tasks
+Improve the task display for task managers & the execution of task automations
+Apply the relations visualisation (mapping) system to automations
+Adapt the survey creation module to also do updating (editing of surveys)
+
+Create more initial superstructure or initial onboarding 'welcome' processing of new members.
+
+Begin building the permissions and roles such that we can recruit earlt stage testers whose access is limited by permissions
+To enable testing, arrange a public access webpage server.
+
+
 
 
 Inconsistencies:
 Modules developed on different dates and by different authors mean that some are classes while others are exported functions, some clean-up when closing, some don't. Styling is different. Naming is confusing do to design changes.
+
+
 
 The future:
 The app is now almost usable. The most essential infrastructure is believed to be there. The process from here is to act as if the app were complete and try to use it as if we are building an organisation. 
