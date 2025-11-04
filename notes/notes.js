@@ -3,6 +3,13 @@ import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 
+/*
+need to add the js from the lab notes.js
+need adjust paths of all imports
+adapt db write
+*/
+
+
 console.log('notes.js loaded');
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
