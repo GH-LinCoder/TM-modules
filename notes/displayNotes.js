@@ -1,7 +1,7 @@
 // Updated displayNotes.js
 console.log('displayNotes.js');
 //import { createSupabaseClient } from '../db/client.js';
-import { fetchNotes } from "./notes.js";  
+import { fetchNotes } from "./labNotesToInclude.js";  
 import { renderNotes } from "./labNotesToInclude.js";  
 
 export async function displayNotes(page = 1, totalCount = null) {
