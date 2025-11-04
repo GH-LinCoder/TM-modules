@@ -1,7 +1,7 @@
 // reactToNoteClick.js
 console.log('ui/reactToNoteClick.js');
 
-import { createSupabaseClient } from '../db/client.js';
+//import { createSupabaseClient } from '../db/client.js';
 
 const statusMap = {
     6: { label: 'Pending (Complete)', icon: '❓', color: 'text-green-500' },
