@@ -1,13 +1,13 @@
 // reactToSaveButton.js
-console.log('reactToSaveButton.js');
-
+console.log('reactToSaveButton.js  loaded');
+import { appState } from '../../state/appState.js';
 import { collectUserChoices } from './collectUserChoices.js';
 import { saveNoteWithTags } from './saveNoteWithTags.js';
 //import { createSupabaseClient } from '../db/client.js';
 
 // Get a single instance of the Supabase client.
-const supabase = createSupabaseClient();
-
+//const supabase = createSupabaseClient();
+const userId = appState.query.userId;
 export async function reactToSaveButton() {
   console.log('reactToSaveButton()');
 
@@ -28,12 +28,12 @@ export async function reactToSaveButton() {
     console.log('✗ No tags');
     return;
   }
-  console.log(userChoices.size, " tags found");
+  console.log(userChoices.size, " tags found", 'userId:', userId);
 
   const result = await saveNoteWithTags(supabase, {
     content: noteContent,
     tags: userChoices,
-    author_id: '47742c9f-9afd-40b3-816a-f83fcd72b905' //mock data until implemented
+    author_id: userId
   });
 
   if (result) {

@@ -1,10 +1,10 @@
 // need to adapt - move to actual listener ??
 
 // setupNotesListeners.js
-console.log("setupNotesListeners.js");
+console.log("setupNotesListeners.js loaded");
 
 import { reactToClearAllButton } from './reactToClearAllButton.js';
-import { reactToSaveButton } from './reactToSaveNoteButton.js';
+import { reactToSaveButton } from './reactToSaveButton.js';
 import { reactToPageButton } from './reactToPageButton.js';
 import { reactToNoteClick } from './reactToNoteClick.js';
 
@@ -12,6 +12,16 @@ export function setupNotesListeners() {
   console.log("setupNotesListeners()");
   const notesPanel = document.getElementById('notes-panel');
   if (!notesPanel) return;
+
+/*
+  console.log("Listner panel:",notesPanel)
+  notesPanel.addEventListener('click', async (event) => {
+    console.log("🖱️ Click detected in notes-panel");
+    const target = event.target;
+
+  });  //overall test if listner attached
+*/
+
 
   notesPanel.addEventListener('click', async (event) => {
     const target = event.target;

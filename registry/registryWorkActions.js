@@ -1,5 +1,7 @@
 // ./../../registry/registryWorkActions.js
 
+
+
 /**
  * A central registry that maps data-action:"data-*  " action names to their metadata and
  * a reference to the actual function for some work process.
@@ -429,32 +431,6 @@ readTaskSteps: {
 },
 
 //TASKS
-/*
-createTaskStep: {
-  metadata: {
-    tables: ['task_steps'],
-    columns: ['name', 'description', 'external_url', 'step_order', 'task_header_id', 'author_id'],
-    type: 'INSERT',
-    requiredArgs: ['taskId', 'stepOrder', 'stepName', 'stepDescription']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
-
-    const { error } = await supabase
-      .from('task_steps')
-      .insert({
-        name: stepName,
-        description: stepDescription,
-        external_url: stepUrl || null,
-        step_order: stepOrder,
-        task_header_id: taskId,
-        author_id: userId
-      });
-
-    if (error) throw error;
-    return { success: true }; // why not return the NEW.id?
-  }
-},  */ // changed to below 10:13 Oct 15
 
 createTaskStep: {
   metadata: {
@@ -911,81 +887,6 @@ console.log('readAssignment2Exists()');
 },
 
 
-/*
-//TASK_ASSIGMENT
-readStudentAssignments: {
-  metadata: {
-    tables: ['task_assignment_view'],
-    columns: ['assignment_id', 'student_id', 'task_header_id', 'task_name', 'task_description', 'step_order', 'step_name', 'step_description', 'manager_id', 'manager_name', 'assigned_at'],
-    type: 'SELECT',
-    requiredArgs: ['student_id']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { student_id } = payload;
-    const { data, error } = await supabase
-      .from('task_assignment_view')
-      .select('assignment_id, student_id, task_header_id, task_name, task_description, step_order, step_name, step_description, manager_id, manager_name, assigned_at')
-      .eq('student_id', student_id)
-      .order('assigned_at', { ascending: false });
-    
-    if (error) throw error;
-    return data;
-  }
-},
-*/  //Replaced with combined function below 23:39 Oct 19
-
-
-// TASK_ASSIGNMENT + SURVEY_ASSIGNMENT
-/*
-readStudentAssignments: {
-  metadata: {
-    tables: ['task_assignment_view', 'survey_assignment_view'], // Add survey view
-    columns: [
-      'assignment_id', 'student_id', 'task_header_id', 'task_name', 'task_description', 
-      'step_order', 'step_name', 'step_description', 'manager_id', 'manager_name', 'assigned_at',
-      'survey_id', 'survey_name', 'survey_description' // Add survey columns
-    ],
-    type: 'SELECT',
-    requiredArgs: ['student_id']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { student_id } = payload;
-    
-    // Get task assignments
-    const { data: taskData, error: taskError } = await supabase
-      .from('task_assignment_view')
-      .select(`
-        assignment_id, student_id, task_header_id, task_name, task_description, 
-        step_order, step_name, step_description, manager_id, manager_name, assigned_at
-        
-      `)
-      .eq('student_id', student_id)
-      .order('assigned_at', { ascending: false });
-    
-    if (taskError) throw taskError;
-    
-    // Get survey assignments (you'll need to create this view)
-    const { data: surveyData, error: surveyError } = await supabase
-      .from('survey_assignment_view') // Create this view
-      .select(`
-        assignment_id, student_id, survey_header_id, survey_name, survey_description,
-        assigned_at
-    
-      `)
-      .eq('student_id', student_id)
-      .order('assigned_at', { ascending: false });
-    
-    if (surveyError) throw surveyError;
-    
-    // Combine and sort by assignment date
-    const combinedData = [...taskData, ...surveyData].sort((a, b) => 
-      new Date(b.assigned_at) - new Date(a.assigned_at)
-    );
-    
-    return combinedData;
-  }
-},  */  // replaced by version with arg to choose type of assignment
-
 readStudentAssignments: {
   metadata: {
     tables: ['task_assignment_view', 'survey_assignment_view'],
@@ -1139,6 +1040,125 @@ readApprofile_relations_view:{
       return data; //
     }
 },
+
+
+//////////    NOTES BUG REPORT MESSAGES   /////////
+saveNoteStatus: {
+  metadata: {
+    tables: ['notes'],  
+    columns: ['status', 'id'],
+    type: 'UPDATE',
+    requiredArgs: ['noteId', 'newStatus'] 
+  },
+  // Updates the status of a note.  //NEED MOVE TO REGISTRY
+  handler: async (supabase, userId, payload)=> {
+    const {noteId, newStatus} = payload;
+    console.log("saveNoteStatus()");
+    const { data, error } = await supabase
+      .from('notes')
+      .update({ status: newStatus })
+      .eq('id', noteId);
+  
+    if (error) {
+      console.error(`Failed to update status for note ${noteId}:`, error);
+    }
+    return { data, error };
+  }
+},
+/** //MOVED TO REGISTRY from The Lab 4 Nov 2025
+ * Inserts a new note and returns its ID. Updated to accept object containg the params
+ */
+insertNote:{
+  metadata: {
+    tables: ['notes'],  
+    columns: ['author_id', 'audience_id', 'reply_to_id', 'title', 'content', 'status'],
+    type: 'INSERT',
+    requiredArgs: ['author_id',  'content'] //  
+  },
+handler: async (supabase,userId, payload) => {
+  const {
+    author_id,
+    audience_id = null,
+    reply_to_id = null,
+    title = 'AutoTitle',
+    content,
+    status = null
+  } = payload;
+  console.log("📝 insertNote data:", { author_id, content, title }); // Debug
+  try {
+    const { data, error } = await supabase
+      .from('notes')
+      .insert([{
+        author_id,
+        audience_id,
+        reply_to_id,
+        title,
+        content,
+        status
+      }])
+      .select('id');
+
+    if (error) throw new Error(`insertNote failed: ${error.message}`);
+
+
+    return data[0].id;
+  } catch (error) {
+    console.error('❌ insertNote failed:', error);
+    throw error;
+  }
+}
+},
+/** //NEED MOVE TO REGISTRY
+ * Fetches a page of notes.
+ */  
+// In fetchNotes.js - return with consistent naming
+fetchNotes: {
+metadata: {
+      tables: ['notes'],  
+      columns: ['id', 'sort_int', 'author_id', 'audience_id', 'reply_to_id', 'title', 'content', 'status'],
+      type: 'SELECT',
+      requiredArgs: ['page', 'pageSize'] // are they required? 
+    },
+handler: async (supabase, page = 1, pageSize = 10) =>{
+    console.log("fetchNote()", page);
+
+  const start = (page - 1) * pageSize;
+  const end = start + pageSize - 1;
+
+  const { data, count, error } = await supabase
+    .from('notes')
+    .select('*', { count: 'exact' })
+    .order('sort_int', { ascending: false })
+    .range(start, end);
+
+  if (error) {
+    console.error('Error fetching notes:', error);
+    return { notes: [], totalCount: 0, message: error.message };
+  }
+
+  return { notes: data, totalCount: count };
+}
+},
+
+readCategoryMap:{
+metadata: {
+  tables: ['notes_categories'],
+  columns: ['id', 'category_name'],
+  type: 'SELECT',
+  requiredArgs: []
+},
+handler: async(supabase, userId, payload) => {
+const {data, error} = await supabase 
+  .from('notes_categories')
+  .select('id, category_name');
+  if (error) {
+    console.error('Error fetching notes:', error);
+            } 
+           console.log('data',data); // data is array of 34 objects
+return data;
+          }
+},
+
 
 //TASKS
 

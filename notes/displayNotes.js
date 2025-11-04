@@ -1,15 +1,15 @@
 // Updated displayNotes.js
 console.log('displayNotes.js');
 //import { createSupabaseClient } from '../db/client.js';
-import { fetchNotes } from "./labNotesToInclude.js";  
-import { renderNotes } from "./labNotesToInclude.js";  
+//import { fetchNotes } from "./labNotesToInclude.js";  
+//import { renderNotes } from "./labNotesToInclude.js";  
 
 export async function displayNotes(page = 1, totalCount = null) {
   console.log('displayNotes()', { page, totalCount });
   const pageSize = 10;
   
   try {
-    const supabase = createSupabaseClient();
+ //   const supabase = createSupabaseClient();
     
     // If totalCount is provided, use it; otherwise fetch everything
     const result = await fetchNotes(supabase, page, pageSize);

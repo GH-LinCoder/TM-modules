@@ -2,7 +2,7 @@
 console.log('db/tags.js');
 //import { createSupabaseClient } from './client.js';
 
-const supabase = createSupabaseClient();
+//const supabase = createSupabaseClient();
 
 /**
  * Fetches all categories from the database and returns a Map of name → id.
@@ -10,16 +10,12 @@ const supabase = createSupabaseClient();
  */
 export async function readCategoryMap() {
   console.log('readCategoryMap()');
-  const { data, error } = await supabase
-    .from('notes_categories')
-    .select('id, category_name');
-
+  const { data, error } = await executeIfPermitted(userId, 'readCategoryMap', {} );
   if (error) {
     console.error('❌ Error fetching categories:', error);
     return new Map();
   }
-
-  return new Map(data.map(cat => [cat.category_name, cat.id]));
+ return new Map(data.map(cat => [cat.category_name, cat.id]));
 }
 
 /**
