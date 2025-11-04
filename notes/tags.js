@@ -1,6 +1,6 @@
 //tags.js
 console.log('db/tags.js');
-import { createSupabaseClient } from './client.js';
+//import { createSupabaseClient } from './client.js';
 
 const supabase = createSupabaseClient();
 
