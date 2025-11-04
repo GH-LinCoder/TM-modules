@@ -5,8 +5,8 @@
 console.log("db/saveNoteWithTags.js");//lacked imports and supabase
 
 
-import { createSupabaseClient } from './client.js';
-import {insertNote} from './notes.js';
+//import { createSupabaseClient } from './client.js';
+import {insertNote} from './notes.js';  //??
 import {tagNoteByNames} from './tags.js';
 import { displayNotes } from '../ui/displayNotes.js';
 import {cleanupNoteInput} from '../ui/cleanupNoteInput.js';
