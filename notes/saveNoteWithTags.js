@@ -12,6 +12,7 @@ import { displayNotes } from './displayNotes.js';
 import {cleanupNoteInput} from './cleanupNoteInput.js';
 
 const userId = appState.query.userId;
+const petitionHistory = appState.query.petitionHistory;
 
 export async function getUserInputWriteToDb(){
 console.log("getUserInputWriteToDb()");  
@@ -29,6 +30,23 @@ export async function saveNoteWithTags(supabase, params = {}) {
     tags = []
   } = params;
 
+//const enhancedContent = content;  
+
+const formattedMetadata = JSON.stringify({
+  petitionHistory: appState.query.petitionHistory
+}, null, 2); // ← adds indentation and line breaks
+
+//note.content += `\n\nmetadata:\n${formattedMetadata}`;
+console.log('meta:', formattedMetadata);
+
+const enhancedContent = content;  // next line would add metadata to the note
+//const enhancedContent = content + `{{{metadata:\n${formattedMetadata}`;
+//this adds the content of petitionHistory 
+// Only relevant for some notes. It should be a choice or only added in some filters
+//There is some code in render to split the main note from the meta but it hasn't been fully worked
+
+console.log('enhancedContent:', enhancedContent);
+
   console.log('Saving note with tags:', { title, tags });
 
   console.log('📥 [save] params:', params);
@@ -41,7 +59,7 @@ console.log('📥 [save] tags type:', typeof tags, 'is array?', Array.isArray(ta
       audience_id,
       reply_to_id,
       title,
-      content,
+     content: enhancedContent,
       status
     });
 
@@ -108,19 +126,15 @@ export async function linkNoteToCategories(noteId, categoryIds) {
     note_category_id: catId
   }));
 
-  const { error } = await supabase  // need to MOVE to Registry <==============
-    .from('notes_categorised')
-    .upsert(rows, {
-      onConflict: ['note_id', 'note_category_id'],
-      ignoreDuplicates: true
-    });
-
-  if (error) {
-    console.error('❌ Error linking note to categories:', error);
-  }
+const { error } = await executeIfPermitted(userId, 'linkNoteToCategories',{rows});
+if (error) {
+  console.error('❌ Error linking note to categories:', error);
 }
 
-export async function readReverseCategoryMap() {
+console.log('Linked note to categories');
+}
+
+export async function readReverseCategoryMap() {  // never called?
   console.log('readReverseCategoryMap');
   const { data, error } = await supabase
     .from('notes_categories')

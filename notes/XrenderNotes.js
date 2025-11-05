@@ -20,13 +20,62 @@ function getIconHTML(status) {
 }
 
 
+function splitContentFromMetadata(note) {
+  console.log('splitContentFromMeta()');
+  const container = document.createElement('div');
+  container.className = 'note-block';
+
+  const hasMetadata = note.content.includes('{{{metadata:');
+
+  let mainContent = note.content;
+  let metadataBlock = null;
+
+  if (hasMetadata) {
+    const [rawMain, rawMeta] = note.content.split('{{{metadata:');
+    mainContent = rawMain.trim();
+
+    try {
+      const parsedMetadata = JSON.parse(rawMeta.trim());
+
+      metadataBlock = document.createElement('pre');
+      metadataBlock.className = 'note-metadata';
+      metadataBlock.textContent = JSON.stringify(parsedMetadata, null, 2);
+      metadataBlock.style.display = 'none'; // hidden by default
+
+      const toggleButton = document.createElement('button');
+      toggleButton.textContent = 'Meta';
+      toggleButton.className = 'meta-toggle';
+      toggleButton.onclick = () => {
+        metadataBlock.style.display =
+          metadataBlock.style.display === 'none' ? 'block' : 'none';
+      };
+
+      container.appendChild(toggleButton);
+      container.appendChild(metadataBlock);
+    } catch (err) {
+      console.warn('Failed to parse metadata:', err);
+    }
+  }
+
+  const contentBlock = document.createElement('p');
+  contentBlock.textContent = mainContent;
+  container.appendChild(contentBlock);
+
+  return container;
+}
+
+
+
 export function renderNotes(notes, totalCount, page, pageSize) {
   console.log('renderNotes() - own file');
   const output = document.getElementById('output');
   
   const notesHtml = notes.map(note => {
-    const content = note.content || '';
-  
+    let content = note.content || '';
+
+    content = splitContentFromMetadata(content);
+
+
 const shortContent = content.length > 2000
   ? `${content.slice(0, 2000)}<span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [more]</span><span class="hidden extra-content">${content.slice(200)} <span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [less]</span></span>`
   : content;
@@ -51,6 +100,7 @@ console.log('Rendering note:', {
   statusAttr: statusAttr,
   statusText: statusText
 });
+
 
     
     return `
@@ -82,7 +132,7 @@ console.log('Rendering note:', {
             </p>
             <p class="flex">
               <span class="font-medium w-20 pt-1">Content:</span>
-             <span class="text-gray-700 flex-1">${shortContent}</span>
+             <span class="text-gray-700 flex-1">XXX${content}</span>
             </p>
           </div>
         </div>

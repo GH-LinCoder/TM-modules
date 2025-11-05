@@ -1,5 +1,7 @@
 // ./../../registry/registryWorkActions.js
 
+//import { linkNoteToCategories } from "../notes/saveNoteWithTags";
+
 
 
 /**
@@ -1114,30 +1116,32 @@ handler: async (supabase,userId, payload) => {
 // In fetchNotes.js - return with consistent naming
 fetchNotes: {
 metadata: {
-      tables: ['notes'],  
+      tables: ['notes_view'],  
       columns: ['id', 'sort_int', 'author_id', 'audience_id', 'reply_to_id', 'title', 'content', 'status'],
       type: 'SELECT',
       requiredArgs: ['page', 'pageSize'] // are they required? 
     },
-handler: async (supabase, page = 1, pageSize = 10) =>{
-    console.log("fetchNote()", page);
-
-  const start = (page - 1) * pageSize;
-  const end = start + pageSize - 1;
-
-  const { data, count, error } = await supabase
-    .from('notes')
-    .select('*', { count: 'exact' })
-    .order('sort_int', { ascending: false })
-    .range(start, end);
-
-  if (error) {
-    console.error('Error fetching notes:', error);
-    return { notes: [], totalCount: 0, message: error.message };
-  }
-
-  return { notes: data, totalCount: count };
-}
+    handler: async (supabase, userId, payload) => {
+      const { page = 1, pageSize = 10 } = payload;
+      console.log("fetchNotes() page", page);
+    
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize - 1;
+    
+      const { data, count, error } = await supabase
+        .from('notes_view')  //changed from notes to notes_view 22:17 Nov 5
+        .select('*', { count: 'exact' })
+        .order('sort_int', { ascending: false })
+        .range(start, end);
+    
+      if (error) {
+        console.error('Error fetching notes:', error);
+        return { notes: [], totalCount: 0, message: error.message };
+      }
+    
+      return { notes: data, totalCount: count };
+    }
+    
 },
 
 readCategoryMap:{
@@ -1158,6 +1162,58 @@ const {data, error} = await supabase
 return data;
           }
 },
+
+linkNoteToCategories:{
+metadata: {
+  tables:['notes_categorised'],
+  columns:['note_id', 'note_category_id'],
+  requiredArgs:['rows']
+},
+
+handler: async(supabase, userId, payload) => {
+const {rows} = payload; 
+const { error } = await supabase
+.from('notes_categorised')
+.upsert(rows, {
+  onConflict: ['note_id', 'note_category_id'],
+  ignoreDuplicates: true
+});
+
+if (error) {
+console.error('❌ Error linking note to categories:', error);
+return error;}
+return null; // success
+}
+},
+
+
+reactToNoteClick: {
+  metadata: {
+    tables: ['notes'],
+    columns: ['id', 'status'],
+    type: 'UPDATE',
+    requiredArgs: ['noteId', 'newStatus']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { noteId, newStatus } = payload;
+
+    const { error } = await supabase
+      .from('notes')
+      .update({ status: newStatus })
+      .eq('id', noteId);
+
+    if (error) {
+      console.error(`❌ Failed to update status for note ${noteId}:`, error);
+      return { success: false, message: error.message };
+    }
+
+    return { success: true };
+  }
+},
+
+
+
+
 
 
 //TASKS
