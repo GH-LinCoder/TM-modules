@@ -23,7 +23,13 @@ console.log('surveyBase.js loaded');
     // ========================================
     // STATE MANAGEMENT
     // ========================================
-    constructor() {
+ // Pass panel and query to the constructor for setup
+constructor(panel, query = {}) { 
+    this.panel = panel;
+    this.query = query;
+    this.userId = appState.query.userId;
+    this.isCreationMode = !query.surveyId; // Crucial flag
+        
         this.surveyId = null;
         this.questionId = null;
         this.answerId = null;
@@ -32,6 +38,17 @@ console.log('surveyBase.js loaded');
         this.answerNumber = 0;
         this.automationsNumber = 0;
     }
+
+// Pass panel and query to the constructor for setup
+constructor(panel, query = {}) { 
+    this.panel = panel;
+    this.query = query;
+    this.userId = appState.query.userId;
+    this.isCreationMode = !query.surveyId; // Crucial flag
+
+    this.surveyId = query.surveyId || null;
+    // ... rest of your state properties
+}
 
     // ========================================
     // UI RENDERING
@@ -247,12 +264,7 @@ getTemplateHTML() {
         panel.querySelector('#saveTaskAutomationBtn')?.addEventListener('click', (e) => {
             this.handleTaskAutomationSubmit(e, panel);
         });
-/*
-        // Save relationship automation button
-        panel.querySelector('#saveRelationshipAutomationBtn')?.addEventListener('click', (e) => {
-            this.handleRelationshipAutomationSubmit(e, panel);
-        });
-*/
+
 // Save relationship automation button
 const relationshipBtn = panel.querySelector('#saveRelationshipAutomationBtn');
 console.log('Relationship button found:', relationshipBtn);
@@ -271,6 +283,35 @@ if (relationshipBtn) {
         panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => {
             panel.remove();
         });
+
+// ========================================
+    // SUBCLASS INTERFACE (Database Operations)
+    // Subclasses MUST implement these methods.
+    // ========================================
+    async handleSurveySubmit(e, panel) { 
+        throw new Error("handleSurveySubmit must be implemented in subclass."); 
+    }
+    async handleQuestionSubmit(e, panel) { 
+        throw new Error("handleQuestionSubmit must be implemented in subclass."); 
+    }
+    handleAddQuestion(e, panel) { 
+        throw new Error("handleAddQuestion must be implemented in subclass."); 
+    }
+    async handleAnswerSubmit(e, panel) { 
+        throw new Error("handleAnswerSubmit must be implemented in subclass."); 
+    }
+    handleAddAnswer(e, panel) { 
+        throw new Error("handleAddAnswer must be implemented in subclass."); 
+    }
+    async handleTaskAutomationSubmit(e, panel) { 
+        throw new Error("handleTaskAutomationSubmit must be implemented in subclass."); 
+    }
+    async handleRelationshipAutomationSubmit(e, panel) { 
+        throw new Error("handleRelationshipAutomationSubmit must be implemented in subclass."); 
+    }
+}
+
+        
     }
 
 
