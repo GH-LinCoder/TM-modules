@@ -1559,7 +1559,7 @@ createSurveyAutomation: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => { // itemName 
-    const { surveyAnswerId,source_task_step_id , taskId, manager_id, student_id, task_step_id, itemName, approfile_is_id, relationship, ofApprofileId, automation_number   } = payload;
+    const { surveyAnswerId, source_task_step_id , taskId, manager_id, student_id, task_step_id, itemName, approfile_is_id, relationship, ofApprofileId, automation_number   } = payload;
 //what is   approfile_is_id  and approfileId at moment of creating an automation in a survey or task???  
 console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id); // 22:40 Oct 14  UNDEFINED    10:58 Oct 15 NULL 
 

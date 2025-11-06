@@ -19,7 +19,7 @@ export class AssignmentBase {
     this.subjectName = null;
     this.subjectType = null;
     this.userId = appState.query.userId;
-    this.panelEl = null;
+    this.panelEl = null; // not used?
   }
 
   // Resolve current subject from clipboard or appState

@@ -19,16 +19,21 @@ import {icons} from '../registry/iconList.js';
 
 console.log('surveyBase.js loaded');
 
-
+export class SurveyBase{
     // ========================================
     // STATE MANAGEMENT
     // ========================================
  // Pass panel and query to the constructor for setup
-constructor(panel, query = {}) { 
-    this.panel = panel;
-    this.query = query;
+constructor(type) { 
+ 
+    this.type = type; // 'create' or 'edit' now
+    console.log ('actionType:', type);
+    this.subject = null;
+    this.subjectId = null;
+    this.subjectName = null;
+    this.subjectType = null;
     this.userId = appState.query.userId;
-    this.isCreationMode = !query.surveyId; // Crucial flag
+    this.panelEl = null;
         
         this.surveyId = null;
         this.questionId = null;
@@ -37,33 +42,25 @@ constructor(panel, query = {}) {
         this.questionNumber = 0;
         this.answerNumber = 0;
         this.automationsNumber = 0;
+    
+    
+    
     }
 
-// Pass panel and query to the constructor for setup
-constructor(panel, query = {}) { 
-    this.panel = panel;
-    this.query = query;
-    this.userId = appState.query.userId;
-    this.isCreationMode = !query.surveyId; // Crucial flag
 
-    this.surveyId = query.surveyId || null;
-    // ... rest of your state properties
-}
+ // Initialize clipboard integration
+  initClipboardIntegration(panel) {  
+    // Populate from clipboard immediately
+    console.log('initClipboardIntegration:',panel);
+    this.populateFromClipboard(panel);  
+    
+    // Listen for clipboard updates
+    onClipboardUpdate(() => {
+      console.log('onClipboardUpdate:',panel);
+      this.populateFromClipboard(panel);
+    });
+  }
 
-    // ========================================
-    // UI RENDERING
-    // ========================================
-    render(panel, query = {}) {
-        console.log('createSurvey.render(', panel, query, ')');
-        panel.innerHTML = this.getTemplateHTML();
-        this.attachListeners(panel);
-        
-        // Setup clipboard update listener
-        onClipboardUpdate(() => {
-            this.populateFromClipboard(panel);
-        });
-      //  panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
-    }
 
 
 getTemplateHTML() {
@@ -135,7 +132,7 @@ getTemplateHTML() {
                                 </div>
                                 <input type="text" id="answerText" placeholder="Answer option" 
                                        class="w-full p-2 border rounded mb-3" maxlength="200" />
-                                <p class="text-xs text-gray-500 mb-3"><span id="answerTextCounter">0</span>/200 characters<                         
+                                <p class="text-xs text-gray-500 mb-3"><span id="answerTextCounter">0</span>/200 characters</p>                         
                                 <button type="button" id="saveAnswerBtn" class="w-full mt-2 bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 opacity-50" style="pointer-events: none;">
                                     Save Answer
                                 </button>
@@ -214,6 +211,8 @@ getTemplateHTML() {
     // ========================================
     // EVENT HANDLERS
     // ========================================
+   
+   /*
     attachListeners(panel) { 
         console.log('attachListeners()');
         
@@ -239,6 +238,7 @@ getTemplateHTML() {
         panel.querySelector('#saveSurveyBtn')?.addEventListener('click', (e) => {
             this.handleSurveySubmit(e, panel);
         });
+console.log('Save button:', panel.querySelector('#saveSurveyBtn'));
 
         // Save question button
         panel.querySelector('#saveQuestionBtn')?.addEventListener('click', (e) => {
@@ -278,41 +278,92 @@ if (relationshipBtn) {
 }
 
 
+// Save relationship automation button
+
 
         // Close dialog
         panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => {
             panel.remove();
         });
 
-// ========================================
-    // SUBCLASS INTERFACE (Database Operations)
-    // Subclasses MUST implement these methods.
-    // ========================================
-    async handleSurveySubmit(e, panel) { 
-        throw new Error("handleSurveySubmit must be implemented in subclass."); 
-    }
-    async handleQuestionSubmit(e, panel) { 
-        throw new Error("handleQuestionSubmit must be implemented in subclass."); 
-    }
-    handleAddQuestion(e, panel) { 
-        throw new Error("handleAddQuestion must be implemented in subclass."); 
-    }
-    async handleAnswerSubmit(e, panel) { 
-        throw new Error("handleAnswerSubmit must be implemented in subclass."); 
-    }
-    handleAddAnswer(e, panel) { 
-        throw new Error("handleAddAnswer must be implemented in subclass."); 
-    }
-    async handleTaskAutomationSubmit(e, panel) { 
-        throw new Error("handleTaskAutomationSubmit must be implemented in subclass."); 
-    }
-    async handleRelationshipAutomationSubmit(e, panel) { 
-        throw new Error("handleRelationshipAutomationSubmit must be implemented in subclass."); 
-    }
+}
+           */  // 19:16 Nov 6 replaced with below
+
+attachListeners(panel) {
+    console.log('attachListeners()');
+    
+    // CHARACTER COUNTERS - Use event delegation:
+    panel.addEventListener('input', (e) => {
+        if (e.target.id === 'surveyName') {
+            panel.querySelector('#surveyNameCounter').textContent = `${e.target.value.length}/128 characters`;
+        } else if (e.target.id === 'surveyDescription') {
+            panel.querySelector('#surveyDescriptionCounter').textContent = `${e.target.value.length}/2000 characters`;
+        } else if (e.target.id === 'questionText') {
+            panel.querySelector('#questionTextCounter').textContent = `${e.target.value.length}/500 characters`;
+        } else if (e.target.id === 'answerText') {
+            panel.querySelector('#answerTextCounter').textContent = `${e.target.value.length}/200 characters`;
+        }
+    });
+
+    // BUTTON CLICKS - Use event delegation:
+    panel.addEventListener('click', (e) => {
+        // Save survey button
+        if (e.target.id === 'saveSurveyBtn') {
+            e.preventDefault();
+            this.handleSurveySubmit(e, panel);
+            return;
+        }
+        
+        // Save question button
+        if (e.target.id === 'saveQuestionBtn') {
+            e.preventDefault();
+            this.handleQuestionSubmit(e, panel);
+            return;
+        }
+        
+        // Add question button   
+        if (e.target.id === 'addQuestionBtn') {
+            e.preventDefault();
+            this.handleAddQuestion(e, panel);
+            return;
+        }
+        
+        // Save answer button
+        if (e.target.id === 'saveAnswerBtn') {
+            e.preventDefault();
+            this.handleAnswerSubmit(e, panel);
+            return;
+        }
+        
+        // Add answer button
+        if (e.target.id === 'addAnswerBtn') {
+            e.preventDefault();
+            this.handleAddAnswer(e, panel);
+            return;
+        }
+        
+        // Save task automation button
+        if (e.target.id === 'saveTaskAutomationBtn') {
+            e.preventDefault();
+            this.handleTaskAutomationSubmit(e, panel);
+            return;
+        }
+        
+        // Save relationship automation button
+        if (e.target.id === 'saveRelationshipAutomationBtn') {
+            e.preventDefault();
+            this.handleRelationshipAutomationSubmit(e, panel);
+            return;
+        }
+        
+        // Close dialog
+        if (e.target.closest('[data-action="close-dialog"]')) {
+            panel.remove();
+            return;
+        }
+    });
 }
 
-        
-    }
 
 
     // ========================================
@@ -523,3 +574,30 @@ styleCardByType(type){
         });
     }
 
+// ========================================
+    // SUBCLASS INTERFACE (Database Operations)
+    // Subclasses MUST implement these methods.
+    // ========================================
+    async handleSurveySubmit(e, panel) { 
+        throw new Error("handleSurveySubmit must be implemented in subclass."); 
+    }
+    async handleQuestionSubmit(e, panel) { 
+        throw new Error("handleQuestionSubmit must be implemented in subclass."); 
+    }
+    handleAddQuestion(e, panel) { 
+        throw new Error("handleAddQuestion must be implemented in subclass."); 
+    }
+    async handleAnswerSubmit(e, panel) { 
+        throw new Error("handleAnswerSubmit must be implemented in subclass."); 
+    }
+    handleAddAnswer(e, panel) { 
+        throw new Error("handleAddAnswer must be implemented in subclass."); 
+    }
+    async handleTaskAutomationSubmit(e, panel) { 
+        throw new Error("handleTaskAutomationSubmit must be implemented in subclass."); 
+    }
+    async handleRelationshipAutomationSubmit(e, panel) { 
+        throw new Error("handleRelationshipAutomationSubmit must be implemented in subclass."); 
+    }
+
+}

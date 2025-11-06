@@ -318,16 +318,7 @@ const stubName = appState.query.petitioner.Action; //legacy html to be phased-ou
     // If it's already open, just focus it (don't open again)
     return;
   }
-/////move to getDisplayArea // move lower 9:44 sep 10
-//  const panel = document.createElement('div');
-//  panel.className = 'page-panel';
 
-//  panel.dataset.pageName = stubName; //what is this?
-////// move the above 
-
-
-//console.log('about to check registry(',stubName,')',stubName.length);
-// extracting these  4 lines to a new function - failed
 
 let registryEntry = await registry[stubName]; //send string to lookup object, get a pointer to a function (don't need await)
 
