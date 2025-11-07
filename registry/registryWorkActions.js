@@ -1404,6 +1404,35 @@ console.log('create survey:','userId:',userId, 'payload;', payload);
 },
 
 //SURVEYS
+updateSurvey: {
+  metadata: {
+    tables: ['survey_headers'],
+    columns: ['name', 'description', 'external_url', 'author_id'],
+    type: 'UPDATE',
+    requiredArgs: ['surveyName', 'surveyDescription'] // ← should include url and author
+  },
+  handler: async (supabase, userId, payload) => {
+
+    const { surveyId, surveyName, surveyDescription} = payload; // should include authorId ?
+    console.log('UpdateSurvey:',surveyName, 'userId:',userId, 'surveyId:',surveyId);
+    const { data, error } = await supabase
+
+    .from('survey_headers')
+      .update({
+        name: surveyName,
+        description :  surveyDescription || null,
+      //  author_id: userId 
+      })
+      .eq('id', surveyId) 
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // ← returns { id, name, description, ... }
+  }
+},
+
+//SURVEYS
 createSurveyQuestion: {
   metadata: {
     tables: ['survey_questions'],

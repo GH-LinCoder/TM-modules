@@ -92,7 +92,7 @@ export const registry = { // this registry is for loading a new page to the righ
 //'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),  
 'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
 'assign-survey-dialogue' :()=> import('../surveys/assignSurvey.js'),
-
+'edit-survey-dialogue':()=> import('../surveys/EditSurvey.js'),
 //////////          SETTINGS            AdminDash      /////////                 
 'money-management-section': () => import('../dash/moneyManagementSection.js'),
 

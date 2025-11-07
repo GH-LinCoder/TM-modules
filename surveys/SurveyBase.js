@@ -91,6 +91,9 @@ getTemplateHTML() {
                         </p>
                     </div>
 
+
+
+
                     <div class="bg-gray-200 p-6 space-y-6">
                         <div class="space-y-4">
                             <input id="surveyName" placeholder="Survey Name - must be unique." maxlength="128" required class="w-full p-2 border rounded" />
@@ -536,9 +539,12 @@ styleCardByType(type){
         // Get clipboard items
         const tasks = getClipboardItems({ as: 'task' });
         const approfiles = getClipboardItems({ as: 'other' });
+        const surveys = getClipboardItems({ as: 'survey' });
         
         console.log('Tasks from clipboard:', tasks);
         console.log('AppProfiles from clipboard:', approfiles);
+        console.log('Surveys from clipboard:', surveys);
+        
         
         // Populate task dropdown
         const taskSelect = panel.querySelector('#taskSelect');
@@ -553,6 +559,25 @@ styleCardByType(type){
             console.log('Populating approfile dropdown with', approfiles.length, 'items');
             this.addClipboardItemsToDropdown(approfiles, approfileSelect, 'approfile');
         }
+
+        // Populate surveys dropdown
+        //<=========================  code needed in html dropdown  BUT editSurvey overwrites this
+        const surveySelect = panel.querySelector('#surveySelect');
+        if (surveySelect) {
+            console.log('Populating survey dropdown with', surveys.length, 'items');
+            this.addClipboardItemsToDropdown(surveys, surveySelect, 'approfile');
+
+            // If only one survey in clipboard, auto-select it:
+if (surveys.length === 1) {
+    surveySelect.value = surveys[0].entity.id; 
+    surveySelect.dispatchEvent(new Event('change'));
+}
+        }
+
+
+
+
+        
     }
 
     addClipboardItemsToDropdown(items, selectElement, type) { 
