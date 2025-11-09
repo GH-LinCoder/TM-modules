@@ -53,12 +53,9 @@ panel.querySelector('#surveySelect')?.addEventListener('change', (e) => {
   const selectedId = e.target.value;
   if (selectedId && selectedId !== this.editSurveyId) {
     this.editSurveyId = selectedId;
-    this.loadSurveyData(panel).then(() => this.populateSurveyData(panel,'header'));
-   // this.attachSummaryListeners(panel); // too early node list length 0
+    this.loadSurveyData(panel).then(() => this.populateSurveyData(panel));
   }
 });
-
-
 
 panel.querySelectorAll('.edit-mode-card').forEach(card => {
     card.addEventListener('click', (e) => {
@@ -68,6 +65,7 @@ panel.querySelectorAll('.edit-mode-card').forEach(card => {
     });
 });
     }
+
 
 
     setViewMode(panel, mode) {
@@ -105,7 +103,7 @@ panel.querySelectorAll('.edit-mode-card').forEach(card => {
             <div id="surveyEditorDialog" class="survey-editor-dialogue relative z-10 flex flex-col h-full">
                 <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
                     <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-xl font-semibold text-gray-900">Edit Survey 18:00 Nov 9</h3>
+                        <h3 class="text-xl font-semibold text-gray-900">Edit Survey 19:19 Nov 7</h3>
 
                                         <select id="surveySelect" 
                                                 class="flex-1 p-2 border border-gray-300 rounded text-sm">
@@ -280,181 +278,61 @@ normalizeSurveyView(rows) {
         }
     }
 
-
-populateEditFormWithHeader(nameInput, descriptionInput,nameCounter, descCounter){
-    if (nameInput) nameInput.value = this.normalizedSurvey.name || '';
-    if (descriptionInput) descriptionInput.value = this.normalizedSurvey.description || '';
-    if (nameCounter) nameCounter.textContent = `${this.normalizedSurvey.name?.length || 0}/128 characters`;
-    if (descCounter) descCounter.textContent = `${this.normalizedSurvey.description?.length || 0}/2000 characters`;
-}
-
-populateEditFormWithQuestion(nameInput, descriptionInput,nameCounter, descCounter){
-    const question = this.normalizedSurvey.questions.find(q => q.questionId === this.questionId);
-    console.log('Q:', question, nameInput, descriptionInput,nameCounter, descCounter);
-    if (nameInput) nameInput.value = question.text || '';
-    if (descriptionInput) descriptionInput.value = question.description || '';
-    if (nameCounter) nameCounter.textContent = `${question.name?.length || 0}/128 characters`;
-    if (descCounter) descCounter.textContent = `${question.description?.length || 0}/2000 characters`;
-}
-
-populateEditFormWithAnswer(nameInput, descriptionInput,nameCounter, descCounter){
-    console.log('A:', nameInput, descriptionInput,nameCounter, descCounter);
-    console.log('A:', this.questionId, this.answerId,this.automationId);  // what is the structure to get to the answers? 
-    const question = this.normalizedSurvey.questions.find(q => q.questionId === this.questionId);
-  if (!question) {
-    console.warn('Question not found:', this.questionId);
-    return;
-  }
-
-  const answer = question.answers.find(a => a.answerId === this.answerId);
-  if (!answer) {
-    console.warn('Answer not found:', this.answerId);
-    return;
-  }
-
-  if (nameInput) nameInput.value = answer.text || '';
-  if (descriptionInput) descriptionInput.value = answer.description || '';
-  if (nameCounter) nameCounter.textContent = `${answer.text?.length || 0}/128 characters`;
-  if (descCounter) descCounter.textContent = `${answer.description?.length || 0}/2000 characters`;
-}
-
-populateEditFormWithAutomation(nameInput, descriptionInput,nameCounter, descCounter)
-
-{ console.log('automation: Q:', this.questionId,'A:', this.answerId,'au:',this.automationId);
-      const question = this.normalizedSurvey.questions.find(q => q.questionId === this.questionId);
-    if (!question) return;
-    
-    const answer = question.answers.find(a => a.answerId === this.answerId);
-    if (!answer) return;
-    
-    const automation = answer.automations.find(auto => auto.automationId === this.automationId);
-    if (!automation) return;
-    
-    console.log('Automation const:', automation);
-    if (nameInput) nameInput.value = automation.text || '';
-    if (descriptionInput) descriptionInput.value = automation.description || '';
-    if (nameCounter) nameCounter.textContent = `${automation.name?.length || 0}/128 characters`;
-    if (descCounter) descCounter.textContent = `${automation.description?.length || 0}/2000 characters`;
-}
-
-// how to edit automations? Only by deletion & addition - need the mechanisms used in createSurvey
-/* The automations part of the object comprises:
-
-approIsId: "06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df"
-approIsName: "Profilia"
-automationId: "5800951e-c201-4151-82c0-8ffb39d67252"
-automationNumber: 5
-name: "passive"
-ofApproId: "24cf072f-f4af-42a5-9d09-f82e14a2139a"
-ofApproName: "Passive"
-relationship: "member"
-taskHeaderId: null
-taskStepId: null
-
-*/
-
-
-attachSummaryListeners(panel){   console.log('attachSummary()');
-    const qEl = panel.querySelectorAll('.clickable-question');
-    console.log('qEl', qEl);  // node list was length 0, probably called too early
-    //Now probably called many times - problem of many listeners
-    this.questionId=null; this.answerId=null; this.automationId=null; // reset the values to not confuse with stale ones
-    panel.querySelectorAll(".clickable-question").forEach(el => {el.removeEventListener('click',e=>{})}); //removes the questions
-
-    panel.querySelectorAll('.clickable-question').forEach(el => {     console.log('el',el);
-        el.addEventListener('click', e => {
-            this.questionId = e.currentTarget.dataset.questionId;
-            console.log('Q:', this.questionId);
-            this.populateSurveyData(panel, 'question');
-
-        });
-      });
-
-      panel.querySelectorAll(".clickable-answer").forEach(el => {el.removeEventListener('click',e=>{})});
-
-      panel.querySelectorAll('.clickable-answer').forEach(el => {
-        el.addEventListener('click', e => {
-            this.questionId = e.currentTarget.dataset.questionId;
-            this.answerId = e.currentTarget.dataset.answerId;
-            console.log('Q:', this.questionId, 'A:', this.answerId);
-            this.populateSurveyData(panel, 'answer');
-
-        });
-      });
-
-          panel.querySelectorAll(".clickable-automationn").forEach(el => {el.removeEventListener('click',e=>{})});
-      
-      panel.querySelectorAll('.clickable-automation').forEach(el => {
-        el.addEventListener('click', e => {
-            this.questionId = e.currentTarget.dataset.questionId;
-            this.answerId = e.currentTarget.dataset.answerId;
-            this.automationId = e.currentTarget.dataset.automationId;
-            console.log('Q:', this.questionId, 'A:', this.answerId, 'Au:', this.automationId);
-            this.populateSurveyData(panel, 'automation');
-
-        });
-      });
-}
-
-
-    populateSurveyData(panel, section) {
+    populateSurveyData(panel) {
         if (!this.normalizedSurvey) return;
         
+        // Fill in survey header
+        //panel.querySelector('#surveyName').value = this.normalizedSurvey.name || '';
+        //panel.querySelector('#surveyDescription').value = this.normalizedSurvey.description || '';
+        
         const nameInput = panel.querySelector('#surveyName');
-//        if (nameInput) nameInput.value = this.normalizedSurvey.name || '';
+        if (nameInput) nameInput.value = this.normalizedSurvey.name || '';
         
         const descriptionInput = panel.querySelector('#surveyDescription');
-//        if (descriptionInput) descriptionInput.value = this.normalizedSurvey.description || '';
+        if (descriptionInput) descriptionInput.value = this.normalizedSurvey.description || '';
         
         // Update character counters
         const nameCounter = panel.querySelector('#surveyNameCounter');
-//        if (nameCounter) nameCounter.textContent = `${this.normalizedSurvey.name?.length || 0}/128 characters`;
+        if (nameCounter) nameCounter.textContent = `${this.normalizedSurvey.name?.length || 0}/128 characters`;
         
         const descCounter = panel.querySelector('#surveyDescriptionCounter');
-//        if (descCounter) descCounter.textContent = `${this.normalizedSurvey.description?.length || 0}/2000 characters`;
-switch (section){
-case 'header' :this.populateEditFormWithHeader(nameInput, descriptionInput,nameCounter, descCounter); break;
-case 'question' :this.populateEditFormWithQuestion(nameInput, descriptionInput,nameCounter, descCounter); break;
-case 'answer' :this.populateEditFormWithAnswer(nameInput, descriptionInput,nameCounter, descCounter); break;
-case 'automation' :this.populateEditFormWithAutomation(nameInput, descriptionInput,nameCounter, descCounter); break;
-default: console.log('section of survey not known') ;
-
-}
+        if (descCounter) descCounter.textContent = `${this.normalizedSurvey.description?.length || 0}/2000 characters`;
+   
    // new 22:22 nov 7
     // ADD: Display questions/answers/automations
     const surveyContentContainer = panel.querySelector('#surveyContent');
     if (surveyContentContainer) {
         surveyContentContainer.innerHTML = this.renderSurveyStructure(this.normalizedSurvey);
     }
-    this.attachSummaryListeners(panel);
+   
     }
 
     renderSurveyStructure(survey) {
         let html = '<h3>Summary:</h3><br>';
         
         survey.questions.forEach(question => {
-            html += `<p class="clickable-question  hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md" data-question-id="${question.questionId}">
+            html += `<p class="clickable-question" data-question-id="${question.questionId}">
             <strong>Q${question.questionNumber}:</strong> ${question.text}</p>`;
             
             //`<p><strong>Q${question.questionNumber}:</strong> ${question.text}</p>`;
             
             question.answers.forEach(answer => {
-                html +=  `<p class="clickable-answer hover:scale-105 transition-transform bg-green-50 border-l-4 border-green-400 rounded-lg p-3 ml-4 mb-2 shadow-sm hover:shadow-md" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}">
+                html +=  `<p class="clickable-answer" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}">
                               <em>A${answer.answerNumber}:</em> ${answer.text}</p>`;
                 
                 //`<p><em>A${answer.answerNumber}:</em> ${answer.text}</p>`;
                 
                 if (answer.automations.length > 0) {
-                 //   html += `<p><em>Automations:</em></p>`;
+                    html += `<p><strong>Automations:</strong></p>`;
                     
                     answer.automations.forEach(auto => {
                         // DECISION LOGIC: Check if it's a task or relationship automation
                         if (auto.taskHeaderId) {
                             // TASK AUTOMATION   `<p class="clickable-automation" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}" data-automation-id="${auto.automationId}">🔄 ${auto.name || 'Unnamed'}</p>`;
-                            html += `<p class="clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-3 ml-8 mb-2 shadow-sm hover:shadow-md" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}" data-automation-id="${auto.automationId}">automation🚂🔧 <strong>Task:</strong> Assign to "${auto.name || 'Unknown Task'}" → Step ${auto.taskStepId || 'Initial'}</p>`;
+                            html += `<p class="clickable-automation" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}" data-automation-id="${auto.automationId}">🔄 <strong>Task:</strong> Assign to "${auto.name || 'Unknown Task'}" → Step ${auto.taskStepId || 'Initial'}</p>`;
                         } else if (auto.relationship && auto.ofApproId) {
                             // RELATIONSHIP AUTOMATION  
-                            html += `<p class="clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-yellow-400 rounded-lg p-3 ml-8 mb-2 shadow-sm hover:shadow-md" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}" data-automation-id="${auto.automationId}">automation🚂🖇️ <strong>Relation:</strong> ${'['+ auto.approIsId + '] <strong> ' + auto.approIsName || 'Respondent' + 'is'} → ${auto.relationship} → ${'of ' + auto.ofApproName+'</strong> ['+auto.ofApproId +']'}</p>`;
+                            html += `<p class="clickable-automation" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}" data-automation-id="${auto.automationId}">🪪 <strong>Relation:</strong> ${'['+ auto.approIsId + '] <strong> ' + auto.approIsName || 'Respondent' + 'is'} → ${auto.relationship} → ${'of ' + auto.ofApproName+'</strong> ['+auto.ofApproId +']'}</p>`;
                         } else {
                             // UNKNOWN AUTOMATION TYPE
                             html += `<p>❓ <strong>Unknown:</strong> ${JSON.stringify(auto)}</p>`;

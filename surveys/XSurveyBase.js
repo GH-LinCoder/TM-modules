@@ -6,9 +6,6 @@ The aim being to enable a new module editSurvey to have access to the shared fun
 However there may be more that could move if the only difference in some other function is calling for INSERT vs UPDATE
 
 Would it be better to have a single createEditSurvey.js module or separate ones createSurvey.js and editSurvey.js  ?
-
-from gitHub Nov 7 (downloaded nov 8 in desperation)
-
 */
 
 
@@ -41,11 +38,9 @@ constructor(type) {
         this.surveyId = null;
         this.questionId = null;
         this.answerId = null;
-        this.automationId=null;
-
         this.steps = []; // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-        this.questionNumber = 0;
-        this.answerNumber = 0;
+        this.questionNumber = 1;
+        this.answerNumber = 1;
         this.automationsNumber = 0;
     
     
@@ -68,153 +63,85 @@ constructor(type) {
 
 
 
-getTemplateHTML() {
-        console.log('getTemplateHTML()');
-        return `
-            <div id="surveyEditorDialog" class="survey-editor-dialogue relative z-10 flex flex-col h-full">
-                <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
-                    <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-xl font-semibold text-gray-900">Create Survey 17:40 Nov 2</h3>
-                        <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
-                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                            </svg>
-                        </button>
-                    </div>
-                    
-                    <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
-                        <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
-                        <p class="text-blue-700 text-sm">
-                            Create a survey with questions and multiple choice answers. 
-                            For each answer, you can optionally assign a task to execute 
-                            and/or create a relationship with an approfile when selected. 
-                            First enter a name for the survey which describes what it is. 
-                            This name has to be unique, each survey should have a meaningful 
-                            name that makes it easy to recognise if in a list of surveys. 
-                            Then add a description. This description will be displayed to 
-                            anyone who is going to respond to the survey.
-                        </p>
-                    </div>
+  getEditTemplateHTML() {
+    return `
+        <div id="surveyEditorDialog" class="survey-editor-dialogue relative z-10 flex flex-col h-full">
+            <div class="bg-white rounded-lg shadow-lg w-full max-w-6xl mx-4 z-10 max-h-[90vh] overflow-hidden">
+                <div class="p-6 border-b border-gray-200 flex justify-between items-center">
+                    <h3 class="text-xl font-semibold text-gray-900">Edit Survey</h3>
+                    <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                        </svg>
+                    </button>
+                </div>
 
-
-
-
-                    <div class="bg-gray-200 p-6 space-y-6">
-                        <div class="space-y-4">
+                <div class="p-6">
+                    <!-- Survey Header Section -->
+                    <div class="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+                        <h4 class="font-medium text-blue-800 mb-3">Survey Header</h4>
+                        <div class="space-y-3">
                             <input id="surveyName" placeholder="Survey Name - must be unique." maxlength="128" required class="w-full p-2 border rounded" />
                             <p id="surveyNameCounter" class="text-xs text-gray-500">0/128 characters</p>
-
-                            <textarea id="surveyDescription" placeholder="Survey Description" rows="3" maxlength="2000" required class="w-full p-2 min-h-80 border rounded"></textarea>
+                            
+                            <textarea id="surveyDescription" placeholder="Survey Description" rows="3" maxlength="2000" required class="w-full p-2 min-h-20 border rounded"></textarea>
                             <p id="surveyDescriptionCounter" class="text-xs text-gray-500">0/2000 characters</p>
-
-                            <button id="saveSurveyBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
-                                Enter name & description then click to save
+                            
+                            <button id="saveSurveyHeaderBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
+                                Save Survey Header
                             </button>
+                        </div>
+                    </div>
 
-                            <!-- Question Card -->
-<div id="questionCard" class="bg-white p-4 rounded-lg border border-gray-300 opacity-50" style="pointer-events: none;">
-    <div class="flex justify-between items-center mb-3">
-        <label class="block text-sm font-medium text-gray-700">Question</label>
-    </div>
-    <input type="text" id="questionText" placeholder="Enter question text" 
-           class="w-full p-2 border rounded mb-3" maxlength="500" />
-    <p class="text-xs text-gray-500 mb-3"><span id="questionTextCounter">0</span>/500 characters</p>
-    
-    <div id="answersContainer" class="space-y-3">
-        <!-- Answers will be added here -->
-    </div>
-                                
-                                <button type="button" id="saveQuestionBtn" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
-                                    Save Question
-                                </button>
-                                <button type="button" id="addQuestionBtn" 
-                                        class="mt-2 w-full text-sm bg-gray-200 hover:bg-gray-300 py-1 px-3 rounded opacity-50" style="pointer-events: none;" >
-                                        + add another question
-                                </button>
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <!-- LEFT: Summary Navigation -->
+                        <div class="space-y-4">
+                            <h4 class="font-medium text-gray-800">Survey Structure</h4>
+                            <div id="surveyStructure" class="bg-gray-50 p-4 rounded-lg border min-h-96 max-h-96 overflow-y-auto">
+                                <!-- Dynamic structure will be populated here -->
                             </div>
-
-                            <!-- Answer Card -->
-                            <div id="answerCard" class="bg-gray-50 p-3 rounded border opacity-30" style="pointer-events: none;">
-                                <div class="flex justify-between items-center mb-2">
-                                    <span class="text-sm font-medium text-gray-600">Answer</span>
-                                </div>
-                                <input type="text" id="answerText" placeholder="Answer option" 
-                                       class="w-full p-2 border rounded mb-3" maxlength="200" />
-                                <p class="text-xs text-gray-500 mb-3"><span id="answerTextCounter">0</span>/200 characters</p>                         
-                                <button type="button" id="saveAnswerBtn" class="w-full mt-2 bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 opacity-50" style="pointer-events: none;">
-                                    Save Answer
+                            
+                            <div class="flex gap-2">
+                                <button id="addQuestionBtn" class="flex-1 bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
+                                    + Add Question
                                 </button>
-                                
-                                <button type="button" id="addAnswerBtn" 
-                                        class="mt-2 w-full text-sm bg-gray-200 hover:bg-gray-300 py-1 px-3 rounded opacity-50" style="pointer-events: none;">
-                                        + add another answer
-                                </button>
-                            </div>
-
-                            <!-- Automations Card -->
-                            <div id="automationsCard" class="bg-green-50 p-4 rounded-lg border border-green-300 opacity-20" style="pointer-events: none;">
-                                <h4 class="font-medium text-green-800 mb-2">Automations</h4>
-                                <p class="text-green-700 text-sm">
-                                    When this answer is selected, the following actions will be performed:
-                                </p>
-                                
-                                <!-- Assign Task Section -->
-                                <div class="mt-4 p-3 bg-white rounded border mb-4">
-                                    <h5 class="font-medium text-gray-800 mb-2">Assign a task</h5>
-                                    <div class="flex gap-2">
-                                        <select id="taskSelect" 
-                                                class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                                            <option value="">Select a task</option>
-                                        </select>
-                                        <button type="button" id="saveTaskAutomationBtn" class="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 opacity-50" style="pointer-events: none;">
-                                            Save Task
-                                        </button>
-                                    </div>
-                                </div>
-                                
-                                <!-- Relate to Category Section -->
-                                <div class="p-3 bg-white rounded border">
-                                    <h5 class="font-medium text-gray-800 mb-2">Relate to a category</h5>
-                                    <div class="flex gap-2 mb-2">
-                                        <select id="approfileSelect" 
-                                                class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                                            <option value="">Select an approfile</option>
-                                        </select>
-                                    </div>
-                                    <div class="flex gap-2">
-                                        <select id="relationshipSelect" 
-                                                class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                                            <option value="">Select relationship</option>
-                                            <option value="member">member</option>
-                                            <option value="customer">customer</option>
-                                            <option value="explanation">explanation</option>
-                                        </select>
-                                        <!--button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
-                                            Save Relationship
-                                        </button-->
-<button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
-    Save Relationship
-</button>
-
-
-                                    </div>
-                                </div>
                             </div>
                         </div>
 
-                        <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
-                            <p class="text-lg font-bold">Information:</p>
-                            <div id="informationSection" class="w-full">
-                                <!-- Information cards will be added here -->
+                        <!-- RIGHT: Edit Panel -->
+                        <div class="space-y-4">
+                            <h4 class="font-medium text-gray-800">Edit Panel</h4>
+                            <div id="editPanel" class="bg-white p-4 rounded-lg border min-h-96">
+                                <div id="editPlaceholder" class="text-gray-500 flex items-center justify-center h-64">
+                                    <p>Select an item from the structure to edit</p>
+                                </div>
+                                <div id="editForm" class="hidden">
+                                    <!-- Dynamic form content -->
+                                </div>
+                            </div>
+                            
+                            <div id="editActions" class="hidden flex gap-2">
+                                <button id="saveEditBtn" class="flex-1 bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700">
+                                    Save Changes
+                                </button>
+                                <button id="cancelEditBtn" class="flex-1 bg-gray-300 text-gray-700 py-2 px-4 rounded hover:bg-gray-400">
+                                    Cancel
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-               ${petitionBreadcrumbs()}; 
-        `;
-    }
+        </div>
+        ${petitionBreadcrumbs()}
+    `;
+}
 
+
+    // ========================================
+    // EVENT HANDLERS
+    // ========================================
+   
 
 attachListeners(panel) {
     console.log('attachListeners()');

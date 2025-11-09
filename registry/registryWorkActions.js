@@ -1507,6 +1507,45 @@ updateSurveyQuestion: {
 },
 
 
+updateSurveyQuestionSoftDelete: {
+  metadata: {
+    tables: ['survey_questions'],
+    columns: ['deleted_at', 'deleted_by', 'is_deleted'],
+    type: 'UPDATE',
+    requiredArgs: ['questionId', 'userId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { questionId } = payload;
+
+    /* Check if question exists  ???
+    const {  existingQuestion, error: fetchError } = await supabase
+      .from('survey_questions')
+      .select('id, survey_header_id')
+      .eq('id', questionId)
+      .single();
+
+    if (fetchError) throw fetchError;
+    if (!existingQuestion) throw new Error('Question not found');
+*/
+    // Perform soft delete
+    const { data, error } = await supabase
+      .from('survey_questions')
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString(),
+        deleted_by: userId
+      })
+      .eq('id', questionId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+    }
+  },
+
+
+
 //SURVEYS
 createSurveyAnswer: {
   metadata: {

@@ -6,9 +6,6 @@ The aim being to enable a new module editSurvey to have access to the shared fun
 However there may be more that could move if the only difference in some other function is calling for INSERT vs UPDATE
 
 Would it be better to have a single createEditSurvey.js module or separate ones createSurvey.js and editSurvey.js  ?
-
-from gitHub Nov 7 (downloaded nov 8 in desperation)
-
 */
 
 
@@ -41,11 +38,9 @@ constructor(type) {
         this.surveyId = null;
         this.questionId = null;
         this.answerId = null;
-        this.automationId=null;
-
         this.steps = []; // Array of step objects: {type, id, text, questionNumber, answerNumber, automationNumber, ...}
-        this.questionNumber = 0;
-        this.answerNumber = 0;
+        this.questionNumber = 1;
+        this.answerNumber = 1;
         this.automationsNumber = 0;
     
     
@@ -69,12 +64,11 @@ constructor(type) {
 
 
 getTemplateHTML() {
-        console.log('getTemplateHTML()');
         return `
             <div id="surveyEditorDialog" class="survey-editor-dialogue relative z-10 flex flex-col h-full">
                 <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
                     <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-xl font-semibold text-gray-900">Create Survey 17:40 Nov 2</h3>
+                        <h3 class="text-xl font-semibold text-gray-900"  id='pageTitle'>???</h3>
                         <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -82,7 +76,13 @@ getTemplateHTML() {
                         </button>
                     </div>
                     
-                    <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+
+  <div id='insertInstructions' class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
+
+  <!-- insert instructions here -->
+
+</div>
+                    <!--div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
                         <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
                         <p class="text-blue-700 text-sm">
                             Create a survey with questions and multiple choice answers. 
@@ -94,7 +94,7 @@ getTemplateHTML() {
                             Then add a description. This description will be displayed to 
                             anyone who is going to respond to the survey.
                         </p>
-                    </div>
+                    </div-->
 
 
 
@@ -112,23 +112,23 @@ getTemplateHTML() {
                             </button>
 
                             <!-- Question Card -->
-<div id="questionCard" class="bg-white p-4 rounded-lg border border-gray-300 opacity-50" style="pointer-events: none;">
-    <div class="flex justify-between items-center mb-3">
-        <label class="block text-sm font-medium text-gray-700">Question</label>
-    </div>
-    <input type="text" id="questionText" placeholder="Enter question text" 
+        <div id="questionCard" class="bg-white p-4 rounded-lg border border-gray-300 opacity-75" style="pointer-events: none;">
+               <div class="flex justify-between items-center mb-3">
+           <label class="block text-sm font-medium text-gray-700">Question</label>
+            </div>
+       <input type="text" id="questionText" placeholder="Enter question text" 
            class="w-full p-2 border rounded mb-3" maxlength="500" />
-    <p class="text-xs text-gray-500 mb-3"><span id="questionTextCounter">0</span>/500 characters</p>
+       <p class="text-xs text-gray-500 mb-3"><span id="questionTextCounter">0</span>/500 characters</p>
     
-    <div id="answersContainer" class="space-y-3">
+       <div id="answersContainer" class="space-y-3">
         <!-- Answers will be added here -->
-    </div>
+       </div>
                                 
-                                <button type="button" id="saveQuestionBtn" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
+                                <button type="button" id="saveQuestionBtn" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 opacity-75" style="pointer-events: none;">
                                     Save Question
                                 </button>
                                 <button type="button" id="addQuestionBtn" 
-                                        class="mt-2 w-full text-sm bg-gray-200 hover:bg-gray-300 py-1 px-3 rounded opacity-50" style="pointer-events: none;" >
+                                        class="mt-2 w-full text-sm bg-gray-200 hover:bg-gray-300 py-1 px-3 rounded opacity-75" style="pointer-events: none;" >
                                         + add another question
                                 </button>
                             </div>
@@ -141,12 +141,12 @@ getTemplateHTML() {
                                 <input type="text" id="answerText" placeholder="Answer option" 
                                        class="w-full p-2 border rounded mb-3" maxlength="200" />
                                 <p class="text-xs text-gray-500 mb-3"><span id="answerTextCounter">0</span>/200 characters</p>                         
-                                <button type="button" id="saveAnswerBtn" class="w-full mt-2 bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 opacity-50" style="pointer-events: none;">
+                                <button type="button" id="saveAnswerBtn" class="w-full mt-2 bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 opacity-75" style="pointer-events: none;">
                                     Save Answer
                                 </button>
                                 
                                 <button type="button" id="addAnswerBtn" 
-                                        class="mt-2 w-full text-sm bg-gray-200 hover:bg-gray-300 py-1 px-3 rounded opacity-50" style="pointer-events: none;">
+                                        class="mt-2 w-full text-sm bg-gray-200 hover:bg-gray-300 py-1 px-3 rounded opacity-75" style="pointer-events: none;">
                                         + add another answer
                                 </button>
                             </div>
@@ -166,7 +166,7 @@ getTemplateHTML() {
                                                 class="flex-1 p-2 border border-gray-300 rounded text-sm">
                                             <option value="">Select a task</option>
                                         </select>
-                                        <button type="button" id="saveTaskAutomationBtn" class="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 opacity-50" style="pointer-events: none;">
+                                        <button type="button" id="saveTaskAutomationBtn" class="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 opacity-75" style="pointer-events: none;">
                                             Save Task
                                         </button>
                                     </div>
@@ -189,12 +189,12 @@ getTemplateHTML() {
                                             <option value="customer">customer</option>
                                             <option value="explanation">explanation</option>
                                         </select>
-                                        <!--button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
+                                        <!--button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-75" style="pointer-events: none;">
                                             Save Relationship
                                         </button-->
-<button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
-    Save Relationship
-</button>
+                                        <button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-75" style="pointer-events: none;">
+                                        Save Relationship
+                                        </button>
 
 
                                     </div>
@@ -215,6 +215,11 @@ getTemplateHTML() {
         `;
     }
 
+
+    // ========================================
+    // EVENT HANDLERS
+    // ========================================
+   
 
 attachListeners(panel) {
     console.log('attachListeners()');
