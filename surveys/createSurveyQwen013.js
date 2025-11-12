@@ -8,7 +8,7 @@ import { showToast } from '../ui/showToast.js';
 //NO, they are not available globally, none of them. Trying to use them in this class assuming they are inherited failed
 
 // DEV  NOTE:  this module uses appState.query.userId as the appro_is .  This may need to be changed if session variable is different
-//working 15:50 Nov 10 2025  prior to edits 
+
 console.log('CreateSurvey.js loaded');
 
 
@@ -144,40 +144,6 @@ class CreateSurvey extends SurveyBase {
     // ========================================
     // 3. DATA OPERATIONS - QUESTION
     // ========================================
-
-   /*  moved to surveyBase 19:50 Nov 10 2025
-async createSurveyQuestion({
-    userId,
-    surveyId,
-    questionText,
-    question_number
-}){
-console.log('createSurveyQuestion()','id:',surveyId,' text:', questionText, 'number',
-    question_number);
-   const result = await executeIfPermitted(userId, 'createSurveyQuestion', {
-        surveyId: surveyId,
-        questionText: questionText,
-        question_number: question_number
-    });
-    return result;
-}
-
-async updateSurveyQuestion({ 
-    userId, 
-    questionId,
-    questionName,
-    questionDescription}){
-console.log('updateSurveyQuestion()','id:',questionId,' name:', questionName, 'description',questionDescription);
-
-const   result = await executeIfPermitted(userId, 'updateSurveyQuestion', {
-        questionId: questionId,
-        questionName: questionName,
-        questionDescription: questionDescription || null
-    })
-    return result;
-
-} */
-
  async handleQuestionSubmit(e, panel) { 
         console.log('handleQuestionSubmit()');
         e.preventDefault();
@@ -199,35 +165,23 @@ const   result = await executeIfPermitted(userId, 'updateSurveyQuestion', {
         saveQuestionBtn.disabled = true;
         saveQuestionBtn.textContent = 'Saving Question...';
         
-        try { let result, questionDescription;
+        try { let result,questionDescription;
 // NEW 14:00 Nov 2 2025  What if Q1 doesn't exist?  this.questionId
             if (this.questionNumber === 1) { // exsiting auto-created Q1 needs updating
-
-result = await this.updateSurveyQuestion({ userId, questionId: this.questionId,
-    questionName: questionText,questionDescription: questionDescription || null});
-
-                /*
                 result = await executeIfPermitted(userId, 'updateSurveyQuestion', {
                     questionId: this.questionId,
                     questionName: questionText,
                     questionDescription: questionDescription || null
-                });  */                
+                });                
             }  
             else { // New question to be inserted
-               // this.questionNumber++; // this is also in the reaction to the click with both jumps 2 places
-             result = await this.createSurveyQuestion({
-                    userId:userId,
-                    surveyId: this.surveyId,
-                    questionText: questionText,
-                    question_number: this.questionNumber
-                })
-console.log('question:', result);
-                /*  result = await executeIfPermitted(userId, 'createSurveyQuestion', {
+                this.questionNumber++;
+             result = await executeIfPermitted(userId, 'createSurveyQuestion', {
                 surveyId: this.surveyId,
                 questionText: questionText,
                 question_number: this.questionNumber
-            }); */
-            } 
+            });
+            }
             
             this.questionId = result.id;
             // Add information card  
@@ -255,10 +209,9 @@ console.log('question:', result);
         }
     }
 
-/* moved to surveyBase 20:13 Nov 10    
+    
     handleAddQuestion(e, panel) { 
         console.log('handleAddQuestion()');
-        this.questionNumber++;  // with this  & the other ++ we get Q=3, but without it we have Q=1
         // Reset question fields for a new question
         panel.querySelector('#questionText').value = '';
         panel.querySelector('#questionText').disabled = false;
@@ -281,46 +234,11 @@ console.log('question:', result);
         saveQuestionBtn.textContent = 'Save Question';
         
         showToast('Ready to add a new question');
-    } */
+    }
 
     // ========================================
     // 4. DATA OPERATIONS - ANSWER (The most critical difference)
     // ========================================
-
-    /*  moved to surveyBase 20:00 Nov 10 2025
-async createSurveyAnswer({
-    userId,
-    questionId,
-    answerText,
-    answer_number
-})
-
-{ console.log('createSurveyAnswer()','id:',questionId,' text:', answerText, 'number',
-    answer_number);
-    const result = await executeIfPermitted(userId, 'createSurveyAnswer', {
-    questionId: questionId,
-    answerText: answerText,
-    answer_number: answer_number
-});
-return result;
-}
-
-async updateSurveyAnswer({
-    userId, 
-    answerId,
-    answerName,
-    answerDescription}){
-
-    const result = await executeIfPermitted(userId, 'updateSurveyAnswer', {
-        answerId: answerId,
-        answerName: answerName,
-        answerDescription: answerDescription || null
-    });
-    return result; 
-
-}
-*/
-
     async handleAnswerSubmit(e, panel) { 
         // This method is unique because it must check for and update the existing A1,
         // then create A2, A3, etc.
@@ -339,34 +257,19 @@ async updateSurveyAnswer({
         try {
             if (this.answerNumber === 1) { 
                 // Exsiting auto-created A1 needs updating
-                result = await this.updateSurveyAnswer({
-                    userId:userId, 
-                    answerId: this.answerId,
-                    answerName: answerText,
-                    answerDescription: answerDescription || null
-                });
-
-                /*
                 result = await executeIfPermitted(userId, 'updateSurveyAnswer', {
                     answerId: this.answerId,
                     answerName: answerText, // NOTE: Changed from 'answerName' to 'answerText' to be consistent with 'createSurveyAnswer'
                     answerDescription: answerDescription || null
-                });*/
-            } else {
-            console.log('call createSurveyAnswer', userId, this.questionId, answerText,this.answerNumber);  
-            result =   await this.createSurveyAnswer({
-                    userId:userId,
-                    questionId: this.questionId,
-                    answerText: answerText,
-                    answer_number: this.answerNumber
-                });        
+                });
+            } else {          
                 // New answer so insert (A2, A3, ...)
-              /*  this.answerNumber++; // Increment ONLY before insertion of new answers (A2+)
+                this.answerNumber++; // Increment ONLY before insertion of new answers (A2+)
                 result = await executeIfPermitted(userId, 'createSurveyAnswer', {
                     questionId: this.questionId,
                     answerText: answerText,
                     answer_number: this.answerNumber
-                }); */
+                });
             } 
             
             this.answerId = result.id;
@@ -390,10 +293,9 @@ async updateSurveyAnswer({
             showToast('Failed to save answer: ' + error.message, 'error');
         }
     }
-/* moved to surveyBase 20:10 Nov 10
+
     handleAddAnswer(e, panel) { 
-        this.answerNumber++;
-        console.log('handleAddAnswer()', this.answerNumber);
+        console.log('handleAddAnswer()');
         // Reset answer fields for a new answer
         panel.querySelector('#answerText').value = '';
         panel.querySelector('#answerText').disabled = false;
@@ -409,8 +311,6 @@ async updateSurveyAnswer({
         
         showToast('Ready to add a new answer');
     }
-*/
-/*
     // ========================================
     // 5. DATA OPERATIONS - AUTOMATIONS
     // ========================================
@@ -531,8 +431,5 @@ async updateSurveyAnswer({
         saveRelationshipAutomationBtn.disabled = false;
         saveRelationshipAutomationBtn.textContent = 'Save Relationship';
     }
-*/
-
-
 }
 

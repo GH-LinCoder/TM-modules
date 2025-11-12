@@ -5,6 +5,8 @@ export const icons={
 abacus: '🧮',    
 abstract:'🎭',
 //admin:'📋', //duplicate
+answer:'✍️🔮',
+answer_update:'🔮',
 approfiles:'🪪' ,
 approfileTask:'📋',
 assignTask:'👨‍🔧',
@@ -57,6 +59,7 @@ news: '🫣',
 pound:'💷',
 
 question:'❔',
+question_update:'✍️❔',
 
 relate: '🎆🖇️',
 relationships: '🖇️',
@@ -71,6 +74,7 @@ step_create:'🎆🪜',
 step_update:'✍️ 🪜',
 student:'🧑‍🎓',
 surveys:'📜' ,
+survey_update:'✍️📜',
 
 task:'🔧' ,
 task_create:'🎆🔧',

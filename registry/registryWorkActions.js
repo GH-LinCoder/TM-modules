@@ -1467,7 +1467,7 @@ createSurveyQuestion: {
         name: questionText,
         question_number:question_number,
         //external_url: taskUrl || null,
-        author_id: userId // ← use passed userId
+        //author_id: userId // ← there is no such column
       })
       .select()
       .single();
@@ -1631,23 +1631,6 @@ createSurveyAutomation: {
 //what is   approfile_is_id  and approfileId at moment of creating an automation in a survey or task???  
 console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id); // 22:40 Oct 14  UNDEFINED    10:58 Oct 15 NULL 
 
-    // Check for duplicate name  ???
-  /*
-    const {  existingSurveyQuestion, error: fetchError } = await supabase
-      .from('survey_questions')
-      .select('id')
-      .eq('name', encodeURIComponent(surveyQuestionName)) // encodeURIComponent(value) for .eq() & .like()
-      .single();
-
-    if (existingSurveyQuestion) {
-      throw new Error('A survey with that name exists. Your survey needs a different name.');
-    }  
-      
-     surveyId: newSurvey.id, // Use the survey ID from the header save
-                questionText: questionText
-    
-    */
-
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -1676,6 +1659,37 @@ console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id)
     return data; // ← returns { id, name, description, ... }
   }
 },
+
+//SURVEYS     DELETE (soft)
+softDeleteSurveyAutomation: {
+  metadata: {
+    tables: ['automations'],
+    columns: ['is_deleted', 'deleted_at', 'deleted_by'],
+    type: 'UPDATE',
+    requiredArgs: ['automationId', 'deletedBy']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { automationId, deletedBy } = payload;
+
+    const { data, error } = await supabase
+      .from('automations')
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString(),
+        deleted_by: deletedBy
+      })
+      .eq('automation_id', automationId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // returns the updated automation row
+  }
+},
+
+
+
+
 
 
 /////////////////////////////////////    READ  SURVEYS   //////////////////////

@@ -66,61 +66,6 @@ constructor(type) {
     });
   }
 
- getTaskAutomationHTML(){
- return `
-    <!-- Automations Card -->
-    <div id="automationsCard" class="automationsCard bg-green-50 p-4 rounded-lg border border-green-300 opacity-20" style="pointer-events: none;">
-        <h4 class="font-medium text-green-800 mb-2">Automations</h4>
-        <p class="text-green-700 text-sm">
-        When this answer is selected, the following actions will be performed:
-        </p>
-                                
-        <!-- Assign Task Section -->
-        <div class="mt-4 p-3 bg-white rounded border mb-4">
-            <h5 class="font-medium text-gray-800 mb-2">Assign a task</h5>
-            <div class="flex gap-2">
-                <select id="taskSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                    <option value="">Select a task</option>
-                </select>
-                <button type="button" id="saveTaskAutomationBtn" class="bg-blue-600 text-white py-1 px-3 rounded hover:bg-blue-700 opacity-50" style="pointer-events: none;">
-                    Save Task
-                </button>
-            </div>
-        </div>
-    </div>
-    `
- }
-
-getRelationAutomationHTML(){
-
-return `
-    <!-- Automations Card -->
-<!-- Relate to Category Section -->
-<div id="automationsCard" class="automationsCard p-3 bg-white rounded border opacity-20 style="pointer-events: none;">
-    <h5 class="font-medium text-gray-800 mb-2">Relate to a category</h5>
-    <div class="flex gap-2 mb-2">
-        <select id="approfileSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
-            <option value="">Select an approfile</option>
-        </select>
-    </div>
-    <div class="flex gap-2">
-        <select id="relationshipSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
-            <option value="">Select relationship</option>
-            <option value="member">member</option>
-            <option value="customer">customer</option>
-            <option value="explanation">explanation</option>
-        </select>
-        <button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
-            Save Relationship
-        </button>
-
-    </div>
-</div>
-
-`
-}
-
-
 
 
 getTemplateHTML() {
@@ -136,17 +81,17 @@ getTemplateHTML() {
                             </svg>
                         </button>
                     </div>
-
+                    
                     <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
                         <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
                         <p class="text-blue-700 text-sm">
-                            Create a survey with questions and multiple choice answers.
-                            For each answer, you can optionally assign a task to execute
-                            and/or create a relationship with an approfile when selected.
-                            First enter a name for the survey which describes what it is.
-                            This name has to be unique, each survey should have a meaningful
-                            name that makes it easy to recognise if in a list of surveys.
-                            Then add a description. This description will be displayed to
+                            Create a survey with questions and multiple choice answers. 
+                            For each answer, you can optionally assign a task to execute 
+                            and/or create a relationship with an approfile when selected. 
+                            First enter a name for the survey which describes what it is. 
+                            This name has to be unique, each survey should have a meaningful 
+                            name that makes it easy to recognise if in a list of surveys. 
+                            Then add a description. This description will be displayed to 
                             anyone who is going to respond to the survey.
                         </p>
                     </div>
@@ -167,21 +112,22 @@ getTemplateHTML() {
                             </button>
 
                             <!-- Question Card -->
-                            <div id="questionCard" class="bg-white p-4 rounded-lg border border-gray-300 opacity-50" style="pointer-events: none;">
-                                <div class="flex justify-between items-center mb-3">
-                                 <label class="block text-sm font-medium text-gray-700">Question</label>
-                            </div>
-                            <input type="text" id="questionText" placeholder="Enter question text" class="w-full p-2 border rounded mb-3" maxlength="500" />
-                                <p class="text-xs text-gray-500 mb-3"><span id="questionTextCounter">0</span>/500 characters</p>
-
-                            <div id="answersContainer" class="space-y-3">
-                                 <!-- Answers will be added here -->
-                             </div>
-
+<div id="questionCard" class="bg-white p-4 rounded-lg border border-gray-300 opacity-50" style="pointer-events: none;">
+    <div class="flex justify-between items-center mb-3">
+        <label class="block text-sm font-medium text-gray-700">Question</label>
+    </div>
+    <input type="text" id="questionText" placeholder="Enter question text" 
+           class="w-full p-2 border rounded mb-3" maxlength="500" />
+    <p class="text-xs text-gray-500 mb-3"><span id="questionTextCounter">0</span>/500 characters</p>
+    
+    <div id="answersContainer" class="space-y-3">
+        <!-- Answers will be added here -->
+    </div>
+                                
                                 <button type="button" id="saveQuestionBtn" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
                                     Save Question
                                 </button>
-                                <button type="button" id="addQuestionBtn"
+                                <button type="button" id="addQuestionBtn" 
                                         class="mt-2 w-full text-sm bg-gray-200 hover:bg-gray-300 py-1 px-3 rounded opacity-50" style="pointer-events: none;" >
                                         + add another question
                                 </button>
@@ -192,14 +138,14 @@ getTemplateHTML() {
                                 <div class="flex justify-between items-center mb-2">
                                     <span class="text-sm font-medium text-gray-600">Answer</span>
                                 </div>
-                                <input type="text" id="answerText" placeholder="Answer option"
+                                <input type="text" id="answerText" placeholder="Answer option" 
                                        class="w-full p-2 border rounded mb-3" maxlength="200" />
-                                <p class="text-xs text-gray-500 mb-3"><span id="answerTextCounter">0</span>/200 characters</p>
+                                <p class="text-xs text-gray-500 mb-3"><span id="answerTextCounter">0</span>/200 characters</p>                         
                                 <button type="button" id="saveAnswerBtn" class="w-full mt-2 bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 opacity-50" style="pointer-events: none;">
                                     Save Answer
                                 </button>
-
-                                <button type="button" id="addAnswerBtn"
+                                
+                                <button type="button" id="addAnswerBtn" 
                                         class="mt-2 w-full text-sm bg-gray-200 hover:bg-gray-300 py-1 px-3 rounded opacity-50" style="pointer-events: none;">
                                         + add another answer
                                 </button>
@@ -211,12 +157,12 @@ getTemplateHTML() {
                                 <p class="text-green-700 text-sm">
                                     When this answer is selected, the following actions will be performed:
                                 </p>
-
+                                
                                 <!-- Assign Task Section -->
                                 <div class="mt-4 p-3 bg-white rounded border mb-4">
                                     <h5 class="font-medium text-gray-800 mb-2">Assign a task</h5>
                                     <div class="flex gap-2">
-                                        <select id="taskSelect"
+                                        <select id="taskSelect" 
                                                 class="flex-1 p-2 border border-gray-300 rounded text-sm">
                                             <option value="">Select a task</option>
                                         </select>
@@ -225,18 +171,18 @@ getTemplateHTML() {
                                         </button>
                                     </div>
                                 </div>
-
+                                
                                 <!-- Relate to Category Section -->
                                 <div class="p-3 bg-white rounded border">
                                     <h5 class="font-medium text-gray-800 mb-2">Relate to a category</h5>
                                     <div class="flex gap-2 mb-2">
-                                        <select id="approfileSelect"
+                                        <select id="approfileSelect" 
                                                 class="flex-1 p-2 border border-gray-300 rounded text-sm">
                                             <option value="">Select an approfile</option>
                                         </select>
                                     </div>
                                     <div class="flex gap-2">
-                                        <select id="relationshipSelect"
+                                        <select id="relationshipSelect" 
                                                 class="flex-1 p-2 border border-gray-300 rounded text-sm">
                                             <option value="">Select relationship</option>
                                             <option value="member">member</option>
@@ -253,7 +199,6 @@ getTemplateHTML() {
 
                                     </div>
                                 </div>
-
                             </div>
                         </div>
 
@@ -267,8 +212,8 @@ getTemplateHTML() {
                 </div>
             </div>
                ${petitionBreadcrumbs()}; 
-        `
-}
+        `;
+    }
 
 
 attachListeners(panel) {
@@ -287,13 +232,9 @@ attachListeners(panel) {
         }
     });
 
-try{
-
-
     // BUTTON CLICKS - Use event delegation:
     panel.addEventListener('click', (e) => {
         // Save survey button
-        console.log('CLICK attachListeners',e.target.id);
         if (e.target.id === 'saveSurveyBtn') {
             e.preventDefault();
             this.handleSurveySubmit(e, panel);
@@ -328,13 +269,9 @@ try{
             return;
         }
         
-   //     console.log('Function exists:', typeof this.handleTaskAutomationSubmit);
-
-
         // Save task automation button
         if (e.target.id === 'saveTaskAutomationBtn') {
             e.preventDefault();
-            console.log('saveTaskAut... YES, calling function');
             this.handleTaskAutomationSubmit(e, panel);
             return;
         }
@@ -351,13 +288,7 @@ try{
             panel.remove();
             return;
         }
-
-        
     });
-
-} catch (err) {
-    console.error('Click attachListener error:', err);
-}
 }
 
 
@@ -432,10 +363,7 @@ try{
 
     // Reset automation card to initial state
     resetAutomationCard(panel) {
-        const automationsCard = panel.querySelectorAll('.automationsCard');
-
-
-        automationsCard.forEach((automationsCard) => {
+        const automationsCard = panel.querySelector('#automationsCard');
         automationsCard.style.opacity = '0.2';
         automationsCard.style.pointerEvents = 'none';
         
@@ -450,14 +378,11 @@ try{
         saveRelationshipAutomationBtn.style.opacity = '0.5';
         saveRelationshipAutomationBtn.style.pointerEvents = 'none';
         saveRelationshipAutomationBtn.textContent = 'Save Relationship';
-    });
     }
 
   // Enable automation card
 enableAutomationCard(panel) {
-    const automationsCard = panel.querySelectorAll('.automationsCard');
-
-    automationsCard.forEach((automationsCard) => {
+    const automationsCard = panel.querySelector('#automationsCard');
     automationsCard.style.opacity = '1';
     automationsCard.style.pointerEvents = 'auto';
     
@@ -472,8 +397,6 @@ enableAutomationCard(panel) {
     saveRelationshipAutomationBtn.style.opacity = '1';
     saveRelationshipAutomationBtn.style.pointerEvents = 'auto';  // This line is crucial!
     saveRelationshipAutomationBtn.textContent = 'Save Relationship';
-
-});
 }
 
     // ========================================
@@ -690,14 +613,14 @@ handleAddAnswer(e, panel) {
 
 
 
-/*
+
     async handleTaskAutomationSubmit(e, panel) { 
         throw new Error("handleTaskAutomationSubmit must be implemented in subclass."); 
     }
     async handleRelationshipAutomationSubmit(e, panel) { 
         throw new Error("handleRelationshipAutomationSubmit must be implemented in subclass."); 
     }
-*/
+
 
 
 // ============================================
@@ -832,7 +755,6 @@ async updateSurveyAnswer({
             });
             
             showToast('Task automation saved successfully!');
-            this.refreshSurvey(panel);
         } catch (error) {
             showToast('Failed to save task automation: ' + error.message, 'error');
         }
@@ -885,7 +807,6 @@ async updateSurveyAnswer({
 
             this.addInformationCard({'name': `${result.name.substring(0, 60)}...` , 'relationship': `${result.relationship.substring(0, 8)}...`,'type':'Appro automation', 'number':this.automationsNumber, 'answerNumber':this.answerNumber,  'questionNumber':this.questionNumber ,'id': `${result.id.substring(0, 8)}...` });            
             showToast('Relationship automation saved successfully!');
-            this.refreshSurvey(panel);
         } catch (error) {
             showToast('Failed to save relationship automation: ' + error.message, 'error');
         }
@@ -894,19 +815,7 @@ async updateSurveyAnswer({
         saveRelationshipAutomationBtn.textContent = 'Save Relationship';
     }
 
-    async refreshSurvey(panel) {
-        try {
-            console.log('Refreshing survey...');
-            await this.loadSurveyData(panel);
-            this.populateSurveyData(panel, this.sectionToEdit);
-            this.resetAutomationCard(panel); // Optional: reset automation UI state
-            showToast('Survey refreshed');
-        } catch (error) {
-            console.error('Failed to refresh survey:', error);
-            showToast('Failed to refresh survey', 'error');
-        }
-    }
-    
+
 
 }
 
