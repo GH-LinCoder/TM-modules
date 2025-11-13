@@ -109,30 +109,20 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
 
 
       export function renderNotes(notes, totalCount, page, pageSize) {
-        console.log('renderNotes 12 Nov()');
+        console.log('renderNotes 12 Nov()', notes);
 
         const output = document.getElementById('output');
         
-        let previousInt = null;
-
-        const notesHtml = notes
-          .map(note => {
-            // Skip if sort_int is the same as the previous one.  The view is normalised, so one row for each tag.
-            // although asking for a page of 10, how many notes depends on how may tags each note has. Probably get 3 to 6
-            if (note.sort_int === previousInt) {
-              return null;
-            }
-            previousInt = note.sort_int;
+        const notesHtml = notes.map(note => {
+          const content = note.content || '';
         
-            const content = note.content || '';
-        
-            const shortContent = content.length > 2000
-              ? `${content.slice(0, 2000)}<span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [more]</span><span class="hidden extra-content">${content.slice(2000)} <span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [less]</span></span>`
-              : content;
-        
-            const iconHTML = getIconHTML(note.status);
-            const statusAttr = note.status ?? '';
-        
+         const shortContent = content.length > 2000  // not used as at 21:30 Nov 5
+        ? `${content.slice(0, 2000)}<span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [more]</span><span class="hidden extra-content">${content.slice(2000)} <span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [less]</span></span>`
+        : content;
+       
+          
+          const iconHTML = getIconHTML(note.status);
+          const statusAttr = note.status ?? '';
           
           // Use status-based styling like in the knowledge base
           const statusClasses = {
@@ -168,7 +158,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
                 <!-- Note content -->
                 <div class="space-y-2 text-sm text-gray-800">
                   <p class="flex items-center">
-                    <span class="font-medium w-20">#:</span>
+                    <span class="font-medium w-20">ID:</span>
                     <span class="text-gray-600">${note.sort_int}</span>
                   </p>
                   <p class="flex items-center">

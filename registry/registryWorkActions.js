@@ -1129,8 +1129,8 @@ metadata: {
       const end = start + pageSize - 1;
     
       const { data, count, error } = await supabase
-        .from('notes_view')  //changed from notes to notes_view 22:17 Nov 5
-        .select('*', { count: 'exact' })
+        .from('notes_view')  //changed from notes to notes_view 22:17 Nov 5  problem of repetitions also id is now called notes_id
+        .select('*', { count: 'exact' }) // the ten could all be the same note with 10 tags
         .order('sort_int', { ascending: false })
         .range(start, end);
     

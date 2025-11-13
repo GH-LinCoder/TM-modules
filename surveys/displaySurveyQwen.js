@@ -143,7 +143,7 @@ class SurveyDisplay {
           </div>
           <div class="bg-gray-200 p-6">
             <div class="bg-white p-4 rounded-lg border border-gray-300">
-              <p class="text-gray-700">${surveyInfo.survey_description}</p>
+              <p class="text-gray-700 whitespace-pre-line" >${surveyInfo.survey_description}</p>
               <p class="text-xs text-gray-500 mt-2">Created: ${new Date(surveyInfo.survey_created_at).toLocaleDateString()}</p>
             </div>
             <div class="bg-green-100 p-4 rounded-lg border border-green-300 text-center mt-4">
