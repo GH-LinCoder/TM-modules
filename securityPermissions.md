@@ -24,19 +24,38 @@ TABLE:  ‘function_registry’  This table has columns: id:uuid, name:text, per
 
 Every javascript function that queries the database also sends as context the unique identifier of the querying function (this is the uuid of the function in the function registry).  This is hard coded into the functions. 
 
-A column in the function_registry contains a JSONB which has the permissions required as a collection of formalised atomic permissions (smallest possible permission pieces) (‘a permission molecule’). The format chosen is on the assumption of this being the best for fast database use. The format could be changed if another is superior.
+A column in the function_registry contains a JSONB which has the permissions required as a collection of formalised atomic permissions (smallest possible permission pieces) (this collection is called ‘a permission molecule’). The format chosen is on the assumption of this being the best for fast database use. The format could be changed if another is superior.
 
-A database function collects the required permission molecule from the registry and will later compare this to the collection of granted atomic permissions. If every atomic permission in the permission molecule is within the granted permission collection, then the access is permitted. If even one atomic is missing, then access is denied.
+A database function collects the required permission molecule from the registry and will later compare this to the collection of granted atomic permissions. If every atomic permission in the permission molecule is within the granted permission collection, then the access is permitted. If even one atom is missing, then access is denied.
 
-A Table ‘permission_atoms’ contains the smallest possible permission (atom) in each row. This is in a controlled syntax which specifies the CRUD action, the tableName, a single column in that table. The total number of rows would therefore be 4 times the total number of columns in all the tables subject to these column level rules.(The format is to be based on what the db can handle fastest)
+A Table ‘permission_atoms’ contains the smallest possible permission (an 'atom') in each row. This is in a controlled syntax which specifies the CRUD action, the tableName, a single column in that table. The total number of rows would therefore be 4 times the total number of columns in all the tables subject to these column level rules.(The format is to be based on what the db can handle fastest)
 
-How the granted permissions are found
+Conversion from human/work based permission specification into a machine matchable permission molecule.
 
-The permissions granted to a user are stored in the appro_relations Table. Permissions are found by searching the permissions_view which is based on the appro_relations table but which has extracted only the permission relations and has left out any other kind of relation.
+When a query is received by the database there is also a context supplied which must contain the id of the calling functtion. The id is then used to look-up the predetermined necessary permissions that are required for handling the query.
 
-The matching requires recursion as permissions may have been inherited by the user from being within some group.
+That is how the database knows what permissions are required for the query.
 
-Permissions are granted in two parts. This uses an existing system within the app called ‘appros’ and ‘relations’. 
+
+That explains how permissions are defined and compared.
+
+
+Next we examine how the granted permissions are to be found:
+
+
+Permissions are granted in two parts. This uses an existing system within the app called ‘appros’ and their ‘relations’. 
+
+How to determine what permissions the user has:
+
+Relationship syntax
+Code defining and restricting syntax of high level called permission_compounds which are converted into molecules which consist of permission atoms. Conversion is done once when the permission is first invented.
+
+Appros
+Defining who has the permission, what the relationship permission is, and what the permission is over. The who is represented by the [appro_is], the relationship is one specific to granting permissions, and what the permission is over is represented by the [of_appro]
+Relationship syntax
+
+Defining permission at a work/human level. Code defining and restricting syntax of high level called permission_compounds which are converted into molecules which consist of permission atoms. Conversion is done once when the permission is first invented
+
 
 An appro is a simple name tag that resides in the app_profiles table. It consists of an id:uuid, a name:text, a description:text and often, but not always, a column entry containing a foreign key id:uuid. This foreign key is only present if the appro represents 
 1) an authenticated user
@@ -45,7 +64,7 @@ An appro is a simple name tag that resides in the app_profiles table. It consist
 
 Appros can be connected to each other (‘related to each other’) via a link called a relationship. (Relationships are edges and appros are nodes.) This relating of appros is used in the app for various things, one of which is the granting of permissions.
 
-When a relationship is used to relate 2 appros the relationship (which is usually represented by a single word such as ‘member’ ) can form a phrase in poor English such as   John IS member OF TestGroup. Where John is an authenticated user represented by his appro and TestGroup is an abstract entity representing some group probably involved with tests.
+When a relationship is used to relate 2 appros the relationship (which is usually represented by a single word such as ‘member’ ) can form a phrase in poor English such as   "John IS member OF TestGroup". Where John is an authenticated user represented by his appro and TestGroup is an abstract entity representing some group probably involved with tests.
 
 To clearly differentiate permissions from these other uses, there is a restricted and controlled syntax in the relationships that grant permissions (see later)
 
@@ -65,27 +84,28 @@ Having iteratively searched the permissions_view, the permissions are assembled 
 
 The final part in defining the granted permission is to examine the appro at the end of the relation.
 
+
+
 The node-edge relationship system called ‘appros’ where  [appro_is] -- [relationship] -- [of_appro ] assigns permission sets over the [of_appro], where [of_appro] can be anything within the system.
 
 The of_appro sets the limit of the permission by for example being the appro of a specific survey. In this case whatever the permissions were they only apply to survey with id== the appro survey_header_id
 
 
 
-Permission details
+Permission details  'atoms'
 Stored in a look-up table ‘permission_atoms’. One atom for each column of every data table multiplied by the possible CRUD actions. Number of rows = (total_columns * 4). Each row is an ‘atom’
-Bundling into permission sets
-Code (JS) runs when a permission set is specified. Then the assembled permission ‘molecule’ is stored as a fk in the relationship table linked to a row in the permission_molecules table which contains the molecule of permissions
-Conversion  from human/work into machine matching
-Database function  that takes the function id and finds the required permission molecule in the function_registry
-Relationship syntax
-Code defining and restricting syntax of high level called permission_compounds which are converted into molecules which consist of permission atoms. Conversion is done once when the permission is first invented.
-Appros
-Defining who has the permission, what the relationship permission is, and what the permission is over. The who is represented by the [appro_is], the relationship is one specific to granting permissions, and what the permission is over is represented by the [of_appro]
-Relationship syntax
-Defining permission at a work/human level. Code defining and restricting syntax of high level called permission_compounds which are converted into molecules which consist of permission atoms. Conversion is done once when the permission is first invented
 
+Permission sets  'molecules'
+A permission set can be specified manually using a javascriot module using a controlled human and machine readable syntax. Then that specification is parsed and a collection of permission atoms is assembled into a permission ‘molecule’. The specification is stored in the relationships table as a fk to a row in the permission_molecules table which is where the molecule of permissions is stored (probably as a JSONB )
 
-
+🎨 Creating a permission and turning into a machine readable form (The Slow Process)
+The complex process of creating parsing and storing permissions is done once during creation of the permission which is the system's core caching strategy.
+ Syntax Construction (UX)
+Admin selects permissions via sequential dropdowns/lists. With forced syntax.  Limits choices based on structure of the involved tables
+ Visual Feedback 
+The UI shows permissions being removed (faded out).  Visually subtracts atomic permissions to clarify the narrowing scope, improving administrative safety. Could be color coded to the sections of the relationship syntax  SUBJECT@ - one color MAJOR-RESOURCE - other color
+Parsing at Definition
+The full path string (e.g., EDITOR@surveys#questions) is saved and immediately parsed. Some default values will already exist in a table, others can be added as invented. This is to speed-up processing of often used compound permissions.  javascript writes to a table that stores the molecule for fast access
 
 
 📜  The Permission Syntax
@@ -119,27 +139,28 @@ In addition when this relationship is applied it has a subject (the person being
 
 The of_appro could be ‘All tasks’ or ‘All surveys’ or ‘The App’ etc.
 
-
-
-
-Syntax Details:
 Role (e.g., EDITOR, ADMIN, READER): The broad capability being granted.
 '@' Separator: Followed by LIMIT of scope which cascades to lower scope
 '#' Separator: Followed by LIMIT of scope which does not cascade to lower scope
 
-🎨 3. Step-by-Step Creation and Translation (The Slow Process)
-The complex process of creating and storing permissions is done once during assignment, which is the system's core caching strategy.
- Syntax Construction (UX)
-Admin selects permissions via sequential dropdowns/lists. With forced syntax.  Limits choices based on structure of the involved tables
- Visual Feedback 
-The UI shows permissions being removed (faded out).  Visually subtracts atomic permissions to clarify the narrowing scope, improving administrative safety. Could be color coded to the sections of the relationship syntax  SUBJECT@ - one color MAJOR-RESOURCE - other color
-Parsing at Definition
-The full path string (e.g., EDITOR@surveys#questions) is saved and immediately parsed. Some default values will already exist in a table, others can be added as invented. This is to speed-up processing of often used compound permissions.  javascript writes to a table that stores the molecule for fast access
+The following are not atoms and therefore not allowed
+INSERT@TASK#description#name,  (not atomic as there is no db thing called TASK)  ?  INSERT@TASK_HEADER#description,name? (still not atomic as the columns are a combination)
+
+These are atomic:
+INSERT@TASK_HEADER#description
+INSERT@TASK_HEADER#name
+
+To ensure that permissions are clearly visible and to avoid confusion with other appro relations, the relationships for permissions use restricted syntax and symbols to differentiate them.
+
+Permissions relationships start and end with double curly braces {{   }}  and have enforced UPPERCASE and lowercase with enforced separators. Any relationship that does not parse will be treated as not granting permissions. Therefore if [John] IS [member] of [Admin], John does not get admin permissions. [Jane] IS [ {{ADMIN@WEBSITE}} ] of [ALL]  means Jane has admin privileges over the entire website.
+However, if a permission relationship were EDITOR@TASK which isn’t atomic we can manually convert that into atomic form. It may be possible to encode the method for automatic conversion.  This can be slowly generated at the time of inventing this role. It can then be stored as a JSON of the atoms (a molecule of permissions (a collection of atoms) )
+
+This syntax and how to interpret it needs further study and testing.
 
 
 
 
-⚡ 4. Runtime Authorization (The Fast Gate)
+⚡  Runtime Authorization (The Fast Gate)
 The system relies on speed at the point of action.
 Aggregation
 On user login or permission change, collect all effective permissions. Recursive CTE: A PostgreSQL function efficiently traverses the appro_relations graph (handling groups and bundles) to aggregate all stored Atomic Permission Arrays into a single user_permissions_array.
@@ -152,12 +173,7 @@ Fast array lookup compares the function permission molecule with the atomic perm
 Positive Permissions Only: The system avoids negative permissions (NOT...), relying on the path syntax to define the inclusion set.
 Inheritance: Handled robustly by the Recursive CTE traversing MEMBER and custom AUTH_GRANT relationships.
 Atomic Definitions: The atomic_permissions table provides a clear, auditable definition of every legal database action (CRUD@table_name#column_name), ensuring security consistency between the frontend guide and the backend gate.
-The appro relations are used for more than permissions. To ensure that permissions are clearly visible and to avoid confusion with other appro relations, the relationships for permissions use restricted syntax and symbols to differentiate them.
-
-Permissions relationships start and end with double curly braces {{   }}  and have enforced UPPERCASE and lowercase with enforced separators. Any relationship that does not parse will be treated as not granting permissions. Therefore if [John] IS [member] of [Admin], John does not get admin permissions. [Jane] IS [ {{ADMIN@WEBSITE}} ] of [ALL]  means Jane has admin privileges over the entire website.
-
-This syntax and how to interpret it needs further study and testing.
-
+The appro relations are used for more than permissions. 
 
 
 
@@ -166,8 +182,6 @@ Implementation
 Data Structures, The Aggregation Function (The Translator/Recursion), and The Enforcement Layer (The Gate).
 1. Data Structures (The Tables)
 Tables to store the permission policies and the assignment cache:
-
-
 
 
 2. The Aggregation Function (The Recursive CTE)
@@ -212,19 +226,6 @@ This breaks the processing into different stages.
 Define a relationship (without specifying who or over what), parse and store so now it is just a look-up when handling the stage of Subject - that relationship - object.
 
 
-
-The following are not atoms and therefore not allowed
-INSERT@TASK#description#name,  (not atomic as there is no db thing called TASK)  ?  INSERT@TASK_HEADER#description,name? (still not atomic as the columns are a combination)
-
-These are atomic:
-INSERT@TASK_HEADER#description
-INSERT@TASK_HEADER#name
-
-
-
-However, if a permission relationship were EDITOR@TASK which isn’t atomic we can manually convert that into atomic form. It may be possible to encode the method for automatic conversion.  This can be slowly generated at the time of inventing this role. It can then be stored as a JSON of the atoms (a molecule of permissions (a collection of atoms) )
-
-At the other end, molecules of atoms have to be instantly generated by the db function based on the actual query. The method is to use session context passing the id of the function and have the db function read the existing permission molecule from the function_registry Table. 
 
 
 All tasks & surveys have an auto-generated appro which has the task or survey id. Therefore if the permission has been set as appro_is → permission_relationship -> of_appro(task) then we refer to this if userId==appro_is , relationship if of type ‘permissions’ and of_appro has an id.  Does the row id == appro id ?
