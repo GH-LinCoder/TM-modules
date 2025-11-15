@@ -1,8 +1,12 @@
 🛡️ 1. Restricting database access 
 
-The call to the db includes a session context telling the database what is being requested.
+The call to the db includes a session context telling the database what is being requested. WRONG js can lie about context
 
-The database function uses the passed uuid to find the required permissions from a look-up table and later checks them against the permissions granted to the user. 
+The call to the db is a request to run a function that resides on the db. The javascript sands no API query
+
+The database function has he REQUIRED permissions associated with the query.
+
+The db checks that the user has a set of permissions sufficient to match the permissions required by the function. 
 
 If it finds the correct permissions the query is then run. 
 
@@ -18,7 +22,7 @@ a specific table(s),
 specific columns 
 and a specific action (CRUD). 
 
-These specifics are pre-recorded as a registry or ‘dictionary’ in a database table.  This is done when the function is developed or the coding is changed. It is regarded as a constant and is not evaluated during execution of the function.
+These specifics are pre-recorded as a registry or ‘dictionary’ in database functions.  This is done when the function is developed or the coding is changed. It is regarded as a constant and is not evaluated during execution of the function.
 
 TABLE:  ‘function_registry’  This table has columns: id:uuid, name:text, permission_molecule: JSONB.  The ‘name’ column is for human use, not code. The name column will have a fixed length to aid easy database access. 
 
