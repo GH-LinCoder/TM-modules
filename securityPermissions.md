@@ -1,10 +1,11 @@
 🛡️ 1. Restricting database access 
 
-The call to the db includes a session context telling the database what is being requested. WRONG js can lie about context
 
-The call to the db is a request to run a function that resides on the db. The javascript sands no API query
+The call to the db is a request to run a function that resides on the db. The javascript sends no API query
+(A previous idea was that any call to the db would include a session context telling the database what is being requested. WRONG js can lie about context)
 
-The database function has he REQUIRED permissions associated with the query.
+The database function has the REQUIRED permissions associated with the query.
+(Question of whether to include the permissions in the code of the function or instead to hold them in a table such that there is a central place that lists all the required permissions related to each & every function)
 
 The db checks that the user has a set of permissions sufficient to match the permissions required by the function. 
 
@@ -18,25 +19,25 @@ How this is achieved:
 Column level specification and checking
 
 The javascript functions that want to query the database have known characteristic needs to access 
-a specific table(s), 
-specific columns 
-and a specific action (CRUD). 
+a specific table(s), specific columns and a specific action (CRUD). 
 
-These specifics are pre-recorded as a registry or ‘dictionary’ in database functions.  This is done when the function is developed or the coding is changed. It is regarded as a constant and is not evaluated during execution of the function.
+These specifics are pre-recorded as a registry or ‘dictionary’ in database functions. (See previous comment about where to store this) This is done when the function is developed or the coding is changed. It is regarded as a constant and is not evaluated during execution of the function.
 
-TABLE:  ‘function_registry’  This table has columns: id:uuid, name:text, permission_molecule: JSONB.  The ‘name’ column is for human use, not code. The name column will have a fixed length to aid easy database access. 
+Do we hold the needed permissions in a TABLE:  ‘function_registry’  This table has columns: id:uuid, name:text, permission_molecule: JSONB.  The ‘name’ column is for human use, not code. The name column will have a fixed length to aid easy database access. 
 
-Every javascript function that queries the database also sends as context the unique identifier of the querying function (this is the uuid of the function in the function registry).  This is hard coded into the functions. 
+In javascript all that is called is the name of the database function that eventually queries the database. The javascript cannot spoof.  The function details and the required permissions are not directly know to the javascript (but can be read if the permissions are held in a table. The advantage is the JS can evaluate whether the the current user has relevant permissions & thereby avoid pointless db quesries. But the JS can't grant actual access because that is hard coded into the functions. 
 
-A column in the function_registry contains a JSONB which has the permissions required as a collection of formalised atomic permissions (smallest possible permission pieces) (this collection is called ‘a permission molecule’). The format chosen is on the assumption of this being the best for fast database use. The format could be changed if another is superior.
+If we use a table a column in that function_registry Table contains a JSONB which has the permissions required as a collection of formalised atomic permissions (smallest possible permission pieces) (this collection is called ‘a permission molecule’). The format chosen is on the assumption of this being the best for fast database use. The format could be changed if another is superior.
 
 A database function collects the required permission molecule from the registry and will later compare this to the collection of granted atomic permissions. If every atomic permission in the permission molecule is within the granted permission collection, then the access is permitted. If even one atom is missing, then access is denied.
+
+Permissions consist of a collection of the smallest possible permissions (a single action such as SELECT and a single column such as tash_header.name ) We call these permission atoms.
 
 A Table ‘permission_atoms’ contains the smallest possible permission (an 'atom') in each row. This is in a controlled syntax which specifies the CRUD action, the tableName, a single column in that table. The total number of rows would therefore be 4 times the total number of columns in all the tables subject to these column level rules.(The format is to be based on what the db can handle fastest)
 
 Conversion from human/work based permission specification into a machine matchable permission molecule.
 
-When a query is received by the database there is also a context supplied which must contain the id of the calling functtion. The id is then used to look-up the predetermined necessary permissions that are required for handling the query.
+When a query is received by the database there is the name of the function being called plus the paramters & id of the user. The name of the function (or function id) is then used to look-up the predetermined necessary permissions that are required for handling the query.
 
 That is how the database knows what permissions are required for the query.
 
