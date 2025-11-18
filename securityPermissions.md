@@ -163,6 +163,8 @@ All authority is in structured syntax, stored in the permissions_molecules table
 Appro_is -> relationship -> of_appro
 Where relationship indicates that it is a PERMISSION relationship by having a name beginning and ending with double curly braces {{   followed by UPPER CASE for the overall role such as EDITOR, followed by the separator '@' followed by the major group of resources it covers such as ‘TASKS’ or ‘SURVEYS’ again in UPPER CASE. -??? Or is this the table name in lower case & with underscores such as task_header  ?  NOT SURE  ???????  (NEEDS MORE ANALYSIS & PLANNING)
 
+Should the syntax of a permission relationship be different to the syntax of a permission atom??? It needs to be meaningful to humans, but machine convertible to atoms.
+
 If the permission is to be restricted to a specific part this is shown after the separator # and specifies (in lower case) the specific resource to be limited to such as ‘automations’ 
 
 The @MAJOR-RESOURCE is a restriction of scope, but contains every subgroup. (The permission cascades down & includes all lower levels)
@@ -219,6 +221,20 @@ The system relies on speed at the point of action.
 Aggregation
 On user login the page to be displayed is probably 'myDash' which will need to access the database to find the surveys, tasks & relations for this user. Therefore, we need to collect this user's permissions. (We may have standard default permissions that are assumed such that these initial database queries can be carried out without detailed checking of permissions)
 
+Login: Read cache; recompute only if cache_version mismatch or TTL expired.
+
+Permission changes: On molecule edit or relation grant/revoke, bump cache_version and emit an appState event (e.g., permissions:changed).
+
+UI listeners: Modules subscribe to appState and re-fetch capability map when permissions change.
+
+Persistent cache:
+
+Benefit: Login stays fast; recomputation happens only on changes.
+
+Guard: Provide a manual “refresh permissions” action for admins in case of missed invalidations.
+
+
+
 At some point the actual permissions will need to be assembled. 
 
 Recursive CTE: A PostgreSQL function traverses the appro_relations graph (handling groups and bundles) to aggregate all stored Atomic Permission Arrays into a single user_permissions_array. This is stored in the permission_user_cache
@@ -253,6 +269,12 @@ A. The Recursive CTE (Graph Traversal)
 The function uses a Recursive CTE (defined using WITH RECURSIVE) to handle inheritance:
 Anchor Permissions: Finds all direct permissions granted to the user_id and all permission granting groups that grant permission to the user.
 Recursion: Continuously joins back to the appro_relations table to find groups within groups (group:A is a permission receiver  from group:B), stopping only when no new permission granters are found.
+
+Recursion limits
+1) If visited this appro already: return.
+2) If more than 5 levels don't go deeper (probably anything found would not have been planned to have distant effects )
+3) A timeout of some kind
+
 
 Aggregation: During this traversal, the CTE joins to the permissions_molecules table to fetch the atomic_atoms_array (the cached TEXT[ ] column) for every assigned permission relationship.
 
