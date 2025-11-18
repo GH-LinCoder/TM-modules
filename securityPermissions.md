@@ -113,11 +113,13 @@ often, but not always, a column entry containing a foreign key id:uuid. This for
 3) A survey 
 (appros have many other columns which are not relevant here)
 
+Each authenticated user is represented by a unique appro. Each task is represented by a unique appro. Each survey is represented by a unique appro. In addition there are abstract appros representing anything that the users want to be able tor track or assign to a task. 
+
 Appros can be connected to each other (‘related to each other’) via a link called a relationship. (Relationships are edges and appros are nodes.) This relating of appros is used in the app for various things, one of which will be the granting of permissions.
 
 When a relationship is used to relate 2 appros the relationship (which is usually represented by a single word such as ‘member’ ) can form a phrase in poor English such as   "John IS member OF TestGroup". Where John is an authenticated user represented by his appro and TestGroup is an abstract entity representing some group probably involved with tests.
 
-To clearly differentiate permissions from these other uses, there is a restricted and controlled syntax in the relationships that grant permissions (see later)
+To clearly differentiate permissions from these other uses, there is a restricted and controlled syntax in the relationships that grant permissions (see later). The relations table contains all relations between appros. There is a permissions_view which extracts and displays only those relationships which grant permissions. The permissions_view is where functions would traverse the table to build permissions that have been granted directly or vicariously (iteratively)
 
 The permissions relationship syntax specifies the type of permission followed by optional restrictions by general type and then by specific limitations.
 
