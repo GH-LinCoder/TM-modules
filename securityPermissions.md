@@ -2,10 +2,11 @@
 
 
 The call to the db is a request to run a function that resides on the db. The javascript sends no API query
-(A previous idea was that any call to the db would include a session context telling the database what is being requested. WRONG js can lie about context)
+
+Therefore malicious users of the client cannot alter SQL and can't evade the permissions system. They may be able to get control of the permission granting, but they can't just alter the code being sent.
 
 The database function has the REQUIRED permissions associated with the query.
-(Question of whether to include the permissions in the code of the function or instead to hold them in a table such that there is a central place that lists all the required permissions related to each & every function)
+(The required permissions are stored in a table. This means there is a central place that lists all the required permissions related to each & every database accessing function)
 
 The db checks that the user has a set of permissions sufficient to match the permissions required by the function. 
 
@@ -18,29 +19,77 @@ How this is achieved:
 
 Column level specification and checking
 
-The javascript functions that want to query the database have known characteristic needs to access 
-a specific table(s), specific columns and a specific action (CRUD). 
+The javascript functions that want to query the database can only do so by calling a database function. These db functions have known characteristic needs to access a specific table(s), specific columns and a specific action (CRUD). These needs are in a look-up table. 
 
-These specifics are pre-recorded as a registry or ‘dictionary’ in database functions. (See previous comment about where to store this) This is done when the function is developed or the coding is changed. It is regarded as a constant and is not evaluated during execution of the function.
+These specifics are pre-recorded when the function is developed or the coding is changed. It is regarded as a constant and is not evaluated during execution of the function.
 
-Do we hold the needed permissions in a TABLE:  ‘function_registry’  This table has columns: id:uuid, name:text, permission_molecule: JSONB.  The ‘name’ column is for human use, not code. The name column will have a fixed length to aid easy database access. 
+In javascript all that is called is the name of the database function that eventually queries the database. The javascript cannot spoof.  The function details and the required permissions are not directly known to the javascript (but can be read if the permissions are held in a table. The advantage is the JS can evaluate whether the the current user has relevant permissions & thereby avoid pointless db quesries. But the JS can't grant actual access because that is hard coded into the functions). 
 
-In javascript all that is called is the name of the database function that eventually queries the database. The javascript cannot spoof.  The function details and the required permissions are not directly know to the javascript (but can be read if the permissions are held in a table. The advantage is the JS can evaluate whether the the current user has relevant permissions & thereby avoid pointless db quesries. But the JS can't grant actual access because that is hard coded into the functions. 
+TERMS & SYNTAX:
 
-If we use a table a column in that function_registry Table contains a JSONB which has the permissions required as a collection of formalised atomic permissions (smallest possible permission pieces) (this collection is called ‘a permission molecule’). The format chosen is on the assumption of this being the best for fast database use. The format could be changed if another is superior.
 
-A database function collects the required permission molecule from the registry and will later compare this to the collection of granted atomic permissions. If every atomic permission in the permission molecule is within the granted permission collection, then the access is permitted. If even one atom is missing, then access is denied.
+atoms:
+The word 'atom' is used to mean the most basic permission which consists of an 
+ACTION (SELECT, INSERT, UPDATE,DELETE) 
+followed by a separator '@' 
+followed by a table_anme (written exactly as the actual table name). 
+An option next part is a separator '#' 
+followed by a column_name (written exactly as the actual column name). 
+
+An example:  
+SELECT@task_headers#name -This is permission to read the name column of the task_headers table.
+UPDATE@survey_headers  -This is permission to edit and column of survey_headers  (Perhas we could use #* ?)
+
+
+
+molecules:
+A collection of permission atoms is called a 'molecule' or a 'permission molecule'. These are stored as TEXT [ ] which is a native Postgre array.
+{ atom , atom , atom }
+
+
+TABLES:
+
+permission_atoms: All possible atoms are stored in the Table permission_atoms which has id:uuid, atom:text [ ]
+(There are currently 516 rows in this table based on 11 tables)
+
+permission_molecule_required: 
+id uuid,
+function_name text,
+permissions_required text[],
+created_at,
+created_by uuid
+The column 'permissions_required' contains the permissions that are required to run the function as a collection of formalised atomic permissions (smallest possible permission pieces) (this collection is called ‘a permission molecule’). The format chosen is on the assumption of this being the best for fast database use. The format could be changed if another is superior.
+
+
+permission_molecule_roles:
+id uuid, 
+role text,  
+molecule text[],   
+created_at, 
+created_by
+The column 'molecule' contains the permissions associated with the name in the 'role' column. The format is the same as in the _required table.   
+
+
+permission_user_cache
+user_id uuid,
+granted_permissions text[],
+cached_at timestamp,
+expires_at timestamp 
+
+This table lists the permissions that each user has. It is calculated and then stored, with the option of the cache being regarded as stale after a fixed period
+
+
+A database function collects the required permission molecule from the _required Table and will later compare this to the collection of granted atomic permissions. If every atomic permission in the permission molecule is within the granted permission collection, then the access is permitted. If even one atom is missing, then access is denied.
 
 Permissions consist of a collection of the smallest possible permissions (a single action such as SELECT and a single column such as tash_header.name ) We call these permission atoms.
 
-A Table ‘permission_atoms’ contains the smallest possible permission (an 'atom') in each row. This is in a controlled syntax which specifies the CRUD action, the tableName, a single column in that table. The total number of rows would therefore be 4 times the total number of columns in all the tables subject to these column level rules.(The format is to be based on what the db can handle fastest)
+The Table ‘permission_atoms’ contains the smallest possible permission (an 'atom') in each row. This is in a controlled syntax which specifies the CRUD action, the tableName, a single column in that table. The total number of rows would therefore be 4 times the total number of columns in all the tables subject to these column level rules.(The format is to be based on what the db can handle fastest)
 
 Conversion from human/work based permission specification into a machine matchable permission molecule.
 
-When a query is received by the database there is the name of the function being called plus the paramters & id of the user. The name of the function (or function id) is then used to look-up the predetermined necessary permissions that are required for handling the query.
+When a query is received by the database there is the name of the function being called plus the paramters. The name of the function (or function id) is then used to look-up the predetermined necessary permissions that are required for handling the query.
 
 That is how the database knows what permissions are required for the query.
-
 
 That explains how permissions are defined and compared.
 
@@ -52,22 +101,18 @@ Permissions are granted in two parts. This uses an existing system within the ap
 
 How to determine what permissions the user has:
 
-Relationship syntax
-Code defining and restricting syntax of high level called permission_compounds which are converted into molecules which consist of permission atoms. Conversion is done once when the permission is first invented.
 
-Appros
-Defining who has the permission, what the relationship permission is, and what the permission is over. The who is represented by the [appro_is], the relationship is one specific to granting permissions, and what the permission is over is represented by the [of_appro]
-Relationship syntax
-
-Defining permission at a work/human level. Code defining and restricting syntax of high level called permission_compounds which are converted into molecules which consist of permission atoms. Conversion is done once when the permission is first invented
-
-
-An appro is a simple name tag that resides in the app_profiles table. It consists of an id:uuid, a name:text, a description:text and often, but not always, a column entry containing a foreign key id:uuid. This foreign key is only present if the appro represents 
+An 'appro' is the name of a simple name tag that resides in the app_profiles table. It consists of an 
+id:uuid, 
+a name:text, 
+a description:text and 
+often, but not always, a column entry containing a foreign key id:uuid. This foreign key is only present if the appro represents 
 1) an authenticated user
 2) a task 
 3) A survey 
+(appros have many other columns which are not relevant here)
 
-Appros can be connected to each other (‘related to each other’) via a link called a relationship. (Relationships are edges and appros are nodes.) This relating of appros is used in the app for various things, one of which is the granting of permissions.
+Appros can be connected to each other (‘related to each other’) via a link called a relationship. (Relationships are edges and appros are nodes.) This relating of appros is used in the app for various things, one of which will be the granting of permissions.
 
 When a relationship is used to relate 2 appros the relationship (which is usually represented by a single word such as ‘member’ ) can form a phrase in poor English such as   "John IS member OF TestGroup". Where John is an authenticated user represented by his appro and TestGroup is an abstract entity representing some group probably involved with tests.
 
@@ -96,12 +141,11 @@ The node-edge relationship system called ‘appros’ where  [appro_is] -- [rela
 The of_appro sets the limit of the permission by for example being the appro of a specific survey. In this case whatever the permissions were they only apply to survey with id== the appro survey_header_id
 
 
-
 Permission details  'atoms'
 Stored in a look-up table ‘permission_atoms’. One atom for each column of every data table multiplied by the possible CRUD actions. Number of rows = (total_columns * 4). Each row is an ‘atom’
 
 Permission sets  'molecules'
-A permission set can be specified manually using a javascriot module using a controlled human and machine readable syntax. Then that specification is parsed and a collection of permission atoms is assembled into a permission ‘molecule’. The specification is stored in the relationships table as a fk to a row in the permission_molecules table which is where the molecule of permissions is stored (probably as a JSONB )
+A permission set can be specified manually using a javascriot module using a controlled human and machine readable syntax. Then that specification is parsed and a collection of permission atoms is assembled into a permission ‘molecule’. The specification is stored in the relationships table as a fk to a row in the permission_molecules table which is where the molecule of permissions is stored (probably as a TEXT [] )
 
 🎨 Creating a permission and turning into a machine readable form (The Slow Process)
 The complex process of creating parsing and storing permissions is done once during creation of the permission which is the system's core caching strategy.
