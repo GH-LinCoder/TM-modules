@@ -447,7 +447,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <p class="text-sm text-gray-500 mb-4">System configuration and administrative settings</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('User Roles not yet implemented')">
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('User Roles not yet implemented')" data-action='open-permissions-dialogue'>
       <h3 class="text-sm font-medium text-gray-800">User Roles</h3>
       <p class="text-xs text-gray-500">Manage user permissions and role assignments</p>
     </div>
