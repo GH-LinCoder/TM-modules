@@ -95,6 +95,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'edit-survey-dialogue':()=> import('../surveys/EditSurvey.js'),
 //////////          SETTINGS            AdminDash      /////////                 
 'money-management-section': () => import('../dash/moneyManagementSection.js'),
+'open-permissions-dialogue': () => import('../db/permissionsModule.js'),   
 
 
 
