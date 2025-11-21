@@ -73,13 +73,11 @@ function populateFromClipboard(panel) {
     const tasks = getClipboardItems({ as: 'task' });
     const approfiles = getClipboardItems({ as: 'other' });
     const managers = getClipboardItems({ as: 'manager' });
-    const surveys = getClipboardItems({ as: 'survey' });
     
     console.log('Clipboard items loaded:', {
       tasks: tasks.length,
       approfiles: approfiles.length,
-      managers: managers.length,
-      surveys: surveys.length
+      managers: managers.length
     });
     
     // Populate task automation dropdown
@@ -89,14 +87,6 @@ function populateFromClipboard(panel) {
       addClipboardItemsToDropdown(tasks, taskSelect, 'task');
     }
     
-    // Populate task automation dropdown
-    const surveySelect = panel.querySelector('#surveyAutomationSelect');
-    if (surveySelect) {
-      console.log('Populating survey automation dropdown with', surveys.length, 'items');
-      addClipboardItemsToDropdown(surveys, surveySelect, 'survey');
-    }
-
-
     // Populate approfile automation dropdown
     const approfileSelect = panel.querySelector('#approfileAutomationSelect');
     if (approfileSelect) {
@@ -319,6 +309,9 @@ function getTemplateHTML() {
                     Save Manager
                   </button-->              
               
+
+
+
                   <button type="button" id="saveTaskAutomationBtn" class="bg-purple-600 text-white py-1 px-3 rounded hover:bg-blue-700 opacity-50" style="pointer-events: none;">
                     Save Task Assignment automation
                   </button>
@@ -326,24 +319,6 @@ function getTemplateHTML() {
                 </div>
               </div>
               
-
-
-              <!-- Assign Survey Section -->
-              <div class="mt-4 p-3 bg-white rounded border mb-4">
-                <h5 class="font-medium text-gray-800 mb-2">Assign a survey</h5>
-                <div class="flex gap-2">
-                  <select id="surveyAutomationSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                    <option value="">Select a survey to assign</option>
-                  </select>
-                </div>
-                  <button type="button" id="saveSurveyAutomationBtn" class="bg-purple-600 text-white py-1 px-3 rounded hover:bg-blue-700 opacity-50" style="pointer-events: none;">
-                    Save Survey Assignment automation
-                  </button>
-              </div>    
-
-
-
-
 
 <!--  INSTRUCTIONS  APPRO -->                           
                     <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200">
@@ -425,8 +400,6 @@ function attachListeners(panel) {   //managerAutomationSelect
 
         // Save task automation button
   panel.querySelector('#saveTaskAutomationBtn')?.addEventListener('click', (e) => handleTaskAutomationSubmit(e, panel));
-  panel.querySelector('#saveSurveyAutomationBtn')?.addEventListener('click', (e) => handleSurveyAutomationSubmit(e, panel));
- 
   panel.querySelector('#saveRelationshipAutomationBtn')?.addEventListener('click', (e) => handleRelationshipAutomationSubmit(e, panel));
 
 
@@ -642,16 +615,6 @@ console.log('result:',result);
       saveTaskAutomationBtn.textContent = 'Save Task Assignment';
     }
     
-    const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
-    if (saveSurveyAutomationBtn) {
-      saveSurveyAutomationBtn.disabled = false;
-      saveSurveyAutomationBtn.style.opacity = '1';
-      saveSurveyAutomationBtn.style.pointerEvents = 'auto';
-      saveSurveyAutomationBtn.textContent = 'Save Task Assignment';
-    }
-
-
-
     const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
     if (saveRelationshipAutomationBtn) {
       saveRelationshipAutomationBtn.disabled = false;
@@ -689,14 +652,6 @@ console.log('result:',result);
       saveTaskAutomationBtn.style.opacity = '0.5';
       saveTaskAutomationBtn.style.pointerEvents = 'none';
       saveTaskAutomationBtn.textContent = 'Save Task Assignment';
-    }
-
-    const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
-    if (saveSurveyAutomationBtn) {
-      saveSurveyAutomationBtn.disabled = true;
-      saveSurveyAutomationBtn.style.opacity = '0.5';
-      saveSurveyAutomationBtn.style.pointerEvents = 'none';
-      saveSurveyAutomationBtn.textContent = 'Save Task Assignment';
     }
     
     const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
@@ -940,37 +895,6 @@ addInformationCard({
 'autoNumber': automationsNumber 
 });
   
-try{
-const result = await executeIfPermitted(userId, 'createSurveyAutomation', { 
-      
-    source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
-    student_id: userId, //the person being assigned to the task
-    manager_id: managerData.managerId, // needs to be from the dropdown    
-    taskId: selectedTaskId,
-         task_step_id: stepId, // 
-         itemName: taskCleanName || 'Unknown Task', // 
-         automation_number: automationsNumber
-     });
-     
-     
-     addInformationCard({
-       'name': `${taskCleanName?.substring(0, 60) || 'Unknown Task'}...`,
-       'type': 'automation_task',
-       'step': stepOrder,  // unknown  23:13  Oct 17
-       'taskId': `${selectedTaskId?.substring(0, 8) || 'unknown'}...`,
-       'id': `${result.id?.substring(0, 8) || 'unknown'}...`
-     });
-     
-     showToast('Task automation saved successfully!');
-     
- } catch (error) {
-     showToast('Failed to save task automation: ' + error.message, 'error');
-      automationsNumber--; // ROLLBACK: Decrement on failure
- }
-
-
-
-
   saveSurveyAutomationBtn.disabled = false;
   saveSurveyAutomationBtn.textContent = 'Save Survey';
 }

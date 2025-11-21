@@ -1,12 +1,13 @@
-//   ./utils/assignmentBase.js   called by assignTask & assignSurvey
+//  ./utils/assignmentBase.js  (to be used by assignTask & assignSurvey)
+//18:40 Nov 21 this file has been copied into tasks to keep all task related together
 
 
-import { appState } from '../state/appState.js';
-import { executeIfPermitted } from '../registry/executeIfPermitted.js';
-import { showToast } from '../ui/showToast.js';
-import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
-import { getClipboardItems, onClipboardUpdate } from './clipboardUtils.js';
-import { resolveSubject, detectContext, applyPresentationRules } from './contextSubjectHideModules.js';
+import { appState } from '../../state/appState.js';
+//import { executeIfPermitted } from '../registry/executeIfPermitted.js';
+import { showToast } from '../../ui/showToast.js';
+import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
+import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
+import { resolveSubject, detectContext, applyPresentationRules } from '../../utils/contextSubjectHideModules.js';
 
 console.log('assignmentBase.js loaded');
 // need to accept a parameter for type:  'task' || 'survey'
@@ -77,9 +78,9 @@ export class AssignmentBase {
 
               <!-- ITEM SELECT -->
               <div class="space-y-2">
-                <label for="dropdown002" class="block text-sm font-medium text-gray-700">Select Student/respondent</label>
+                <label for="dropdown002" class="block text-sm font-medium text-gray-700">Select Student</label>
                 <select id="dropdown002" data-form="dropdown002" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                  <option value="">If no items use menu [Select]</option>
+                  <option value="">Select an item from clipboard...</option>
                 </select>
               </div>
 
@@ -88,7 +89,7 @@ export class AssignmentBase {
               <div class="space-y-2">
                 <label for="dropdown003" class="block text-sm font-medium text-gray-700">Select Manager</label>
                 <select id="dropdown003" data-form="dropdown003" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                  <option value="">If no items use menu [Select]</option>
+                  <option value="">Select a subject from clipboard...</option>
                 </select>
               </div>
 
@@ -137,7 +138,7 @@ export class AssignmentBase {
     //else if type='survey' collect 'respondent' || 'other' , 'survey'
     // Get clipboard items
 let dropdown01Items, dropdown02Items, dropdown03Items;
-if (this.assignmentType=='task') { // when === the value does not update from clipboard
+if (this.assignmentType=='task') { // if use === the value does not update from clipboard
     dropdown01Items = getClipboardItems({as:'task'});
     dropdown02Items = getClipboardItems({ as: 'student'});
     dropdown03Items  = getClipboardItems({as:'manager'});

@@ -59,15 +59,12 @@ try {
       const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', { // this happens
         task_header_id: assignment.task_header_id
       });
-//console.log('assignment:', assignment);
+
       const currentStep = assignment.step_order;
       const numberOfSteps = taskSteps.length;
       const studentName = assignment.student_name || 'Unknown Student';
       const taskName = assignment.task_name || 'Unnamed Task';
       const taskDescription = assignment.task_description;
-
-      const taskExternalURL = assignment.task_external_url;
-//console.log('');
       const currentStepName = assignment.step_name || 'Unnamed Step';
       const currentStepDescription = assignment.step_description || 'No description available';
 //confirmed that program flows to here on first save
@@ -106,38 +103,13 @@ try {
      console.log('checking consoleflow', card);  // 
       //confirmed that program flows to here on first save & card =  <div class="bg-white rounded-lg shad… border border-gray-200">      
       
-
-        // Decide how to render the external URL
-    let externalContent = ''; console.log('taskExternalURL:',taskExternalURL);
-    if (taskExternalURL) { console.log('taskExternalURL: true');
-      if (taskExternalURL.startsWith('<iframe')) { console.log('startsWith(<iframe');//okay to here
-        // Treat as raw iframe markup
-        externalContent = `
-          <div class="mt-4">
-            ${taskExternalURL}
-          </div>`;
-      } else if (taskExternalURL.startsWith('http')) {
-        // Treat as plain link
-        externalContent = `
-          <div class="mt-4">
-            <a href="${taskExternalURL}" target="_blank" rel="noopener noreferrer"
-               class="text-blue-600 underline hover:text-blue-800">
-              Open external resource
-            </a>
-          </div>`;
-      }
-    }
-
-
-
-
       card.innerHTML = `
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-xl font-semibold text-gray-900">${taskName}</h3>
           <div class="text-sm text-gray-500">Student: ${studentName}</div>
         </div>
-        <div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"> ${taskDescription}</div>
-${externalContent};
+        <div class="rounded-lg p-6 shadow-md border relative"> ${taskDescription}</div>
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           ${renderStepCard('Previous Step', previousStep,studentName , true, 'gray')}
@@ -146,8 +118,7 @@ ${externalContent};
 
           ${renderStepCard('Current Step', {
             step_name: currentStepName,
-            step_description: currentStepDescription,
-            external_url: assignment.external_url  //new paramter 15:00 Nov 21 2025
+            step_description: currentStepDescription
           }, currentStep === 1 ? 'red' : currentStep === 2 ? 'green' : 'blue', studentName, false, currentStep)}
 
           ${renderStepCard(
@@ -195,42 +166,18 @@ console.log('After append, panel connected:', panel.isConnected);
   }
 }
 
-//new function 15:00 Nov 21 2025
-
 function renderStepCard(title, step, color, studentName = null, showCheckmark = false, stepNumber = null) {
-    if (!step) return '';
+    if (!step) return '';  //step is an object
   
     const name = step.step_name || 'Unnamed';
     const description = step.step_description || 'No description available';
-    const externalUrl = step.external_url || null;
   
     const bgColor = {
       gray: 'bg-gray-50 border-gray-200',
       blue: 'bg-blue-50 border-blue-200',
       green: 'bg-green-50 border-green-200',
-      red: 'bg-red-50 border-red-200'
+       red: 'bg-red-50 border-red-200'
     }[color] || 'bg-white border-gray-200';
-  
-    // Decide how to render the external URL
-    let externalContent = '';
-    if (title === 'Current Step' && externalUrl) {
-      if (externalUrl.startsWith('<iframe')) {
-        // Treat as raw iframe markup
-        externalContent = `
-          <div class="mt-4">
-            ${externalUrl}
-          </div>`;
-      } else if (externalUrl.startsWith('http')) {
-        // Treat as plain link
-        externalContent = `
-          <div class="mt-4">
-            <a href="${externalUrl}" target="_blank" rel="noopener noreferrer"
-               class="text-blue-600 underline hover:text-blue-800">
-              Open external resource
-            </a>
-          </div>`;
-      }
-    }
   
     return `
       <div class="${bgColor} rounded-lg p-6 shadow-md border relative">
@@ -238,16 +185,15 @@ function renderStepCard(title, step, color, studentName = null, showCheckmark = 
           ${stepNumber !== null ? `Step ${stepNumber}: ` : ''}${title}
         </div>
         <h4 class="text-lg font-bold">${name}</h4>
-        <p class="text-sm text-gray-600 mt-1  whitespace-pre-line">${description}</p>
-  
-        ${externalContent}
-  
+        <p class="text-sm text-gray-600 mt-1">${description}</p>
+
+        <!--  if title === 'Current Step'       display a div that contains the iframe vido url link or the url as a hyperlink if not iframe -->
+
         ${studentName && title === 'Current Step' ? `
-          <div class="absolute -top-4 -left-4 bg-white rounded-full p-2 text-xs font-medium text-gray-700 shadow border border-gray-200">
-            Student: ${studentName}
-          </div>` : ''}
-  
-        ${showCheckmark && stepNumber !== 1 ? `
+            <div class="absolute -top-4 -left-4 bg-white rounded-full p-2 text-xs font-medium text-gray-700 shadow border border-gray-200">
+              Student: ${studentName}
+            </div>` : ''}
+                  ${showCheckmark && stepNumber !== 1 ? `
           <div class="absolute top-2 right-2 text-green-500">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
               <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2l4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -256,5 +202,4 @@ function renderStepCard(title, step, color, studentName = null, showCheckmark = 
       </div>
     `;
   }
-  
   

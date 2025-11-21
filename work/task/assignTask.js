@@ -1,10 +1,11 @@
-
+// ./assignTask.js 
 
 import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
-import { AssignmentBase } from '../../utils/assignmentBase.js'; // ✅ Import base class
+import { AssignmentBase } from '../../utils/assignmentBase.js'; // base also used by assign survey
+//import { AssignmentBase } from './assignmentBase.js'; //
 
 console.log('assignTask.js loaded');
 
@@ -67,7 +68,7 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
   attachTaskListeners(panel) {
     console.log('attachTaskListeners()');
     
-    // Task select change  WHAT IS THIS ????? 
+    // Task select change
     panel.querySelector('#dropdown001')?.addEventListener('change', (e) => {
       this.updateSubmitButtonState(panel);
     });
