@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permission System Architecture Overview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#1e40af',
+                        success: '#16a34a',
+                        warning: '#d97706',
+                        danger: '#dc2626',
+                        info: '#0891b2'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .permission-card {
+            transition: all 0.3s ease;
+            border-left: 4px solid #2563eb;
+        }
+        .permission-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+        .atom-badge {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+        }
+        .molecule-badge {
+            background: linear-gradient(135deg, #10b981, #047857);
+            color: white;
+        }
+        .flow-diagram {
+            position: relative;
+            padding: 2rem;
+            background: linear-gradient(135deg, #f8fafc, #e2e8f0);
+            border-radius: 12px;
+            margin: 2rem 0;
+        }
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        .flow-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #2563eb;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            flex-shrink: 0;
+        }
+        .flow-line {
+            position: absolute;
+            left: 20px;
+            top: 60px;
+            bottom: 60px;
+            width: 2px;
+            background: #cbd5e1;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <!-- Header -->
+        <header class="text-center mb-12">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">🛡️ Granular Permission System Architecture</h1>
+            <p class="text-lg text-gray-600 max-w-4xl mx-auto">
+                A comprehensive column-level, row-level, and table-level permission system for volunteer-driven organizations
+            </p>
+        </header>
+
+        <!-- Overview Cards -->
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+            <div class="bg-white rounded-xl p-6 shadow-lg permission-card border-l-primary">
+                <div class="text-3xl mb-3">🧬</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Atomic Permissions</h3>
+                <p class="text-gray-600">Smallest permission units: CRUD + Table + Column</p>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-lg permission-card border-l-success">
+                <div class="text-3xl mb-3">🧫</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Permission Molecules</h3>
+                <p class="text-gray-600">Collections of atomic permissions</p>
+            </div>
+
+                <div class="bg-green-50 rounded-xl p-6 shadow-lg permission-card border-l-success">
+                <div class="text-3xl mb-3">🧫</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Permission Role Molecules</h3>
+                <p class="text-gray-600">Collections of atomic permissions granted to a role</p>
+            </div>
+
+                            <div class="bg-red-50 rounded-xl p-6 shadow-lg permission-card border-l-success">
+                <div class="text-3xl mb-3">🧫</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Permission Required Molecules</h3>
+                <p class="text-gray-600">Collections of atomic permissions required to run a function</p>
+            </div>
+            
+            <div class="bg-white rounded-xl p-6 shadow-lg permission-card border-l-warning">
+                <div class="text-3xl mb-3">🔗</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Appro Relations</h3>
+                <p class="text-gray-600">Graph-based permission assignment system</p>
+            </div>
+            <div class="bg-white rounded-xl p-6 shadow-lg permission-card border-l-danger">
+                <div class="text-3xl mb-3">⚡</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">Fast Authorization</h3>
+                <p class="text-gray-600">Runtime permission checking with caching</p>
+            </div>
+        </div>
+
+        <!-- Architecture Flow -->
+        <div class="bg-white rounded-xl shadow-lg mb-12">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-900">System Architecture Flow</h2>
+            </div>
+            <div class="flow-diagram">
+                <div class="relative">
+                    <div class="flow-line hidden md:block"></div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-icon">1</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Permission Definition</h3>
+                            <p class="text-gray-600">Admin creates role using syntax: {{EDITOR@SURVEYS#questions}}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-icon">2</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Parsing & Storage</h3>
+                            <p class="text-gray-600">Converts to atomic permissions, stores in permission_molecules table</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-icon">3</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Assignment</h3>
+                            <p class="text-gray-600">Link permission molecule to user via appro relations</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-icon">4</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Runtime Authorization</h3>
+                            <p class="text-gray-600">Function calls set context, security function validates permissions</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Database Schema -->
+        <div class="bg-white rounded-xl shadow-lg mb-12">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-900">Database Schema</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Core Tables</h3>
+                        <div class="space-y-4">
+                            <div class="bg-blue-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-blue-900 mb-2">function_registry</h4>
+                                <ul class="text-sm text-blue-800 space-y-1">
+                                    <li>• feature_id (UUID) - Primary Key</li>
+                                    <li>• feature_name (TEXT)</li>
+                                    <li>• permission_molecule (JSONB)</li>
+                                </ul>
+                            </div>
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-green-900 mb-2">permission_atoms</h4>
+                                <ul class="text-sm text-green-800 space-y-1">
+                                    <li>• id (UUID)</li>
+                                    <li>• atom (TEXT) - CREATE@survey_headers#name</li>
+                                                                    </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Relationship Tables</h3>
+                        <div class="space-y-4">
+                            <div class="bg-purple-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-purple-900 mb-2">appro_relations</h4>
+                                <ul class="text-sm text-purple-800 space-y-1">
+                                    <li>• id (UUID)</li>
+                                    <li>• appro_is (UUID) - User/Group</li>
+                                    <li>• relationship (TEXT) - {{ROLE@SCOPE#RESTRICTION}}</li>
+                                    <li>• of_appro (UUID) - Target object</li>
+                                </ul>
+                            </div>
+                            <div class="bg-orange-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-orange-900 mb-2">permission_molecules</h4>
+                                <ul class="text-sm text-orange-800 space-y-1">
+                                    <li>• molecule_id (UUID)</li>
+                                    <li>• relationship_syntax (TEXT)</li>
+                                    <li>• atomic_permissions (JSONB array)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Permission Syntax Examples -->
+        <div class="bg-white rounded-xl shadow-lg mb-12">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-900">Permission Syntax Examples</h2>
+            </div>
+            <div class="p-6">
+                <div class="space-y-4">
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            <span class="atom-badge px-3 py-1 rounded-full text-sm font-medium mr-2">Atomic</span>
+                            <code class="text-sm bg-white px-2 py-1 rounded">INSERT@task_header#name</code>
+                        </div>
+                        <p class="text-gray-600 text-sm">Grant insert permission on name column only</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            <span class="molecule-badge px-3 py-1 rounded-full text-sm font-medium mr-2">Molecule</span>
+                            <code class="text-sm bg-white px-2 py-1 rounded">{{EDITOR@TASKS}}</code>
+                        </div>
+                        <p class="text-gray-600 text-sm">Expands to all CRUD operations on all task-related tables and columns</p>
+                    </div>
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <div class="flex items-center mb-2">
+                            <span class="molecule-badge px-3 py-1 rounded-full text-sm font-medium mr-2">Molecule</span>
+                            <code class="text-sm bg-white px-2 py-1 rounded">{{READER@SURVEYS#questions}}</code>
+                        </div>
+                        <p class="text-gray-600 text-sm">Read-only access to survey questions only, not answers or automations</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Implementation Benefits -->
+        <div class="grid md:grid-cols-2 gap-8 mb-12">
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">✅ Strengths</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-success mt-0.5 mr-3"></i>
+                        <span><strong>Granular Control:</strong> Column-level permissions prevent over-privileging</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-success mt-0.5 mr-3"></i>
+                        <span><strong>Performance:</strong> Cached permission molecules enable fast runtime checks</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-success mt-0.5 mr-3"></i>
+                        <span><strong>Flexibility:</strong> Graph-based relationships support complex inheritance patterns</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-check-circle text-success mt-0.5 mr-3"></i>
+                        <span><strong>Security:</strong> Database-enforced permissions cannot be bypassed by client code</span>
+                    </li>
+                </ul>
+            </div>
+            <div class="bg-white rounded-xl shadow-lg p-6">
+                <h3 class="text-xl font-bold text-gray-900 mb-4">⚠️ Challenges</h3>
+                <ul class="space-y-3">
+                    <li class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-warning mt-0.5 mr-3"></i>
+                        <span><strong>Complexity:</strong> Learning curve for administrators defining permissions</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-warning mt-0.5 mr-3"></i>
+                        <span><strong>Performance:</strong> Recursive CTE for permission aggregation may impact large organizations</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-warning mt-0.5 mr-3"></i>
+                        <span><strong>Maintenance:</strong> Schema changes require permission atom updates</span>
+                    </li>
+                    <li class="flex items-start">
+                        <i class="fas fa-exclamation-triangle text-warning mt-0.5 mr-3"></i>
+                        <span><strong>Testing:</strong> Comprehensive testing needed for complex permission combinations</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Implementation Steps -->
+        <div class="bg-white rounded-xl shadow-lg">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-900">Implementation Roadmap</h2>
+            </div>
+            <div class="p-6">
+                <div class="space-y-6">
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Build Core Tables</h3>
+                            <p class="text-gray-600">Create permission_atoms, function_registry, permission_molecules, and appro_relations tables</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Implement Permission Parser</h3>
+                            <p class="text-gray-600">Create functions to convert {{ROLE@SCOPE#RESTRICTION}} syntax into atomic permission collections</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Create Aggregation Function</h3>
+                            <p class="text-gray-600">Build PostgreSQL recursive CTE function to collect all user permissions</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Implement Security Layer</h3>
+                            <p class="text-gray-600">Create authorization function using session variables and RLS policies</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">5</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Admin Interface</h3>
+                            <p class="text-gray-600">Build UI for administrators to create and assign permissions using controlled syntax</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="text-center mt-12 text-gray-500">
+            <p>Granular Permission System Architecture • Designed for Volunteer Organizations</p>
+        </footer>
+    </div>
+</body>
+</html>
+

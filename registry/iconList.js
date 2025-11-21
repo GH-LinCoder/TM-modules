@@ -56,6 +56,7 @@ moveStudent:'🛼🧑‍🎓',
 
 news: '🫣',
 
+permission:'🔐',  
 permission:'🔐', 
 pound:'💷',
 
