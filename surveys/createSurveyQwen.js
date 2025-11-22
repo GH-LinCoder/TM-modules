@@ -1,9 +1,9 @@
 // ./surveys/CreateSurvey.js
 
-//import { appState} from '../../state/appState.js';
+import { appState} from '../state/appState.js';
 import { SurveyBase } from './SurveyBase.js';
-//import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-//import { showToast } from '../../ui/showToast.js'; 
+import { executeIfPermitted } from '../registry/executeIfPermitted.js';
+import { showToast } from '../ui/showToast.js'; 
 // Note: appState, userId, getClipboardItems, etc., are likely imported/accessed via SurveyBase or already globally available.
 //NO, they are not available globally, none of them. Trying to use them in this class assuming they are inherited failed
 

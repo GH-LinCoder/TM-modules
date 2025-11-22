@@ -87,13 +87,13 @@ export const registry = { // this registry is for loading a new page to the righ
 //////////          KNOWLEDGE MANAGEMENT         AdminDash  /////////           //Confusing naming      
 'survey-management-section': ()=> import('../dash/surveyManagementSection.js'),
 
-'create-survey-dialogue': () => import('../work/surveys/createSurveyQwen.js'),
-'display-survey-dialogue' : () => import('../work/surveys/displaySurveyQwen.js'),
-'display-this-survey' :()=> import('../work/surveys/displaySurveyQwen.js'), //changed 19:30 Oct 22
-//'display-surveys':()=> import('../work/surveys/displayStudentSurveys.js'),  
-'display-surveys':()=> import('../work/surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
-'assign-survey-dialogue' :()=> import('../work/surveys/assignSurvey.js'),
-'edit-survey-dialogue':()=> import('../work/surveys/EditSurvey.js'),
+'create-survey-dialogue': () => import('../surveys/createSurveyQwen.js'),
+'display-survey-dialogue' : () => import('../surveys/displaySurveyQwen.js'),
+'display-this-survey' :()=> import('../surveys/displaySurveyQwen.js'), //changed 19:30 Oct 22
+//'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),  
+'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
+'assign-survey-dialogue' :()=> import('../surveys/assignSurvey.js'),
+'edit-survey-dialogue':()=> import('../surveys/EditSurvey.js'),
 //////////          SETTINGS            AdminDash      /////////                 
 'money-management-section': () => import('../dash/moneyManagementSection.js'),
 'open-permissions-dialogue': () => import('../db/permissionsModule.js'),   
