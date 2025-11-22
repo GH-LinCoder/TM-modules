@@ -89,7 +89,7 @@ function populateFromClipboard(panel) {
       addClipboardItemsToDropdown(tasks, taskSelect, 'task');
     }
     
-    // Populate task automation dropdown
+    // Populate survey automation dropdown
     const surveySelect = panel.querySelector('#surveyAutomationSelect');
     if (surveySelect) {
       console.log('Populating survey automation dropdown with', surveys.length, 'items');
@@ -150,7 +150,7 @@ function getTemplateHTML() {
       <div id="createTaskDialog" class="create-task-dialogue relative z-10 flex flex-col h-full">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
           <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="text-xl font-semibold text-gray-900">Create New Task  21:33 Oct 17</h3>
+            <h3 class="text-xl font-semibold text-gray-900">Create New Task  22:25 Nov 22</h3>
             <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -423,10 +423,61 @@ function attachListeners(panel) {   //managerAutomationSelect
   panel.querySelector('#saveStepBtn')?.addEventListener('click', (e) => handleStepSubmit(e, panel));
   panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
 
-        // Save task automation button
+
+
+  const taskAutomationSelect = panel.querySelector('#taskAutomationSelect');
+  const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
+  taskAutomationSelect?.addEventListener('change', () => {
+    if (taskAutomationSelect.value) {
+      saveTaskAutomationBtn.disabled = false;
+      saveTaskAutomationBtn.style.pointerEvents = 'auto';
+      saveTaskAutomationBtn.classList.remove('opacity-50');
+    } else {
+      saveTaskAutomationBtn.disabled = true;
+      saveTaskAutomationBtn.style.pointerEvents = 'none';
+      saveTaskAutomationBtn.classList.add('opacity-50');
+    }
+  });
+
+  const surveyAutomationSelect = panel.querySelector('#surveyAutomationSelect');
+  const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
+  surveyAutomationSelect?.addEventListener('change', () => {
+    if (surveyAutomationSelect.value) {
+      saveSurveyAutomationBtn.disabled = false;
+      saveSurveyAutomationBtn.style.pointerEvents = 'auto';
+      saveSurveyAutomationBtn.classList.remove('opacity-50');
+    } else {
+      saveSurveyAutomationBtn.disabled = true;
+      saveSurveyAutomationBtn.style.pointerEvents = 'none';
+      saveSurveyAutomationBtn.classList.add('opacity-50');
+    }
+  });
+
+  const approfileAutomationSelect = panel.querySelector('#approfileAutomationSelect');
+  const saveRelationshipAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
+  approfileAutomationSelect?.addEventListener('change', () => {
+    if (approfileAutomationSelect.value) {
+      saveRelationshipAutomationBtn.disabled = false;
+      saveRelationshipAutomationBtn.style.pointerEvents = 'auto';
+      saveRelationshipAutomationBtn.classList.remove('opacity-50');
+    } else {
+      saveRelationshipAutomationBtn.disabled = true;
+      saveRelationshipAutomationBtn.style.pointerEvents = 'none';
+      saveRelationshipAutomationBtn.classList.add('opacity-50');
+    }
+  });
+
+  const managerAutomationSelect = panel.querySelector('#managerAutomationSelect');
+  managerAutomationSelect?.addEventListener('change', () => {
+    // optional: enable task automation button or update context
+    console.log('Manager selected:', managerAutomationSelect.value);
+  });
+
+
+
+        // Save automation buttons
   panel.querySelector('#saveTaskAutomationBtn')?.addEventListener('click', (e) => handleTaskAutomationSubmit(e, panel));
   panel.querySelector('#saveSurveyAutomationBtn')?.addEventListener('click', (e) => handleSurveyAutomationSubmit(e, panel));
- 
   panel.querySelector('#saveRelationshipAutomationBtn')?.addEventListener('click', (e) => handleRelationshipAutomationSubmit(e, panel));
 
 
@@ -875,7 +926,7 @@ addInformationCard({
         console.log('currentStepId:', currentStepId);  // NULL  10:58 Oct 15  Different name !
 //        console.log('source_task_step_id:', source_task_step_id);
         // Save task automation to database
-        const result = await executeIfPermitted(userId, 'createSurveyAutomation', { 
+        const result = await executeIfPermitted(userId, 'createAutomationAssignTaskByTask', { 
       
        source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
        student_id: userId, //the person being assigned to the task
@@ -892,6 +943,7 @@ addInformationCard({
           'type': 'automation_task',
           'step': stepOrder,  // unknown  23:13  Oct 17
           'taskId': `${selectedTaskId?.substring(0, 8) || 'unknown'}...`,
+          'autoNumber': automationsNumber, 
           'id': `${result.id?.substring(0, 8) || 'unknown'}...`
         });
         
@@ -911,11 +963,14 @@ async function handleSurveyAutomationSubmit(e, panel) {
   console.log('handleSurveyAutomationSubmit()');
   e.preventDefault();
   
+  const taskSelect = panel.querySelector('#taskAutomationSelect');
+  const selectedTaskId = taskSelect?.value;
+
   const surveySelect = panel.querySelector('#surveyAutomationSelect');
-  const selectedSurveyId = taskSelect?.value;
+  const selectedSurveyId = surveySelect?.value;
   
   // Get the selected option text
-  const selectedOption = taskSelect?.options[taskSelect.selectedIndex];
+  const selectedOption = surveySelect?.options[surveySelect.selectedIndex];
   const surveyCleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
   
   const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
@@ -928,43 +983,38 @@ async function handleSurveyAutomationSubmit(e, panel) {
   saveSurveyAutomationBtn.textContent = 'Saving...'; //? 
   automationsNumber++;    
   
-  const managerSelect = panel.querySelector('#managerAutomationSelect'); 
-  const managerData = getManagerName(managerSelect);
+//  const managerSelect = panel.querySelector('#managerAutomationSelect'); 
+//  const managerData = getManagerName(managerSelect);
 
 addInformationCard({
-'name': `${managerData.managerName}`,
-'id': `${managerData.managerId?.substring(0, 8) || 'unknown'}`,
-'type': 'manager-assigned',
-'for-task': `${taskCleanName?.substring(0, 30) || 'Unknown Survey'}`,  // Show which task
-'on-step': stepOrder || 3,  // Show current step number
-'autoNumber': automationsNumber 
+'name': `${surveyCleanName}`,
+'type': 'automation_survey',
+'step': stepOrder || 3,  // Show current step number
+'autoNumber': automationsNumber, 
+'id': `${surveySelect.value?.substring(0, 8) || 'unknown'}`
 });
   
 try{
-const result = await executeIfPermitted(userId, 'createSurveyAutomation', { 
-      
-    source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
-    student_id: userId, //the person being assigned to the task
-    manager_id: managerData.managerId, // needs to be from the dropdown    
-    taskId: selectedTaskId,
-         task_step_id: stepId, // 
-         itemName: taskCleanName || 'Unknown Task', // 
-         automation_number: automationsNumber
+const result = await executeIfPermitted(userId, 'createAutomationAssignSurveyByTask', { // BUG - this assigns a task not a survey <------------------------
+            source_task_step_id :selectedTaskId, 
+            survey_header_id : selectedSurveyId, 
+            name: surveyCleanName, 
+            automation_number: automationsNumber
      });
      
      
      addInformationCard({
-       'name': `${taskCleanName?.substring(0, 60) || 'Unknown Task'}...`,
+       'name': `${surveyCleanName?.substring(0, 60) || 'Unknown Task'}...`,
        'type': 'automation_task',
        'step': stepOrder,  // unknown  23:13  Oct 17
-       'taskId': `${selectedTaskId?.substring(0, 8) || 'unknown'}...`,
-       'id': `${result.id?.substring(0, 8) || 'unknown'}...`
+       'surveyId': `${survey_header_id?.substring(0, 8) || 'unknown'}...`,
+       'automationId': `${result.id?.substring(0, 8) || 'unknown'}...`
      });
      
-     showToast('Task automation saved successfully!');
+     showToast('Survey automation saved successfully!');
      
  } catch (error) {
-     showToast('Failed to save task automation: ' + error.message, 'error');
+     showToast('Failed to save survey automation: ' + error.message, 'error');
       automationsNumber--; // ROLLBACK: Decrement on failure
  }
 
@@ -1007,7 +1057,7 @@ const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
     
     try {  
         // Save relationship automation to database - ADAPTED FOR TASKS
-        const result = await executeIfPermitted(userId, 'createSurveyAutomation', { // Same function name?
+        const result = await executeIfPermitted(userId, 'createAutomationRelateByTask', { // Same function name?
             source_task_step_id:  currentStepId,    // NULL
           //  student_id: userId,                         // Not relevant
             approfileId: selectedApproleId,            

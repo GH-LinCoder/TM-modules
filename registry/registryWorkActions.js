@@ -447,7 +447,7 @@ readTaskSteps: {
     const { taskId } = payload;
     const { data, error } = await supabase
       .from('task_steps')
-      .select('id, name, description, step_order')
+      .select('id, name, description, step_order, external_url')
       .eq('task_header_id', encodeURIComponent(taskId)) // encodeURIComponent(value) for .eq() & .like()
       .order('step_order');
     if (error) throw error;
@@ -834,6 +834,10 @@ handler: async (supabase, userId, payload) =>{
  }
 },
 //*/
+
+
+
+
 
 //TASK_ASSIGMENT
 readThisAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
@@ -1642,6 +1646,67 @@ updateSurveyAnswer: {
 },
 
 
+//AUTOMATIONS
+
+readTaskAutomations: {
+  metadata: {
+    tables: ['automations'],
+    columns: [
+      'id',
+      'name',
+      'description',
+      'task_header_id',
+      'task_step_id',
+      'survey_answer_id',
+      'student_id',
+      'from_step',
+      'to_step',
+      'appro_is_id',
+      'relationship',
+      'of_appro_id',
+      'appro_relations_id',
+      'automation_number',
+      'source_task_step_id',
+      'manager_id',
+      'task_assignment_id',
+      'created_at',
+      'last_updated_at',
+      'is_deleted'
+    ],
+    type: 'SELECT',
+    requiredArgs: ['taskId', 'stepId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { taskId, stepId } = payload;
+
+    // Validate required args
+    for (const arg of ['taskId', 'stepId']) {
+      if (payload[arg] === undefined || payload[arg] === null) {
+        throw new Error("Missing required argument: " + arg);
+      }
+    }
+
+    // Query automations table
+    const { data, error } = await supabase
+      .from('automations')
+      .select('*')
+      .eq('task_header_id', taskId)
+      .eq('task_step_id', stepId)
+      .is('deleted_at', null) // exclude soft-deleted
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error reading task automations:', error.message);
+      throw new Error('Failed to read task automations.');
+    }
+
+    return data;
+  }
+},
+
+
+
+
 createAutomationAssignTaskByTask: { //new 21:25 Nov 21
   metadata: { 
     tables: ['automations'], 
@@ -1652,6 +1717,14 @@ createAutomationAssignTaskByTask: { //new 21:25 Nov 21
       const { source_task_step_id, task_header_id, task_step_id, name, automation_number } = payload; 
       for (const arg of this.metadata.requiredArgs) { if (payload[arg] === undefined || payload[arg] === null) 
         { throw new Error("Missing required argument: " + arg); } } 
+
+        console.log('assignSurveyByTask', 
+          source_task_step_id, 
+          task_header_id, 
+          task_step_id,
+          name, 
+          automation_number);
+
         const { data, error } = await supabase 
         .from('automations') 
         .insert({ 
@@ -1677,6 +1750,13 @@ createAutomationAssignSurveyByTask: { // is it bad to default automation number 
           handler: async (supabase, userId, payload) => { const { source_task_step_id, survey_header_id, name, automation_number } = payload; 
           for (const arg of this.metadata.requiredArgs) 
             { if (payload[arg] === undefined || payload[arg] === null) { throw new Error("Missing required argument: " + arg); } } 
+          
+          console.log('assignSurveyByTask', 
+            source_task_step_id, 
+            survey_header_id, 
+            name, 
+            automation_number);
+
           const { data, error } = await supabase 
           .from('automations') 
           .insert({ 
@@ -1698,6 +1778,15 @@ createAutomationRelateByTask: {
     requiredArgs: ['source_task_step_id', 'appro_is_id', 'relationship', 'of_appro_id'] }, 
     handler: async (supabase, userId, payload) => { const { source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload; 
     for (const arg of this.metadata.requiredArgs) { if (payload[arg] === undefined || payload[arg] === null) { throw new Error("Missing required argument: " + arg); } } 
+    
+    console.log('relateByTask', 
+      source_task_step_id, 
+      appro_is_id, 
+      relationship, 
+      of_appro_id, 
+      name, 
+      automation_number);
+
     const { data, error } = await supabase 
     .from('automations') 
     .insert({ 
@@ -1823,7 +1912,7 @@ createAutomationSendMessageByTask: { //needs review
       return data; } },        
 
 
-
+/* seems to be a duplicate
 createAutomationAssignTaskByTask:{
   metadata: {
     tables: ['automations'],
@@ -1872,7 +1961,7 @@ console.log('createAutomation  source_task_step_id:', source_task_step_id);
     return data; // ← returns { id, name, description, ... }
   }
 },
-
+*/
 createAutomationDeleteRelationBySurvey: { 
   metadata: { 
     tables: ['automations'], 

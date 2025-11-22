@@ -48,9 +48,8 @@ function initClipboardIntegration(panel) {
 function populateFromClipboard(panel) {
   console.log('populateFromClipboard()');
   
-  // Get tasks & surveys from clipboard
+  // Get tasks from clipboard
   const tasks = getClipboardItems({ as: 'task', type: 'tasks' });
-  
   
   if (tasks.length === 0) return;
 
@@ -123,7 +122,6 @@ function populateFromClipboardAuto(panel) {
     const tasks = getClipboardItems({ as: 'task' });
     const approfiles = getClipboardItems({ as: 'other' });
     const managers = getClipboardItems({ as: 'manager' });
-    const surveys = getClipboardItems({ as: 'survey' });
     
     console.log('Clipboard items loaded:', {
       tasks: tasks.length,
@@ -138,14 +136,6 @@ function populateFromClipboardAuto(panel) {
       addClipboardItemsToDropdown(tasks, taskSelect, 'task');
     }
     
-    // Populate survey automation dropdown
-    const surveySelect = panel.querySelector('#surveyAutomationSelect');
-    if (surveySelect) {
-      console.log('Populating survey automation dropdown with', surveys.length, 'items');
-      addClipboardItemsToDropdown(surveys, surveySelect, 'survey');
-    }
-
-
     // Populate approfile automation dropdown
     const approfileSelect = panel.querySelector('#approfileAutomationSelect');
     if (approfileSelect) {
@@ -359,18 +349,7 @@ function getTemplateHTML() {
       Save Task Automation
     </button>
   </div>
-<!-- Assign Survey Section -->
-              <div class="mt-4 p-3 bg-white rounded border mb-4">
-                <h5 class="font-medium text-gray-800 mb-2">Assign a survey</h5>
-                <div class="flex gap-2">
-                  <select id="surveyAutomationSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                    <option value="">Select a survey to assign</option>
-                  </select>
-                </div>
-                  <button type="button" id="saveSurveyAutomationBtn" class="bg-purple-400 text-white py-1 px-3 rounded hover:bg-blue-700 opacity-50" style="pointer-events: none;">
-                    Save Survey Assignment automation
-                  </button>
-              </div>    
+
   <div>
     <label for="approfileAutomationSelect" class="block text-sm font-medium text-gray-700">Relate to a Category</label>
     <select id="approfileAutomationSelect" class="w-full p-2 border rounded mb-2">
@@ -512,20 +491,6 @@ loadStepAutomations(panel, step.id);
     loadTaskSteps(panel, state.currentTaskId);
   });
 //end new 17:39 oct 4  
-const surveySelect = panel.querySelector('#surveyAutomationSelect');
-const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
-
-surveySelect?.addEventListener('change', () => {
-  if (surveySelect.value) {
-    saveSurveyAutomationBtn.disabled = false;
-    saveSurveyAutomationBtn.style.pointerEvents = 'auto';
-    saveSurveyAutomationBtn.classList.remove('opacity-50');
-  } else {
-    saveSurveyAutomationBtn.disabled = true;
-    saveSurveyAutomationBtn.style.pointerEvents = 'none';
-    saveSurveyAutomationBtn.classList.add('opacity-50');
-  }
-});
 
 //new 19:25 Nov 12
 
@@ -544,7 +509,6 @@ panel.addEventListener('click', async (e) => {
   });
  //new 19:25 Nov 12
   panel.querySelector('#saveTaskAutomationBtn')?.addEventListener('click', (e) => handleTaskAutomationSubmit(e, panel));
-  panel.querySelector('#saveSurveyAutomationBtn')?.addEventListener('click', (e) => handleSurveyAutomationSubmit(e, panel));
 panel.querySelector('#saveRelationshipAutomationBtn')?.addEventListener('click', (e) => handleRelationshipAutomationSubmit(e, panel));
 
 }
@@ -646,78 +610,6 @@ addInformationCard({
     saveTaskAutomationBtn.disabled = false;
     saveTaskAutomationBtn.textContent = 'Save Task';
 }
-
-
-async function handleSurveyAutomationSubmit(e, panel) {
-  console.log('handleSurveyAutomationSubmit()');
-  e.preventDefault();
-  
-  const surveySelect = panel.querySelector('#surveyAutomationSelect');
-  const selectedSurveyId = surveySelect?.value;
-  
-  // Get the selected option text
-  const selectedOption = taskSelect?.options[taskSelect.selectedIndex];
-  const surveyCleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
-  
-  const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
-  if (!saveSurveyAutomationBtn) {
-      showToast('Save button not found', 'error');
-      return;
-  }
-  
-  saveSurveyAutomationBtn.disabled = true;
-  saveSurveyAutomationBtn.textContent = 'Saving...'; //? 
-  automationsNumber++;    
-  
-  const managerSelect = panel.querySelector('#managerAutomationSelect'); 
-  const managerData = getManagerName(managerSelect);
-
-addInformationCard({
-'name': `${managerData.managerName}`,
-'id': `${managerData.managerId?.substring(0, 8) || 'unknown'}`,
-'type': 'manager-assigned',
-'for-task': `${taskCleanName?.substring(0, 30) || 'Unknown Survey'}`,  // Show which task
-'on-step': stepOrder || 3,  // Show current step number
-'autoNumber': automationsNumber 
-});
-  
-try{
-const result = await executeIfPermitted(userId, 'createSurveyAutomation', { 
-      
-    source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
-    student_id: userId, //the person being assigned to the task
-    manager_id: managerData.managerId, // needs to be from the dropdown    
-    taskId: selectedTaskId,
-         task_step_id: stepId, // 
-         itemName: taskCleanName || 'Unknown Task', // 
-         automation_number: automationsNumber
-     });
-     
-     
-     addInformationCard({
-       'name': `${taskCleanName?.substring(0, 60) || 'Unknown Task'}...`,
-       'type': 'automation_task',
-       'step': stepOrder,  // unknown  23:13  Oct 17
-       'taskId': `${selectedTaskId?.substring(0, 8) || 'unknown'}...`,
-       'id': `${result.id?.substring(0, 8) || 'unknown'}...`
-     });
-     
-     showToast('Task automation saved successfully!');
-     
- } catch (error) {
-     showToast('Failed to save task automation: ' + error.message, 'error');
-      automationsNumber--; // ROLLBACK: Decrement on failure
- }
-
-
-
-
-  saveSurveyAutomationBtn.disabled = false;
-  saveSurveyAutomationBtn.textContent = 'Save Survey';
-}
-
-
-
 
 
 //new 19:40 Nov 12

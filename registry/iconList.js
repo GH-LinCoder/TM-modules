@@ -31,7 +31,7 @@ display:'👁️',
 dollar:'💵',
 down:'🔽',
 
-edit:' ✍️ ',
+edit:'✍️',
 email:'📧',
 empty:'🫗',
 euro:'💶',

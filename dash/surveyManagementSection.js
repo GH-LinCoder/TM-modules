@@ -8,7 +8,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
 <!-- survey Management section -->
 <div class="bg-green-100 rounded-lg shadow p-6" data-section="survey-management" >
-  <h2 class="text-lg font-semibold mb-2">survey Management  15:30 Oct 8</h2>
+  <h2 class="text-lg font-semibold mb-2">survey Management  15:05 Nov 22</h2>
   <p class="text-sm text-gray-500 mb-4">Click to carryout the action, it opens in a new panel to the right </p>
 <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
 
@@ -41,31 +41,30 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     
     <!-- Edit -->
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="edit-survey-dialogue">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Edit a survey</h3>
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Edit a survey ✍️📜</h3>
     <p class="text-xs text-blue-600">There may be many things to edit. Not yet defined.</p>
   </div>
 
-      <!-- Delete -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="delete-survey">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Delete a survey</h3>
-    <p class="text-xs text-blue-600">Deletion marks the record as deleted, but does not erase it from the system</p>
-  </div>
 
       <!-- Assign -->
-  <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assign-survey">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Assign to a survey</h3>
-    <p class="text-xs text-red-600">This places an approfile on the survey.</p>
+  <div class="bg-red-50 border border-red-100 rounded-lg p-4" data-action='assign-survey-dialogue'>
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Assign to a survey 🎆📜 </h3>
+    <p class="text-xs text-blue-600">This places an approfile on the survey.</p>
   </div>
 
       <!-- relate -->
   <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-survey">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Relate a survey to...</h3>
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Relate a survey to...</h3>
     
-    <p class="text-xs text-red-600">surveys can be related. Each survey has its own approfile.
+    <p class="text-xs text-blue-600">surveys can be related. Each survey has its own approfile.
     The process of relating is between approfiles. A survey can be related to other surveys directly or via a 3rd abstract approfile. </p>
   </div>
 
-
+      <!-- Delete -->
+  <div class="bg-red-50 border border-red-300 rounded-lg p-4" data-action="delete-survey">
+    <h3 class="text-sm font-medium text-red-700 mb-1">Delete a survey</h3>
+    <p class="text-xs text-red-600">Deletion marks the record as deleted, but does not erase it from the system</p>
+  </div>
 
 
 </div>

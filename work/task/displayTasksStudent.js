@@ -47,7 +47,7 @@ try {
       student_id: studentId,
       type: 'task'
     });
-//console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
+console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
     if (!assignments || assignments.length === 0) {
       panel.innerHTML = `<div class="text-gray-500 text-center py-8">No task assignments found.</div>`;
       return;
