@@ -21,6 +21,9 @@ export async function loadAdminDashWithData() {
   
    count = await executeIfPermitted(null, 'tasksCount', null); 
     updateAll('[data-value="tasks-count"]', count);
+
+    count = await executeIfPermitted(null, 'surveysCount', null); 
+    updateAll('[data-value="surveys-count"]', count);
   
     count = await executeIfPermitted(null, 'authorsCount', null);
     updateAll('[data-value="authors-count-unique"]', count);//doesn't find this one but does find next 2  if the html has authors-count the js says '23' but if authors-count-unique it gets it right

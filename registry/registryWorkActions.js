@@ -278,7 +278,30 @@ handler: async  (supabase, userId) =>{
 }
 },
 
+surveysCount:{
+  // Metadata for the permissions system
+  metadata: {
+    tables: ['survey_headers'],
+    columns: [],
+    type: 'SELECT',
+    requiredArgs:['supabase', 'userId']
+    // This could also hold other data like required user roles or permissions
+  },
+  // The actual function that interacts with the database
+handler: async  (supabase, userId) =>{
+  console.log('surveysCount()');
+  const { count, error } = await supabase
+  .from('survey_headers')
+  .select('id', { count: 'exact', head: true }); // ← head: true = don't return rows, just count 
 
+  if (error) {
+    console.error('Error counting surveys:', error.message);
+    throw new Error('Failed to count surveys.');
+  }
+  
+  return count// if use {count} it would be in form  {count: 23}
+}
+},
 
 /////////////////////////////////////   CREATE  INSERT    ///////////////////
 //APPRO

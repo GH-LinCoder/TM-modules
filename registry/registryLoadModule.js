@@ -36,6 +36,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'tasks-stats' :() => import('../work/task/tasks-stats.js'),
 'steps-stats' :() => import('../work/task/steps-stats.js'),
 
+'surveys-stats' :() => import('../surveys/survey-stats.js'),
 
 
 

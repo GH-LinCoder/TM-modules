@@ -41,6 +41,14 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-xs text-blue-400 mt-1" data-delta="members-month">+? new this month</p>
     </div>
 
+        <!-- Approfiles -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="approfiles-stats">
+      <h3 class="text-sm font-medium text-blue-700 mb-1">Approfiless total</h3>
+      <p class="text-2xl font-bold text-blue-900" data-value="approfiles-count">?</p>
+      <p class="text-xs text-blue-600">Humans + tasks + abstracts</p>
+      <p class="text-xs text-blue-400 mt-1" data-delta="members-month">+? new this month</p>
+    </div>
+
         <!-- Assignments -->
     <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assignments-stats">
       <h3 class="text-sm font-medium text-red-700 mb-1">Assignments</h3>
@@ -56,6 +64,16 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-xs text-yellow-600">Available tasks</p>
       <p class="text-xs text-yellow-400 mt-1" data-delta="tasks-month">+? added this month</p>
     </div>
+
+<!-- Surveys -->
+    <div class="bg-orange-50 border border-yellow-200 rounded-lg p-4" data-action="surveys-stats">
+      <h3 class="text-sm font-medium text-yellow-700 mb-1">surveys</h3>
+      <p class="text-2xl font-bold text-yellow-900" data-value="surveys-count">?</p>
+      <p class="text-xs text-yellow-600">Available Surveys</p>
+      <p class="text-xs text-yellow-400 mt-1" data-delta="tasks-month">+? added this month</p>
+    </div>
+
+
 
     <!-- Authors -->
     <div class="bg-yellow-50 border border-purple-200 rounded-lg p-4" data-action="authors-stats">
@@ -78,15 +96,8 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-xs text-indigo-600">Task supervisors</p>
     </div>
 
-        <!-- Approfiles -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="approfiles-stats">
-      <h3 class="text-sm font-medium text-blue-700 mb-1">Approfiless total</h3>
-      <p class="text-2xl font-bold text-blue-900" data-value="approfiles-count">?</p>
-      <p class="text-xs text-blue-600">Humans + tasks + abstracts</p>
-      <p class="text-xs text-blue-400 mt-1" data-delta="members-month">+? new this month</p>
-    </div>
-
-        <!-- Approfiles -->
+    
+        <!-- Analytics -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="analytics">
       <h3 class="text-sm font-medium text-blue-700 mb-1">Analytics</h3>
     </div>
