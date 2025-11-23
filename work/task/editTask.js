@@ -249,7 +249,7 @@ function getTemplateHTML() {
     <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-xl font-semibold text-gray-900">Edit Task  19:46 Nov 22</h3>
+          <h3 class="text-xl font-semibold text-gray-900">Edit Task  9:30 Nov 23</h3>
           <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -613,7 +613,17 @@ addInformationCard({
         } else {
             throw new Error(`No initial step (step 3) found for task ${selectedTaskId}`);
         }
-        console.log('currentStepId:', currentStepId);  // NULL  10:58 Oct 15  Different name !
+        console.log(
+          'currentStepId:', currentStepId,
+          'source_task_step_id :', stepId,
+          'student_id:', userId, //should be null because usually this is a future unknown person
+          'manager_id:', managerData.managerId,     
+          'taskId:', selectedTaskId,
+          'task_step_id:', stepId,
+          'itemName:', taskCleanName, 
+          'automation_number:', automationsNumber 
+        ); 
+
 //        console.log('source_task_step_id:', source_task_step_id);
         // Save task automation to database
         const result = await executeIfPermitted(userId, 'createSurveyAutomation', { 
@@ -638,7 +648,7 @@ addInformationCard({
         
         showToast('Task automation saved successfully!');
         
-    } catch (error) {
+    } catch (error) { console.log(error.message);
         showToast('Failed to save task automation: ' + error.message, 'error');
          automationsNumber--; // ROLLBACK: Decrement on failure
     }

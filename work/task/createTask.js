@@ -150,7 +150,7 @@ function getTemplateHTML() {
       <div id="createTaskDialog" class="create-task-dialogue relative z-10 flex flex-col h-full">
         <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
           <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-            <h3 class="text-xl font-semibold text-gray-900">Create New Task  22:25 Nov 22</h3>
+            <h3 class="text-xl font-semibold text-gray-900">Create New Task  14:49 Nov 23</h3>
             <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
               <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -926,7 +926,20 @@ addInformationCard({
         console.log('currentStepId:', currentStepId);  // NULL  10:58 Oct 15  Different name !
 //        console.log('source_task_step_id:', source_task_step_id);
         // Save task automation to database
-        const result = await executeIfPermitted(userId, 'createAutomationAssignTaskByTask', { 
+
+        console.log(
+          'currentStepId:', currentStepId,
+          'source_task_step_id :', stepId,
+          'student_id:', userId, //should be null because usually this is a future unknown person
+          'manager_id:', managerData.managerId,     
+          'taskId:', selectedTaskId,
+          'task_step_id:', stepId,
+          'itemName:', taskCleanName, 
+          'automation_number:', automationsNumber 
+        ); 
+
+
+        const result = await executeIfPermitted(userId, 'createAutomationAddTaskByTask', { //assingTask ???
       
        source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
        student_id: userId, //the person being assigned to the task
@@ -949,7 +962,7 @@ addInformationCard({
         
         showToast('Task automation saved successfully!');
         
-    } catch (error) {
+    } catch (error) {console.log('Failed', error.message);
         showToast('Failed to save task automation: ' + error.message, 'error');
          automationsNumber--; // ROLLBACK: Decrement on failure
     }
@@ -983,20 +996,25 @@ async function handleSurveyAutomationSubmit(e, panel) {
   saveSurveyAutomationBtn.textContent = 'Saving...'; //? 
   automationsNumber++;    
   
+  //this could be a function
+  let stepId = null;  
+  const initialStep = steps.find(step => step.step_order === 3);
+  if (initialStep && initialStep.id) {
+      stepId = initialStep.id;
+      console.log('Found initial step_id:', stepId);  // got it 10:58 Oct 15
+  } else {
+      throw new Error(`No initial step (step 3) found for task ${selectedTaskId}`);
+  }
+
+  
 //  const managerSelect = panel.querySelector('#managerAutomationSelect'); 
 //  const managerData = getManagerName(managerSelect);
 
-addInformationCard({
-'name': `${surveyCleanName}`,
-'type': 'automation_survey',
-'step': stepOrder || 3,  // Show current step number
-'autoNumber': automationsNumber, 
-'id': `${surveySelect.value?.substring(0, 8) || 'unknown'}`
-});
+
   
 try{
-const result = await executeIfPermitted(userId, 'createAutomationAssignSurveyByTask', { // BUG - this assigns a task not a survey <------------------------
-            source_task_step_id :selectedTaskId, 
+const result = await executeIfPermitted(userId, 'createAutomationAddSurveyByTask', { // BUG - this assigns a task not a survey <------------------------
+            source_task_step_id : stepId, //need this 
             survey_header_id : selectedSurveyId, 
             name: surveyCleanName, 
             automation_number: automationsNumber
@@ -1004,12 +1022,13 @@ const result = await executeIfPermitted(userId, 'createAutomationAssignSurveyByT
      
      
      addInformationCard({
-       'name': `${surveyCleanName?.substring(0, 60) || 'Unknown Task'}...`,
-       'type': 'automation_task',
-       'step': stepOrder,  // unknown  23:13  Oct 17
-       'surveyId': `${survey_header_id?.substring(0, 8) || 'unknown'}...`,
-       'automationId': `${result.id?.substring(0, 8) || 'unknown'}...`
-     });
+      'name': `${surveyCleanName}`,
+      'type': 'automation_survey',
+      'step': stepOrder || 3,  // Show current step number
+      'stepId':stepId?.substring(0, 8),
+      'autoNumber': automationsNumber, 
+      'survey id': `${selectedSurveyId?.substring(0, 8) || 'unknown'}`
+      });
      
      showToast('Survey automation saved successfully!');
      
