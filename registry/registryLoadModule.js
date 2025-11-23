@@ -16,8 +16,8 @@ export const registry = { // this registry is for loading a new page to the righ
 'bug-report' :()=> import('../notes/notes.js'),
 'selector-dialogue' :()=> import('../work/select/selectRemember.js'),
 'plans' :() => import('../plans.js'),
+'login-signup':()=>import('../auth/login-signup.js'),
 'login':()=>import('../auth/login.js'),
-
 
 
 //////////          QUICK STATS   AdminDash           /////////                 

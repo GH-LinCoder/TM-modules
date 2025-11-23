@@ -21,8 +21,8 @@ clipboard:[],
 //const userId:'e9b82fd0-067e-43f1-b514-c2dbbfd10cba',//Jubbul  step 3  2 tasks
 //const 
 //default DEV values
-userId :'ca1e9188-b3d6-4752-a4ed-d0cbdd62c044',//Keki  step 3 2 tasks  Has students
-userName:'Keki Surveyor',
+userId :'e0c6201d-66e0-4b1c-8826-027ec059d523',//Huyie T&M vidoes task, member of TestMock,
+userName:'Huyie',
 userType: 'app-human',
 
 defaultManagerId:'9066554d-1476-4655-9305-f997bff43cbb',

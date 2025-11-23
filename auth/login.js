@@ -7,24 +7,24 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
 <body class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
   <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
-    <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Create Account</h1>
+    <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Log in to existing Account</h1>
     
-    <form id="signupForm" class="space-y-4">
-      <!-- Full Name -->
+    <form id="loginForm" class="space-y-4">
+      <!-- User Name -->
       <div>
-        <label for="fullName" class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+        <label for="userName" class="block text-sm font-medium text-gray-700 mb-1">Enter your user name</label>
         <input 
           type="text" 
-          id="fullName" 
+          id="userName" 
           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="John Doe"
+          placeholder="Johaness Von Doe"
           required
         />
       </div>
 
       <!-- Email -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">or enter Email</label>
         <input 
           type="email" 
           id="email" 
@@ -36,7 +36,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
       <!-- Password -->
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password required</label>
         <input 
           type="password" 
           id="password" 
@@ -48,31 +48,20 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
         <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
       </div>
 
-      <!-- Confirm Password -->
-      <div>
-        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-        <input 
-          type="password" 
-          id="confirmPassword" 
-          class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="••••••••"
-          required
-        />
-      </div>
 
       <!-- Submit Button -->
       <button 
         type="submit" 
-        id="signupBtn"
+        id="loginBtn"
         class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
       >
-        Sign Up
+        (enter username OR email) plus password
       </button>
     </form>
 
     <!-- Success Message (hidden by default) -->
     <div id="successMessage" class="hidden mt-4 p-3 bg-green-100 text-green-800 rounded text-sm text-center">
-      Account created! Redirecting...
+      Redirecting...
     </div>
 
     <!-- Error Message -->
@@ -80,10 +69,20 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
     <!-- Link to Sign In -->
     <p class="mt-6 text-center text-sm text-gray-600">
-      Already have an account? 
-      <a href="signin.html" class="text-blue-600 hover:underline font-medium">Sign in</a>
+      Don't have an account? 
+<button class="nav-btn" data-page="login-signup" data-action="login-signup">Sign-up for account</button>
     </p>
   </div>
+
+
+      <!-- Link to password change -->
+    <p class="mt-6 text-center text-sm text-red-100">
+      Can't remember password? 
+<button class="nav-btn" data-page="password-change" data-action="password-change">Change password</button>
+    </p>
+  </div>
+
+
 
 `}
 

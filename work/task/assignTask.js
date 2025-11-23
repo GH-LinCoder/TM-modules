@@ -29,6 +29,7 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     super('task'); // ✅ Call parent constructor
     this.taskHeaders = [];
     this.approfiles = [];  // 'students'  'managers' ????
+    defaultManagerId = appState.query.defaultManagerId;
   }
 
   render(panel, query = {}) {
@@ -182,7 +183,7 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
         task_header_id: taskHeaderId,
         step_id: stepId,
         student_id: studentId,
-        manager_id: managerId || null,
+        manager_id: managerId || defaultManagerId,
         assignedBy: userId // Current user doing the assignment
       });
       
