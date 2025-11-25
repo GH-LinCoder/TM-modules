@@ -1310,7 +1310,7 @@ handler: async (supabase, userId, payload) => {
       requiredArgs:['supabase', 'userId', 'taskId']
     },
     handler: async (supabase, userId, taskId) => {// assume receive {task_header_id:task_header_id}
-      taskId = taskId.task_header_id;
+      taskId = taskId.task_header_id;  //this is weird
   //  console.log('readTaskWithSteps for taskId;',taskId);
       const { data, error } = await supabase
         .from('task_with_steps_view')
@@ -1676,13 +1676,13 @@ readTaskAutomations: {
       'is_deleted'
     ],
     type: 'SELECT',
-    requiredArgs: ['taskId', 'stepId']
+    requiredArgs: ['source_task_stepId']
   },
   handler: async (supabase, userId, payload) => {
-    const { taskId, stepId } = payload;
+    const { source_task_step_id} = payload;
 
     // Validate required args
-    for (const arg of ['taskId', 'stepId']) {
+    for (const arg of ['source_task_step_id']) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
@@ -1692,8 +1692,8 @@ readTaskAutomations: {
     const { data, error } = await supabase
       .from('automations')
       .select('*')
-      .eq('task_header_id', taskId)
-      .eq('task_step_id', stepId)
+      
+      .eq('source_task_step_id', source_task_step_id)
       .is('deleted_at', null) // exclude soft-deleted
       .order('created_at', { ascending: true });
 
@@ -1705,6 +1705,7 @@ readTaskAutomations: {
     return data;
   }
 },
+
 //Newer version with corrected arg check (not using "this.") File 001 has previous versions
 
 
@@ -2087,7 +2088,7 @@ console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id)
 },
 
 //SURVEYS     DELETE (soft)
-softDeleteSurveyAutomation:{
+softDeleteAutomation:{
   metadata: {
     tables: ['automations'],
     columns: ['is_deleted', 'deleted_at', 'deleted_by'],
@@ -2096,7 +2097,7 @@ softDeleteSurveyAutomation:{
   },
   handler: async (supabase, userId, payload) => {
     const { automationId, deletedBy } = payload;
-
+console.log('registry softDelete', automationId, 'by', deletedBy);
     const { data, error } = await supabase
       .from('automations')
       .update({
@@ -2104,7 +2105,7 @@ softDeleteSurveyAutomation:{
         deleted_at: new Date().toISOString(),
         deleted_by: deletedBy
       })
-      .eq('automation_id', automationId)
+      .eq('id', automationId)
       .select()
       .single();
 

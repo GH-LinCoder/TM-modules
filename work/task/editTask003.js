@@ -74,11 +74,6 @@ function initClipboardIntegration(panel) {
   });
 }
 
-
-
-
-
-
 // out  19:57 Nov 12
 
 function populateFromClipboard(panel) {
@@ -226,20 +221,6 @@ function addClipboardItemsToDropdown(items, selectElement) {
 }
 
 
-//Originally the header is loaded from the clipboard & then the steps and automations are read from the db
-//but if we reload the task after making any changes we need to read it all from the data base, this requires reading the header, placing the data in the form
-//and then calling the steps and automations functions
-
-
-
-async function reloadTaskData(taskName){
-  const header = await executeIfPermitted(state.user, 'readTaskHeaders', { taskName: taskName });
-//put data in form
-//extract taskId
-//call loadTaskSteps(panel, taskId)
-
-
-}
 
 
 
@@ -258,7 +239,7 @@ async function loadTaskSteps(panel, taskId) {
       }
       
       // Populate steps list
-      renderTaskStructure(panel); //which also does output of automations
+      OutputStepsList(panel);
       
       // Populate step select dropdown
       populateStepSelect(panel);
@@ -301,7 +282,7 @@ function getTemplateHTML() {
     <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-xl font-semibold text-gray-900">Edit Task  22:15 Nov 24</h3>
+          <h3 class="text-xl font-semibold text-gray-900">Edit Task  21:34 Nov 24</h3>
           <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -400,7 +381,7 @@ function getTemplateHTML() {
 
               <div id="createdSteps" class="hidden mt-4">
                 <h5 class="text-md font-medium mb-2">Existing Steps:</h5>
-                <div id="taskSummary" class="space-y-2"></div>
+                <div id="stepsList" class="space-y-2"></div>
               </div>
 
               <!--new 19:18 Nov 12 -->
@@ -623,7 +604,7 @@ approSelect?.addEventListener('change', () => {
 
 
 //new 19:25 Nov 12
-/* commented out 20:28 Nov 25. There is a listener on the summary output list to react to DELETE
+
 panel.addEventListener('click', async (e) => {
     if (e.target.classList.contains('deleteAutomationBtn')) {
       const automationId = e.target.dataset.id;
@@ -637,7 +618,6 @@ panel.addEventListener('click', async (e) => {
       }
     }
   });
-  */
  //new 19:25 Nov 12
   panel.querySelector('#saveTaskAutomationBtn')?.addEventListener('click', (e) => handleTaskAutomationSubmit(e, panel));
   panel.querySelector('#saveSurveyAutomationBtn')?.addEventListener('click', (e) => handleSurveyAutomationSubmit(e, panel));
@@ -943,6 +923,9 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
             'stepId':  stepId?.substring(0, 8) || 'unknown'  //
         });            
         
+
+
+
         showToast('Relationship automation saved successfully!');
         
     } catch (error) {
@@ -1064,7 +1047,7 @@ async function handleTaskUpdate(e, panel) {
         console.log('Updating existing step:', order, 'stepName:', stepName, 'stepDescription:', stepDescription);
         await executeIfPermitted(state.user, 'updateTaskStep', {
           taskId: state.currentTaskId,
-          stepOrder: order, // This should be a number-19:20 Nov 25  null. Probably the click on the step isn't setting the relevant value the way the drop down would
+          stepOrder: order, // This should be a number
           stepName,
           stepDescription,
           stepUrl
@@ -1075,7 +1058,7 @@ async function handleTaskUpdate(e, panel) {
         console.log('Creating new step:', order);
         await executeIfPermitted(state.user, 'createTaskStep', {
           taskId: state.currentTaskId,
-          stepOrder: order, // This should be a number 
+          stepOrder: order, // This should be a number
           stepName,
           stepDescription,
           stepUrl
@@ -1112,199 +1095,133 @@ enableAutomationControls(panel);
   }
   
 
-// Module-scoped state for the Edit Task panel
-const editTaskState = {
-  currentStepId: null,
-  currentAutomationId: null
-};
-
-
-function loadStepIntoEditor(panel,stepId){
-  console.log('stepId incoming:', stepId, 'typeof:', typeof stepId);
-  console.log('steps length:', Array.isArray(state.steps) ? state.steps.length : 'not array');
-  console.log('available ids:', (state.steps || []).map(s => s.id));
-
-  const step = state.steps.find(s => s.id === stepId);
-  console.log('Looking for stepId:', stepId, 'in', state.steps.map(s => s.id));
-stepOrder = step.step_order;  //used later in saving to db line 1146
-    
-  // ✅ DEBUG: Log found step
-  console.log('state,steps:',state.steps,'stepId',stepId,'step.stepOrder:', step.step_order); // undefined 23:07 24 Nov
+  function attachStepsListeners(panel) {
+    console.log('attachStepsListeners()');
   
-  if (step) {
-    // Fill form with step data
-    panel.querySelector('#stepName').value = step.name || '';
-    panel.querySelector('#stepDescription').value = step.description || '';
-    panel.querySelector('#stepUrl').value = step.external_url || '';
-    panel.querySelector('#stepOrder').value = stepOrder; // Ensure this is set
-    console.log('Form filled with step data');
-}
-}
-
-
-async function handleDeleteAutomationButton(automationId){
-  const deletedBy = state.user;
-  console.log('handleDelete of', automationId, 'by', deletedBy);
-
-  try {
-    await executeIfPermitted(state.user, 'softDeleteAutomation', { automationId, deletedBy });
-    showToast('Automation deleted');
-     } catch (err) {
-    showToast('Failed to delete automation', 'error');
+    this.stepId = null;
+    this.automationId = null;
+  
+    panel.addEventListener('click', (e) => {
+      const target = e.target.closest(
+        '.clickable-step, .clickable-automation, .deleteAutomationBtn, #addStepBtn'
+      );
+      if (!target) return;
+  
+      const saveBtn = panel.querySelector('#saveTaskBtn');
+      if (!saveBtn) return;
+  
+      if (target.classList.contains('clickable-step')) {
+        this.stepId = target.dataset.stepId;
+        console.log('Step:', this.stepId);
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Edit step';
+        this.sectionToEdit = 'step';
+        saveBtn.disabled = false;
+        this.hideAutomationsHTML(panel);
+        this.populateTaskData(panel, this.sectionToEdit);
+  
+      } else if (target.classList.contains('clickable-automation')) {
+        this.stepId = target.dataset.stepId;
+        this.automationId = target.dataset.automationId;
+        console.log('Automation:', this.automationId, 'Step:', this.stepId);
+        saveBtn.disabled = true;
+        saveBtn.textContent = 'Can add or delete automations, but not edit';
+        this.sectionToEdit = 'automation';
+        saveBtn.disabled = false;
+        this.displayAutomationsHTML(panel);
+        this.populateTaskData(panel, this.sectionToEdit);
+  
+      } else if (target.classList.contains('deleteAutomationBtn')) {
+        const autoId = target.dataset.id;
+        console.log('Delete automation:', autoId, 'from step:', this.stepId);
+        this.handleDeleteAutomation(autoId, panel);
+  
+      } else if (target.id === 'addStepBtn') {
+        console.log('Add Step clicked');
+        this.handleAddStep(e, panel);
+      }
+    });
   }
-}
-
-
-
-// Attach listeners to the summary panel
-function attachStepsListeners(panel) {
-  console.log('attachStepsListeners()');
-
-  panel.addEventListener('click', (e) => {
-    const target = e.target.closest(
-      '.clickable-step, .clickable-automation, .deleteAutomationBtn, #addStepBtn'
-    );
-    if (!target) return;
-console.log('steps listener event:', target); // responds
-    const saveBtn = panel.querySelector('#saveTaskBtn');
-    // Save button optional; do not hard-depend on it to load the editor
-    const sectionToEditEl = panel.querySelector('#editSectionLabel'); // optional status label
-
-    if (target.classList.contains('clickable-step')) {
-      const stepId = target.dataset.stepId;
-      editTaskState.currentStepId = stepId;
-      console.log('target.dataset',target.dataset);
-      panel.querySelector('#stepOrder').value = stepOrder; // Ensure this is set to a number not an id
-      if (saveBtn) { saveBtn.textContent = 'Edit step'; saveBtn.disabled = false; }
-      if (sectionToEditEl) sectionToEditEl.textContent = 'step';
-      
-      loadStepIntoEditor(panel, stepId); //       
-    //  hideAutomationsUI(panel);
-
-    } else if (target.classList.contains('clickable-automation')) {
-      const stepId = target.dataset.stepId;
-      const automationId = target.dataset.automationId;
-      editTaskState.currentStepId = stepId;
-      editTaskState.currentAutomationId = automationId;
-      if (saveBtn) { saveBtn.textContent = 'Manage automations'; saveBtn.disabled = false; }
-      if (sectionToEditEl) sectionToEditEl.textContent = 'automation';
-     // showAutomationsUI(panel, stepId);
-
-    } else if (target.classList.contains('deleteAutomationBtn')) {
-      
-      console.log('Clicked the:',target.textContent);
-      const automationId = target.dataset.id;
-      const stepId = editTaskState.currentStepId || target.dataset.stepId;
-
-      if(target.textContent ==   'Click to confirm Delete this automation') {handleDeleteAutomationButton(automationId)}
-      else target.textContent = 'Click to confirm Delete this automation' ;
-        
-     // handleDeleteAutomation(panel, stepId, automationId);
-
-    } else if (target.id === 'addStepBtn') {
-    //  handleAddStep(panel);
-    }
-  });
-}
-
-
-
-
-function markActiveStepInSummary(panel, stepId) {
-  panel.querySelectorAll('.clickable-step').forEach(el => {
-    el.classList.toggle('ring-2', el.dataset.stepId === String(stepId));
-    el.classList.toggle('ring-blue-500', el.dataset.stepId === String(stepId));
-    el.classList.toggle('bg-blue-100', el.dataset.stepId === String(stepId));
-  });
-}
-
-
-
   
 
 
-function renderTaskStructure(panel) {
-  const list = panel.querySelector('#taskSummary');
+function OutputStepsList(panel) {
+  console.log('OutputStepsList()');
+  const list = panel.querySelector('#stepsList');
   if (!list) return;
 
-  list.innerHTML = '<h3>Summary:</h3><br>';
-
+  list.innerHTML = '';
   state.steps.forEach(step => {
-    const stepCard = document.createElement('p');
-    stepCard.className = 'clickable-step hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
-    stepCard.dataset.stepId = step.id;
-    stepCard.innerHTML = `
-      <strong>Step ${step.step_order}:</strong> ${step.name}
-      <span class="block text-sm text-gray-600 whitespace-pre-line">${step.description || ''}</span>
+
+
+
+    const div = document.createElement('div');
+    div.className = 'p-2 bg-gray-50 rounded border';
+    div.innerHTML = `
+      <div class="font-medium">Step ${step.step_order}: ${step.name}</div>
+      <div class="text-sm text-gray-600">${step.description}</div>
     `;
 
-    list.appendChild(stepCard);
+   const automations = loadStepAutomations(div, step.id);
+//    const card = renderAutomationCards(panel, automations);
+//div.innerHTML+= card;
 
-    // Inline automations under the step (styled like survey answers/automations)
-    const autosContainer = document.createElement('div');
-    autosContainer.className = 'ml-4';
-    list.appendChild(autosContainer);
-    loadStepAutomations(autosContainer, step.id);
+    list.appendChild(div);
+
   });
-
+  
   const createdSteps = panel.querySelector('#createdSteps');
-  if (createdSteps && state.steps.length > 0) createdSteps.classList.remove('hidden');
-  attachStepsListeners(panel);
-}
-
-// Your existing function works; keep signature the same, but pass the container.
-async function loadStepAutomations(container, stepId) {
-  try {
-    const automations = await executeIfPermitted(state.user, 'readTaskAutomations', {
-      source_task_step_id: stepId
-    });
-    renderAutomationCards(container, automations);
-  } catch (error) {
-    console.error('Failed to load automations:', error);
-    showToast('Could not load automations', 'error');
+  if (createdSteps && state.steps.length > 0) {
+    createdSteps.classList.remove('hidden');
   }
 }
 
-function renderAutomationCards(container, automations) {
-  if (!automations || automations.length === 0) {
-    container.innerHTML += `<p class="text-gray-500"><em>No automations</em></p>`;
-    return;
-  }
+//new 19:23 Nov 12
 
-  automations.forEach(auto => {
-    const p = document.createElement('p');
-    p.className = 'clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
-    p.dataset.stepId = auto.source_task_step_id;
-    p.dataset.automationId = auto.id;
-
-    // choose border color per type
-    const borderClass =
-      auto.taskHeaderId ? 'border-yellow-500' :
-      auto.survey_header_id ? 'border-yellow-500' :
-      auto.relationship ? 'border-yellow-400' : 'border-yellow-300';
-    p.classList.add(borderClass);
-
-    if (auto.task_header_id) {
-      p.innerHTML = `automation🚂🔧 <strong>Task:</strong> Assign to "${auto.name || 'Unknown Task'}" → Step ${auto.task_step_id || 'Initial'}`;
-    } else if (auto.survey_header_id) {
-      p.innerHTML = `automation🚂📜 <strong>Survey:</strong> Assign to "${auto.name || 'Unknown Survey'}"`;
-    } else if (auto.relationship) {
-      p.innerHTML = `automation🚂🖇️ <strong>Relation:</strong> [${auto.approIsId}] <strong>${auto.approIsName || 'Respondent'} is</strong> → ${auto.relationship} → of ${auto.ofApproName} [${auto.of_appro_id}]`;
-    } else {
-      p.innerHTML = `❓ <strong>default:</strong> ${JSON.stringify(auto)}`;
+async function loadStepAutomations(panel, stepId) { // display existing automations
+    try {
+      const automations = await executeIfPermitted(state.user, 'readTaskAutomations', {
+        
+        source_task_step_id: stepId
+      });
+      console.log('Read automations:',automations, 'on step:', stepId, 'of task:', state.currentTaskId);
+      renderAutomationCards(panel, automations);
+    } catch (error) {
+      console.error('Failed to load automations:', error);
+      showToast('Could not load automations', 'error');
     }
+  }
 
-    const del = document.createElement('button');
-    del.className = 'deleteAutomationBtn text-red-600 text-sm ml-4';
-    del.dataset.id = auto.id;
-    del.dataset.stepId = auto.source_task_step_id;
-    del.textContent = 'Delete';
+  function renderAutomationCards(panel, automations) {
+   // const container = panel.querySelector('#automationCards');
+   // if (!container) return;
+  
+//    panel.innerHTML = ''; // Clear previous
+    const card = document.createElement('div');  
+    
+    automations.forEach(auto => {
+      card.className = 'p-2 bg-green-50 rounded border flex justify-between items-center';
+      card.innerHTML = `<div>        
+      `;
 
-    const row = document.createElement('div');
-    row.className = 'ml-6 flex items-center gap-2';
-    row.appendChild(p);
-    row.appendChild(del);
+     // DECISION LOGIC: Check if it's a task or relationship automation
+        if (auto.taskHeaderId) {
+            // TASK AUTOMATION   `<p class="clickable-automation" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}" data-automation-id="${auto.automationId}">🔄 ${auto.name || 'Unnamed'}</p>`;
+            card.innerHTML += `<p class="clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-3 ml-8 mb-2 shadow-sm hover:shadow-md" data-step-id="${auto.source_task_step_id}" data-automation-id="${auto.id}">automation🚂🔧 <strong>Task:</strong> Assign to "${auto.name || 'Unknown Task'}" → Step ${auto.task_step_id || 'Initial'}</p>`;
+        } else if (auto.survey_header_id){
+          card.innerHTML += `<p class="clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-3 ml-8 mb-2 shadow-sm hover:shadow-md" data-step-id="${auto.source_task_step_id}" data-automation-id="${auto.id}">automation🚂📜 <strong>Survey:</strong> Assign to "${auto.name || 'Unknown Survey'}" 'Header'}</p>`;
+       
+          } else if (auto.relationship) {
+            // RELATIONSHIP AUTOMATION  
+            card.innerHTML += `<p class="clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-yellow-400 rounded-lg p-3 ml-8 mb-2 shadow-sm hover:shadow-md" data-step-id="${auto.source_task_step_id}" data-automation-id="${auto.id}">automation🚂🖇️ <strong>Relation:</strong> ${'['+ auto.approIsId + '] <strong> ' + auto.approIsName || 'Respondent' + 'is'} → ${auto.relationship} → ${'of ' + auto.ofApproName+'</strong> ['+auto.of_appro_id +']'}</p>`;
+        } 
+        card.innerHTML+=`
+        <button class="deleteAutomationBtn text-red-600 text-sm" data-id="${auto.id}">Delete</button>`;
+      });
 
-    container.appendChild(row);
-  });
-}
+      panel.appendChild(card);
+
+      return card;
+
+  }
+  

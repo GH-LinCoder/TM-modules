@@ -90,7 +90,7 @@ panel.querySelectorAll('.edit-mode-card').forEach(card => {  // NOT USED  ??
             <div id="surveyEditorDialog" class="survey-editor-dialogue relative z-10 flex flex-col h-full">
                 <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
                     <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-                        <h3 class="text-xl font-semibold text-gray-900">Edit Survey 18:15 Nov 12</h3>
+                        <h3 class="text-xl font-semibold text-gray-900">Edit Survey 21:39 Nov 24</h3>
 
                                         <select id="surveySelect" 
                                                 class="flex-1 p-2 border border-gray-300 rounded text-sm">
@@ -436,78 +436,6 @@ attachSummaryListeners(panel) {
     });
 }
 
-
-
-/* removed 22:40  Nov 10 replaced by delegated
-attachSummaryListeners(panel){   console.log('attachSummary()')
-    const hEl = panel.querySelector('.clickable-header');
-    console.log('hEl', hEl); 
-    hEl.addEventListener('click', (e) => {
-        
-        console.log('H:', this.surveyId);
-        
-        const saveHeaderBtn = panel.querySelector('#saveSurveyBtn'); // shared button
-        saveHeaderBtn.disabled = true;  // shared button
-        saveHeaderBtn.textContent = 'Edit header';
-        this.populateSurveyData(panel, 'header');
-
-    });
-
-    const qEl = panel.querySelectorAll('.clickable-question');
-    console.log('qEl', qEl);  // node list was length 0, probably called too early
-    //Now probably called many times - problem of many listeners
-    this.questionId=null; this.answerId=null; this.automationId=null; // reset the values to not confuse with stale ones
-    panel.querySelectorAll(".clickable-question").forEach(el => {el.removeEventListener('click',e=>{})}); //removes the questions
-
-    panel.querySelectorAll('.clickable-question').forEach(el => {     console.log('el',el);
-        el.addEventListener('click', e => {
-            this.questionId = e.currentTarget.dataset.questionId;
-            console.log('Q:', this.questionId);
-            
-            const saveQuestionBtn = panel.querySelector('#saveSurveyBtn'); // shared button
-            saveQuestionBtn.disabled = true;  // shared button
-            saveQuestionBtn.textContent = 'Edit question';
-            this.populateSurveyData(panel, 'question');
-
-        });
-      });
-
-      panel.querySelectorAll(".clickable-answer").forEach(el => {el.removeEventListener('click',e=>{})});
-
-      panel.querySelectorAll('.clickable-answer').forEach(el => {
-        el.addEventListener('click', e => {
-            this.questionId = e.currentTarget.dataset.questionId;
-            this.answerId = e.currentTarget.dataset.answerId;
-            console.log('Q:', this.questionId, 'A:', this.answerId);
-            
-            const saveAnswerBtn = panel.querySelector('#saveSurveyBtn'); // shared button
-            saveAnswerBtn.disabled = true;  // shared button
-            saveAnswerBtn.textContent = 'Edit answer';
-            this.populateSurveyData(panel, 'answer');
-
-        });
-      });
-
-          panel.querySelectorAll(".clickable-automationn").forEach(el => {el.removeEventListener('click',e=>{})});
-      
-      panel.querySelectorAll('.clickable-automation').forEach(el => {
-        el.addEventListener('click', e => {
-            this.questionId = e.currentTarget.dataset.questionId;
-            this.answerId = e.currentTarget.dataset.answerId;
-            this.automationId = e.currentTarget.dataset.automationId;
-            console.log('Q:', this.questionId, 'A:', this.answerId, 'Au:', this.automationId);
-
-            const saveABtn = panel.querySelector('#saveSurveyBtn'); // shared button
-            saveABtn.disabled = true;  // shared button
-            saveABtn.textContent = 'Can add or delete automations, but not edit';
-
-
-            this.populateSurveyData(panel, 'automation');
-
-        });
-      });
-}
-*/
 
     populateSurveyData(panel, section) {
         if (!this.normalizedSurvey) return;

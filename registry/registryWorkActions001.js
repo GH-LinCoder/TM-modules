@@ -1674,13 +1674,13 @@ readTaskAutomations: {
       'is_deleted'
     ],
     type: 'SELECT',
-    requiredArgs: ['taskId', 'stepId']
+    requiredArgs: ['source_task_stepId']
   },
   handler: async (supabase, userId, payload) => {
-    const { taskId, stepId } = payload;
+    const { source_task_step_id} = payload;
 
     // Validate required args
-    for (const arg of ['taskId', 'stepId']) {
+    for (const arg of ['source_task_step_id']) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
@@ -1690,8 +1690,8 @@ readTaskAutomations: {
     const { data, error } = await supabase
       .from('automations')
       .select('*')
-      .eq('task_header_id', taskId)
-      .eq('task_step_id', stepId)
+      
+      .eq('source_task_step_id', source_task_step_id)
       .is('deleted_at', null) // exclude soft-deleted
       .order('created_at', { ascending: true });
 
