@@ -8,38 +8,38 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 <body class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
   <div class="w-full max-w-md bg-blue-100 rounded-lg shadow-md p-8">
     <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Create Account</h1>
-    
+    <div id="signupForm" class="auth-form">
     <form id="signupForm" class="space-y-4">
-      <!-- User Name -->
+      <!-- signup User Name -->
       <div>
-        <label for="userName" class="block text-sm font-medium text-gray-700 mb-1">User name</label>
+        <label for="signup-userName" class="block text-sm font-medium text-gray-700 mb-1">User name</label>
         <input 
           type="text" 
-          id="userName" 
+          id="signup-userName" 
           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Johaness Von Doe"
           required
         />
       </div>
 
-      <!-- Email -->
+      <!-- signup Email -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
+        <label for="signup-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
         <input 
           type="email" 
-          id="email" 
+          id="signup-email" 
           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="you@example.com"
           required
         />
       </div>
 
-      <!-- Password -->
+      <!-- signup Password -->
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+        <label for="signup-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
         <input 
           type="password" 
-          id="password" 
+          id="signup-password" 
           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="••••••••"
           minlength="6"
@@ -50,10 +50,10 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
       <!-- Confirm Password -->
       <div>
-        <label for="confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
+        <label for="signup-confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
         <input 
           type="password" 
-          id="confirmPassword" 
+          id="signup-confirmPassword" 
           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="••••••••"
           required
@@ -71,59 +71,60 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </form>
 
     <!-- Success Message (hidden by default) -->
-    <div id="successMessage" class="hidden mt-4 p-3 bg-green-100 text-green-800 rounded text-sm text-center">
+    <div id="signup-successMessage" class="hidden mt-4 p-3 bg-green-100 text-green-800 rounded text-sm text-center">
       Account created! Redirecting...
     </div>
 
     <!-- Error Message -->
-    <div id="errorMessage" class="hidden mt-4 p-3 bg-red-100 text-red-800 rounded text-sm"></div>
+    <div id="signup-errorMessage" class="hidden mt-4 p-3 bg-red-100 text-red-800 rounded text-sm"></div>
 
     <!-- Link to Sign In -->
-    <!--p class="mt-6 text-center text-sm text-gray-600">
+    <p class="mt-6 text-center text-sm text-gray-600">
       Already have an account? 
-<button class="nav-btn" data-page="login" data-action="login">Login/out</button>
-    </p-->
+<button id ="showLoginForm">Login/out</button>
+    </p>
   </div>
-
+</div>
 <!-------------------------------------------        --------------------------------------->
 
 <body class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-  <div class="w-full max-w-md bg-green-100 rounded-lg shadow-md p-8">
+    <div id="loginForm" class="auth-form hidden">
+<div class="w-full max-w-md bg-green-100 rounded-lg shadow-md p-8">
     <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Log in to existing Account</h1>
-    
+
     <form id="loginForm" class="space-y-4">
-      <!-- User Name -->
+      <!-- login User Name -->
       <div>
-        <label for="userName" class="block text-sm font-medium text-gray-700 mb-1">Enter your user name</label>
+        <label for="login-userName" class="block text-sm font-medium text-gray-700 mb-1">Enter your user name</label>
         <input 
           type="text" 
-          id="userName" 
+          id="login-userName" 
           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="Johaness Von Doe"
           required
         />
       </div>
 
-      <!-- Email -->
+      <!-- login Email -->
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-700 mb-1">or enter Email</label>
+        <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">or enter Email</label>
         <input 
           type="email" 
-          id="email" 
+          id="login-email" 
           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           placeholder="you@example.com"
           required
         />
       </div>
 
-      <!-- Password -->
+      <!-- login Password -->
       <div>
-        <label for="password" class="block text-sm font-medium text-gray-700 mb-1">Password required</label>
+        <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password required</label>
         <input 
           type="password" 
-          id="password" 
+          id="login-password" 
           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="••••••••"
+          placeholder="••••••"
           minlength="6"
           required
         />
@@ -142,12 +143,12 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </form>
 
     <!-- Success Message (hidden by default) -->
-    <div id="successMessage" class="hidden mt-4 p-3 bg-green-100 text-green-800 rounded text-sm text-center">
+    <div id="login-successMessage" class="hidden mt-4 p-3 bg-green-100 text-green-800 rounded text-sm text-center">
       Redirecting...
     </div>
 
     <!-- Error Message -->
-    <div id="errorMessage" class="hidden mt-4 p-3 bg-red-100 text-red-800 rounded text-sm"></div>
+    <div id="login-errorMessage" class="hidden mt-4 p-3 bg-red-100 text-red-800 rounded text-sm"></div>
 
     <!-- Link to Sign In -->
     <!--p class="mt-6 text-center text-sm text-gray-600">
@@ -162,10 +163,10 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       Can't remember password?
 
     <form id="forgot-password-form">
-  <label for="email" class="text-center text-sm text-red-600">Enter email and click to renew password:</label>
-  <input type="email" id="email" name="email" placeholder="Enter email then click" required <input 
+  <label for="password-email" class="text-center text-sm text-red-600">Enter email and click to renew password:</label>
+  <input type="email" id="password-email" name="password-email" placeholder="Enter email then click" required <input 
           type="email" 
-          id="email" 
+          id="password-email" 
           class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:border-blue-500">
 <button  type="submit"  class="w-full bg-red-300 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-md transition-colors" data-action="password-change">Enter email then click to change password</button>  
  </form>
@@ -174,11 +175,75 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </p>
   </div>
 
- 
-
-
+  </div>
 
 `}
+
+
+
+function showAuthForm(formName) {
+  document.querySelectorAll('.auth-form').forEach(form => {
+    form.classList.add('hidden');
+  });
+  document.getElementById(`${formName}Form`).classList.remove('hidden');
+}
+
+
+/*
+
+ERROR: onclick showLoginForm is not defined  ??
+
+When you return to it, focus first on:
+1. **Unique element IDs**
+2. **Form visibility toggle**
+3. **Isolated error/success messaging**
+
+<!-- Signup -->
+<input id="signup-email" ...>
+<!-- Login -->
+<input id="login-email" ...>
+<!-- Reset -->
+<input id="reset-email" ...>
+
+<div id="signup-error" class="hidden ..."></div>
+<div id="login-error" class="hidden ..."></div>
+
+Wrap each form in a container with a unique ID and class:
+```html
+<div id="signupForm" class="auth-form">
+  <!-- signup fields -->
+</div>
+<div id="loginForm" class="auth-form hidden">
+  <!-- login fields -->
+</div>
+<div id="resetForm" class="auth-form hidden">
+  <!-- reset fields -->
+</div>
+
+Instead of one huge `render()` function, split logic:
+
+
+
+*/
+function showLoginForm(){
+  console.log('showLoginForm()');
+
+}
+
+function initSignupForm() { /* ... */ }
+function initLoginForm() { /* ... */ }
+function initResetForm() { /* ... */ }
+
+export function renderNEW(panel, petition = {}) {
+  panel.innerHTML = getTemplateHTML();
+  initSignupForm();
+  initLoginForm();
+  initResetForm();
+  showAuthForm('login'); // default
+}
+
+
+
 
 export function render(panel, petition = {}) {
     console.log('memberDash Render(', panel, petition, ')');
@@ -204,35 +269,39 @@ export function render(panel, petition = {}) {
 
 
 
+
+
+
+
   // Handle sign-up form
   signupForm = document.getElementById('signupForm')
   
   signupForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const userName = signupForm.getElementById('userName').value.trim();
-    const email = signupForm.getElementById('email').value.trim();
-    const password = signupForm.getElementById('password').value;
-    const confirmPassword = signupForm.getElementById('confirmPassword').value;
+    const signup_userName = signupForm.getElementById('signup-userName').value.trim();
+    const signup_email = signupForm.getElementById('signup-email').value.trim();
+    const signup_password = signupForm.getElementById('signup-password').value;
+    const signup_confirmPassword = signupForm.getElementById('signup-confirmPassword').value;
     const signupBtn = signupForm.getElementById('signupBtn');
     //const loginBtn = document.getElementById('loginBtn');
-    const errorMessage = signupForm.getElementById('errorMessage');
-    const successMessage = signupForm.getElementById('successMessage');
+    const signup_errorMessage = signupForm.getElementById('signup-errorMessage');
+    const signup_successMessage = signupForm.getElementById('signup-successMessage');
 
     // Reset messages
-    errorMessage.classList.add('hidden');
-    successMessage.classList.add('hidden');
+    signup_errorMessage.classList.add('hidden');
+    signup_successMessage.classList.add('hidden');
 
     // Validate
-    if (password !== confirmPassword) {
-      errorMessage.textContent = 'Passwords do not match';
-      errorMessage.classList.remove('hidden');
+    if (signup_password !== signup_confirmPassword) {
+      signup_errorMessage.textContent = 'Passwords do not match';
+      signup_errorMessage.classList.remove('hidden');
       return;
     }
 
-    if (password.length < 6) {
-      errorMessage.textContent = 'Password must be at least 6 characters';
-      errorMessage.classList.remove('hidden');
+    if (signup_password.length < 6) {
+      signup_errorMessage.textContent = 'Password must be at least 6 characters';
+      signup_errorMessage.classList.remove('hidden');
       return;
     }
 
@@ -242,8 +311,8 @@ export function render(panel, petition = {}) {
 
     try {
       const { data, error } = await supabase.auth.signUp({
-        email,
-        password,
+        signup_email,
+        signup_password,
         options: {
           data: {
             full_name: userName,
@@ -253,18 +322,18 @@ export function render(panel, petition = {}) {
       });
 
       if (error) {
-        errorMessage.textContent = error.message;
-        errorMessage.classList.remove('hidden');
+        signup_errorMessage.textContent = error.message;
+        signup_errorMessage.classList.remove('hidden');
       } else {
-        successMessage.classList.remove('hidden');
+        signup_successMessage.classList.remove('hidden');
         // Redirect after 1.5s
         setTimeout(() => {
           window.location.href = 'adminDash.html';
         }, 1500);
       }
     } catch (err) {
-      errorMessage.textContent = 'An unexpected error occurred';
-      errorMessage.classList.remove('hidden');
+      signup_errorMessage.textContent = 'An unexpected error occurred';
+      signup_errorMessage.classList.remove('hidden');
     } finally {
       signupBtn.disabled = false;
       signupBtn.textContent = 'Sign Up';
@@ -272,36 +341,36 @@ export function render(panel, petition = {}) {
   });
 
 
-  // Handle sign-up form
+  // Handle login form
 
   const loginForm = document.getElementById('loginForm');
   
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault();
     
-    const userName = loginForm.getElementById('userName').value.trim(); // can't use this?
-    const email = loginForm.getElementById('email').value.trim();
-    const password = loginForm.getElementById('password').value;
+    const login_userName = loginForm.getElementById('login-userName').value.trim(); // can't use this?
+    const login_email = loginForm.getElementById('login-email').value.trim();
+    const login_password = loginForm.getElementById('login-password').value;
     
     const loginBtn = loginForm.getElementById('loginBtn');
-    const errorMessage = loginForm.getElementById('errorMessage');
-    const successMessage = loginForm.getElementById('successMessage');
+    const login_errorMessage = loginForm.getElementById('login-errorMessage');
+    const login_successMessage = loginForm.getElementById('login-successMessage');
 
     // Reset messages
-    errorMessage.classList.add('hidden');
-    successMessage.classList.add('hidden');
+    login_errorMessage.classList.add('hidden');
+    login_successMessage.classList.add('hidden');
 
 
-    if (password.length < 6) {
-      errorMessage.textContent = 'Password must be at least 6 characters';
-      errorMessage.classList.remove('hidden');
+    if (login_password.length < 6) {
+      login_errorMessage.textContent = 'Password must be at least 6 characters';
+      login_errorMessage.classList.remove('hidden');
       return;
     }
 
     // Disable button
     loginBtn.disabled = true;
     loginBtn.textContent = 'Checking account...';
-    handleLogin(email,password)
+    handleLogin(login_email,login_password)
   
   })
 
@@ -314,13 +383,13 @@ try{
     password,
 });
 }catch (error) {
-    errorMessage = "Password or email not recognised";
-    errorMessage.classList.remove('hidden');
+  login_errorMessage = "Password or email not recognised";
+  login_errorMessage.classList.remove('hidden');
 } finally {
   loginBtn.disabled = false;
   loginBtn.textContent = 'Login';
-  successMessage = "Logged in";
-  successMessage.classList.remove('hidden');
+  login_successMessage = "Logged in";
+  login_successMessage.classList.remove('hidden');
 }
 }
 

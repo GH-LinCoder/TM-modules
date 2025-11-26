@@ -301,7 +301,7 @@ function getTemplateHTML() {
     <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-xl font-semibold text-gray-900">Edit Task  22:15 Nov 24</h3>
+          <h3 class="text-xl font-semibold text-gray-900">Edit Task  14:09 Nov 26</h3>
           <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -621,23 +621,6 @@ approSelect?.addEventListener('change', () => {
 });
 
 
-
-//new 19:25 Nov 12
-/* commented out 20:28 Nov 25. There is a listener on the summary output list to react to DELETE
-panel.addEventListener('click', async (e) => {
-    if (e.target.classList.contains('deleteAutomationBtn')) {
-      const automationId = e.target.dataset.id;
-      try {
-        await executeIfPermitted(state.user, 'deleteSurveyAutomation', { automationId });
-        showToast('Automation deleted');
-        const stepId = parseInt(panel.querySelector('#stepOrder')?.value);
-        if (stepId) loadStepAutomations(panel, stepId);
-      } catch (err) {
-        showToast('Failed to delete automation', 'error');
-      }
-    }
-  });
-  */
  //new 19:25 Nov 12
   panel.querySelector('#saveTaskAutomationBtn')?.addEventListener('click', (e) => handleTaskAutomationSubmit(e, panel));
   panel.querySelector('#saveSurveyAutomationBtn')?.addEventListener('click', (e) => handleSurveyAutomationSubmit(e, panel));
@@ -722,14 +705,23 @@ addInformationCard({
 
 //        console.log('source_task_step_id:', source_task_step_id);
         // Save task automation to database
+        // function needs 
+          // source_task_step_id, task_header_id, task_step_id, name, automation_number
+
+console.log(stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
+  state.user, //the person being assigned to the task
+  managerData.managerId, // needs to be from the dropdown    
+  selectedTaskId, // 
+  taskCleanName, // 
+  automationsNumber);
+
         const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTask', { 
-      
        source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
        student_id: state.user, //the person being assigned to the task
        manager_id: managerData.managerId, // needs to be from the dropdown    
-       taskId: selectedTaskId,
+       task_header_id: selectedTaskId,
             task_step_id: stepId, // 
-            itemName: taskCleanName || 'Unknown Task', // 
+            name: taskCleanName || 'Unknown Task', // 
             automation_number: automationsNumber
         });
         
@@ -854,6 +846,16 @@ async function handleSurveyAutomationSubmit(e, panel) {
 
   
 try{
+console.log('stepId',stepId, //need this 
+  'surveyId',selectedSurveyId, 
+  'name',surveyCleanName, 
+'auto#',automationsNumber);
+
+//function needs:
+//source_task_step_id, survey_header_id, name , automation_number
+//table needs
+//source_task_step_id, survey_header_id, name, automation_number
+
 const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyByTask', { 
             source_task_step_id : stepId, //need this 
             survey_header_id : selectedSurveyId, 
@@ -898,14 +900,14 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
     const approfileSelect = panel.querySelector('#approfileAutomationSelect'); // Changed ID to match task module
     const relationshipSelect = panel.querySelector('#relationshipAutomationSelect'); // Changed ID to match task module
     
-    const selectedApproleId = approfileSelect?.value;
+    const selectedApproId = approfileSelect?.value;
     // Get the selected option text
     const selectedOption = approfileSelect?.options[approfileSelect.selectedIndex];
     const cleanName = selectedOption?.textContent?.replace(' (clipboard)', '') || 'Unknown Approfile';
     
     const selectedRelationship = relationshipSelect?.value;
     
-    if (!selectedApproleId) {
+    if (!selectedApproId) {
         showToast('Please select an approfile first', 'error');
         return;
     }
@@ -921,12 +923,14 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
     automationsNumber++;        
     
     try {  
-        // Save relationship automation to database - ADAPTED FOR TASKS
+        // Save relationship automation to database
+//function needs: source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number
+//db needs 
+        console.log('stepId',editTaskState.currentStepId, 'selectedApproId:', selectedApproId); //undefined here 16:15 Nov 26
         const result = await executeIfPermitted(state.user, 'createAutomationRelateByTask', { 
-            source_task_step_id:  stepId,    // NULL
-          //  student_id: userId,                         // Not relevant
-            approfileId: selectedApproleId,            
-            itemName: cleanName,                        
+            source_task_step_id:  editTaskState.currentStepId,    // NULL
+            of_appro_id: selectedApproId,       //of_appro_id     
+            name: cleanName,                        
             relationship: selectedRelationship,         
             automation_number: automationsNumber   
         });
@@ -938,9 +942,9 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
             'type': 'automation_appro', 
             'number':  automationsNumber, 
            'step':  stepOrder,  // 
-          
-            'id': `${result.id?.substring(0, 8) || 'unknown'}...`,
-            'stepId':  stepId?.substring(0, 8) || 'unknown'  //
+          'stepId': editTaskState.currentStepId?.substring(0,8) || 'unknown',
+            'result.id': `${result.id?.substring(0, 8) || 'unknown'}...`,
+          //  'stepId':  stepId?.substring(0, 8) || 'unknown'  //
         });            
         
         showToast('Relationship automation saved successfully!');
@@ -1171,7 +1175,7 @@ console.log('steps listener event:', target); // responds
     const sectionToEditEl = panel.querySelector('#editSectionLabel'); // optional status label
 
     if (target.classList.contains('clickable-step')) {
-      const stepId = target.dataset.stepId;
+      const stepId = target.dataset.stepId; // is this an id or a DOM element?
       editTaskState.currentStepId = stepId;
       console.log('target.dataset',target.dataset);
       panel.querySelector('#stepOrder').value = stepOrder; // Ensure this is set to a number not an id

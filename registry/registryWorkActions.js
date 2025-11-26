@@ -1682,11 +1682,12 @@ readTaskAutomations: {
     const { source_task_step_id} = payload;
 
     // Validate required args
+ /*
     for (const arg of ['source_task_step_id']) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
-    }
+    } */
 
     // Query automations table
     const { data, error } = await supabase
@@ -1709,7 +1710,7 @@ readTaskAutomations: {
 //Newer version with corrected arg check (not using "this.") File 001 has previous versions
 
 
-createAutomationAssignTaskByTask: {
+createAutomationAddTaskByTask: {
   metadata: {
     tables: ['automations'],
     columns: ['name', 'source_task_step_id', 'task_header_id', 'task_step_id', 'automation_number'],
@@ -1718,11 +1719,12 @@ createAutomationAssignTaskByTask: {
   },
   handler: async (supabase, userId, payload) => {
     const { source_task_step_id, task_header_id, task_step_id, name, automation_number } = payload;
+   /*
     for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
-    }
+    }*/
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -1739,7 +1741,7 @@ createAutomationAssignTaskByTask: {
   }
 },
 
-createAutomationAssignSurveyByTask: {
+createAutomationAddSurveyByTask: {
   metadata: {
     tables: ['automations'],
     columns: ['name', 'source_task_step_id', 'survey_header_id', 'automation_number'],
@@ -1748,18 +1750,26 @@ createAutomationAssignSurveyByTask: {
   },
   handler: async (supabase, userId, payload) => {
     const { source_task_step_id, survey_header_id, name, automation_number } = payload;
-    for (const arg of this.metadata.requiredArgs) {
-      if (payload[arg] === undefined || payload[arg] === null) {
-        throw new Error("Missing required argument: " + arg);
-      }
-    }
+  //  for (const arg of this.metadata.requiredArgs) {
+  //    if (payload[arg] === undefined || payload[arg] === null) {
+  //      throw new Error("Missing required argument: " + arg);
+   //   }
+  //  }
+
+    console.log('stpId',source_task_step_id, //need this 
+      'surveyId',survey_header_id, 
+      'name',name, 
+    'auto#',automation_number);
+
+//automations table needs: source_task_step_id, survey_header_id, name, automation_number
+
     const { data, error } = await supabase
       .from('automations')
       .insert({
         source_task_step_id,
         survey_header_id,
         name: name || 'Assign Survey Automation',
-        automation_number: automation_number || null
+        automation_number: automation_number
       })
       .select()
       .single();
@@ -1777,19 +1787,19 @@ createAutomationRelateByTask: {
   },
   handler: async (supabase, userId, payload) => {
     const { source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
-    for (const arg of this.metadata.requiredArgs) {
-      if (payload[arg] === undefined || payload[arg] === null) {
-        throw new Error("Missing required argument: " + arg);
-      }
-    }
+  //  for (const arg of this.metadata.requiredArgs) {
+  //    if (payload[arg] === undefined || payload[arg] === null) {
+  //      throw new Error("Missing required argument: " + arg);
+  //    }
+  //  }
     const { data, error } = await supabase
       .from('automations')
       .insert({
         source_task_step_id,
-        appro_is_id,
+        appro_is_id, //?? usually should be respondent not specified when creating automation
         relationship,
-        of_appro_id,
-        name: name || 'Relate Automation',
+        of_appro_id, // bug 16:35 Nov 26 'null'
+        name: name || 'error name missing createAutomationRelateByTask',
         automation_number: automation_number || null
       })
       .select()
@@ -1808,11 +1818,11 @@ createAutomationDeleteRelationByTask: {
   },
   handler: async (supabase, userId, payload) => {
     const { source_task_step_id, appro_is_id, of_appro_id, name, automation_number } = payload;
-    for (const arg of this.metadata.requiredArgs) {
+   /* for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
-    }
+    } */
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -1839,11 +1849,11 @@ createAutomationSendMessageByTask: {
   },
   handler: async (supabase, userId, payload) => {
     const { source_task_step_id, message_content, recipient_id, name, automation_number } = payload;
-    for (const arg of this.metadata.requiredArgs) {
+ /*   for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
-    }
+    } */
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -1860,7 +1870,7 @@ createAutomationSendMessageByTask: {
   }
 },
 
-createAutomationAssignTaskBySurvey: {
+createAutomationAddTaskBySurvey: {
   metadata: {
     tables: ['automations'],
     columns: ['name', 'survey_answer_id', 'task_header_id', 'task_step_id', 'automation_number'],
@@ -1869,11 +1879,11 @@ createAutomationAssignTaskBySurvey: {
   },
   handler: async (supabase, userId, payload) => {
     const { survey_answer_id, task_header_id, task_step_id, name, automation_number } = payload;
-    for (const arg of this.metadata.requiredArgs) {
+  /*  for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
-    }
+    } */
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -1890,7 +1900,7 @@ createAutomationAssignTaskBySurvey: {
   }
 },
 
-createAutomationAssignSurveyBySurvey: {
+createAutomationAddSurveyBySurvey: {
   metadata: {
     tables: ['automations'],
     columns: ['name', 'survey_answer_id', 'survey_header_id', 'automation_number'],
@@ -1899,11 +1909,11 @@ createAutomationAssignSurveyBySurvey: {
   },
   handler: async (supabase, userId, payload) => {
     const { survey_answer_id, survey_header_id, name, automation_number } = payload;
-    for (const arg of this.metadata.requiredArgs) {
+  /*  for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
-    }
+    } */
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -1928,11 +1938,11 @@ createAutomationRelateBySurvey: {
   },
   handler: async (supabase, userId, payload) => {
     const { survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
-    for (const arg of this.metadata.requiredArgs) {
+   /* for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
-    }
+    } */
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -1959,11 +1969,11 @@ createAutomationDeleteRelationBySurvey: {
   },
   handler: async (supabase, userId, payload) => {
     const { survey_answer_id, appro_is_id, of_appro_id, name, automation_number } = payload;
-    for (const arg of this.metadata.requiredArgs) {
+   /* for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
-    }
+    } */
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -1990,11 +2000,11 @@ createAutomationSendMessageBySurvey: {
   },
   handler: async (supabase, userId, payload) => {
     const { survey_answer_id, message_content, recipient_id, name, automation_number } = payload;
-    for (const arg of this.metadata.requiredArgs) {
+ /*   for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
-    }
+    } */
     const { data, error } = await supabase
       .from('automations')
       .insert({
