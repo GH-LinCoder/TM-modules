@@ -322,6 +322,14 @@ function getTemplateHTML() {
               <li>• You can modify the name, description, and URL</li>
               <li>• The name must be unique across all existing tasks</li>
               <li>• Click "Update Task" to save your changes</li>
+              <li>• Create a new step with the dropdown</li>
+              <li>• Edit existing steps by clicking the summary or use the dropdown</li>
+              <li>• Click "Save step" to save your changes to steps</li>
+              <li>• Automations are added in the section below the summary</li>
+              <li>• Click "Save" Automation to add it to the displayed step</li>
+   
+   
+              
               
             </ul>
           </div>
@@ -370,9 +378,9 @@ function getTemplateHTML() {
             <div class="bg-white p-4 rounded border">
               <form id="editStepForm" class="space-y-4">
                 <div class="flex items-center gap-4">
-                  <label for="stepSelect" class="block text-sm font-medium text-gray-700">Edit Step:</label>
+                  <label for="stepSelect" class="block text-sm font-medium text-gray-700">Add a Step:</label>
                   <select id="stepSelect" class="w-full p-2 border rounded">
-                    <option value="">Select a step to edit</option>
+                    <option value="">New step, or select a step</option>
                   </select>
                 </div>
                 <div>
