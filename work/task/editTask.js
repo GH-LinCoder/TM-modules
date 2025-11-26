@@ -8,12 +8,16 @@ import {icons} from '../../registry/iconList.js';
 
 console.log('editTaskForm.js loaded');
 
+
 const state = {
   user: appState.query.userId,
   currentTask: null,
   currentTaskId: null,
-  steps: []
+  steps: [],
+  currentStepId: null,   // 👈 ADD THIS
+  currentStepOrder: null // optional, but helpful
 };
+
 let automationsNumber = 0; //added 16:16 Nov 23
 
 export function render(panel, query = {}) {
@@ -393,6 +397,7 @@ function getTemplateHTML() {
 
                 <!-- Hidden input for form submission -->
                 <input id="stepOrder" type="hidden" />
+                <input id="stepId" type="hidden" />
                 <button id="saveStepBtn" class="w-full bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">
                   Save Step
                 </button>
@@ -526,6 +531,7 @@ stepSelect?.addEventListener('change', (e) => {
     console.log('Found step:', step);
     
     if (step) {
+      state.currentStepId = step.id; 
       // Fill form with step data
       panel.querySelector('#stepName').value = step.name || '';
       panel.querySelector('#stepDescription').value = step.description || '';
@@ -944,7 +950,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
            'step':  stepOrder,  // 
           'stepId': editTaskState.currentStepId?.substring(0,8) || 'unknown',
             'result.id': `${result.id?.substring(0, 8) || 'unknown'}...`,
-          //  'stepId':  stepId?.substring(0, 8) || 'unknown'  //
+          'of_aapro_id':  selectedApproId?.substring(0, 8) || 'unknown'  //
         });            
         
         showToast('Relationship automation saved successfully!');
@@ -1176,7 +1182,8 @@ console.log('steps listener event:', target); // responds
 
     if (target.classList.contains('clickable-step')) {
       const stepId = target.dataset.stepId; // is this an id or a DOM element?
-      editTaskState.currentStepId = stepId;
+      state.currentStepId = stepId;
+      editTaskState.currentStepId = stepId; // is this redundant ?
       console.log('target.dataset',target.dataset);
       panel.querySelector('#stepOrder').value = stepOrder; // Ensure this is set to a number not an id
       if (saveBtn) { saveBtn.textContent = 'Edit step'; saveBtn.disabled = false; }
@@ -1198,7 +1205,7 @@ console.log('steps listener event:', target); // responds
       
       console.log('Clicked the:',target.textContent);
       const automationId = target.dataset.id;
-      const stepId = editTaskState.currentStepId || target.dataset.stepId;
+     // const stepId = state.currentStepId || target.dataset.stepId;
 
       if(target.textContent ==   'Click to confirm Delete this automation') {handleDeleteAutomationButton(automationId)}
       else target.textContent = 'Click to confirm Delete this automation' ;
@@ -1280,7 +1287,7 @@ function renderAutomationCards(container, automations) {
     p.className = 'clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
     p.dataset.stepId = auto.source_task_step_id;
     p.dataset.automationId = auto.id;
-
+console.log(auto);
     // choose border color per type
     const borderClass =
       auto.taskHeaderId ? 'border-yellow-500' :
@@ -1293,7 +1300,7 @@ function renderAutomationCards(container, automations) {
     } else if (auto.survey_header_id) {
       p.innerHTML = `automation🚂📜 <strong>Survey:</strong> Assign to "${auto.name || 'Unknown Survey'}"`;
     } else if (auto.relationship) {
-      p.innerHTML = `automation🚂🖇️ <strong>Relation:</strong> [${auto.approIsId}] <strong>${auto.approIsName || 'Respondent'} is</strong> → ${auto.relationship} → of ${auto.ofApproName} [${auto.of_appro_id}]`;
+      p.innerHTML = `automation🚂🖇️ <strong>Relation:</strong>  <strong>${auto.approIsName || 'Respondent'}</strong>[${auto.approIsId ||'id?'} ] is → ${auto.relationship} → of <strong> ${auto.name}</strong>[id:${auto.of_appro_id}]`;
     } else {
       p.innerHTML = `❓ <strong>default:</strong> ${JSON.stringify(auto)}`;
     }
