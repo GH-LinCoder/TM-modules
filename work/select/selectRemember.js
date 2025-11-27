@@ -20,7 +20,12 @@ function canUseSelector() {
   return false;  //I could set to true so can use DEVmode to control other things like console logs
 }
 
-
+//14:20  Nov 27 - the visual layout is complicated. Hard to decide what to click for relating a task or survey
+//Idea: separate by work aims, but what are those aims?
+// Relate: appro for task, appro for survey, human appros, abstract appro
+// Assign task, survey
+//edit task, survey, 
+// edit appros: appro for task, appro for survey, human appros, abstract appro, 
 
 export function render(panel, query = {}) {
   console.log('devDataSelector.render()');
@@ -108,40 +113,47 @@ class DevDataSelector {
 
         <!-- DATA TYPE SELECTION -->
         <div class="mb-4">
-          <h4 class="font-medium mb-2">1. Click to load a List:</h4>
+          <h4 class="font-medium mb-2">1. Click to load a list of:</h4>
           <div class="space-y-1">
              <div title= "This is a link to the actual task. It needs an appro assigned as a student to the task, it also needs a manager">
             <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer">
             <input type="radio" name="view" value="tasks"> 🔧 Tasks to assign or edit</label>
             </div>  
-            <div title= "Can relate to other appros. This shows up on myDash ralations map. This is like an index card for the task, or a name sticker, it isn't the actual task">
-            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="view" value="app-task"> 🖇️🔧 APPRO of a task for relating 🖇️</label>
-            </div>
+
             <div class="border-t my-2" ></div>
             <div title="This is for selecting a survey to edit it or read it or assign it to someone. When assigned the survey will show-up on that person's myDash">            
               <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer">
               <input type="radio" name="view" value="surveys" > 📜 Surveys to assign or edit</label>
             </div>
-            <div title="This is for putting the survey in a group or category. It will show-up on the relations map. This is an 'appro' (a name sticker) that is used to represent the survey in relations.">
-              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer" >
-              <input type="radio" name="view" value="app-survey" > 🖇️📜 APPRO of a survey edit or relate</label> <!--NEW Nov 1 2025 -->
-            </div>
-            <div class="border-t my-2"></div>
+            <div class="border-t my-2"><i>Appros to relate or edit:</i></div>
             <div title= "Can assign to a task as student or manager, or a survey as respondent, or relate to another appro. It represents the authenicated users of the app. It is like their name tag. ">           
               <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer" >
-              <input type="radio" name="view" value="app-human" > 👥 Human APPRO  👨‍🔧, 🎆📜 , 🖇️</label>  
+              <input type="radio" name="view" value="app-human" > 🪪👥 Human APPRO  👨‍🔧,🎆📜,🖇️</label>  
             </div>
             <div title= "Can relate to other appros. This shows up on myDash ralations map. It is an appro that represents ideas or groups or outside things. Can be assigned as a student to a task, but not as a manager. Cannot be respondent to survey.">
               <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer">
-              <input type="radio" name="view" value="app-abstract" >🎭 Abstract APPRO 👨‍🔧, 🖇️</label>
-            </div>                 
+              <input type="radio" name="view" value="app-abstract" >🪪🎭 Abstract APPRO 👨‍🔧, 🖇️</label>
+            </div>
             
-            <div class="border-t my-2"></div>
+                        <div title= "Can relate to other appros. This shows up on myDash ralations map. This is like an index card for the task, or a name sticker, it isn't the actual task">
+            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="view" value="app-task"> 🪪🔧 APPRO of a task 👨‍🔧,🖇️</label>
+            </div>
+            
+            <div title="This is for putting the survey in a group or category. It will show-up on the relations map. This is an 'appro' (a name sticker) that is used to represent the survey in relations.">
+              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer" >
+              <input type="radio" name="view" value="app-survey" > 🪪📜 APPRO of a survey👨‍🔧,🖇️</label> <!--NEW Nov 1 2025 -->
+            </div>
+
+
+
+            <div class="border-t my-2"><i>Extras</i></div>
             <div title="See what tasks and surveys have already been assigned.">     
               <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer" >
               <input type="radio" name="view" value="assignments"> 👨‍🔧 Existing Assignments</label>
             </div>
+
+
         </div>
       </div>
 
@@ -244,6 +256,8 @@ console.log('ViewChange:');
   async loadApprofiles() {
     try {
       const result = await executeIfPermitted(appState.query.userId, 'readApprofiles', {});
+//that function returns:  humanApprofiles,taskApprofiles,surveyApprofiles, abstractApprofiles //added surveys 9:22 Nov 1 2025
+      
       this.loadedData.humanApprofiles = result.humanApprofiles || [];
       this.loadedData.abstractApprofiles = result.abstractApprofiles || [];
       this.loadedData.taskApprofiles = result.taskApprofiles || [];
@@ -370,34 +384,6 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       return;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
-    
     
     items.forEach(item => {
       const div = document.createElement('div');

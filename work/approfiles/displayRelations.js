@@ -6,6 +6,8 @@ import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
 
+import {getClipboardAppros} from './getClipboardAppros.js';
+
 console.log('displayRelations.js loaded 12:45 Oct 26');
 
 const userId = appState.query.userId;
@@ -218,10 +220,13 @@ function showInformation(approName) {
 
 
 async function populateApprofileSelect(panel) {
+
+  const approfiles = getClipboardAppros();//replaced 19:45 Nov 27
+  /*
   const approfiles = getClipboardItems({ type: 'app-human' })
     .concat(getClipboardItems({ type: 'app-task' }))
     .concat(getClipboardItems({ type: 'app-abstract' }));
-  
+  */
 console.log('length:',approfiles.length);
 
   const select = panel.querySelector('[data-role="subject-dropdown"]');
@@ -304,6 +309,8 @@ function renderRelationships(panel, relationshipsData, approfileName) { // aprof
     container.innerHTML = `
       <div class="bg-yellow-50 border border-yellow-200 rounded p-4 text-center">
         <p class="text-yellow-800">No relationships found for this approfile.</p>
+        <p class="text-gray-500 text-center py-8">"<i>${approfileName}</i>"</p>
+  
         <p class="text-yellow-800">No one is an island; you can use Create a Relationship to connect this lonely appro.</p>
       </div>
     `;

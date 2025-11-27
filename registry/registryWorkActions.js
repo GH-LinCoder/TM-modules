@@ -303,6 +303,34 @@ handler: async  (supabase, userId) =>{
 }
 },
 
+respondentsCount:{
+  // Metadata for the permissions system
+  metadata: {
+    tables: ['unique_respondents'], //VIEW not a table
+    columns: [],
+    type: 'SELECT',
+    requiredArgs:['supabase', 'userId']
+    // This could also hold other data like required user roles or permissions
+  },
+  // The actual function that interacts with the database
+handler: async  (supabase, userId) =>{
+  console.log('respondentsCount()');
+  const { count, error } = await supabase
+  .from('unique_respondents')
+  .select('*', { count: 'exact', head: true }); // ← head: true = don't return rows, just count 
+
+  if (error) {
+    console.error('Error counting respondents:', error.message);
+    throw new Error('Failed to count respondents.');
+  }
+  
+  return count// if use {count} it would be in form  {count: 23}
+}
+},
+
+
+
+
 /////////////////////////////////////   CREATE  INSERT    ///////////////////
 //APPRO
  createApprofile:{
@@ -1016,7 +1044,7 @@ readRelationships: {
     const { data, error } = await supabase
       .from('relationships')
       .select('id, name, category, description, created_at ')
-      .order('category') // category is in relationships, not listed in approfiles
+    //  .order('category') // category is in relationships, not listed in approfiles
       .order('name');
 
     if (error) throw error;

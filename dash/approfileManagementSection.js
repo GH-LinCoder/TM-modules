@@ -6,7 +6,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   return `
 <!-- approfile Management section -->
 <div class="bg-green-100 rounded-lg shadow p-6" data-section="approfile-management" >
-  <h2 class="text-lg font-semibold mb-2">Approfile Management</h2>
+  <h2 class="text-lg font-semibold mb-2">Approfile Management 21:00 Nov 27</h2>
   <p class="text-sm text-gray-500 mb-4">Click to carryout the action, it opens in a new panel to the right. (Approfiles include members) </p>
 <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
 
@@ -52,9 +52,9 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
       <!-- relate -->
   <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="relate-approfiles-dialogue">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Relate an approfile to...🖇️</h3>
+    <h3 class="text-sm font-medium text-gray-700 mb-1">Relate an approfile to...🖇️</h3>
     
-    <p class="text-xs text-red-600">Relate an approfile to someone or something.
+    <p class="text-xs text-gray-600">Relate an approfile to someone or something.
     (If you want to assign someone to a task use the other method. 
     You can 'relate' a person to a task, but it doesn't put them on the task)
     Relate an abstract concept to a person or a group or category...</p>

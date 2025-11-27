@@ -5,6 +5,9 @@ import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 console.log('editApprofileForm.js loaded');
 
+import {getClipboardAppros} from './getClipboardAppros.js';
+let currentSelection = null;
+
 const state = {
   user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df', // Replace with dynamic user ID
   currentApprofile: null
@@ -28,8 +31,97 @@ function initClipboardIntegration(panel) {
   // Listen for future changes
   onClipboardUpdate(() => {
     populateFromClipboard(panel);
+    populateApprofileSelect(panel);
   });
 }
+
+async function populateApprofileSelect(panel) {
+
+  const approfiles = getClipboardAppros();//replaced 19:45 Nov 27
+ 
+console.log('length:',approfiles.length);
+
+  const select = panel.querySelector('#approfile1Select');
+  if (!select) {currentSelection = 'Not selected' } // previously return    changed 12:00 Oct 27
+else  currentSelection = select.value;
+
+ // Save current selection
+  
+  // Rebuild options
+  select.innerHTML = '<option value="">Select an approfile from clipboard...</option>';
+  
+  approfiles.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.entity.id;
+    option.textContent = item.entity.name;
+    select.appendChild(option);
+  });
+  
+  // Restore selection if still valid
+  if (currentSelection && approfiles.some(item => item.entity.id === currentSelection)) {
+    select.value = currentSelection;
+  } else if (approfiles.length === 1) { //change to approLength=approfiles.length; if approLength >0 select.value = approfiles[approLength-1] //select newest entry
+    // Auto-select if only one option
+    select.value = approfiles[0].entity.id;
+    //await loadAndRenderRelationships(panel, approfiles[0].entity.id, approfiles[0].entity.name);
+  }
+  attachDropdownListener(panel);
+
+  return approfiles.length
+
+}
+
+function attachDropdownListener(panel) {
+  const select = panel.querySelector('#approfile1Select'); //change 16:17 Oct 27
+
+if (!select) return;
+
+// Check if listener already attached
+if (select.dataset.listenerAttached === 'true') {
+  console.log('Listener already attached, skipping');
+  return;
+}
+
+// Add the listener
+select.addEventListener('change', async (e) => {
+  const approfileId = e.target.value;
+  const selectedName = e.target.options[e.target.selectedIndex].textContent;
+
+  if (approfileId) {
+    console.log('Selected approfileId:', approfileId);
+
+    // Find the approfile object from the clipboard list
+    const approfiles = getClipboardAppros();
+    const selectedApprofile = approfiles.find(item => item.entity.id === approfileId);
+
+    if (selectedApprofile) {
+      state.currentApprofile = selectedApprofile.entity.item || selectedApprofile.entity;
+
+      // Populate the form fields
+      loadApprofileIntoForm(panel, state.currentApprofile);
+    }
+  }
+});
+
+}
+
+function loadApprofileIntoForm(panel, approfile) {
+  const nameInput = panel.querySelector('#approfileName');
+  const descriptionInput = panel.querySelector('#approfileDescription');
+  const nameCounter = panel.querySelector('#approfileNameCounter');
+  const descriptionCounter = panel.querySelector('#approfileDescriptionCounter');
+
+  if (nameInput) {
+    nameInput.value = approfile.name || '';
+    nameCounter.textContent = `${nameInput.value.length}/64 characters`;
+  }
+  if (descriptionInput) {
+    descriptionInput.value = approfile.description || '';
+    descriptionCounter.textContent = `${descriptionInput.value.length}/2000 characters`;
+  }
+}
+
+
 
 function populateFromClipboard(panel) {
   console.log('populateFromClipboard()');
@@ -46,21 +138,18 @@ function populateFromClipboard(panel) {
   state.currentApprofile = item.entity.item; // full row data
   
   // Populate form
-  const nameInput = panel.querySelector('#approfileName');
-  const descriptionInput = panel.querySelector('#approfileDescription');
-  const nameCounter = panel.querySelector('#approfileNameCounter');
-  const descriptionCounter = panel.querySelector('#approfileDescriptionCounter');
-  
-  if (nameInput && state.currentApprofile.name) {
-    nameInput.value = state.currentApprofile.name;
-    nameCounter.textContent = `${state.currentApprofile.name.length}/64 characters`;
-    showToast(`Auto-filled from clipboard: ${state.currentApprofile.name}`, 'info');
+  if (state.currentApprofile) {
+    loadApprofileIntoForm(panel, state.currentApprofile);
   }
-  
-  if (descriptionInput && state.currentApprofile.description) {
-    descriptionInput.value = state.currentApprofile.description;
-    descriptionCounter.textContent = `${state.currentApprofile.description.length}/2000 characters`;
-  }
+  // Sync dropdown selection
+  const select = panel.querySelector('#approfile1Select');
+  console.log('Clipboard approfile:', state.currentApprofile);
+console.log('Clipboard approfile.id:', state.currentApprofile?.id);
+select.value =''; //remove the previous name from the dropdown
+  /*
+  if (select && state.currentApprofile.id) {
+    select.value = state.currentApprofile.id;
+  } */ //this didn't work. It just reset the dropdown text to "Select...."
 }
 
 function getTemplateHTML() {
@@ -89,6 +178,15 @@ function getTemplateHTML() {
               <li>📋 Auto-filled from clipboard if available</li>
             </ul>
           </div>
+
+<div class="space-y-2">
+            <label for="approfile1Select" class="block text-sm font-medium text-gray-700">Use [Select] to load Approfiles</label>
+            <select id="approfile1Select" data-form="approfile1Select" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
+              <option value="">The select from dropwdown</option>
+            </select>
+          </div>
+
+
 
           <div id="editApprofileForm" class="space-y-6 bg-gray-50 p-6 rounded-lg">
             <div>

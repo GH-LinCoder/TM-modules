@@ -519,7 +519,8 @@ async function handleTaskSubmit(e, panel) {
 
     taskId = newTask.id;
     
-
+//the appro for this task needs to be related to the Tasks appro.
+//(the appro id is different to the taskId)
 
 
 

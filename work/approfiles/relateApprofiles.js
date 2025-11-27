@@ -5,6 +5,8 @@ import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
+import {getClipboardAppros} from './getClipboardAppros.js';
+
 const userId = appState.query.userId;
 
 console.log('🔥 relateApprofiles.js: START');
@@ -187,14 +189,30 @@ async function populateRelationshipsDropdown(relationshipSelect) {
     showToast('Failed to load relationships', 'error');
   }
 }
+/*
+function getClipboardAppros(){
+  const allAppros = getClipboardItems({ type: 'app-human' })
+  .concat(getClipboardItems({ type: 'app-task' }))
+  .concat(getClipboardItems({ type: 'app-abstract' }))
+  .concat(getClipboardItems({ type: 'app-survey' })) 
+  .concat(getClipboardItems({ type: 'app-task' }))
+return allAppros;
+} */
+
 
 function populateFromClipboard({ approfile1Select, approfile2Select, informationFeedback }) {
   console.log('populateFromClipboard()');
   
+  const approfiles =getClipboardAppros(); //moved to separate function
+
   // Get all approfile types
+/*
   const approfiles = getClipboardItems({ type: 'app-human' })
     .concat(getClipboardItems({ type: 'app-task' }))
-    .concat(getClipboardItems({ type: 'app-abstract' }));
+    .concat(getClipboardItems({ type: 'app-abstract' }))
+    .concat(getClipboardItems({ type: 'app-survey' })) 
+    .concat(getClipboardItems({ type: 'app-task' }))
+ ; */ //added surveys and tasks 18:57 Nov 27 2025
   
   // Auto-fill if exactly two items and fields are empty
   if (approfiles.length === 2 && !approfile1Select.value && !approfile2Select.value) {

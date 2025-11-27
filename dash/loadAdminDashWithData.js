@@ -37,6 +37,11 @@ export async function loadAdminDashWithData() {
 
     count = await executeIfPermitted(null, 'approfilesCount', null); 
     updateAll('[data-value="approfiles-count"]', count);
+
+    count = await executeIfPermitted(null, 'respondentsCount', null);
+    updateAll('[data-value="respondents-count-unique"]', count); //need change html students-count-unique
+  
+
     
   }
 
