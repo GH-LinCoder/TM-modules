@@ -15,19 +15,16 @@ const state = {
   currentTaskId: null,
   steps: [],
   currentStepId: null,   //
-  currentStepOrder: null, // optional, but helpful
-  currentAutomationId: null, //added 22:57 Nov 29
-  initialStepId: null
+  currentStepOrder: null // optional, but helpful
 };
 
-//why do we also have this?  22:57 Nov 29 I changed this to use state
+//why do we also have this?
 // Module-scoped state for the Edit Task panel
 const editTaskState = {
   currentStepId: null,
   currentAutomationId: null
 };
 
-let stepId = null; // was on line 705 used for no obvious reason to replaced 'initialStepId'
 
 
 
@@ -74,7 +71,6 @@ function styleCardByType(type){
 
 
 function initClipboardIntegration(panel) {
-    console.log('initClipboardIntegration()');
   // Check clipboard immediately
   populateFromClipboard(panel);
   // Listen for future changes
@@ -198,7 +194,6 @@ function populateFromClipboardAuto(panel) {
 
 
 function addClipboardItemsToDropdown(items, selectElement) {
-    console.log('addClipboardItemsToDropdown()');
   if (!items || items.length === 0) return;
   
   items.forEach(item => {
@@ -250,8 +245,6 @@ renderTaskStructure(panel);
 
 
 async function loadTaskSteps(panel, taskId) { //readTaskSteps 'id, name, description, step_order, external_url' excludes automations
-    
-    console.log('loadTaskSteps()');
     try {
       const steps = await executeIfPermitted(state.user, 'readTaskSteps', { taskId });
       state.steps = steps || [];
@@ -280,7 +273,6 @@ async function loadTaskSteps(panel, taskId) { //readTaskSteps 'id, name, descrip
 
 
 function populateStepSelect(panel) {
-    console.log('populateStepSelect()');
   const stepSelect = panel.querySelector('#stepSelect');
   if (!stepSelect) return;
   
@@ -491,7 +483,6 @@ function getTemplateHTML() {
 }
 
 function attachListeners(panel) {
-    console.log('attachListeners()');
   const nameInput = panel.querySelector('#taskName');
   const descriptionInput = panel.querySelector('#taskDescription');
   const urlInput = panel.querySelector('#taskUrl');
@@ -704,21 +695,21 @@ addInformationCard({
         });
         
         // FIND STEP 3 (initial step) - IMPROVED ERROR HANDLING
-        
+        let stepId = null;
         const initialStep = steps.find(step => step.step_order === 3);
         if (initialStep && initialStep.id) {
-            state.initialStepId = initialStep.id;
-            console.log('Found initial step_id:', state.initialStepId);  // got it 10:58 Oct 15
+            stepId = initialStep.id;
+            console.log('Found initial step_id:', stepId);  // got it 10:58 Oct 15
         } else {
             throw new Error(`No initial step (step 3) found for task ${selectedTaskId}`);
         }
         console.log(
 //          'stepId:', stepId,
-          'source_task_step_id :', state.initialStepId,
+          'source_task_step_id :', stepId,
           'student_id:', state.user, //should be null because usually this is a future unknown person
           'manager_id:', managerData.managerId,     
           'taskId:', selectedTaskId,
-          'task_step_id:', state.initialStepId,
+          'task_step_id:', stepId,
           'itemName:', taskCleanName, 
           'automation_number:', automationsNumber 
         ); 
@@ -728,7 +719,7 @@ addInformationCard({
         // function needs 
           // source_task_step_id, task_header_id, task_step_id, name, automation_number
 
-console.log(state.initialStepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
+console.log(stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
   state.user, //the person being assigned to the task
   managerData.managerId, // needs to be from the dropdown    
   selectedTaskId, // 
@@ -736,14 +727,11 @@ console.log(state.initialStepId, // is that the correct step we are adding the a
   automationsNumber);
 
         const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTask', { 
-       source_task_step_id : state.currentStepId, //undefined?
-       
-       // It had been using stepId which was always step 3 No wrong name was being used here 'currentStepId'
-//but stepId was invented for no obvious reason as a new name for initialStepId which is probably step 3
+       source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
        student_id: state.user, //the person being assigned to the task
        manager_id: managerData.managerId, // needs to be from the dropdown    
        task_header_id: selectedTaskId,
-            task_step_id: state.initialStepId, // 
+            task_step_id: stepId, // 
             name: taskCleanName || 'Unknown Task', // 
             automation_number: automationsNumber
         });
@@ -798,7 +786,6 @@ function addInformationCard(stepData) {
 
 
 function getManagerName(managerSelect) {
-    console.log('getManagerName()');
   // BETTER MANAGER SELECTION:
   let managerId, managerName;
   
@@ -830,7 +817,6 @@ function getManagerName(managerSelect) {
 
 
 async function handleSurveyAutomationSubmit(e, panel) {
-    console.log('handleSurveyAutomations()');
   console.log('handleSurveyAutomationSubmit()');
   e.preventDefault();
   
@@ -855,11 +841,11 @@ async function handleSurveyAutomationSubmit(e, panel) {
   automationsNumber++;    
   
   //this could be a function  Why is this finding step 3?????
-//  let stepId = null;  
+  let stepId = null;  
   const initialStep = state.steps.find(step => step.step_order === 3);
   if (initialStep && initialStep.id) {
-      state.initialStepId = initialStep.id;
-      console.log('Found initial step_id:', state.initialStepId);  // got it 10:58 Oct 15
+      stepId = initialStep.id;
+      console.log('Found initial step_id:', stepId);  // got it 10:58 Oct 15
   } else {
       throw new Error(`No initial step (step 3) found for task ${selectedTaskId}`);
   }
@@ -871,7 +857,7 @@ async function handleSurveyAutomationSubmit(e, panel) {
 
   
 try{
-console.log('state.initialStepId',state.initialStepId, //need this 
+console.log('stepId',stepId, //need this 
   'surveyId',selectedSurveyId, 
   'name',surveyCleanName, 
 'auto#',automationsNumber);
@@ -882,7 +868,7 @@ console.log('state.initialStepId',state.initialStepId, //need this
 //source_task_step_id, survey_header_id, name, automation_number
 
 const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyByTask', { 
-            source_task_step_id : state.initialStepId, //need this 
+            source_task_step_id : stepId, //need this 
             survey_header_id : selectedSurveyId, 
             name: surveyCleanName, 
             automation_number: automationsNumber
@@ -893,7 +879,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
       'name': `${surveyCleanName}`,
       'type': 'automation_survey',
       'step': stepOrder || 3,  // Show current step number
-      'state.initialStepId':state.initialStepId?.substring(0, 8),
+      'stepId':stepId?.substring(0, 8),
       'autoNumber': automationsNumber, 
       'survey id': `${selectedSurveyId?.substring(0, 8) || 'unknown'}`
       });
@@ -951,9 +937,9 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
         // Save relationship automation to database
 //function needs: source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number
 //db needs 
-        console.log('state.currentStepId',state.currentStepId, 'selectedApproId:', selectedApproId); //undefined here 16:15 Nov 26
+        console.log('stepId',editTaskState.currentStepId, 'selectedApproId:', selectedApproId); //undefined here 16:15 Nov 26
         const result = await executeIfPermitted(state.user, 'createAutomationRelateByTask', { 
-            source_task_step_id:  state.currentStepId,    // NULL
+            source_task_step_id:  editTaskState.currentStepId,    // NULL
             of_appro_id: selectedApproId,       //of_appro_id     
             name: cleanName,                        
             relationship: selectedRelationship,         
@@ -967,7 +953,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
             'type': 'automation_appro', 
             'number':  automationsNumber, 
            'step':  stepOrder,  // 
-          'state.currentStepId': state.currentStepId?.substring(0,8) || 'unknown',
+          'stepId': editTaskState.currentStepId?.substring(0,8) || 'unknown',
             'result.id': `${result.id?.substring(0, 8) || 'unknown'}...`,
           'of_aapro_id':  selectedApproId?.substring(0, 8) || 'unknown'  //
         });            
@@ -992,7 +978,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
 //New 19:38 Nov 12
 async function handleTaskUpdate(e, panel) {
     e.preventDefault();
-    console.log('handleTaskUpdate()');
+    console.log('handleTaskUpdate');
   
     const name = panel.querySelector('#taskName')?.value.trim();
     const description = panel.querySelector('#taskDescription')?.value.trim();
@@ -1131,7 +1117,6 @@ enableAutomationControls(panel);
   }
 
   function enableAutomationControls(panel) {
-    console.log('enableAutomationControls()');
     const taskBtn = panel.querySelector('#saveTaskAutomationBtn');
     const relBtn = panel.querySelector('#saveRelationshipAutomationBtn');
   
@@ -1149,7 +1134,7 @@ enableAutomationControls(panel);
 
 
 function loadStepIntoEditor(panel,stepId){
-  console.log('loadStepIntoEditor() stepId incoming:', stepId, 'typeof:', typeof stepId);
+  console.log('stepId incoming:', stepId, 'typeof:', typeof stepId);
   console.log('steps length:', Array.isArray(state.steps) ? state.steps.length : 'not array');
   console.log('available ids:', (state.steps || []).map(s => s.id));
 
@@ -1173,7 +1158,7 @@ stepOrder = step.step_order;  //used later in saving to db line 1146
 
 async function handleDeleteAutomationButton(panel, automationId){
   const deletedBy = state.user;
-  console.log('handleDelete  button of', automationId, 'by', deletedBy);
+  console.log('handleDelete of', automationId, 'by', deletedBy);
 
   try {
     await executeIfPermitted(state.user, 'softDeleteAutomation', { automationId, deletedBy });
@@ -1202,22 +1187,22 @@ console.log('steps listener event:', target); // responds
     const sectionToEditEl = panel.querySelector('#editSectionLabel'); // optional status label
 
     if (target.classList.contains('clickable-step')) {
-      const clickedStepId = target.dataset.stepId; // is this an id or a DOM element?
-      state.currentStepId = clickedStepId;
-      
+      const stepId = target.dataset.stepId; // is this an id or a DOM element?
+      state.currentStepId = stepId;
+      editTaskState.currentStepId = stepId; // is this redundant ?
       console.log('target.dataset',target.dataset);
       panel.querySelector('#stepOrder').value = stepOrder; // Ensure this is set to a number not an id
       if (saveBtn) { saveBtn.textContent = 'Edit step'; saveBtn.disabled = false; }
       if (sectionToEditEl) sectionToEditEl.textContent = 'step';
       
-      loadStepIntoEditor(panel, clickedStepId); //       
+      loadStepIntoEditor(panel, stepId); //       
     //  hideAutomationsUI(panel);
 
     } else if (target.classList.contains('clickable-automation')) {
-      const clickedStepId = target.dataset.stepId;
+      const stepId = target.dataset.stepId;
       const automationId = target.dataset.automationId;
-      state.currentStepId = clickedStepId;
-      state.currentAutomationId = automationId;
+      editTaskState.currentStepId = stepId;
+      editTaskState.currentAutomationId = automationId;
       if (saveBtn) { saveBtn.textContent = 'Manage automations'; saveBtn.disabled = false; }
       if (sectionToEditEl) sectionToEditEl.textContent = 'automation';
      // showAutomationsUI(panel, stepId);
@@ -1240,8 +1225,9 @@ console.log('steps listener event:', target); // responds
 }
 
 
-function markActiveStepInSummary(panel, stepId) { // not used?
-    console.log('markActiveStepInSumary()');
+
+
+function markActiveStepInSummary(panel, stepId) {
   panel.querySelectorAll('.clickable-step').forEach(el => {
     el.classList.toggle('ring-2', el.dataset.stepId === String(stepId));
     el.classList.toggle('ring-blue-500', el.dataset.stepId === String(stepId));
@@ -1250,11 +1236,15 @@ function markActiveStepInSummary(panel, stepId) { // not used?
 }
 
 
+
+  
+
+
 function renderTaskStructure(panel) {
   const list = panel.querySelector('#taskSummary');
   if (!list) return;
 
-console.log('renderTaskStructure()-state:', state, 'stepOrder:', stepOrder);
+console.log('renderTaskStructure-state:', state, 'stepOrder:', stepOrder, 'stepId:',stepId);
 
 
   list.innerHTML = '<h3>Summary:</h3><br>';
@@ -1301,7 +1291,6 @@ async function loadStepAutomations(container, stepId) {
 }
 
 function renderAutomationCards(container, automations) {
-    console.log('renderAutomationCards()');
   if (!automations || automations.length === 0) {
     container.innerHTML += `<p class="text-gray-500"><em>No automations</em></p>`;
     return;
@@ -1312,7 +1301,7 @@ function renderAutomationCards(container, automations) {
     p.className = 'clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
     p.dataset.stepId = auto.source_task_step_id;
     p.dataset.automationId = auto.id;
-console.log('automation',auto);
+console.log(auto);
     // choose border color per type
     const borderClass =
       auto.taskHeaderId ? 'border-yellow-500' :

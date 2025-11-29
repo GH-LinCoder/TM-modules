@@ -1767,7 +1767,7 @@ readTaskAutomations: {
   },
   handler: async (supabase, userId, payload) => {
     const { source_task_step_id} = payload;
-
+console.log('registryReadTaskAutomations-stepId:',source_task_step_id);
     // Validate required args
  /*
     for (const arg of ['source_task_step_id']) {
