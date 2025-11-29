@@ -811,6 +811,65 @@ readApprofileById:{
   }
 },
 
+//new 22:00 Nov 28 replacement of readApprofileRelationships to include type icon
+
+//APPRO
+readApprofileRelationships: {
+  metadata: {
+    tables: ['approfile_relationships_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfileId } = payload;
+
+    const isRels = await supabase
+      .from('approfile_relations_view')
+      .select('*')
+      .eq('approfile_is', approfileId);
+
+    const ofRels = await supabase
+      .from('approfile_relations_view')
+      .select('*')
+      .eq('of_approfile', approfileId);
+
+      const ids = [
+        approfileId,                                   // subject itself
+        ...isRels.data.map(r => r.of_approfile),       // of-appros
+        ...ofRels.data.map(r => r.approfile_is)        // is-appros
+      ];
+       
+console.log('ids:',ids);
+    const profiles = await supabase
+      .from('app_profiles')
+      .select('id, auth_user_id, survey_header_id, task_header_id')
+      .in('id', ids);
+console.log('profiles:',profiles);
+    // build a lookup map of appro id → icon
+    const profileMap = {};
+    for (const ap of profiles.data || []) {
+      let icon = '🎭'; // default abstract
+      if (ap.auth_user_id) {
+        icon = '👥'; // human
+      } else if (ap.survey_header_id) {
+        icon = '📜'; // survey
+      } else if (ap.task_header_id) {
+        icon = '🔧'; // task
+      }
+      profileMap[ap.id] = icon;
+    }
+console.log('profileMap',profileMap);
+    return {
+      is: isRels.data || [],
+      of: ofRels.data || [],
+      iconMap:profileMap    
+    };
+  }
+},
+
+
+/*
 //APPRO
 readApprofileRelationships: {
   metadata: {
@@ -840,7 +899,7 @@ readApprofileRelationships: {
     };
   }
 },
-
+*/
 // GENERIC
 readThisColumnIdFromThatTable:{
 metadata:{

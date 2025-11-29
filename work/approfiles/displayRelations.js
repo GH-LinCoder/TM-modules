@@ -62,16 +62,12 @@ function attachClickItemListener(panel) {
 
 }
 
-export function render(panel, query = {}) {
+export function render(panel, query = {}) { //Called from loader (standard interface) 
   console.log('displayRelations.render()', panel, query);
   if (!panel || !panel.isConnected) {
     console.warn('Render target not found or disconnected');
     return;
   }
-  
-
-
-
   panel.innerHTML = getTemplateHTML();
   init(panel, query);
       //    panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
@@ -91,9 +87,6 @@ function getTemplateHTML() {
           </button>
         </div>
 
-
-
-
           <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200" data-action="selector-dialogue">
             <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
             <p class="text-blue-700 text-sm">
@@ -107,8 +100,6 @@ function getTemplateHTML() {
               <li> Click the [Select] menu button or click here to open the Selector</li>
             </ul>
           </div>
-
-
 
       <div class="space-y-4">
         <div>
@@ -196,7 +187,7 @@ function showInformation(approName) {
 //moved the above to own file 16:47 Oct 27
 
 
-  function init(panel) {
+  function init(panel) { // called from render() 2nd function to run
     const isMyDash = detectContext(panel);
     applyPresentationRules(panel, isMyDash);
   
@@ -284,8 +275,8 @@ async function loadRelationships(approfileId) {
     approfileId: approfileId 
   });
   
-//  console.log('Raw result:', result);
-  return result || { is: [], of: [] };
+console.log('Raw result:', result);// object { is:[] , of:[] , iconMap:{} }
+  return result || { is: [], of: [], iconMap:{} };
 }
 
 function renderRelationships(panel, relationshipsData, approfileName) { // aprofileName is used at head of the display.
@@ -304,6 +295,7 @@ function renderRelationships(panel, relationshipsData, approfileName) { // aprof
   
   const isRelationships = relationshipsData.is || [];
   const ofRelationships = relationshipsData.of || [];
+  const iconMap = relationshipsData.iconMap || {};
   
   if (isRelationships.length === 0 && ofRelationships.length === 0) {
     container.innerHTML = `
@@ -366,16 +358,20 @@ html += `
         </div>
       `;
       
-      group.items.forEach(rel => {
+      group.items.forEach(rel => { console.log('rel:',rel);
+        
         const subject = rel.approfile_is_name || rel.approfile_is;
+       const subjectIcon = iconMap[rel.approfile_is] || '🫗';
+
         const object = rel.of_approfile_name || rel.of_approfile;
+        const objectIcon = iconMap[rel.of_approfile] || '🫗';
         html += `
           <div class="relationship-flow" style="display: flex; justify-content: center; align-items: center; margin: 2rem auto; gap: 1rem;">
             <div class="flow-box-subject" 
                  style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-green-400;"
                  data-subject-id="${rel.approfile_is}"
                  title="Click to explore ${subject}">
-              ${subject} is
+            ${subjectIcon}  ${subject}  is
             </div>
             <div class="flow-box-relation" style="padding: 0.75rem 1.25rem; background-color: #d7e4e2; border: 2px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; font-size: 16px; font-style: italic; color: #4f46e5;">
               ${rel.relationship}
@@ -384,7 +380,7 @@ html += `
                  style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
                  data-subject-id="${rel.of_approfile}"
                  title="Click to explore ${object}">
-              of ${object}
+              of ${object} ${objectIcon}
             </div>
           </div>
         `;
@@ -422,14 +418,17 @@ html += `
       
       group.items.forEach(rel => {
         const subject = rel.approfile_is_name || rel.approfile_is;
+        const subjectIcon = iconMap[rel.approfile_is] || '🫗';
         const object = rel.of_approfile_name || rel.of_approfile;
+        const objectIcon = iconMap[rel.of_approfile] || '🫗';
+
         html += `
           <div class="relationship-flow" style="display: flex; justify-content: center; align-items: center; margin: 2rem auto; gap: 1rem;">
             <div class="flow-box-other" 
                  style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
                  data-subject-id="${rel.approfile_is}"
                  title="Click to explore ${subject}">
-              ${subject} is
+                 ${subjectIcon} ${subject} is
             </div>
             <div class="flow-box-relation" style="padding: 0.75rem 1.25rem; background-color: #d7e4e2; border: 2px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; font-size: 16px; font-style: italic; color: #4f46e5;">
               ${rel.relationship}
@@ -438,7 +437,7 @@ html += `
                  style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-green-400;"
                  data-subject-id="${rel.of_approfile}"
                  title="Click to explore ${object}">
-              of ${object}
+              of  ${object} ${objectIcon}
             </div>
           </div>
         `;
