@@ -1,4 +1,4 @@
-// ./work/tasks/editTaskForm.js
+// ./work/task/editTaskForm.js
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
@@ -6,8 +6,7 @@ import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import {icons} from '../../registry/iconList.js';
 
-console.log('editTaskForm.js loaded');
-
+console.log('editTask.js loaded');
 
 const state = {
   user: appState.query.userId,
@@ -20,21 +19,14 @@ const state = {
   initialStepId: null
 };
 
-//why do we also have this?  22:57 Nov 29 I changed this to use state
-// Module-scoped state for the Edit Task panel
-/*const editTaskState = {
-  currentStepId: null,
-  currentAutomationId: null
-};*/
-
 let stepId = null; // was on line 705 used for no obvious reason to replaced 'initialStepId'
-
+// used lines 549, 1256, 1273 but always   as =stepId so always null !
 
 
 let automationsNumber = 0; //added 16:16 Nov 23
 
 export function render(panel, query = {}) {
-  console.log('Render Edit Task Form:', panel, query);
+  console.log('editTask.render:', panel, query);
   panel.innerHTML = getTemplateHTML();
   // Initialize clipboard integration
   initClipboardIntegration(panel);
@@ -311,7 +303,15 @@ function getTemplateHTML() {
     <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-xl font-semibold text-gray-900">Edit Task  14:09 Nov 26</h3>
+          <h3 class="text-xl font-semibold text-gray-900">Edit Task  19:31 Nov 30</h3>
+            <div class="space-y-2">
+              <!--label for="taskSelect" class="block text-sm font-medium text-gray-700">Use [Select] menu to choose tasks then this dropdown to load a Task</label-->
+              <select id="taskSelect" data-form="taskSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
+                <option value="">Use the menu [Select] button then this dropdown to select Task</option>
+              </select>
+            </div>
+
+
           <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -319,6 +319,8 @@ function getTemplateHTML() {
           </button>
         </div>
         
+
+
         <div class="p-6">
           <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200" data-action="selector-dialogue">
             <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
@@ -341,12 +343,6 @@ function getTemplateHTML() {
           </div>
 
 
-            <div class="space-y-2">
-              <label for="taskSelect" class="block text-sm font-medium text-gray-700">Use [Select] menu to choose tasks then this dropdown to load a Task</label>
-              <select id="taskSelect" data-form="taskSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                <option value="">Use the menu [Select] button then this dropdown to select Task</option>
-              </select>
-            </div>
 
 
           <div id="editTaskForm" class="space-y-6 bg-gray-50 p-6 rounded-lg">
@@ -546,7 +542,7 @@ stepSelect?.addEventListener('change', (e) => {
     console.log('Found step:', step);
     
     if (step) {
-      state.currentStepId = step.id; //where does step.id come from? - from stepOrder. 
+      state.currentStepId = step.id; //where does step.id decalred line 30 as null. Never assigned
       // Fill form with step data
       panel.querySelector('#stepName').value = step.name || '';
       panel.querySelector('#stepDescription').value = step.description || '';
@@ -681,7 +677,7 @@ async function handleTaskAutomationSubmit(e, panel) {
     automationsNumber++;    
     
     const managerSelect = panel.querySelector('#managerAutomationSelect'); 
-const managerData = getManagerName(managerSelect);
+    const managerData = getManagerName(managerSelect);
 
 //making global 14:18 Oct 18
 //const stepOrder = currentStepId ? currentStepId.substring(0, 8) : 'unknown'; //unknown  23:12 Oct 17
@@ -715,7 +711,7 @@ addInformationCard({
             throw new Error(`No initial step (step 3) found for task ${selectedTaskId}`);
         }
         console.log(
-//          'stepId:', stepId,
+
           'state.initialStepId,:', state.initialStepId,
           'state.user:', state.user, //should be null because usually this is a future unknown person
           'managerData.managerId:', managerData.managerId,     
@@ -728,10 +724,10 @@ addInformationCard({
 
 
         const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTask', { 
-       source_task_step_id : state.currentStepId, //undefined  12:18 Nov 30
+       source_task_step_id : state.currentStepId, //works, but in survey it is undefined  12:18 Nov 30
        
-       // It had been using stepId which was always step 3 No wrong name was being used here 'currentStepId'
-//but stepId was invented for no obvious reason as a new name for initialStepId which is probably step 3
+       // It had been using step Id which was always step 3 No wrong name was being used here 'currentStepId'
+//but step Id was invented for no obvious reason as a new name for initialStepId which is probably step 3
        student_id: state.user, //the person being assigned to the task
        manager_id: managerData.managerId, // needs to be from the dropdown    
        task_header_id: selectedTaskId,
@@ -847,7 +843,7 @@ async function handleSurveyAutomationSubmit(e, panel) {
   automationsNumber++;    
   
   //this could be a function  Why is this finding step 3?????
-//  let stepId = null;  
+
   const initialStep = state.steps.find(step => step.step_order === 3);
   if (initialStep && initialStep.id) {
       state.initialStepId = initialStep.id;
@@ -864,6 +860,7 @@ async function handleSurveyAutomationSubmit(e, panel) {
   
 try{
 console.log('state.initialStepId',state.initialStepId, //need this 
+  'state.currentId',state.currentStepId, //undefined 16:34 nov 30
   'surveyId',selectedSurveyId, 
   'name',surveyCleanName, 
 'auto#',automationsNumber);
@@ -874,7 +871,7 @@ console.log('state.initialStepId',state.initialStepId, //need this
 //source_task_step_id, survey_header_id, name, automation_number
 
 const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyByTask', { 
-            source_task_step_id : state.initialStepId, //need this 
+            source_task_step_id : state.currentStepId, //need this 
             survey_header_id : selectedSurveyId, 
             name: surveyCleanName, 
             automation_number: automationsNumber
@@ -1151,7 +1148,7 @@ console.log('state.currentStepId:',state.currentStepId); // should be == clicked
   
 stepOrder = step.step_order;  //used later in saving to db line 1146
     
-  // ✅ DEBUG: Log found step
+  // ✅ DEBUG: Log found step  //stepId is never given a value??
   console.log('state,steps:',state.steps,'stepId',stepId,'step.stepOrder:', step.step_order); // undefined 23:07 24 Nov
   
   if (step) {
@@ -1205,7 +1202,7 @@ console.log('steps listener event:', target); // responds
       if (sectionToEditEl) sectionToEditEl.textContent = 'step';
       
       loadStepIntoEditor(panel, clickedStepId); //  
-
+      markActiveStepInSummary(panel,state.currentStepId);
     //  hideAutomationsUI(panel);
 
     } else if (target.classList.contains('clickable-automation')) {
@@ -1215,18 +1212,16 @@ console.log('steps listener event:', target); // responds
       state.currentAutomationId = automationId;
       if (saveBtn) { saveBtn.textContent = 'Manage automations'; saveBtn.disabled = false; }
       if (sectionToEditEl) sectionToEditEl.textContent = 'automation';
-     // showAutomationsUI(panel, stepId);
+     
 
     } else if (target.classList.contains('deleteAutomationBtn')) {
       
       console.log('Clicked the:',target.textContent);
       const automationId = target.dataset.id;
-     // const stepId = state.currentStepId || target.dataset.stepId;
+     
 
       if(target.textContent ==   'Click to confirm Delete this automation') {handleDeleteAutomationButton(panel, automationId)}
       else target.textContent = 'Click to confirm Delete this automation' ;
-      //the above is not happening. The delete happens on first click. (too many listeners??)  
-     // handleDeleteAutomation(panel, stepId, automationId);
 
     } else if (target.id === 'addStepBtn') {
     //  handleAddStep(panel);
@@ -1235,12 +1230,13 @@ console.log('steps listener event:', target); // responds
 }
 
 
-function markActiveStepInSummary(panel, stepId) { // not used?
+function markActiveStepInSummary(panel, stepId) {
     console.log('markActiveStepInSumary()');
   panel.querySelectorAll('.clickable-step').forEach(el => {
-    el.classList.toggle('ring-2', el.dataset.stepId === String(stepId));
-    el.classList.toggle('ring-blue-500', el.dataset.stepId === String(stepId));
-    el.classList.toggle('bg-blue-100', el.dataset.stepId === String(stepId));
+    console.log('el.dataset.stepId',el.dataset.stepId, 'currentStepId',state.currentStepId);
+    el.classList.toggle('ring-4', el.dataset.stepId === String(state.currentStepId));
+    el.classList.toggle('ring-blue-500', el.dataset.stepId === String(state.currentStepId));
+    el.classList.toggle('bg-blue-100', el.dataset.stepId === String(state.currentStepId));
   });
 }
 
@@ -1249,7 +1245,7 @@ function renderTaskStructure(panel) {
   const list = panel.querySelector('#taskSummary');
   if (!list) return;
 
-console.log('renderTaskStructure()-state:', state, 'stepOrder:', stepOrder);
+console.log('renderTaskStructure()-state:', state, 'stepOrder:', stepOrder, 'stepId',stepId);
 
 
   list.innerHTML = '<h3>Summary:</h3><br>';
@@ -1257,7 +1253,8 @@ console.log('renderTaskStructure()-state:', state, 'stepOrder:', stepOrder);
   state.steps.forEach(step => {
     const stepCard = document.createElement('p');
     stepCard.className = 'clickable-step hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
-    stepCard.dataset.stepId = step.id;
+    stepCard.dataset.stepId = step.id;//stepId? Never has a value.was and is null.
+    
     stepCard.innerHTML = `
       <strong>Step ${step.step_order}:</strong> ${step.name}
       <span class="block text-sm text-gray-600 whitespace-pre-line">${step.description || ''}</span>
@@ -1269,7 +1266,7 @@ console.log('renderTaskStructure()-state:', state, 'stepOrder:', stepOrder);
     const autosContainer = document.createElement('div');
     autosContainer.className = 'ml-4';
     list.appendChild(autosContainer);
-    loadStepAutomations(autosContainer, step.id); 
+    loadStepAutomations(autosContainer, step.id); //is stepId always null?
   });
 
   const createdSteps = panel.querySelector('#createdSteps');
@@ -1280,6 +1277,7 @@ console.log('renderTaskStructure()-state:', state, 'stepOrder:', stepOrder);
   attachStepsListeners(panel); 
   panel._listenerAttached = true; 
 }
+
 }
 
 
@@ -1339,4 +1337,6 @@ console.log('automation',auto);
 
     container.appendChild(row);
   });
+
+
 }
