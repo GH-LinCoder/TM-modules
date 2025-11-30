@@ -159,7 +159,7 @@ class DevDataSelector {
 
         <!-- DATA LIST -->
                   <h4 class="font-medium mb-2">2. Click to choose an item from the list:</h4>
-        <div id="listContainer" class="border rounded min-h-32 max-h-60 overflow-y-auto bg-gray-50 p-3 mb-4">
+        <div id="listContainer" class="border rounded min-h-64 max-h-80 overflow-y-auto bg-gray-50 p-3 mb-4">
           <div class="text-gray-500 text-center py-4">
             Click a checkbox above to load a list, then select an item.
           </div>

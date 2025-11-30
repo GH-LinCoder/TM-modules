@@ -22,10 +22,10 @@ const state = {
 
 //why do we also have this?  22:57 Nov 29 I changed this to use state
 // Module-scoped state for the Edit Task panel
-const editTaskState = {
+/*const editTaskState = {
   currentStepId: null,
   currentAutomationId: null
-};
+};*/
 
 let stepId = null; // was on line 705 used for no obvious reason to replaced 'initialStepId'
 
@@ -99,7 +99,8 @@ function populateFromClipboard(panel) {
   //new 16:03 oct 4
   if (tasks.length === 1 && !taskSelect.value) { 
     taskSelect.value = tasks[0].entity.id;
-    informationFeedback.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled task: ${tasks[0].entity.name}</div>`;
+    const infoSection = document.querySelector('#informationSection');
+    infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled task: ${tasks[0].entity.name}</div>`;
   }
   addClipboardItemsToDropdown(tasks, taskSelect);
   
@@ -341,9 +342,9 @@ function getTemplateHTML() {
 
 
             <div class="space-y-2">
-              <label for="taskSelect" class="block text-sm font-medium text-gray-700">Use Select menu then this dropdown for Task</label>
+              <label for="taskSelect" class="block text-sm font-medium text-gray-700">Use [Select] menu to choose tasks then this dropdown to load a Task</label>
               <select id="taskSelect" data-form="taskSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                <option value="">Select a task</option>
+                <option value="">Use the menu [Select] button then this dropdown to select Task</option>
               </select>
             </div>
 
@@ -454,7 +455,7 @@ function getTemplateHTML() {
     </select>
     <select id="relationshipAutomationSelect" class="w-full p-2 border rounded mb-2">
       <option value="">Select relationship</option>
-      <option value="member">member</option>
+      <option value="a member">a member</option>
       <option value="customer">customer</option>
       <option value="explanation">explanation</option>
     </select>
@@ -703,7 +704,8 @@ addInformationCard({
             taskId: selectedTaskId
         });
         
-        // FIND STEP 3 (initial step) - IMPROVED ERROR HANDLING
+        // FIND STEP 3 (initial step) - WHY? why are we finding step 3????
+        //we need the current step. Where is current step stored????
         
         const initialStep = steps.find(step => step.step_order === 3);
         if (initialStep && initialStep.id) {
@@ -714,29 +716,19 @@ addInformationCard({
         }
         console.log(
 //          'stepId:', stepId,
-          'source_task_step_id :', state.initialStepId,
-          'student_id:', state.user, //should be null because usually this is a future unknown person
-          'manager_id:', managerData.managerId,     
-          'taskId:', selectedTaskId,
-          'task_step_id:', state.initialStepId,
-          'itemName:', taskCleanName, 
-          'automation_number:', automationsNumber 
+          'state.initialStepId,:', state.initialStepId,
+          'state.user:', state.user, //should be null because usually this is a future unknown person
+          'managerData.managerId:', managerData.managerId,     
+          'selectedTaskId:', selectedTaskId,
+          'taskCleanName:', taskCleanName,
+          'currentStepId',state.currentStepId, 
+          'auto#:', automationsNumber 
         ); 
+// we don't know the currentStepId !!! 
 
-//        console.log('source_task_step_id:', source_task_step_id);
-        // Save task automation to database
-        // function needs 
-          // source_task_step_id, task_header_id, task_step_id, name, automation_number
-
-console.log(state.initialStepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
-  state.user, //the person being assigned to the task
-  managerData.managerId, // needs to be from the dropdown    
-  selectedTaskId, // 
-  taskCleanName, // 
-  automationsNumber);
 
         const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTask', { 
-       source_task_step_id : state.currentStepId, //undefined?
+       source_task_step_id : state.currentStepId, //undefined  12:18 Nov 30
        
        // It had been using stepId which was always step 3 No wrong name was being used here 'currentStepId'
 //but stepId was invented for no obvious reason as a new name for initialStepId which is probably step 3
@@ -1148,13 +1140,15 @@ enableAutomationControls(panel);
 
 
 
-function loadStepIntoEditor(panel,stepId){
-  console.log('loadStepIntoEditor() stepId incoming:', stepId, 'typeof:', typeof stepId);
-  console.log('steps length:', Array.isArray(state.steps) ? state.steps.length : 'not array');
-  console.log('available ids:', (state.steps || []).map(s => s.id));
-
-  const step = state.steps.find(s => s.id === stepId);
-  console.log('Looking for stepId:', stepId, 'in', state.steps.map(s => s.id));
+function loadStepIntoEditor(panel,clickedStepId){//clicked is the id uuid
+  console.log('loadStepIntoEditor() clickedStepId:', clickedStepId, 'typeof:', typeof clickedStepId);
+  //console.log('steps length:', Array.isArray(state.steps) ? state.steps.length : 'not array');
+  console.log('available ids of all the steps:', (state.steps || []).map(s => s.id));
+  state.currentStepId = clickedStepId; //the card that was clicked sets the current step.
+console.log('state.currentStepId:',state.currentStepId); // should be == clickedStepId
+  const step = state.steps.find(s => s.id === clickedStepId); //extract this steps data from the array of al the steps data
+  console.log('Looking for clickedStepId:', clickedStepId, 'in', state.steps.map(s => s.id));
+  
 stepOrder = step.step_order;  //used later in saving to db line 1146
     
   // ✅ DEBUG: Log found step
@@ -1210,7 +1204,8 @@ console.log('steps listener event:', target); // responds
       if (saveBtn) { saveBtn.textContent = 'Edit step'; saveBtn.disabled = false; }
       if (sectionToEditEl) sectionToEditEl.textContent = 'step';
       
-      loadStepIntoEditor(panel, clickedStepId); //       
+      loadStepIntoEditor(panel, clickedStepId); //  
+
     //  hideAutomationsUI(panel);
 
     } else if (target.classList.contains('clickable-automation')) {
@@ -1338,8 +1333,9 @@ console.log('automation',auto);
 
     const row = document.createElement('div');
     row.className = 'ml-6 flex items-center gap-2';
-    row.appendChild(p);
     row.appendChild(del);
+    row.appendChild(p);
+    
 
     container.appendChild(row);
   });
