@@ -1,0 +1,4 @@
+BEGIN
+    NEW.last_updated := CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
