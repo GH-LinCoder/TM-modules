@@ -1525,18 +1525,18 @@ updateSurvey: {
     tables: ['survey_headers'],
     columns: ['name', 'description', 'external_url', 'author_id'],
     type: 'UPDATE',
-    requiredArgs: ['surveyName', 'surveyDescription'] // ← should include url and author
+    requiredArgs: ['surveyId','surveyName', 'surveyDescription'] // ← should include url and author
   },
   handler: async (supabase, userId, payload) => {
 
-    const { surveyId, surveyName, surveyDescription} = payload; // should include authorId ?
-    console.log('UpdateSurvey:',surveyName, 'userId:',userId, 'surveyId:',surveyId);
+    const { surveyId, name, description} = payload; // should include authorId ?
+    console.log('UpdateSurvey:',name, 'userId:',userId, 'surveyId:',surveyId);
     const { data, error } = await supabase
 
     .from('survey_headers')
       .update({
-        name: surveyName,
-        description :  surveyDescription || null,
+        name: name,
+        description :  description || null,
       //  author_id: userId 
       })
       .eq('id', surveyId) 
@@ -1557,7 +1557,7 @@ createSurveyQuestion: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields
   },
   handler: async (supabase, userId, payload) => {
-    const { surveyId, questionText, question_number } = payload;
+    const { surveyId, questionText, description, question_number } = payload;
 
     // Check for duplicate name  ???
   /*
@@ -1582,6 +1582,7 @@ createSurveyQuestion: {
         survey_header_id: surveyId,
         name: questionText,
         question_number:question_number,
+        description :  description || null,
         //external_url: taskUrl || null,
         //author_id: userId // ← there is no such column
       })
@@ -1782,6 +1783,64 @@ console.log('registryReadTaskAutomations-stepId:',source_task_step_id);
       .select('*')
       
       .eq('source_task_step_id', source_task_step_id)
+      .is('deleted_at', null) // exclude soft-deleted
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error reading task automations:', error.message);
+      throw new Error('Failed to read task automations.');
+    }
+
+    return data;
+  }
+},
+
+
+readSurveyAutomations: {
+  metadata: {
+    tables: ['automations'],
+    columns: [
+      'id',
+      'name',
+      'description',
+      'task_header_id',
+      'task_step_id',
+      'survey_answer_id',
+      'student_id',
+      'from_step',
+      'to_step',
+      'appro_is_id',
+      'relationship',
+      'of_appro_id',
+      'appro_relations_id',
+      'automation_number',
+      'source_task_step_id',
+      'manager_id',
+      'task_assignment_id',
+      'created_at',
+      'last_updated_at',
+      'is_deleted'
+    ],
+    type: 'SELECT',
+    requiredArgs: ['answerId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { answer_id} = payload;
+console.log('registryReadSurveyAutomations-answerId:',answer_id);
+    // Validate required args
+ /*
+    for (const arg of ['source_task_step_id']) {
+      if (payload[arg] === undefined || payload[arg] === null) {
+        throw new Error("Missing required argument: " + arg);
+      }
+    } */
+
+    // Query automations table
+    const { data, error } = await supabase
+      .from('automations')
+      .select('*')
+      
+      .eq('survey_answer_id', answer_id)
       .is('deleted_at', null) // exclude soft-deleted
       .order('created_at', { ascending: true });
 
@@ -2224,15 +2283,22 @@ readSurveyHeaders:{
     tables: ['survey_headers'],
     columns: ['name', 'description', 'author_id', 'created_at', 'last_updated_at', 'automations'], // automations not curren
     type: 'SELECT',
-    requiredArgs: ['surveyId'] // could be either id or name?
+    optionalArgs: ['surveyName'] // could be either id or name?
   },
   handler: async (supabase, userId, payload) => {
     console.log('readSurveyHeaders()');
    // const { surveyId } = payload;
-    const { data, error } = await supabase
-      .from('survey_headers')
-      .select('id, name, description, author_id, created_at, last_updated_at, automations  ')
-     // .eq('id',surveyId);
+
+    let query = supabase
+ .from('survey_headers')
+      .select('id, name, description, author_id, created_at, last_updated_at ')
+
+    if (payload?.surveyName) {
+      query = query.eq('name', payload.surveyName);
+    }
+
+    const { data, error } = await query;
+
 
     if (error) throw error;
     return data;
@@ -2243,7 +2309,7 @@ readSurveyHeaders:{
 readSurveyQuestion:{
   metadata: {
     tables: ['survey_questions'],
-    columns: ['name', 'description', 'author_id', 'created_at', 'last_updated_at'], //?
+    columns: ['name', 'description',  'created_at', 'last_updated_at'], //?
     type: 'SELECT',
     requiredArgs: ['surveyId'] 
   },
@@ -2252,7 +2318,7 @@ readSurveyQuestion:{
    const { surveyId } = payload;
     const { data, error } = await supabase
       .from('survey_questions')
-      .select('id, name, description, author_id, created_at, last_updated_at, question_number')
+      .select('id, name, description, created_at, last_updated_at, question_number')
      .eq('survey_header_id',surveyId);
 
     if (error) throw error;

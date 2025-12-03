@@ -91,6 +91,31 @@ constructor(type) {
     `
  }
 
+
+getSurveyAutomationHTML(){
+return `
+    <!-- Automations Card -->
+    <div id="automationsCard" class="automationsCard bg-green-50 p-4 rounded-lg border border-green-300 opacity-20" style="pointer-events: none;">
+        <h4 class="font-medium text-green-800 mb-2">Survey Automation</h4>
+        <p class="text-green-700 text-sm">
+            When this answer is selected, the following actions will be performed:
+        </p>
+        <!-- Assign Survey Section -->
+        <div class="mt-4 p-3 bg-white rounded border mb-4">
+            <h5 class="font-medium text-gray-800 mb-2">Assign a survey</h5>
+            <div class="flex gap-2">
+                <select id="surveySelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
+                    <option value="">Select a survey to assign</option>
+                </select>
+                <button type="button" id="saveSurveyAutomationBtn" class="bg-purple-600 text-white py-1 px-3 rounded hover:bg-purple-700 opacity-50" style="pointer-events: none;">
+                    Save Survey Assignment
+                </button>
+            </div>
+        </div>
+    </div>
+`;
+}
+
 getRelationAutomationHTML(){
 
 return `
@@ -339,6 +364,16 @@ try{
             return;
         }
         
+const btn = e.target.closest('#saveSurveyAutomationBtn');
+if (btn) {
+            e.preventDefault();
+            console.log('saveSurveyAut... YES, calling function');
+            this.handleSurveyAutomationSubmit(e, panel);
+            return;
+        }
+
+
+
         // Save relationship automation button
         if (e.target.id === 'saveRelationshipAutomationBtn') {
             e.preventDefault();
@@ -551,6 +586,38 @@ styleCardByType(type){
         console.log('Surveys from clipboard:', surveys);
         
         
+
+// Populate MAIN survey selector (for choosing which survey to edit)
+const surveySelectMain = panel.querySelector('#surveySelectMain');
+if (surveySelectMain) {
+    console.log('Populating surveySelectMain with', surveys.length, 'items');
+    this.addClipboardItemsToDropdown(surveys, surveySelectMain, 'survey');
+    if (surveys.length === 1) {
+
+this.refreshSurvey(panel);
+
+/*surveySelectMain.value = surveys[0].entity.id;
+//        console.log('surveySelectMain', surveySelect);
+        const nameInput = panel.querySelector('#surveyName');
+        if (nameInput) nameInput.value = surveys[0].entity.name || '';
+        
+        const descriptionInput = panel.querySelector('#surveyDescription');
+        if (descriptionInput) descriptionInput.value = surveys[0].entity.description || '';
+        
+        // Update character counters
+        const nameCounter = panel.querySelector('#surveyNameCounter');
+        if (nameCounter) nameCounter.textContent = `${surveys[0].entity.name?.length || 0}/128 characters`;
+        
+        const descCounter = panel.querySelector('#surveyDescriptionCounter');
+        if (descCounter) descCounter.textContent = `${surveys[0].entity.description?.length || 0}/128 characters`;
+*/
+
+// this uses the surveyview which is detail that isn't currently needed        this.populateSurveyData(panel, 'header');
+    }
+}
+
+
+
         // Populate task dropdown
         const taskSelect = panel.querySelector('#taskSelect');
         if (taskSelect) {
@@ -561,7 +628,23 @@ styleCardByType(type){
             taskSelect.value = tasks[0].entity.id; 
             taskSelect.dispatchEvent(new Event('change'));
         }
-        
+        // Populate surveys dropdown
+        //<=========================  code needed in html dropdown  BUT editSurvey overwrites this
+        const surveySelect = panel.querySelector('#surveySelect');
+        console.log('surveySelect element:', surveySelect);
+        if (surveySelect) {
+            console.log('Populating survey dropdown with', surveys.length, 'items');
+            this.addClipboardItemsToDropdown(surveys, surveySelect, 'survey');
+
+            // If only one survey in clipboard, auto-select it:
+if (surveys.length === 1) {
+    surveySelect.value = surveys[0].entity.id; 
+    surveySelect.dispatchEvent(new Event('change'));
+    this.editSurveyId =surveys[0].entity.id; //seems valid id 23:55 Dec 2
+    console.log('surveys[0]',surveys[0].entity.id);
+this.refreshSurvey(panel);
+
+}
         // Populate approfile dropdown
         const approfileSelect = panel.querySelector('#approfileSelect');
         if (approfileSelect) {
@@ -572,28 +655,9 @@ styleCardByType(type){
             approfileSelect.value = approfiles[0].entity.id; 
             approfileSelect.dispatchEvent(new Event('change'));
         }
-
-        // Populate surveys dropdown
-        //<=========================  code needed in html dropdown  BUT editSurvey overwrites this
-        const surveySelect = panel.querySelector('#surveySelect');
-        if (surveySelect) {
-            console.log('Populating survey dropdown with', surveys.length, 'items');
-            this.addClipboardItemsToDropdown(surveys, surveySelect, 'approfile');
-
-            // If only one survey in clipboard, auto-select it:
-if (surveys.length === 1) {
-    surveySelect.value = surveys[0].entity.id; 
-    surveySelect.dispatchEvent(new Event('change'));
-}
-
-
-        }
-
-
-
-
         
     }
+}
 
     addClipboardItemsToDropdown(items, selectElement, type) { 
         console.log('addClipboardItemsToDropdown()');
@@ -813,11 +877,12 @@ async updateSurveyAnswer({
             }
             
             // Save task automation to database WITH step_id
-            const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
-                surveyAnswerId: this.answerId,
-                taskId: selectedTaskId,
-                source_task_step_id : stepId, // changed to match db in automations Table. BUT registry function being called didn't use task_step_id at all. Changed that 19:14 oct 13
-                itemName: cleanName,
+            //function needs const { survey_answer_id, task_header_id, task_step_id, name, automation_number } = payload
+            const result = await executeIfPermitted(userId, 'createAutomationAddTaskBySurvey', {
+                survey_answer_id: this.answerId,
+                task_header_id: selectedTaskId,
+                task_step_id : stepId, // changed to match db in automations Table. BUT registry function being called didn't use task_step_id at all. Changed that 19:14 oct 13
+                name: cleanName,
                 automation_number: this.automationsNumber
             });
             
@@ -839,6 +904,58 @@ async updateSurveyAnswer({
         
         saveTaskAutomationBtn.disabled = false;
         saveTaskAutomationBtn.textContent = 'Save Task';
+    }
+
+        async handleSurveyAutomationSubmit(e, panel) {
+        console.log('handleSurveyAutomationSubmit()');
+        e.preventDefault();
+        const  userId = appState.query.userId;
+
+        const surveySelect = panel.querySelector('#surveySelect');
+        const selectedsurveyId = surveySelect?.value;
+        // Get the selected option text
+        const selectedOption = surveySelect.options[surveySelect.selectedIndex];
+        const cleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
+        
+        if (!selectedsurveyId) {
+            showToast('Please select a survey first', 'error');
+            return;
+        }
+        
+        const surveySurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
+        surveySurveyAutomationBtn.disabled = true;
+        surveySurveyAutomationBtn.textContent = 'Saving...';
+        this.automationsNumber++;        
+        
+
+        try{            
+            // Save survey automation to database WITH step_id
+            const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
+                surveyAnswerId: this.answerId,
+                surveyId: selectedsurveyId,
+           //     source_survey_step_id : stepId, // changed to match db in automations Table. BUT registry function being called didn't use survey_step_id at all. Changed that 19:14 oct 13
+                itemName: cleanName,
+                automation_number: this.automationsNumber
+            });
+            
+            // Add information card  
+            this.addInformationCard({
+                'name': `${result.name.substring(0, 60)}...`,
+                'type': 'survey automation',
+                'number': this.automationsNumber, 
+                'answerNumber': this.answerNumber,  
+                'questionNumber': this.questionNumber, 
+                'id': `${result.id.substring(0, 8)}...`
+            });
+            
+            showToast('survey automation saved successfully!');
+            this.refreshSurvey(panel);
+        } catch (error) {
+            showToast('Failed to save survey automation: ' + error.message, 'error');
+        }
+        
+        surveySurveyAutomationBtn.disabled = false;
+        surveySurveyAutomationBtn.textContent = 'Save survey';
     }
 
     async handleRelationshipAutomationSubmit(e, panel) {
@@ -872,7 +989,7 @@ async updateSurveyAnswer({
         this.automationsNumber++;        
         try {  
             // Save relationship automation to database
-            const result = await executeIfPermitted(userId, 'createSurveyAutomation', {
+            const result = await executeIfPermitted(userId, 'createAutomationAddSurveyBySurvey', {
                 surveyAnswerId: this.answerId,
                 ofApprofileId: selectedOfApprofile,
                 approfile_is_id:respondentId,

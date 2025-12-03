@@ -1,13 +1,11 @@
 # AI Agent Instructions for TM-modules
 
-A task/relationship management organizational OS with role-based permissions and modular UI architecture.
+A lightweight organizational OS focused on tasks, surveys and relationship management. The app itself is used as a living guide for implementing its features.
 
-## Purpose & Core Domains
-
-TM-modules is an **organizational OS** where humans create and manage organizations through three interconnected data structures:
-- **Persons** (approfiles): Human and non-human entities with profiles and relationships
-- **Tracking** (tasks & steps): Workflows broken into actionable steps
-- **Bridging** (task_assignments): Links persons to tasks
+## Three Core Domain Workflows
+1. **Tasks & Steps** — Create tasks with multiple steps. Each step can branch execution based on decisions (manually or via surveys).
+2. **Surveys** — Survey responses can trigger task branching and code execution, driving conditional workflows.
+3. **Relations & Hierarchy** — Define and visualize relationships between persons, creating organizational hierarchies and structures.
 
 Key features include task creation/assignment (with code branching), survey-driven workflows, relationship/hierarchy visualization, and member subscriptions.
 
