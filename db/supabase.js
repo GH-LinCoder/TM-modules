@@ -33,4 +33,17 @@ export function createSupabaseClient() {
   return supabaseClient;
 }
 
+/* Dec 4 2025
+
+import { createClient } from '@supabase/supabase-js';
+
+//npm install @supabase/supabase-js
+using vite
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
+node --version  # should show v20.x or v22.x
+npm --version
+npm create vite@latest . -- --template vanilla   ////or something like this.
+*/
+
 
