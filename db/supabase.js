@@ -2,9 +2,11 @@
 
 console.log('Imported: supabase.js');
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
+Dec 4 the connection is different.
 
-const supabaseUrl = 'https://kxdplsvojxgdskbbfonp.supabase.co'
-const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt4ZHBsc3ZvanhnZHNrYmJmb25wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMzNjk4MzMsImV4cCI6MjA2ODk0NTgzM30.cbJAOYkEkNyd3VbgJQLEtWtWs_MKrpzA16ZHMuOP4bk'
+//removed keys 4 Dec 2025
+const supabaseUrl = 'https://*********.supabase.co'
+const supabaseAnonKey = '*****'
 
 let supabaseClient;
 
