@@ -1,6 +1,6 @@
 //  ./db/permissionsModule.js
 
-console.log('permissionsModule.js loaded);
+console.log('permissionsModule.js loaded');
 
 
 export function render(panel, query = {}) {

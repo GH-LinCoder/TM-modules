@@ -10,6 +10,8 @@
 *.userosscache
 *.sln.docstates
 *.env
+supabase.js #contains keys
+
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
@@ -416,3 +418,4 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+.env

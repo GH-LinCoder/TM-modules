@@ -261,68 +261,6 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 </div>
 
 
-<!-- Relations & hierarchy Management -->
-  <div class="bg-orange-100 rounded-lg shadow p-6" data-section='r&h-management' data-destination='r&h-management'>
-    <h2 class="text-lg font-semibold mb-2">Relations & hierarchy Management 🏯</h2>
-    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-
-<!-- Approfiles -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action='approfile-management-section'>
-      <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Appros 🪪</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage any kind of approfiles: personal, task based or abstract, approfiles</p>
-    </div>
-
-
-<!-- HUMAN APPROFILES-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="member_approfiles">
-      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-purple-700">Human approfiles</h3>
-      <p class="text-xs text-gray-500">View and manage the approfiles for members</p>
-    </div>
-
-
-    <!-- TASK APPROFILES-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="task-approfiles">
-      <p class="text-3xl font-bold text-indigo-900" data-value="task-profiles-count">?</p>
-      <h3 class="text-sm font-medium text-indigo-700">Task approfiles</h3>
-      <p class="text-xs text-gray-500">View and manage the approfiles for tasks</p>
-    </div>
-
-<!-- GROUP APPROFILES-->    
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="group_approfiles">
-      <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Group Profiles</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage  the approfiles fo groups</p>
-    </div>
-
-<!-- ABSTRACT APPROFILES-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="abstract_approfiles">
-      <p class="text-3xl font-bold text-pink-900" data-value="abstract-app-profiles-count">?</p>
-      <h3 class="text-sm font-medium text-pink-700">Abstract approfiles</h3>
-      <p class="text-xs text-gray-500">View and manage abstract approfiles</p>
-    </div>
-
-<!-- RELATE APPROFILES-->    
-    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="relationships">
-      <p class="text-3xl font-bold text-yellow-900" data-value="relationships-count">?</p>
-      <h3 class="text-sm font-medium text-yellow-700">Relationships</h3>
-      <p class="text-xs text-gray-500">Assign and organize relationships between approfiles</p>
-    </div>
-
-<!-- RELATIONSHIPS-->    
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="relations">
-      <p class="text-3xl font-bold text-red-900" data-value="relations-count">?</p>
-      <h3 class="text-sm font-medium text-red-700">Relations</h3>
-      <p class="text-xs text-gray-500">Create and edit the concept of a relationship that can be applied to any two approfiles</p>
-    </div>
-
-  </div>
-</div>
-
-
 <!-- KNOWLEDGE MANAGEMENT -->
   <div class="bg-indigo-200 rounded-lg shadow p-6" data-section='knowledge-management' data-destination='knowledge-management'>
     <h2 class="text-lg font-semibold mb-2">Knowledge Management 📚</h2>
@@ -384,6 +322,67 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-3xl font-bold text-red-900" data-value="relations-count">?</p>
       <h3 class="text-sm font-medium text-red-700">Relations</h3>
       <p class="text-xs text-gray-500">Create and edit the knowledge on the concept of a relationship that can be applied to any two approfiles</p>
+    </div>
+
+  </div>
+</div>
+
+<!-- Relations & hierarchy Management -->
+  <div class="bg-orange-100 rounded-lg shadow p-6" data-section='r&h-management' data-destination='r&h-management'>
+    <h2 class="text-lg font-semibold mb-2">Relations & hierarchy Management 🏯</h2>
+    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+
+<!-- Approfiles -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action='approfile-management-section'>
+      <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
+      <h3 class="text-sm font-medium text-blue-700">Appros 🪪</h3>
+      <p class="text-xs text-gray-500">View, edit, and manage any kind of approfiles: personal, task based or abstract, approfiles</p>
+    </div>
+
+
+<!-- HUMAN APPROFILES-->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="member_approfiles">
+      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
+      <h3 class="text-sm font-medium text-purple-700">Human approfiles</h3>
+      <p class="text-xs text-gray-500">View and manage the approfiles for members</p>
+    </div>
+
+
+    <!-- TASK APPROFILES-->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="task-approfiles">
+      <p class="text-3xl font-bold text-indigo-900" data-value="task-profiles-count">?</p>
+      <h3 class="text-sm font-medium text-indigo-700">Task approfiles</h3>
+      <p class="text-xs text-gray-500">View and manage the approfiles for tasks</p>
+    </div>
+
+<!-- GROUP APPROFILES-->    
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="group_approfiles">
+      <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
+      <h3 class="text-sm font-medium text-blue-700">Group Profiles</h3>
+      <p class="text-xs text-gray-500">View, edit, and manage  the approfiles fo groups</p>
+    </div>
+
+<!-- ABSTRACT APPROFILES-->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="abstract_approfiles">
+      <p class="text-3xl font-bold text-pink-900" data-value="abstract-app-profiles-count">?</p>
+      <h3 class="text-sm font-medium text-pink-700">Abstract approfiles</h3>
+      <p class="text-xs text-gray-500">View and manage abstract approfiles</p>
+    </div>
+
+<!-- RELATE APPROFILES-->    
+    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="relationships">
+      <p class="text-3xl font-bold text-yellow-900" data-value="relationships-count">?</p>
+      <h3 class="text-sm font-medium text-yellow-700">Relationships</h3>
+      <p class="text-xs text-gray-500">Assign and organize relationships between approfiles</p>
+    </div>
+
+<!-- RELATIONSHIPS-->    
+    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="relations">
+      <p class="text-3xl font-bold text-red-900" data-value="relations-count">?</p>
+      <h3 class="text-sm font-medium text-red-700">Relations</h3>
+      <p class="text-xs text-gray-500">Create and edit the concept of a relationship that can be applied to any two approfiles</p>
     </div>
 
   </div>

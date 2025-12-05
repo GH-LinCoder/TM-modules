@@ -54,12 +54,12 @@ export const registry = { // this registry is for loading a new page to the righ
 'create-task-dialogue': () => import('../work/task/createTask.js'),
 'createTaskForm': () => import('../work/task/createTask.js'), //legacy?
 'edit-task-dialogue': () => import('../work/task/editTask.js'),
-'editTask': () => import('./editTask.js'), //legacy?
+'editTask': () => import('../work/task/editTask.js'), //legacy?
 //'-management-section': ()=> import('../work/dash/ManagementSection.js'),
 
 'display-students':()=> import('../work/task/displayTasksManager.js'),
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),
-'moveStudent': () => import('../student/moveStudent.js'),//legacy?
+'moveStudent': () => import('../work/student/moveStudent.js'),//legacy?
 
 
 //'display-tasks' :()=> import('../work/task/displayTasks.js'), // changed 20:29 Oct 21
@@ -70,10 +70,10 @@ export const registry = { // this registry is for loading a new page to the righ
 'approfile-management-section': ()=> import('../dash/approfileManagementSection.js'),// from button has .html
 
 "create-approfile-dialogue":()=> import('../work/approfiles/createApprofile.js'),
-'createApprofile': () => import('./createApprofile.js'), // legacy?
+//'createApprofile': () => import('./createApprofile.js'), // legacy?
 'edit-approfile-dialogue':()=> import('../work/approfiles/editApprofile.js'),
 'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),
-'relateApprofile': () => import('../work/approfiles/relateApprofile.js'), //legacy?
+//'relateApprofile': () => import('../work/approfiles/relateApprofile.js'), //legacy?
 'display-related-approfiles-dialogue': () => import('../work/approfiles/displayRelations.js'),
 
 'member-management-section': ()=> import('../dash/approfileManagementSection.js'), //???
@@ -103,7 +103,7 @@ export const registry = { // this registry is for loading a new page to the righ
 
 
 //////////          AUTO-BACKGROUND                  /////////
-'auto-assign-task' :() => import('../work/task/autoAssignTasks.js'),  //? not directly loaded?
+'auto-assign-task' :() => import('../work/task/autoAssignTask.js'),  //? not directly loaded?
 'auto-relate-appro': () => import('../work/approfiles/autoRelateAppro.js'), //?not directly loaded
 'auto-execute-automations':() => import('../utils/autoExecuteAutomations.js'), //this imports the above 2
 
@@ -113,8 +113,8 @@ export const registry = { // this registry is for loading a new page to the righ
 
 
 //possible further modules for admin dashboard
-
-'editStep': () => import('./editStep.js'),
+/*
+'editStep': () => import('../work/task/editStep.js'),
 'editMember': () => import('./editMember.js'),
 'editAssignment': () => import('./editAssignment.js'),
 'editApprofile': () => import('./editApprofile.js'),
@@ -122,7 +122,7 @@ export const registry = { // this registry is for loading a new page to the righ
 
 'createHowto': () => import('./createHowto.js'),
 'viewHowto': () => import('./viewHowto.js'),
-
+*/
 
 
 
@@ -139,7 +139,7 @@ export const registry = { // this registry is for loading a new page to the righ
 
 //'createTaskForm.html': () => import('../work/task/createTask.js'),
 'moveStudentForm.html': () => import('../work/student/moveStudent.js'),
-'relateApprofileForm.html': () => import('../work/approfiles/relateApprofile.js'),
+'relateApprofileForm.html': () => import('../work/approfiles/relateApprofiles.js'),
 
 'howTo.html': () => import('../work/how/howTo.js'),
 
@@ -148,7 +148,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'managers.html':() => import('../work/task/managers-stats.js'),
 'authors.html':() => import('../work/task/authors-stats.js'),
 'assignments.html':() => import('../work/task/assignments-stats.js'),
-'members.html' :() => import('../work/data/memberss.js'),
+//'members.html' :() => import('../work/data/members.js'),
 'plans.html' :() => import('../plans.js'),
 'tasks.html' :() => import('../work/task/tasks-stats.js'),
 'steps.html' :() => import('../work/task/steps-stats.js'),

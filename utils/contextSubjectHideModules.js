@@ -1,5 +1,5 @@
-import { appState } from '../../state/appState.js';
-import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
+import { appState } from '../state/appState.js';
+import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
 
 
 // new functions to find data - External file to be imported by each module
