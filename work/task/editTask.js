@@ -1115,12 +1115,16 @@ function loadStepIntoEditor(panel,clickedStepId){//clicked is the id uuid
   console.log('available ids of all the steps:', (state.steps || []).map(s => s.id));
   state.currentStepId = clickedStepId; //the card that was clicked sets the current step.
 console.log('state.currentStepId:',state.currentStepId); // should be == clickedStepId
-  const step = state.steps.find(s => s.id === clickedStepId); //extract this steps data from the array of al the steps data
+
+
+//Task just has stps, but the module for editSurvey has to find if questions or answers, but task just has steps
+
+const step = state.steps.find(s => s.id === clickedStepId); //extract this steps data from the array of al the steps data
   console.log('Looking for clickedStepId:', clickedStepId, 'in', state.steps.map(s => s.id));
   
-//stepOrder = step.step_order;  //used later in saving to db line 1146
+
     
-  // ✅ DEBUG: Log found step  //stepId is never given a value??
+
  
   
   if (step) { stepOrder = step.step_order;  console.log('state,steps:',state.steps,'stepId',stepId,'step.stepOrder:', step.step_order); // undefined 23:07 24 Nov
@@ -1130,7 +1134,7 @@ console.log('state.currentStepId:',state.currentStepId); // should be == clicked
     panel.querySelector('#stepUrl').value = step.external_url || '';
     panel.querySelector('#stepOrder').value = stepOrder; // Ensure this is set
     console.log('Form filled with step data');
-} else{console.log('Ws it the header that was clicked?'); }
+} else{console.log('Was it the header that was clicked?'); }
 }
 
 
@@ -1148,7 +1152,6 @@ reloadTaskData(panel);
 }
 
 
-
 // Attach listeners to the summary panel
 function attachStepsListeners(panel) {
   console.log('attachStepsListeners()');
@@ -1164,10 +1167,11 @@ console.log('steps listener event:', target); // responds
     const sectionToEditEl = panel.querySelector('#editSectionLabel'); // optional status label
 
     if (target.classList.contains('clickable-step')) {
+      
       const clickedStepId = target.dataset.stepId; // is this an id or a DOM element?
       state.currentStepId = clickedStepId;
       
-      console.log('target.dataset',target.dataset);
+      console.log('target.dataset',target.dataset); //stepOrder is never set??? Dec 6
       panel.querySelector('#stepOrder').value = stepOrder; // Ensure this is set to a number not an id
       if (saveBtn) { saveBtn.textContent = 'Edit step'; saveBtn.disabled = false; }
       if (sectionToEditEl) sectionToEditEl.textContent = 'step';
@@ -1208,15 +1212,32 @@ function renderTaskHeaderCard(list, task) {
 
   const card = document.createElement('div');
    card.dataset.stepOrder='0';//steps start at a stepOrder of 1. 0 being used to say 'header'
- // card.className = styleCardByType('survey');
- card.className = 'clickable-step hover:scale-105 transition-transform bg-gray-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
+   //   card.dataset.taskId = task.id;//copied not tested dec 6
+   //  card.dataset.type = 'header'; //copied not tested  dec 6
+   // card.className = styleCardByType('survey');
+  card.className = 'clickable-step hover:scale-105 transition-transform bg-gray-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
   card.innerHTML = `
-    <div>Task: ${task.name}</div>
+    <strong>Task: ${task.name}</strong>
     ${task.description ? `<div class="text-sm text-gray-700">${task.description.substring(0,200) }...</div>` : ''}
     ${task.external_url ? `<div class="text-xs text-blue-600">${task.external_url}</div>` : ''}
   `;
 
   list.appendChild(card);
+}
+
+
+function renderStepCard(summary,step){
+
+    const stepCard = document.createElement('p');
+    //edit survey has 'type' here  
+    stepCard.className = 'clickable-step hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
+    stepCard.dataset.stepId = step.id;//stepId? Never has a value.was and is null. 
+    stepCard.innerHTML = `
+      <strong>Step ${step.step_order}:</strong> ${step.name}
+      <span class="block text-sm text-gray-600 whitespace-pre-line">${step.description || ''}</span>
+    `;
+
+    summary.appendChild(stepCard);
 }
 
 
@@ -1241,8 +1262,9 @@ console.log('renderTaskStructure()-state:', state, 'stepOrder:', stepOrder, 'ste
   list.innerHTML = '<h3>Summary:</h3><br>';
     renderTaskHeaderCard(list,state.currentTask)
   state.steps.forEach(step => {
-
-    const stepCard = document.createElement('p');
+renderStepCard(list,step);
+/*
+const stepCard = document.createElement('p');
     stepCard.className = 'clickable-step hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
     stepCard.dataset.stepId = step.id;//stepId? Never has a value.was and is null.
     
@@ -1252,7 +1274,7 @@ console.log('renderTaskStructure()-state:', state, 'stepOrder:', stepOrder, 'ste
     `;
 
     list.appendChild(stepCard);
-
+*/
     // Inline automations under the step (styled like survey answers/automations)
     const autosContainer = document.createElement('div');
     autosContainer.className = 'ml-4';

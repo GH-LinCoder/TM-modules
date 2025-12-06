@@ -21,7 +21,7 @@ const state = {
   //initialStepId: null
 };
 
-let stepId = null; // was on line 705 used for no obvious reason to replaced 'initialStepId'
+//let stepId = null; // was on line 705 used for no obvious reason to replaced 'initialStepId'
 // used lines 549, 1256, 1273 but always   as =stepId so always null !
 
 
@@ -242,7 +242,7 @@ async function loadSurveyQuestions(panel, surveyId) { //readSurveyQuestion: 'id,
       showToast('Failed to load  questions', 'error');
     return;
     }
-      // Populate questions list
+      // Populate questions summary
       renderSurveyStructure(panel); //which also does output of automations
       
       // Populate step select dropdown
@@ -1123,15 +1123,10 @@ item = state.questions.find(s => s.id === clickedItemId); //extract this steps d
 else if (type ==='answer')
 item = state.answers.find(s => s.id === clickedItemId);  // is this the full data of the answer?
 //else if (type === 'automation') //not displayed, option is just to delete
-
-
 console.log('Looking for clickedItemId:', clickedItemId, 'in', state.items.map(s => s.id));
   
 //stepOrder = step.question_number;  //used later in saving to db line 1146  // how accommodate answer_number?
     
-  
-
-
   if (item) {
     // Fill form with step data
     panel.querySelector('#stepName').value = item.name || '';
@@ -1155,6 +1150,7 @@ reloadSurveyData(panel);
     showToast('Failed to delete automation', 'error');
   }
 }
+
 
 // Attach listeners to the summary panel
 function attachStepsListeners(panel) {
@@ -1221,7 +1217,7 @@ function renderSurveyHeaderCard(list, survey) {
  // card.className = styleCardByType('survey');
     card.className = 'clickable-item hover:scale-105 transition-transform bg-gray-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
     card.innerHTML = `
-    <div>Survey: ${survey.name}</div>
+    <strong>Survey: ${survey.name}</strong>
     ${survey.description ? `<div class="text-sm text-gray-700">${survey.description.substring(0,200) }...</div>` : ''}
     ${survey.external_url ? `<div class="text-xs text-blue-600">${survey.external_url}</div>` : ''}
     ${survey.id}
@@ -1230,28 +1226,46 @@ function renderSurveyHeaderCard(list, survey) {
   list.appendChild(card);
 }
 
+function renderItemCard(summary,item, type){
+console.log('item',item, 'summary',summary,'type',type);
+    const stepCard = document.createElement('p');
+    stepCard.dataset.type = type; 
+    stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`;
+    stepCard.dataset.id = item.id;
+    stepCard.innerHTML = `
+      <strong>Item ${item.question_number}:</strong> ${item.name}
+      <span class="block text-sm text-gray-600 whitespace-pre-line">${item.description || ''}</span>
+    `;
+console.log('stepCard',stepCard);
+    summary.appendChild(stepCard);
+}
+
 
 function markActiveStepInSummary(panel) {
     console.log('markActiveStepInSumary()');
   panel.querySelectorAll('.clickable-item').forEach(el => {
-    console.log('el.dataset.stepId',el.dataset.stepId, 'currentItemId',state.currentItemId);
-    el.classList.toggle('ring-4', el.dataset.stepId === String(state.currentItemId));
-    el.classList.toggle('ring-blue-500', el.dataset.stepId === String(state.currentItemId));
-    el.classList.toggle('bg-blue-100', el.dataset.stepId === String(state.currentItemId));
+    console.log('el.dataset.id',el.dataset.id, 'currentItemId',state.currentItemId);
+    el.classList.toggle('ring-4', el.dataset.id === String(state.currentItemId));
+    el.classList.toggle('ring-blue-500', el.dataset.id === String(state.currentItemId));
+    el.classList.toggle('bg-blue-100', el.dataset.id === String(state.currentItemId));
   });
 }
 
 
 function renderSurveyStructure(panel) {
-  const list = panel.querySelector('#surveySummary');
-  if (!list) return; //list is a DOM element id="surveySummary" innerText="Summary" inner.HTML="<h3>Summary:</h3><br>" Or is by the time the console logs it
+  const summary = panel.querySelector('#surveySummary');
+  if (!summary) return; //summary is a DOM element id="surveySummary" innerText="Summary" inner.HTML="<h3>Summary:</h3><br>" Or is by the time the console logs it
 
 console.log('renderSurveyStructure():', 'state',state); //
 //object user:  currentSurvey:object id:, name:, description:, author_id:, automations:null, created_at:, last_updated_at:, length:, 
 //currentSurveyId:, initialStepId:null, questions[] of objects id: name: description: created_at: last_updated_at, question_number:
-  list.innerHTML = '<h3>Summary:</h3><br>';
-      renderSurveyHeaderCard(list, state.currentSurvey);
+  summary.innerHTML = '<h3>Summary:</h3><br>';
+      renderSurveyHeaderCard(summary, state.currentSurvey);
   state.questions.forEach(card => { //state.questions[] is an array
+
+renderItemCard(summary,card,"question");
+
+/*
     console.log('card in renderSurveyStruc..():',card); //card logged - shows question
     const stepCard = document.createElement('p');
     stepCard.className = 'clickable-item data-type="question" hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
@@ -1263,11 +1277,11 @@ console.log('renderSurveyStructure():', 'state',state); //
     card.id:${card.id}`;
 
     list.appendChild(stepCard);//this does not show-up on screen 14:00 Dec 3
-
-    // Inline automations under the step (styled like survey answers/automations)
+*/
+   // Inline automations under the step (styled like survey answers/automations)
     const autosContainer = document.createElement('div');
     autosContainer.className = 'ml-4';
-    list.appendChild(autosContainer);
+    summary.appendChild(autosContainer);
 //    loadStepAutomations(autosContainer, card.id); //the card represents a question, but automations are,t on questions; automations are on answers
   });
 
