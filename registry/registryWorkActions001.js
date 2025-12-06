@@ -1441,13 +1441,13 @@ updateSurvey: {
   handler: async (supabase, userId, payload) => {
 
     const { surveyId, surveyName, surveyDescription} = payload; // should include authorId ?
-    console.log('UpdateSurvey:',surveyName, 'userId:',userId, 'surveyId:',surveyId);
+    console.log('UpdateSurvey:','surveyId:',surveyId,'surveyName',surveyName, 'surveyDescription:',surveyDescription, );
     const { data, error } = await supabase
 
     .from('survey_headers')
       .update({
         name: surveyName,
-        description :  surveyDescription || null,
+        description :  surveyDescription || 'ERROR',
       //  author_id: userId 
       })
       .eq('id', surveyId) 

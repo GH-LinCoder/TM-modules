@@ -4,7 +4,7 @@ console.log('displayNotes.js');
 //import { fetchNotes } from "./labNotesToInclude.js";  
 //import { renderNotes } from "./labNotesToInclude.js";  
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
-import { appState } from '../../state/appState.js';
+import { appState } from '../state/appState.js';
 const userId = appState.query.userId;
 
 export async function displayNotes(page = 1, totalCount = null) {

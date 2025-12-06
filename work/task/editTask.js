@@ -19,7 +19,7 @@ const state = {
   currentAutomationId: null, //added 22:57 Nov 29
   initialStepId: null
 };
-
+let stepOrder = null;
 let stepId = null; // was on line 705 used for no obvious reason to replaced 'initialStepId'
 // used lines 549, 1256, 1273 but always   as =stepId so always null !
 
@@ -702,7 +702,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTa
             name: taskCleanName || 'Unknown Task', // 
             automation_number: automationsNumber
         });
-        
+
         
         addInformationCard({
           'name': `${taskCleanName?.substring(0, 60) || 'Unknown Task'}...`,
@@ -1007,23 +1007,24 @@ async function handleTaskUpdate(e, panel) {
   async function handleStepUpdate(e, panel) {
     e.preventDefault();
     console.log('handleStepUpdate');
-  
-    const order = parseInt(panel.querySelector('#stepOrder')?.value);
-    const stepName = panel.querySelector('#stepName')?.value.trim();
-    const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
-    const stepUrl = panel.querySelector('#stepUrl')?.value.trim();
-    const saveBtn = panel.querySelector('#saveStepBtn');
-  
     if (!state.currentTaskId || !state.user) {
       showToast('Task not loaded or user missing', 'error');
       return;
     }
   
-    // ENFORCE BUSINESS RULE: Steps 1-2 are not editable
+      // Task specific that steps 1 & 2 are system steps that cannot be edited
     if (order < 3) {
       showToast('Steps 1 and 2 are system-managed and cannot be edited.', 'error');
       return;
     }
+    
+    const order = parseInt(panel.querySelector('#stepOrder')?.value);//but if clicked summary?
+    const stepName = panel.querySelector('#stepName')?.value.trim();
+    const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
+    const stepUrl = panel.querySelector('#stepUrl')?.value.trim();
+    const saveBtn = panel.querySelector('#saveStepBtn');
+  
+  
   
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving Step...';
@@ -1177,7 +1178,7 @@ console.log('steps listener event:', target); // responds
       if (sectionToEditEl) sectionToEditEl.textContent = 'step';
       
       loadStepIntoEditor(panel, clickedStepId); //  
-      markActiveStepInSummary(panel,state.currentStepId);
+      markActiveStepInSummary(panel);
     //  hideAutomationsUI(panel);
 
     } else if (target.classList.contains('clickable-automation')) {
@@ -1241,7 +1242,7 @@ function renderStepCard(summary,step){
 }
 
 
-function markActiveStepInSummary(panel, stepId) {
+function markActiveStepInSummary(panel) {
     console.log('markActiveStepInSumary()');
   panel.querySelectorAll('.clickable-step').forEach(el => {
     console.log('el.dataset.stepId',el.dataset.stepId, 'currentStepId',state.currentStepId);

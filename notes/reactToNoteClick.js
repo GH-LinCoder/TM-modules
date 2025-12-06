@@ -2,7 +2,7 @@
 console.log('ui/reactToNoteClick.js');
 
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
-import { appState } from '../../state/appState.js';
+import { appState } from '../state/appState.js';
 const userId = appState.query.userId;
 
 const statusMap = {

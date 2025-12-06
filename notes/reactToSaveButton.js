@@ -1,6 +1,6 @@
 // reactToSaveButton.js
 console.log('reactToSaveButton.js  loaded');
-import { appState } from '../../state/appState.js';
+import { appState } from '../state/appState.js';
 import { collectUserChoices } from './collectUserChoices.js';
 import { saveNoteWithTags } from './saveNoteWithTags.js';
 //import { createSupabaseClient } from '../db/client.js';

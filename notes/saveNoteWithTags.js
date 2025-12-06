@@ -3,7 +3,7 @@
 console.log("saveNoteWithTags.js loaded");
 
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
-import { appState } from '../../state/appState.js';
+import { appState } from '../state/appState.js';
 
 //import {insertNote} from './notes.js';  //  insertNote is in the registry
 

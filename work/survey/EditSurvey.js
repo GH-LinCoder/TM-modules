@@ -16,6 +16,7 @@ const state = {
   answers:[], //added 19:00 Dec 5
   items:[],
   currentItemId: null,   //
+ currentItemType:null,
   //currentStepOrder: null, // optional, but helpful
   currentAutomationId: null, //added 22:57 Nov 29
   //initialStepId: null
@@ -535,7 +536,7 @@ if (q) {  //in edit task finds step id & then fills if found
   });
 
   // Button listeners
-  saveSurveyBtn?.addEventListener('click', (e) => handleSurveyUpdate(e, panel));
+  saveSurveyBtn?.addEventListener('click', (e) => {state.currentItemType='header'; handleStepUpdate(e, panel)});
   saveStepBtn?.addEventListener('click', (e) => handleStepUpdate(e, panel));
   panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
 
@@ -935,7 +936,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
 
 
 //New 19:38 Nov 12
-async function handleSurveyUpdate(e, panel) {
+async function handleSurveyUpdate(e, panel) { //this works 21:55 dec 6, but should it be replaced with new switch ? line 1100?
     e.preventDefault();
     console.log('handleSurveyUpdate()');
   
@@ -981,8 +982,8 @@ async function handleSurveyUpdate(e, panel) {
         //external_url: url //? function doesn't use, but should use
       });
   
-      showToast('Task updated successfully!');
-      saveBtn.textContent = 'Task updated!';
+      showToast('Updated successfully!');
+      saveBtn.textContent = 'Updated!';
       
       // Update state
       state.currentSurvey = updatedSurvey;
@@ -1002,53 +1003,204 @@ async function handleSurveyUpdate(e, panel) {
     }
   }
   
+async function insertNewQuestion(panel){
+console.log('insertNewQuestion()');
+    const stepName = panel.querySelector('#stepName')?.value.trim();
+    const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
+try{
+        console.log('Creating new step: survey_header_id',state.currentSurveyId );//logs ok
+        //function needs:   survey_header_id: surveyId, name: questionText, question_number:question_number,
+        await executeIfPermitted(state.user, 'createSurveyQuestion', {
+          surveyId: state.currentSurveyId,  //error not defined 20:00 dec 4
+          questionText:stepName,
+          description:stepDescription,
+          question_number: choice,
+          //stepUrl
+        });
+        showToast('New step created!', 'success');
+}catch (error) {
+      console.error('Error saving new step:', error);
+      showToast('Failed to save new step: ' + error.message, 'error');
+    }
+}
 
+
+async function updateOldQuestion(panel){ // 
+console.log('updateOldQuestion()');
+    const stepName = panel.querySelector('#stepName')?.value.trim();
+    const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
+ try{ await executeIfPermitted(state.user, 'updateSurveyQuestion', {
+          questionId: state.currentItemId,
+          questionName: stepName,
+          questionDescription:stepDescription,
+          //stepUrl
+        });
+        showToast('Updated successfully!', 'success');
+  
+   await loadSurveyQuestions(panel, state.currentSurveyId);//added 19:37 dec 4
+  
+    }catch (error) {
+      console.error('Error saving step:', error);
+      showToast('Failed to save step: ' + error.message, 'error');
+    }
+  }
+
+
+async function insertNewAnswer(panel){
+console.log('insertNewAnswer()');
+    const stepName = panel.querySelector('#stepName')?.value.trim();
+    const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
+}
+
+async function updateOldAnswer(panel){
+console.log('updateOldAnswer()');
+    const stepName = panel.querySelector('#stepName')?.value.trim();
+    const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
+    console.log('updateOldQuestion()');
+    
+ try{ await executeIfPermitted(state.user, 'updateSurveyAnswer', {
+          questionId: state.currentItemId,
+          questionName: stepName,
+          questionDescription:stepDescription,
+          //stepUrl
+        });
+        showToast('Updated successfully!', 'success');
+  
+   await loadSurveyQuestions(panel, state.currentSurveyId);//added 19:37 dec 4
+  //does this need to change for loading answers??
+    }catch (error) {
+      console.error('Error saving step:', error);
+      showToast('Failed to save step: ' + error.message, 'error');
+    }
+
+}
+
+async function updateHeader(panel){ 
+console.log('updateHeader()');
+    const stepName = panel.querySelector('#surveyName')?.value.trim();
+    const stepDescription = panel.querySelector('#surveyDescription')?.value.trim();
+
+     const url = panel.querySelector('#surveyUrl')?.value.trim();
+    const saveBtn = panel.querySelector('#saveSurveyBtn');
+    const nameError = panel.querySelector('#nameError');
+  
+    if (!stepName || !stepDescription) {
+      showToast('Name and description are required', 'error');
+      return;
+    }
+  console.log('stepDescription', stepDescription);//here has value but later becomes null dec 6  23:05
+
+    saveBtn.disabled = true;
+    saveBtn.textContent = 'Checking for duplicates...';
+  
+    try {
+      // Check for duplicates only if name has changed
+      if (!state.currentSurvey || state.currentSurvey.name !== stepName) {
+        const existing = await executeIfPermitted(state.user, 'readSurveyHeaders', { surveyName: stepName });
+    console.log('duplicate?', existing);
+    
+        
+        if (existing && existing.length > 0) {
+          nameError.classList.remove('hidden');
+          showToast('A survey with this name already exists', 'error');
+          saveBtn.disabled = false;
+          saveBtn.textContent = 'Choose a different name';
+          return;
+        }
+      }
+  
+      saveBtn.textContent = 'Updating Survey...'; //description has value here 23:05
+  console.log('handleSurv update()id:', state.currentSurvey.id,'name:', stepName,'descr:',stepDescription, 'external_url:', url); //looks ok  15:16 Dec 3//state.currentSurveyId null 14:13 Dec 3  id was known on line 998 also in ifP line 59
+       //function requires:     const { surveyId, name, description} = payload;
+      const updatedSurvey = await executeIfPermitted(state.user, 'updateSurvey', {
+        surveyId: state.currentSurveyId,
+        name:stepName,
+        description:stepDescription,
+        //external_url: url //? function doesn't use, but should use
+      });
+  
+      showToast('Updated successfully!');
+      saveBtn.textContent = 'Updated!';
+      
+      // Update state
+      state.currentSurvey = updatedSurvey;
+  
+      
+      // Enable steps section if not already enabled
+      const questionsSection = panel.querySelector('#questionsSection');
+      if (questionsSection && questionsSection.classList.contains('opacity-50')) {
+        questionsSection.classList.remove('opacity-50', 'pointer-events-none');
+        loadSurveyQuestions(panel, state.currentSurveyId);
+      }
+      
+    } catch (error) {
+      showToast('Failed to update survey: ' + error.message, 'error');
+      saveBtn.disabled = false;
+      saveBtn.textContent = 'Update Survey';
+    }
+
+}
 
   async function handleStepUpdate(e, panel) {
     e.preventDefault();
-    console.log('handleStepUpdate');
-  
-   // const order = parseInt(panel.querySelector('#stepOrder')?.value);//not relevant
-    const stepName = panel.querySelector('#stepName')?.value.trim();
-    const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
-   // const stepUrl = panel.querySelector('#stepUrl')?.value.trim();
-    const saveBtn = panel.querySelector('#saveStepBtn');
-  
-    if (!state.currentSurveyId || !state.user) {
-      showToast('Survey not loaded or user missing', 'error');
+    console.log('handleStepUpdate()-e',e);//e is the saveStepbtn button
+    console.log('type:',state.currentItemType);//22:32 dec 6 null - because when editing the existing displayed header this has not been set
+  if (!state.currentSurveyId || !state.user) {    
+    showToast('Survey not loaded or user missing', 'error');
       return;
     }
 
-//edit task has rule about not editing steps 1 or 2
-//
-//
-//
-//
 
-  saveBtn.disabled = true;
-  saveBtn.textContent = 'Saving...';
+switch (state.currentItemType){//is it a question, answer or header? Is it an old or new one?
+  case 'question':{//check in state.questions[] for state.currentItemId
+    const found = state.questions.find(s => s.id === state.currentItemId);
+if (!found) insertNewQuestion(panel);
+else updateOldQuestion(panel);
+} break;
+  case 'answer':{//check in state.answers[] for state.currentItemId
+   const found = state.answers.find(s => s.id === state.currentItemId);
+if (!found) insertNewAnswer(panel);
+else updateOldAnswer(panel);
+ } break;
+  case 'header':{updateHeader(panel);
+    }
+  break;
+  default:{ showToast('state.currentItemType not recognised', state.currentItemType) }
+}
 
+    
+   // const order = parseInt(panel.querySelector('#stepOrder')?.value);//not relevant
+  //  const stepName = panel.querySelector('#stepName')?.value.trim();
+  //  const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
+   // const stepUrl = panel.querySelector('#stepUrl')?.value.trim();
+    //const saveBtn = panel.querySelector('#saveStepBtn'); // e is this button, why finding it again?
+  //  console.log('stepName',stepName, 'stepDescritption',stepDescription);//okay dec 6
+
+
+
+
+
+
+  e.disabled = true;
+e.textContent = 'Saving...';
     //edit task has more steps stepOrder code here
 //e is the saving button. It doesn't have dataset.new
 //that is in    newQuestionOption.dataset.new = "true"
 //it was set as  newQuestionOption = document.createElement('option');
 //could put itin saveBtn
 //e.target is a button that does not have the dataset console.log('handleStepUpdate(e)',e ); 
+//const existingItem = state.items.find(s => parseInt(s.step_order) === order);
+//this is wrong and I don't understand why it is different to the edit task functions
+//assumes item selected by dropdown and not clicked in summary?
+//const questionSelect = panel.querySelector('#questionSelect');
+//  if (!questionSelect) return;//console.log( 'Simply using questionSelect.value:',questionSelect.value);
+//const selectedOption = questionSelect.options[questionSelect.selectedIndex];
+//const isNew = selectedOption?.dataset.new === "true"; // placed on line 288?
+//console.log('selectedOption:',selectedOption);
 
+//  const choice = selectedOption?.value; //what is this uuid/integer? 
 
-
-
-
-const questionSelect = panel.querySelector('#questionSelect');
-  if (!questionSelect) return;//console.log( 'Simply using questionSelect.value:',questionSelect.value);
-
-
-const selectedOption = questionSelect.options[questionSelect.selectedIndex];
-const isNew = selectedOption?.dataset.new === "true"; // placed on line 288?
-
-console.log('selectedOption:',selectedOption);
-
-  const choice = selectedOption?.value; //what is this uuid/integer? 
+/*
   if(!choice)return; 
 console.log('New choice:',choice, 'isNew:',isNew, 'state.surveyId',state.surveyId);
 
@@ -1090,6 +1242,7 @@ console.log('New choice:',choice, 'isNew:',isNew, 'state.surveyId',state.surveyI
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save Step';
 //new 19:39 Nov 12
+*/
 enableAutomationControls(panel);
   }
 
@@ -1113,8 +1266,9 @@ function loadStepIntoEditor(panel,clickedItemId, type){//clicked is the id uuid
   console.log('loadStepIntoEditor() clickedItemId:', clickedItemId);
 
   console.log('available ids of all the items:', (state.items || []).map(s => s.id));
-  state.currentItemId = clickedItemId; //the card that was clicked sets the current step.
-console.log('state.currentItemId:',state.currentItemId, 'state',state); // should be == clickedItemId
+  state.currentItemId = clickedItemId; //the card that was clicked sets the current item.
+  state.currentItemType = type;
+console.log('state.currentItemId:',state.currentItemId, 'state.currentItemType',state.currentItemType); // should be == clickedItemId
 
 
 let item=null;
@@ -1170,6 +1324,7 @@ console.log('steps listener event-target:', target, 'target.id',target.id, 'targ
       const type = target.dataset.type; // 'survey', 'question', etc. 
       const clickedItemId = target.dataset.id; // is this an id or a DOM element?
       state.currentItemId = clickedItemId;
+      state.currentItemType =type; 
       
       console.log('target.dataset',target.dataset);//DOMStringMap{Id->"9e63.."}
      // panel.querySelector('#stepOrder').value = stepOrder; // This is only used in editTask not in surveys
@@ -1204,7 +1359,7 @@ console.log('steps listener event-target:', target, 'target.id',target.id, 'targ
 }
 
 
-function renderSurveyHeaderCard(list, survey) {
+function renderSurveyHeaderCard(summary, survey) {
   if (!survey) return;
 
   //const summary = panel.querySelector('#surveySummary');
@@ -1223,7 +1378,7 @@ function renderSurveyHeaderCard(list, survey) {
     ${survey.id}
   `;
 
-  list.appendChild(card);
+  summary.appendChild(card);
 }
 
 function renderItemCard(summary,item, type){
@@ -1232,8 +1387,9 @@ console.log('item',item, 'summary',summary,'type',type);
     stepCard.dataset.type = type; 
     stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`;
     stepCard.dataset.id = item.id;
+
     stepCard.innerHTML = `
-      <strong>Item ${item.question_number}:</strong> ${item.name}
+      <strong>${type}: ${item.question_number}:</strong> ${item.name}
       <span class="block text-sm text-gray-600 whitespace-pre-line">${item.description || ''}</span>
     `;
 console.log('stepCard',stepCard);

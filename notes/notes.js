@@ -1,8 +1,8 @@
 // ./notes/notes.js   module based on 'The Lab' notes page. For reporting bugs and part of future messaging system.
-import { appState } from '../../state/appState.js';
-import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-import { showToast } from '../../ui/showToast.js';
-import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
+//import { appState } from '../state/appState.js';
+//import { executeIfPermitted } from '../registry/executeIfPermitted.js';
+//import { showToast } from '../ui/showToast.js';
+import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { setupNotesListeners } from './noteListeners.js';
 import { displayNotes } from './displayNotes.js';
 /*
