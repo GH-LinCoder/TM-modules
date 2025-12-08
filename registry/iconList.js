@@ -5,18 +5,20 @@ export const icons={
 abacus: '🧮',    
 abstract:'🎭',
 //admin:'📋', //duplicate
-answer:'✍️🔮',
-answer_update:'🔮',
+
 approfiles:'🪪' ,
 approfileTask:'📋',
 assignTask:'👨‍🔧',
 asignSurvey:'🎆📜' ,
 
+automation:'🚂',
 automation_appro:'🚂🖇️',
 automation_task:'🚂🔧',
 automation_survey:'🚂📜',
 
-answer:'💭',
+answer:'🔮',
+answer_edit:'✍️🔮',
+answer_update:'🔮',
 
 back:'◀️',
 

@@ -4,8 +4,57 @@ import { appState } from '../../state/appState.js';
 const userId = appState.query.userId;
 
 
+function displaySurveyData(surveyId, rows){
+/*
+  const array0 = rows[0];
+  console.log('SurveyId', surveyId);
+  console.log('rows',rows);
+  console.log('id:',array0.survey_id);
+  console.log('name:',array0.survey_name);
+  console.log('description:',array0.survey_description);
+  console.log('questionName',array0.question_name);
+  */
+console.log('rows',rows);
+
+let oldHeader = null;
+let oldQuestion = null;
+let oldAnswer = null;
+let oldAuto = null;
+
+  rows.forEach(row => { //loop through all the rows
+
+if (row.survey_id !== oldHeader) {
+  console.log('Survey:',row.survey_name, row.survey_description, row.survey_id);
+  oldHeader = row.survey_id;
+}
+
+   if (row.question_id !== oldQuestion) {
+    console.log("Question:",row.question_number, row.question_name , row.question_description, row.question_id);
+    oldQuestion = row.question_id;
+  }
+
+  if (row.answer_id !== oldAnswer) {
+    console.log("Answer:",row.answer_number, row.answer_name, row.answer_description, row.answer_id);
+    oldAnswer = row.answer_id;
+  }
+
+  if (row.auto_id !== oldAuto) {
+    console.log("Automation:",row.auto_number, row.auto_name, row.auto_description, row.auto_id);
+    oldAuto = row.auto_id;
+  } 
+//outputs null or undefined when null or undefined. Is that wanted behaviour?
+
+  });
+
+}
+
+
+
 export async function readSurveyNormalised(surveyId){
 const rawData = await executeIfPermitted(userId, 'readSurveyView', { survey_id: surveyId});
+//console.log('survey_view:',rawData);
+
+//displaySurveyData(surveyId,rawData);
 const surveyNorm = normalizeSurveyView(rawData);
 return surveyNorm;
 
