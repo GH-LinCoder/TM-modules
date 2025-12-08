@@ -13,9 +13,11 @@ const state = {
   currentTask: null,
   currentTaskId: null, //different to editSurvey
   //questions: [], //only used in edit Survey.
+  //answer:[], //only in edit survey
   steps: [],
   currentStepId: null,   //
   currentStepOrder: null, // optional, but helpful
+  //currentItemType, //in surveys to tell questions from answers and header
   currentAutomationId: null, //added 22:57 Nov 29
   initialStepId: null
 };
@@ -32,7 +34,6 @@ export function render(panel, query = {}) {
   // Initialize clipboard integration
   initClipboardIntegration(panel);
   attachListeners(panel);
-  
   //taskSelect = panel.querySelector('[data-form="taskSelect"]');//surveys has nothing here
 }
 
@@ -217,9 +218,7 @@ function addClipboardItemsToDropdown(items, selectElement) {
 async function reloadTaskData(panel){
 //is the header not reloaded?
   loadTaskSteps(panel, state.currentTaskId);
-
 }
-
 
 //in edit survey this called loadSurveyQuestions
 async function loadTaskSteps(panel, taskId) { //readTaskSteps 'id, name, description, step_order, external_url' excludes automations
@@ -506,8 +505,8 @@ function attachListeners(panel) {
   // In attachListeners, update the stepSelect change handler:
 stepSelect?.addEventListener('change', (e) => {
     const stepOrder = parseInt(e.target.value); // stepOrder is read from the summary (wheras in edit survey finds questionId)
-    if (!stepOrder) return;
     
+    if (!stepOrder) return;
 
     console.log('Selected step order:', stepOrder);
     

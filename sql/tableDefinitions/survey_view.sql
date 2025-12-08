@@ -27,7 +27,7 @@ select
 from
   survey_headers sh
   join survey_questions sq on sh.id = sq.survey_header_id
-  join survey_answers sa on sq.id = sa.survey_question_id
+  left join survey_answers sa on sq.id = sa.survey_question_id
   left join automations a on sa.id = a.survey_answer_id
   left join app_profiles ap_is on ap_is.id = a.appro_is_id
   left join app_profiles ap_of on ap_of.id = a.of_appro_id

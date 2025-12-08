@@ -2335,7 +2335,7 @@ readSurveyAnswers:{
     requiredArgs: ['questionId'] 
   },
   handler: async (supabase, userId, payload) => {
-    console.log('readSurveyHeaders()');
+    console.log('readSurveyAnswers()');
    const { questionId } = payload;
     const { data, error } = await supabase
       .from('survey_answers')

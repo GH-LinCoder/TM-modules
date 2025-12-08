@@ -1,4 +1,4 @@
-console.log('fetchNotes.js');
+console.log('fetchNotes.js');  //is this a junk file? Dec 7 2025
 
 export async function fetchNotes(){
 console.log('fetchNotes.()');

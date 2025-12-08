@@ -3,7 +3,9 @@
 
 console.log("databaseCentral.js loaded");
 
-/*
+/* this was an idea, but has not been implemented. The newer idea is that all database actions are in database functions that are only accessed by name & passed paramenters
+The javascript won't even use the api system of defining the query. This makes it much harder for hacking or spoofing of the query
+
 All access to the database is done through this module.
     
 DBC listens for change of state of type = DATA_REQUEST.  

@@ -8,17 +8,13 @@ import {icons} from '../../registry/iconList.js';
 import{readSurveyNormalised} from './readSurveyNormal.js';
 
 console.log('editSurvey.js loaded');
-///Globals
+
 const state = {
   user: appState.query.userId,
   currentSurvey: null,
   currentSurveyId: null,
-  
-  header:null,
   questions: [], //edit Task does not have this.
   answers:[], //added 19:00 Dec 5
-  automations:[],
-
   items:[],  //steps[] in edit task
   currentItemId: null,   // currentStepId in tasks
   currentItemNumber:null, //in tasks
@@ -40,20 +36,6 @@ export function render(panel, query = {}) {
   initClipboardIntegration(panel);
   attachListeners(panel);
   //surveySelect = panel.querySelector('[data-form="surveySelect"]');
-}
-
-async function readSurveyToArrays(surveyId){
-const surveyNorm = await readSurveyNormalised(surveyId);
-state.header = surveyNorm.header;
-state.questions = surveyNorm.questions;
-state.answers = surveyNorm.answers;
-state.automations = surveyNorm.automations;
-
-console.log('surveyId',surveyId);
-console.log('surveyNorm.header', state.header);
-console.log('surveyNorm.questions', state.questions);
-console.log('surveyNorm.answers', state.answers);
-console.log('surveyNorm.automations', state.automations);
 }
 
 
@@ -238,15 +220,13 @@ function addClipboardItemsToDropdown(items, selectElement) {//helper to build a 
 
 async function reloadSurveyData(panel){
 //header is not reloaded?
-//call for the surveyNorm
-//render the surveyStructure
   loadSurveyQuestions(panel, state.currentSurveyId);
 }
 
 //in edit task this called loadTaskSteps
 async function loadSurveyQuestions(panel, surveyId) { //readSurveyQuestion: 'id, name, description, author_id, created_at, last_updated_at, question_number' excludes automations
   //new 21:40 Dec 7
-/*  
+  
 const surveyNorm = await readSurveyNormalised(surveyId);
 console.log('surveyNorm', surveyNorm);
 
@@ -254,17 +234,15 @@ console.log('surveyNorm.header', surveyNorm.header);
 console.log('surveyNorm.questions', surveyNorm.questions);
 console.log('surveyNorm.answers', surveyNorm.answers);
 console.log('surveyNorm.automations', surveyNorm.automations);
-*/
 
-readSurveyToArrays(surveyId);
+
+
     console.log('loadSurveyQuestions()');
     try {  //needs survey_header_id',surveyId
-    //const questions = await executeIfPermitted(state.user, 'readSurveyQuestion', { surveyId }); //why use a local when we have a global?
-    //  state.questions = questions || [];//is it worth having the intermediate const?
-    
-    //console.log('questionsFromTable:',questions);
-    //state.questions = surveyNorm.questions;  // probably pointless having the two separate
-      //console.log('questionsFromNorm:', surveyNorm.questions);//logs okay 13:08 dec 3
+      const questions = await executeIfPermitted(state.user, 'readSurveyQuestion', { surveyId }); //why use a local when we have a global?
+      state.questions = questions || [];//is it worth having the intermediate const?
+      
+      console.log('Loaded questions:', state.questions);//logs okay 13:08 dec 3
       
       // Enable questions section
       const questionsSection = panel.querySelector('#questionsSection');
@@ -284,13 +262,7 @@ readSurveyToArrays(surveyId);
       populateQuestionselect(panel);
   }
 
-/*
-state.answers.forEach(item => {
-    if (item.label === questionId) {
-        displayAnswer(item.value);
-    }
-});
-*/
+
 //in edit task this called populateStepSelect
 function populateQuestionselect(panel) {
     console.log('populatequestionSelect()');
@@ -795,7 +767,6 @@ addInformationCard({
         });
         
         showToast('Task automation saved successfully!');
-        //RELOAD <------------------------------
         reloadSurveyData(panel);  // new 20:47 Nov 29
     } catch (error) { console.log(error.message);
         showToast('Failed to save task automation: ' + error.message, 'error');
@@ -1053,7 +1024,7 @@ async function handleSurveyUpdate(e, panel) { //this works 21:55 dec 6, but shou
         }
       }
   
-      saveBtn.textContent = 'Updating Survey header...';
+      saveBtn.textContent = 'Updating Survey...';
   console.log('handleSurv update()id:', state.currentSurvey.id,'name:', name,'descr:',description, 'external_url:', url); //looks ok  15:16 Dec 3//state.currentSurveyId null 14:13 Dec 3  id was known on line 998 also in ifP line 59
        //function requires:     const { surveyId, surveyName, surveyDescription} = payload;
       const updatedSurvey = await executeIfPermitted(state.user, 'updateSurvey', {
@@ -1067,7 +1038,7 @@ async function handleSurveyUpdate(e, panel) { //this works 21:55 dec 6, but shou
       saveBtn.textContent = 'Updated!';
       
       // Update state
-      state.currentSurvey = updatedSurvey;//??? 
+      state.currentSurvey = updatedSurvey;
   
       
       // Enable steps section if not already enabled
@@ -1099,9 +1070,6 @@ try{
           //stepUrl
         });
         showToast('New step created!', 'success');
-
-//RELOAD <------------------------------
-
 }catch (error) {
       console.error('Error saving new item:', error);
       showToast('Failed to save new item: ' + error.message, 'error');
@@ -1149,7 +1117,7 @@ console.log('updateOldAnswer()');
           //stepUrl
         });
         showToast('Updated successfully!', 'success');
-  //RELOAD <------------------------------
+  
    await loadSurveyQuestions(panel, state.currentSurveyId);//added 19:37 dec 4
   //does this need to change for loading answers??
     }catch (error) {
@@ -1205,7 +1173,7 @@ console.log('updateHeader()');
   
       showToast('Updated successfully!');
       saveBtn.textContent = 'Updated!';
-      //RELOAD <------------------------------ 
+      
       // Update state
       state.currentSurvey = updatedSurvey;
   
@@ -1382,7 +1350,7 @@ async function handleDeleteAutomationButton(panel, automationId){
   try {
     await executeIfPermitted(state.user, 'softDeleteAutomation', { automationId, deletedBy });
     showToast('Automation deleted');
-    //RELOAD <------------------------------
+    
 reloadSurveyData(panel);
      }catch(error) {       console.error('Error deleting:', error);
     showToast('Failed to delete automation', 'error');
@@ -1494,45 +1462,24 @@ function markActiveStepInSummary(panel) {
 }
 
 
-function findRelevantAnswers(questionId){
-
-
-    /*  The format of the answers array is 
-id: "8d564119-b48d-4d58-b110-982d1e315868", 
-questionId: "3c08eabf-7706-4b48-8fa1-8700a014b457", 
-name: "Of course", … }
-answer_number: 1
-description: null
-id: "8d564119-b48d-4d58-b110-982d1e315868"
-name: "Of course"
-questionId: "3c08eabf-7706-4b48-8fa1-8700a014b457" 
-*/
-
-
-}
-
-
 function renderSurveyStructure(panel) {
   const summary = panel.querySelector('#surveySummary');
   if (!summary) return; //summary is a DOM element id="surveySummary" innerText="Summary" inner.HTML="<h3>Summary:</h3><br>" Or is by the time the console logs it
 
 console.log('renderSurveyStructure():', 'state',state); //
-
+//object user:  currentSurvey:object id:, name:, description:, author_id:, automations:null, created_at:, last_updated_at:, length:, 
+//currentSurveyId:, initialStepId:null, questions[] of objects id: name: description: created_at: last_updated_at, question_number:
   summary.innerHTML = '<h3>Summary:</h3><br>';
       renderSurveyHeaderCard(summary, state.currentSurvey);
 
- state.questions.sort((a, b) => a.question_number - b.question_number);//added 20:21 Dec 7 to put in order  //with surveyNorm aren't they already sorted?
+ state.questions.sort((a, b) => a.question_number - b.question_number);//added 20:21 Dec 7 to put in order
  state.questions.forEach(card => { //state.questions[] is an array
  renderItemCard(summary,card,"question");
  //added 20:21 Dec 7 to put answers in the loop...
 //try a sub loop to put the answers under each question, but function needs both the question & answer data?
-
-state.answers.sort((a, b) => a.answer_number - b.answer_number);//added 20:21 Dec 7 to put in order
-state.answers.forEach(card => { //state.answers[] is an array & is now probably sorted ??
-
-//the answers have to be matched to the question. The format is: 
-
-    renderItemCard(summary,card,"answer");
+ state.answers.sort((a, b) => a.answer_number - b.answer_number);//added 20:21 Dec 7 to put in order
+state.answers.forEach(card => { //state.answers[] is an array
+renderItemCard(summary,card,"answer");
 
    // Inline automations under the item (styled like survey answers/automations)
     const autosContainer = document.createElement('div');
