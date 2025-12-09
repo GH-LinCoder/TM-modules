@@ -40,8 +40,9 @@ export function render(panel, query = {}) {
   console.log('render:');
   panel.innerHTML = getTemplateHTML();
   // Initialize clipboard integration
+  attachListeners(panel);//moved above init 19:00 dec 9
   initClipboardIntegration(panel);
-  attachListeners(panel);
+  
   //surveySelect = panel.querySelector('[data-form="surveySelect"]');
 }
 
@@ -52,6 +53,7 @@ async function readSurveyView(surveyId){
     const userId = appState.query.userId;
 const rows = await executeIfPermitted(userId, 'readSurveyView', { survey_id: surveyId});
 state.currentSurveyView = rows; //turn the survey into a global for this module 
+//console.log('readSurveyView', state.currentSurveyView);
 return rows;
 
 }
@@ -146,7 +148,8 @@ const stepCard = document.createElement('p');
 }
 
 function renderAutoCard(summary, row, type){
- // console.log('row:',row, 'summary:',summary,'type:',type);
+ console.log('renderAutoCard');
+  // console.log('row:',row, 'summary:',summary,'type:',type);
 if(type!=='auto') return;
 let icon = getIconByType('automation');
 const stepCard = document.createElement('p');
@@ -171,6 +174,17 @@ function markActiveStepInSummary(panel) {
     el.classList.toggle('ring-blue-500', el.dataset.id === String(state.currentItemId));
     el.classList.toggle('bg-blue-100', el.dataset.id === String(state.currentItemId));
   });
+}
+
+
+function renderNewSelectedSurvey(panel,surveyId){
+  console.log('renderNewSelectedSurvey');
+//the dropdown has a new selection. 
+
+//render the new survey
+state.currentSurveyHeaderId = surveyId;
+renderSurveyStructure(panel);
+//That function also loads name,descriptioon,url into edit boxes
 }
 
 
@@ -220,39 +234,21 @@ if (row.survey_id !== oldHeader) {
 
 //console.log('renderSurveyStructure():', 'state',state); //
 
-
-  //    renderSurveyHeaderCard(summary, state.currentSurvey);
-
-// state.questions.sort((a, b) => a.question_number - b.question_number);//added 20:21 Dec 7 to put in order  //with surveyNorm aren't they already sorted?
-// state.questions.forEach(card => { //state.questions[] is an array
-// renderItemCard(summary,card,"question");
- //added 20:21 Dec 7 to put answers in the loop...
-//try a sub loop to put the answers under each question, but function needs both the question & answer data?
-
-//state.answers.sort((a, b) => a.answer_number - b.answer_number);//added 20:21 Dec 7 to put in order
-//state.answers.forEach(card => { //state.answers[] is an array & is now probably sorted ??
-
-//the answers have to be matched to the question. The format is: 
-
-  //  renderItemCard(summary,card,"answer");
-
    // Inline automations under the item (styled like survey answers/automations)
     const autosContainer = document.createElement('div');
     autosContainer.className = 'ml-4';
     summary.appendChild(autosContainer);
 
- //});
-//    loadStepAutomations(autosContainer, card.id); //the card represents a question, but automations are,t on questions; automations are on answers
- // });
-
   const createdSteps = panel.querySelector('#createdSteps');
   if (createdSteps && state.items.length > 0) createdSteps.classList.remove('hidden');
-
 
  if(!panel._listenerAttached) { //renderSurveyStructure is called many times, but only want one listener
   attachStepsListeners(panel); 
   panel._listenerAttached = true; 
 }
+
+loadHeaderIntoEditor(panel); // could return a value and have this loadHeader function in calling function
+
 }
 
 
@@ -284,71 +280,88 @@ function styleCardByType(type){
 function initClipboardIntegration(panel) {
     console.log('initClipboardIntegration()');
   // Check clipboard immediately
-  populateFromClipboard(panel); // renderSurveyStructure(panel);//at this point state.currentSurveyId not in state
+ checkClipboardForSurveys(panel); // renderSurveyStructure(panel);//at this point state.currentSurveyId not in state
 
   // Listen for future changes
   onClipboardUpdate(() => {
-    populateFromClipboard(panel);
-    populateFromClipboardAuto(panel);
+    checkClipboardForSurveys(panel);
+    //populateFromClipboardAuto(panel); //should this be inside checkclipboard?
   });
 }
 
 
-function populateFromClipboard(panel) { //for the main dropdown
-  console.log('populateFromClipboard()');
-  
+function checkClipboardForSurveys(panel) {
+console.log('checkClipboardForSurveys()');  
   // Get tasks or surveys from clipboard
   const surveys = getClipboardItems({ as: 'survey', type: 'surveys' });
-  
-  
-  if (surveys.length === 0) return;
-  const surveySelect = panel.querySelector('#surveySelect');//added 16:44 Dec 5
-  addClipboardItemsToDropdown(surveys, surveySelect); //the helper builds the drpdown display for any passed element
-//moved 12:06 dec 3 from below
+  if (surveys.length === 0) return; //nothing yet selected
+
+  //at least one survey is in the clipboard so let's use it
+  populateFromClipboard(panel,surveys);
+populateFromClipboardAuto(panel); //moved here from init  19:31 dec 9
+}
+
+
+function ifOnlyOneItemInDropdownloadAndRenderSurvey(panel, surveys, surveySelect){
+console.log('ifonlyOneItem...');
   if (surveys.length === 1 && !surveySelect.value) { 
     surveySelect.value = surveys[0].entity.id;
     const infoSection = document.querySelector('#informationSection');
-    infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled Survey: ${surveys[0].entity.name}</div>`;
+    if(infoSection) infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled Survey: ${surveys[0].entity.name}</div>`;
   //  console.log('surveySelect.value',surveySelect.value);//uuid
     state.currentSurveyHeaderId = surveySelect.value;
     renderSurveyStructure(panel);// this displays summary if/when there is a single item in the dropdown
+   
+ 
   }
-  
- const item = surveySelect.value ? surveys.find(t => t.entity.id === surveySelect.value) : surveys[0]; // what is this line?
- if (!item) return;
- console.log('Using clipboard item:', item);
-  state.currentSurveyHeader = item.entity.item; // full row (of what?) data  I think this is the header only
-  state.currentSurveyHeaderId = item.entity.id;
-  //  renderSurveyStructure(panel); //this fails to change the display when a new item is selected
- // console.log('populateFromClip..()surveysSelect.value:',surveySelect.value, 'item.entity.id:',item.entity.id, 'state.currentSurveyId:',state.currentSurveyId);
-  // Populate form
+
+}
+
+function loadHeaderIntoEditor(panel){//state.currentSurveyView.  Has to be called after readSurveyView has completed
+console.log('loadHeaderIntoEditor'); //currentSurveyView  null
   const nameInput = panel.querySelector('#surveyName');
   const descriptionInput = panel.querySelector('#surveyDescription');
   const urlInput = panel.querySelector('#surveyUrl');
   const nameCounter = panel.querySelector('#surveyNameCounter');
   const descriptionCounter = panel.querySelector('#surveyDescriptionCounter');
-  
-  if (nameInput && state.currentSurveyHeader.name) {
-    nameInput.value = state.currentSurveyHeader.name;
-    nameCounter.textContent = `${state.currentSurveyHeader.name.length}/64 characters`;
-    showToast(`Auto-filled from clipboard: ${state.currentSurveyHeader.name}`, 'info');
+  const row = state.currentSurveyView[0];
+  if (nameInput && row.survey_name) {
+    nameInput.value = row.survey_name;
+    nameCounter.textContent = `${row.survey_name.length}/64 characters`;
+    showToast(`Auto-filled from clipboard: ${row.survey_name}`, 'info');
   
   }
   
-  if (descriptionInput && state.currentSurveyHeader.description) {
-    descriptionInput.value = state.currentSurveyHeader.description;
-    descriptionCounter.textContent = `${state.currentSurveyHeader.description.length}/2000 characters`;
+  if (descriptionInput && row.survey_description) {
+    descriptionInput.value = row.survey_description;
+    descriptionCounter.textContent = `${row.survey_description.length}/2000 characters`;
   }
   
-  if (urlInput && state.currentSurveyHeader.external_url) {
-    urlInput.value = state.currentSurveyHeader.external_url;
+  if (urlInput && row.external_url) {
+    urlInput.value = row.external_url;
   }
   
   // activate questions area if survey ID is available
-  if (state.currentSurveyHeaderId) {
+  if (row) {
     activateQuestionsSection(panel);
  
   }
+
+}
+
+
+
+function populateFromClipboard(panel,surveys) { //Only call this when there is a survey on the clipboard
+  console.log('populateFromClipboard()');
+  
+  // Get tasks or surveys from clipboard
+  //const surveys = getClipboardItems({ as: 'survey', type: 'surveys' });
+  if (surveys.length === 0) return;
+
+  const surveySelect = panel.querySelector('#surveySelect');//Find a specific dropdown
+  addClipboardItemsToThisDropdown(surveys, surveySelect); //build that dropdown display (generic function)for any passed element
+
+  ifOnlyOneItemInDropdownloadAndRenderSurvey(panel, surveys, surveySelect);
 }
 
 
@@ -377,14 +390,14 @@ function populateFromClipboardAuto(panel) { //for the automations dropdowns
     const taskSelect = panel.querySelector('#taskAutomationSelect');
     if (taskSelect) {
       //console.log('Populating task automation dropdown with', tasks.length, 'items');
-      addClipboardItemsToDropdown(tasks, taskSelect, 'task');
+      addClipboardItemsToThisDropdown(tasks, taskSelect, 'task');
     }
     
     // Populate survey automation dropdown 
     const surveyAutomationSelect = panel.querySelector('#surveyAutomationSelect');
     if (surveyAutomationSelect) {
       //console.log('Populating survey automation dropdown with', surveys.length, 'items');
-      addClipboardItemsToDropdown(surveys, surveyAutomationSelect, 'survey');
+      addClipboardItemsToThisDropdown(surveys, surveyAutomationSelect, 'survey');
     }
 
 
@@ -392,27 +405,27 @@ function populateFromClipboardAuto(panel) { //for the automations dropdowns
     const approfileSelect = panel.querySelector('#approfileAutomationSelect');
     if (approfileSelect) {
     //  console.log('Populating approfile automation dropdown with', approfiles.length, 'items');
-      addClipboardItemsToDropdown(approfiles, approfileSelect, 'approfile');
+      addClipboardItemsToThisDropdown(approfiles, approfileSelect, 'approfile');
     }
     
     // Populate manager automation dropdown (if you want managers in automations too)
     const managerSelect = panel.querySelector('#managerAutomationSelect');
     if (managerSelect) {
       //console.log('Populating manager automation dropdown with', managers.length, 'items');
-      addClipboardItemsToDropdown(managers, managerSelect, 'manager');
+      addClipboardItemsToThisDropdown(managers, managerSelect, 'manager');
     }
     
     // Also populate the main manager dropdown in the header section
     const headerManagerSelect = panel.querySelector('#managerSelect');
     if (headerManagerSelect) {
       //console.log('Populating header manager dropdown with', managers.length, 'items');
-      addClipboardItemsToDropdown(managers, headerManagerSelect, 'manager');
+      addClipboardItemsToThisDropdown(managers, headerManagerSelect, 'manager');
     }
   }
 
 
-function addClipboardItemsToDropdown(items, selectElement) {//helper to build a dropdown display in the supplied element
-    console.log('addClipboardItemsToDropdown()');
+function addClipboardItemsToThisDropdown(items, selectElement) {//helper to build a dropdown display in the supplied element
+    console.log('addClipboardItemsToThisDropdown()');
   if (!items || items.length === 0) return;
   
   items.forEach(item => {
@@ -512,14 +525,14 @@ function attachListeners(panel) {
 
   // Dropdown selection listener, but probable that user clicks summary and not the dropdown
   // In attachListeners, update the questionSelect change handler:
-questionSelect?.addEventListener('change', (e) => { //If user clicks dropdown...
+  questionSelect?.addEventListener('change', (e) => { //If user clicks dropdown...
   const itemNumber = e.target.value;  //in edit task uses parse to find stepOrder not itemNumber
   //console.log('questionSelect:',itemNumber); //is this dropdown only for questions?
   if (!itemNumber) return;  //why is it itemNumber here but a number in editTask?
     
   //console.log('From dropdown itemNumber:', itemNumber);
-    state.currentItemNumber = itemNumber;
-const item = state.questions.find(item => item.itemNumber === itemNumber);
+  state.currentItemNumber = itemNumber;
+  const item = state.questions.find(item => item.itemNumber === itemNumber);
 //what about answers?
 
 
@@ -551,7 +564,10 @@ if (item) {  //in edit task finds step id & then fills if found
 const surveySelect = panel.querySelector('#surveySelect'); //used in edit task  #taskSelect
 
   surveySelect?.addEventListener('change', (e) => {
-    const selectedId = e.target.value;
+    const selectedSurveyId = e.target.value;//this is the new displayed data of the selected survey
+
+renderNewSelectedSurvey(panel,selectedSurveyId);
+/*
     const surveys = getClipboardItems({ as: 'survey', type: 'surveys' });
     const selectedItem = surveys.find(t => t.entity.id === selectedId);
     if (!selectedItem) return;
@@ -566,7 +582,7 @@ const surveySelect = panel.querySelector('#surveySelect'); //used in edit task  
   
     state.currentSurveyHeader = survey;
     state.currentSurveyHeaderId = selectedItem.entity.id;
-  
+  */
     activateQuestionsSection(panel);
   });
 //end new 17:39 oct 4  
@@ -979,11 +995,12 @@ console.log('updateOldQuestion()');
           questionId: state.currentItemId,
           questionName: stepName,
           questionDescription:stepDescription,
+          questionNumber: state.currentItemNumber,
           //stepUrl
         });
         showToast('Updated successfully!', 'success');
   
-   await activateQuestionsSection(panel);//added 19:37 dec 4
+   //await activateQuestionsSection(panel);//added 19:37 dec 4 //why?
   
     }catch (error) {
       console.error('Error saving step:', error);
@@ -1002,13 +1019,12 @@ async function updateOldAnswer(panel){
 console.log('updateOldAnswer()');
     const stepName = panel.querySelector('#stepName')?.value.trim();
     const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
-    //console.log('updateOldQuestion()');
-    
+//func needs const { answerId, answerName, answerDescription} = payload;    
  try{ await executeIfPermitted(state.user, 'updateSurveyAnswer', {
-          questionId: state.currentItemId,
-          questionName: stepName,
-          questionDescription:stepDescription,
-          //stepUrl
+          answerId: state.currentItemId,
+          answerName: stepName,
+          answerDescription:stepDescription,
+          //answerNumber: state.currentItemNumber,
         });
         showToast('Updated successfully!', 'success');
   readSurveyView(state.currentSurveyHeaderId);
@@ -1038,8 +1054,10 @@ console.log('updateHeader()');
     saveBtn.textContent = 'Checking for duplicates...';
   
     try {
-      // Check for duplicates only if name has changed
-      if (!state.currentSurveyHeader || state.currentSurveyHeader.name !== stepName) {
+      // Check for duplicates only if name has changed 
+      const surveyOriginalName = state.currentSurveyView[0].survey_name;
+//      console.log('stepName:',stepName, 'state.currentSurveyView.survey_name',state.currentSurveyView[0].survey_name, state.currentSurveyView );
+      if (!surveyOriginalName || surveyOriginalName !== stepName) {
         const existing = await executeIfPermitted(state.user, 'readSurveyHeaders', { surveyName: stepName });
     //console.log('duplicate?', existing);
     
@@ -1052,11 +1070,12 @@ console.log('updateHeader()');
           return;
         }
       }
-  
+  //the above test would have been done by the db anyway.
       saveBtn.textContent = 'Updating Survey...'; //description has value here 23:05
   //console.log('handleSurv update()id:', state.currentSurveyHeader.id,'name:', stepName,'descr:',stepDescription, 'external_url:', url); //looks ok  15:16 Dec 3//state.currentSurveyHeaderId null 14:13 Dec 3  id was known on line 998 also in ifP line 59
        //function requires:     const { surveyId, name, description} = payload;
-      const updatedSurvey = await executeIfPermitted(state.user, 'updateSurvey', {
+console.log('surveyId, name, description',state.currentSurveyHeaderId, stepName, stepDescription);
+       const updatedSurvey = await executeIfPermitted(state.user, 'updateSurvey', {
         surveyId: state.currentSurveyHeaderId,
         name:stepName,
         description:stepDescription,
@@ -1086,25 +1105,26 @@ console.log('updateHeader()');
 
   async function handleStepUpdate(e, panel) {
     e.preventDefault();
-    console.log('handleStepUpdate()-e',e);//e is the saveStepbtn button
+    console.log('handleStepUpdate()');//e is the saveStepbtn button
     //console.log('type:',state.currentItemType);//22:32 dec 6 null - because when editing the existing displayed header this has not been set
-  if (!state.currentSurveyHeaderId || !state.user) {  //20:00 dec 6 null when select new from dropdown  
+
+    if (!state.currentSurveyHeaderId || !state.user) {  //20:00 dec 6 null when select new from dropdown  
     showToast('Survey not loaded or user missing', 'error');
       return;
     }
 
-
 switch (state.currentItemType){//is it a question, answer or header? Is it an old or new one?
-  case 'question':{//check in state.questions[] for state.currentItemId
-    const found = state.questions.find(s => s.id === state.currentItemId);
-if (!found) insertNewQuestion(panel);
-else updateOldQuestion(panel);
+  case 'question':{//selected question or answer uuid @ state.currentItemId number @ state.currentItemNumber
+
+    if (state.currentItemId) updateOldQuestion(panel);
+else insertNewQuestion(panel);
 } break;
-  case 'answer':{//check in state.answers[] for state.currentItemId
-   const found = state.answers.find(s => s.id === state.currentItemId);
-if (!found) insertNewAnswer(panel);
-else updateOldAnswer(panel);
+
+  case 'answer':{//check in state.answers[] for state.currentItemId   
+if (state.currentItemId)  updateOldAnswer(panel);
+else insertNewAnswer(panel);
  } break;
+
   case 'header':{updateHeader(panel);
     }
   break;
@@ -1112,81 +1132,10 @@ else updateOldAnswer(panel);
 }
 
     
-   // const order = parseInt(panel.querySelector('#stepOrder')?.value);//not relevant
-  //  const stepName = panel.querySelector('#stepName')?.value.trim();
-  //  const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
-   // const stepUrl = panel.querySelector('#stepUrl')?.value.trim();
-    //const saveBtn = panel.querySelector('#saveStepBtn'); // e is this button, why finding it again?
-  //  console.log('stepName',stepName, 'stepDescritption',stepDescription);//okay dec 6
-
-
-
-
-
 
   e.disabled = true;
 e.textContent = 'Saving...';
-    //edit task has more steps stepOrder code here
-//e is the saving button. It doesn't have dataset.new
-//that is in    newQuestionOption.dataset.new = "true"
-//it was set as  newQuestionOption = document.createElement('option');
-//could put itin saveBtn
-//e.target is a button that does not have the dataset console.log('handleStepUpdate(e)',e ); 
-//const existingItem = state.items.find(s => parseInt(s.step_order) === order);
-//this is wrong and I don't understand why it is different to the edit task functions
-//assumes item selected by dropdown and not clicked in summary?
-//const questionSelect = panel.querySelector('#questionSelect');
-//  if (!questionSelect) return;//console.log( 'Simply using questionSelect.value:',questionSelect.value);
-//const selectedOption = questionSelect.options[questionSelect.selectedIndex];
-//const isNew = selectedOption?.dataset.new === "true"; // placed on line 288?
-//console.log('selectedOption:',selectedOption);
-
-//  const choice = selectedOption?.value; //what is this uuid/integer? 
-
-/*
-  if(!choice)return; 
-console.log('New choice:',choice, 'isNew:',isNew, 'state.surveyId',state.surveyId);
-
-  if (isNew) {//edit task uses if existing step & reacts to exisitng step first
-  try{
-        console.log('Creating new step: survey_header_id',state.currentSurveyId );//logs ok
-        //function needs:   survey_header_id: surveyId, name: questionText, question_number:question_number,
-        await executeIfPermitted(state.user, 'createSurveyQuestion', {
-          surveyId: state.currentSurveyId,  //error not defined 20:00 dec 4
-          questionText:stepName,
-          description:stepDescription,
-          question_number: choice,
-          //stepUrl
-        });
-        showToast('New step created!', 'success');
-}catch (error) {
-      console.error('Error saving new step:', error);
-      showToast('Failed to save new step: ' + error.message, 'error');
-    } 
-} else  //existing question or answer 
-    { console.log('existing quesion');
-  //function needs: id: questionId, name: questionName, description :  questionDescription || null, author_id: userId  
-  try{ await executeIfPermitted(state.user, 'updateSurveyQuestion', {
-          questionId: state.currentQuestionId,
-          questionName: stepName,
-          questionDescription:stepDescription,
-          //stepUrl
-        });
-        showToast('Updated successfully!', 'success');
-  
-   await activateQuestionsSection(panel, state.currentSurveyId);//added 19:37 dec 4
-  
-    }catch (error) {
-      console.error('Error saving step:', error);
-      showToast('Failed to save step: ' + error.message, 'error');
-    }
-  }
-
-    saveBtn.disabled = false;
-    saveBtn.textContent = 'Save Step';
-//new 19:39 Nov 12
-*/
-enableAutomationControls(panel);
+//enableAutomationControls(panel);
   }
 
 
@@ -1223,30 +1172,33 @@ function loadStepIntoEditor(panel,clickedItemId, type){//clicked is the id uuid
   console.log('loadStepIntoEditor() clickedItemId:', clickedItemId, 'type:',type);//logs okay 21:08 dec 8
 const rows = state.currentSurveyView;
  // console.log('available ids of all the items:', (state.items || []).map(s => s.id));
-  state.currentItemId = clickedItemId; //the card that was clicked sets the current item.
+//store the id & type in a global
+ state.currentItemId = clickedItemId; //the card that was clicked sets the current item.
   state.currentItemType = type;
 //console.log('state.currentItemId:',state.currentItemId, 'state.currentItemType',state.currentItemType); // should be == clickedItemId
 
-//need to find the relevant id inside state.currentSurveyView. See renderSurveyView line ~= 1236
-
 if(type ==='question'){
-  rows.forEach(row => { 
-   if (row.question_id === clickedItemId) {
+ // rows.forEach(row => { //is forEach the wrong command, only need to find one not each
+  // if (row.question_id === clickedItemId) 
+  const match = rows.find(row => row.question_id === clickedItemId);
+  if (match) {
    // console.log("Question:",row.question_number, row.question_name , row.question_description, row.question_id);
-  panel.querySelector('#stepName').value = row.question_name || '';
-  panel.querySelector('#stepDescription').value =row.question_description  || '';
+  panel.querySelector('#stepName').value = match.question_name || '';
+  panel.querySelector('#stepDescription').value =match.question_description  || '';
    }
-  });
+ // });
 }
 else if (type ==='answer'){
-  rows.forEach(row => {  
- if (row.answer_id === clickedItemId) {
-    panel.querySelector('#stepName').value = row.answer_name || '';
-    panel.querySelector('#stepDescription').value = row.answer_description || '';
+ // rows.forEach(row => {  
+ //if (row.answer_id === clickedItemId) 
+ const match = rows.find(row => row.answer_id === clickedItemId);
+  if (match) {
+    panel.querySelector('#stepName').value = match.answer_name || '';
+    panel.querySelector('#stepDescription').value = match.answer_description || '';
     
   //  console.log('Form filled with step data');
 }
-});
+//});
 } //eo if
 }//eof
 
@@ -1341,14 +1293,8 @@ function getTemplateHTML() {console.log('getTemplateHTML');
     <div id="editSurveyDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-xl font-semibold text-gray-900">Edit Survey (cloned from edit task)  10:31 Dec 3</h3>
-            <div class="space-y-2">
-              <!--label for="surveySelect" class="block text-sm font-medium text-gray-700">Use [Select] menu to choose tasks then this dropdown to load a Survey</label-->
-              <select id="surveySelect" data-form="surveySelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                <option value="">Use the menu [Select] button then this dropdown to select Survey</option>
-              </select>
-            </div>
-
+          <h3 class="text-xl font-semibold text-gray-900">Edit Survey (adapted from edit task)  10:31 Dec 3 - dec 9</h3>
+            
 
           <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1377,11 +1323,19 @@ function getTemplateHTML() {console.log('getTemplateHTML');
           </div>
 
 
+
           <div id="editSurveyForm" class="space-y-6 bg-gray-50 p-6 rounded-lg">
             <div>
-              <label for="surveyName" class="block text-sm font-medium text-gray-700 mb-1">
+
+              <!--label for="surveySelect" class="block text-sm font-medium text-gray-700">Use [Select] menu to choose tasks then this dropdown to load a Survey</label-->
+              <select id="surveySelect" data-form="surveySelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
+                <option value="">Use the menu [Select] button then this dropdown to select Survey</option>
+              </select>
+            
+            <label for="surveyName" class="block text-sm font-medium text-gray-700 mb-1">
                 Survey Name *
               </label>
+
               <input id="surveyName" placeholder="Short & unique name" maxlength="64" required class="w-full p-2 border rounded border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               <p id="surveyNameCounter" class="text-xs text-gray-500 mt-1">0/64 characters</p>
               <p id="nameError" class="text-xs text-red-500 mt-1 hidden">This name already exists. Please choose a different name.</p>

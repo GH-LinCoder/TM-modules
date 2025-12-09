@@ -3,7 +3,7 @@ import { appState } from '../state/appState.js';
 
 export function getClipboardItems({ as = null, type = null, sortBy = 'newest' } = {}) {
   if (!appState.clipboard) return [];
-  
+  console.log('GetClipboardItems()');
   let items = [...appState.clipboard];
   
   // Filter
@@ -21,6 +21,7 @@ export function getClipboardItems({ as = null, type = null, sortBy = 'newest' } 
 }
 
 export function onClipboardUpdate(callback) {
+  console.log('onClipboarUpdated()');
   document.addEventListener('clipboard:updated', (e) => {
     callback(e.detail.clipboard);
   });

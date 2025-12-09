@@ -5,6 +5,7 @@ render                         EditSurvey.js:38:11
 getTemplateHTML                EditSurvey.js:1330:37
 initClipboardIntegration()     EditSurvey.js:200:13
 populateFromClipboard()        EditSurvey.js:213:11
+
 attachListeners()              EditSurvey.js:400:13
 
 [USE SELECT TO PICK A SURVEY]

@@ -1605,14 +1605,14 @@ updateSurveyQuestion: {
   handler: async (supabase, userId, payload) => {
 
     const { questionId, questionName, questionDescription} = payload;
-    console.log('UpdateQuestion:',questionName, 'userId:',userId, 'questionId:',questionId);
+    console.log('UpdateQuestion:',questionName, 'userId:',userId, 'questionId:',questionId, 'question_number:'questionNumber);
     const { data, error } = await supabase
 
     .from('survey_questions')
       .update({
         name: questionName,
         description :  questionDescription || null,
-      //  author_id: userId 
+      question_number:questionNumber 
       })
       .eq('id', questionId) 
       .select()
@@ -1723,7 +1723,7 @@ updateSurveyAnswer: {
       .update({
         name: answerName,
         description:answerDescription || null
-        //external_url: taskUrl || null,
+        //answer_number:answerNumber,
         //author_id: userId // ← no such column use passed userId
       })
       .eq('id', answerId)
