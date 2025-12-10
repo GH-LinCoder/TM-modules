@@ -1604,8 +1604,8 @@ updateSurveyQuestion: {
   },
   handler: async (supabase, userId, payload) => {
 
-    const { questionId, questionName, questionDescription} = payload;
-    console.log('UpdateQuestion:',questionName, 'userId:',userId, 'questionId:',questionId, 'question_number:'questionNumber);
+    const { questionId, questionName, questionDescription, questionNumber} = payload;
+    console.log('UpdateQuestion:',questionName, 'userId:',userId, 'questionId:',questionId, 'question_number:',questionNumber);
     const { data, error } = await supabase
 
     .from('survey_questions')
@@ -1672,7 +1672,7 @@ createSurveyAnswer: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => {
-    const { questionId, answerText, answer_number } = payload;
+    const { survey_question_id, answerName, answer_number } = payload;
 
     // Check for duplicate name  ???
   /*
@@ -1694,8 +1694,8 @@ createSurveyAnswer: {
     const { data, error } = await supabase
       .from('survey_answers')
       .insert({
-        survey_question_id: questionId,
-        name: answerText,
+        survey_question_id: survey_question_id,
+        name: answerName,
         answer_number:answer_number,
         //external_url: taskUrl || null,
         //author_id: userId // ← no such column use passed userId
@@ -2189,7 +2189,7 @@ createAutomationDeleteRelationByTask,
 createAutomationDeleteRelationBySurvey, 
 */
 
-
+/*
 //AUTOMATIONS  //this function tries to do too much. It has spawned the above narrower versions
 createSurveyAutomation:{
   metadata: {
@@ -2241,7 +2241,7 @@ console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id)
     if (error) throw error;
     return data; // ← returns { id, name, description, ... }
   }
-},
+}, */
 
 //SURVEYS     DELETE (soft)
 softDeleteAutomation:{

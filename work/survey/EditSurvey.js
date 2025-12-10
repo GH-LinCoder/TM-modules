@@ -34,7 +34,7 @@ currentSurveyView:null, // readSurveyView() places the surveyView into currentSu
 // used lines 549, 1256, 1273 but always   as =stepId so always null !
 
 
-let automationsNumber = 0; //added 16:16 Nov 23
+//let automationsNumber = 0; //added 16:16 Nov 23
 
 export function render(panel, query = {}) {
   console.log('render:');
@@ -42,9 +42,9 @@ export function render(panel, query = {}) {
   // Initialize clipboard integration
   attachListeners(panel);//moved above init 19:00 dec 9
   initClipboardIntegration(panel);
-  
-  //surveySelect = panel.querySelector('[data-form="surveySelect"]');
 }
+
+
 
 // READ SURVEY VIEW
 
@@ -149,18 +149,25 @@ const stepCard = document.createElement('p');
 
 function renderAutoCard(summary, row, type){
  console.log('renderAutoCard');
-  // console.log('row:',row, 'summary:',summary,'type:',type);
+  console.log('row:',row, 'summary:',summary,'type:',type);
 if(type!=='auto') return;
 let icon = getIconByType('automation');
 const stepCard = document.createElement('p');
     stepCard.dataset.type = type; 
-    stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`;
+//    stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`;
 stepCard.dataset.id = row.auto_id; 
-   stepCard.innerHTML = `
+   
+if(row.auto_deleted_at) {stepCard.innerHTML+= `<span class=" text-sm text-gray-400"><i>
+  ${icon} ${type}: ${row.auto_number}: ${row.auto_name} ${row.auto_description} ${row.auto_id} soft deleted</i></span>`} 
+    else 
+    { 
+      stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`; 
+      stepCard.innerHTML = `
       <strong>${icon} ${type}: ${row.auto_number}:</strong> ${row.auto_name}
       <span class="block text-sm text-gray-600 whitespace-pre-line">${row.auto_description || ''}</span>
-    ${row.auto_id}
-      `;
+    ${row.auto_id} 
+    <span class= 'deleteAutomationBtn text-red-600 text-sm ml-4' data-id=${row.auto_id}>Delete</span>
+      `};
 //console.log('stepCard',stepCard);
     summary.appendChild(stepCard);
 
@@ -407,20 +414,20 @@ function populateFromClipboardAuto(panel) { //for the automations dropdowns
     //  console.log('Populating approfile automation dropdown with', approfiles.length, 'items');
       addClipboardItemsToThisDropdown(approfiles, approfileSelect, 'approfile');
     }
-    
+    /*
     // Populate manager automation dropdown (if you want managers in automations too)
     const managerSelect = panel.querySelector('#managerAutomationSelect');
-    if (managerSelect) {
+    if (managerSelect) {  //15:20 Dec 10 - no such dropdown in the HTML
       //console.log('Populating manager automation dropdown with', managers.length, 'items');
       addClipboardItemsToThisDropdown(managers, managerSelect, 'manager');
-    }
+    } 
     
     // Also populate the main manager dropdown in the header section
     const headerManagerSelect = panel.querySelector('#managerSelect');
     if (headerManagerSelect) {
       //console.log('Populating header manager dropdown with', managers.length, 'items');
       addClipboardItemsToThisDropdown(managers, headerManagerSelect, 'manager');
-    }
+    }  */
   }
 
 
@@ -445,16 +452,6 @@ function addClipboardItemsToThisDropdown(items, selectElement) {//helper to buil
 //but if we reload the survey after making any changes we need to read it all from the data base, this requires reading the header, placing the data in the form
 //and then calling the steps and automations functions
 
-
-
-async function reloadSurveyData(panel){  // change??
-  console.log('reloadSurveyData');
- renderSurveyStructure(panel);
-
-}
-
-
-
 //in edit task this called loadTaskSteps
 async function activateQuestionsSection(panel) { //readSurveyQuestion: 'id, name, description, author_id, created_at, last_updated_at, question_number' excludes automations
 console.log('activateQuestionsSection');
@@ -469,8 +466,8 @@ console.log('activateQuestionsSection');
   }
 
 
-
-function calculateNewQuestionNumber(){// new to access the rows?
+/*
+function calculateNewItemNumber(){// new to access the rows?
   console.log('calculateNewQuestionNumber');
 const maxQuestion = Math.max(...state.questions.map(s => s.question_number));
   const newQuestionOption = document.createElement('option');
@@ -482,30 +479,36 @@ const maxQuestion = Math.max(...state.questions.map(s => s.question_number));
  //questionSelect.appendChild(newQuestionOption);
 
 }
-
+*/
 
 function attachListeners(panel) {
     console.log('attachListeners()');
   const nameInput = panel.querySelector('#surveyName');
   const descriptionInput = panel.querySelector('#surveyDescription');
   const urlInput = panel.querySelector('#surveyUrl');  // never used
-  const stepNameInput = panel.querySelector('#stepName');
-  const stepDescriptionInput = panel.querySelector('#stepDescription');
-  const questionSelect = panel.querySelector('#questionSelect');
-  
+
   const nameCounter = panel.querySelector('#surveyNameCounter');
   const descriptionCounter = panel.querySelector('#surveyDescriptionCounter');
+
+  const stepNameInput = panel.querySelector('#stepName');
+  const stepDescriptionInput = panel.querySelector('#stepDescription');
+  const stepUrlInput = panel.querySelector('#stepUrl');  // never used
+
   const stepNameCounter = panel.querySelector('#stepNameCounter');
   const stepDescriptionCounter = panel.querySelector('#stepDescriptionCounter');
   
-  const nameError = panel.querySelector('#nameError');
+  const nameError = panel.querySelector('#nameError'); //what is this?
+
   const saveSurveyBtn = panel.querySelector('#saveSurveyBtn');
   const saveStepBtn = panel.querySelector('#saveStepBtn');
 
+  const addQuestionBtn = panel.querySelector('#addQuestionBtn');
+  const addAnswerBtn = panel.querySelector('#addAnswerBtn');
+
   // Survey header field listeners
-  nameInput?.addEventListener('input', e => {
+    nameInput?.addEventListener('input', e => {
     nameCounter.textContent = `${e.target.value.length}/64 characters`;
-    nameError.classList.add('hidden');
+    nameError.classList.add('hidden'); //??
     saveSurveyBtn.disabled = false;
     saveSurveyBtn.textContent = 'Update header';
   });
@@ -523,42 +526,14 @@ function attachListeners(panel) {
     stepDescriptionCounter.textContent = `${e.target.value.length}/2000 characters`;
   });
 
-  // Dropdown selection listener, but probable that user clicks summary and not the dropdown
-  // In attachListeners, update the questionSelect change handler:
-  questionSelect?.addEventListener('change', (e) => { //If user clicks dropdown...
-  const itemNumber = e.target.value;  //in edit task uses parse to find stepOrder not itemNumber
-  //console.log('questionSelect:',itemNumber); //is this dropdown only for questions?
-  if (!itemNumber) return;  //why is it itemNumber here but a number in editTask?
-    
-  //console.log('From dropdown itemNumber:', itemNumber);
-  state.currentItemNumber = itemNumber;
-  const item = state.questions.find(item => item.itemNumber === itemNumber);
-//what about answers?
-
-
-if (item) {  //in edit task finds step id & then fills if found
-  state.currentItemQuestionId = item.id;
-    //console.log('item.id', item.name);
-      // Fill form with data
-      panel.querySelector('#stepName').value = item.name || '';
-      panel.querySelector('#stepDescription').value = item.description || '';
-    //  panel.querySelector('#stepUrl').value = q.external_url || '';
-      //console.log('Form filled with step data');
-}
- else {
-      // Clear form for new step
-      panel.querySelector('#stepName').value = '';
-      panel.querySelector('#stepDescription').value = '';
-    //  panel.querySelector('#stepUrl').value = '';
-     // panel.querySelector('#stepOrder').value = stepOrder;
-      //console.log('Form cleared for new step');
-    }
-  });
-
   // Button listeners
   saveSurveyBtn?.addEventListener('click', (e) => {state.currentItemType='header'; handleStepUpdate(e, panel)});
   saveStepBtn?.addEventListener('click', (e) => handleStepUpdate(e, panel));
   panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
+
+  addQuestionBtn?.addEventListener('click', (e) => {state.currentItemType='question'; insertNewQuestion(panel)}); // handlestepUpdate also tries to handle this
+  addAnswerBtn?.addEventListener('click', (e) => {state.currentItemType='answer'; insertNewAnswer(panel)});  //there may be a conflict between direct insert and update calling insert
+
 
 
 const surveySelect = panel.querySelector('#surveySelect'); //used in edit task  #taskSelect
@@ -646,21 +621,28 @@ approSelect?.addEventListener('change', () => {
 async function handleTaskAutomationSubmit(e, panel) {
     console.log('handleTaskAutomationSubmit()');
     e.preventDefault();
-    
+   let nextAutoNumber = findNumberInSurvey('auto_number'); //added 20:10 dec 10
+   console.log('nextAutoNumber',nextAutoNumber);
     // BETTER: Check if we have required context first
   //  if (!answerId || !questionId) {
   //      showToast('Please save the answer first', 'error');
   //      return;
    // }
-    
+   if (state.currentItemType != 'answer' ) {
+    console.log('Attempt to add auto without selecting answer. Type:', state.currentItemType);
+        showToast('Please click the answer first. Automations are applied to answers only.','warning');
+    return;
+   } 
+
+
     const taskAutomationSelect = panel.querySelector('#taskAutomationSelect');
     const selectedTaskId = taskAutomationSelect?.value;
     
     // Get the selected option text
-    const surveyAutomationSelect = panel.querySelector('#surveyAutomationSelect');
-    const selectedOption = taskAutomationSelect?.options[surveyAutomationSelect.selectedIndex];
+
+    const selectedOption = taskAutomationSelect?.options[taskAutomationSelect.selectedIndex];
     const taskCleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
-    
+    console.log('task name:',taskCleanName);
     const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
     if (!saveTaskAutomationBtn) {
         showToast('Save button not found', 'error');
@@ -669,9 +651,9 @@ async function handleTaskAutomationSubmit(e, panel) {
     
     saveTaskAutomationBtn.disabled = true;
     saveTaskAutomationBtn.textContent = 'Saving...'; //? 
-    automationsNumber++;    
-    
-    const managerSelect = panel.querySelector('#managerAutomationSelect'); 
+    //automationsNumber++;    
+    /*
+    const managerSelect = panel.querySelector('#managerAutomationSelect'); //this select does not exist? 15:20 dec 10
     const managerData = getManagerName(managerSelect);
 
 //making global 14:18 Oct 18
@@ -686,7 +668,7 @@ addInformationCard({
   //'on-step': stepOrder || 3,  // Show current step number
   'autoNumber': automationsNumber 
 });
-
+*/
     //We need to find the id of step3 of the task we are applying as automation. 
     try { 
         // LOOK UP ALL STEPS FOR THIS TASK
@@ -707,39 +689,39 @@ addInformationCard({
         }
         /*console.log(
 
-          'state.initialStepId,:', state.initialStepId,
+          'state.currentItemId:',state.currentSelectedItemId,
           'state.user:', state.user, //should be null because usually this is a future unknown person
-          'managerData.managerId:', managerData.managerId,     
+              
           'selectedTaskId:', selectedTaskId,
-          'taskCleanName:', taskCleanName,
-          'currentStepId',state.currentStepId, 
+          'taskCleanName:', taskCleanName, 
+          'state.initialStepId,:', state.initialStepId,
           'auto#:', automationsNumber 
         );*/ 
-// we don't know the currentStepId !!! 
+// we don't know the currentAnswerId !!! 
 
 //function needs:  const { survey_answer_id, task_header_id, task_step_id, name, automation_number } = payload;
         const result = await executeIfPermitted(state.user, 'createAutomationAddTaskBySurvey', { 
-       survey_answer_id : state.currentAnswerId, // where get annswer id?
+            survey_answer_id : state.currentItemId, // where get annswer id?
 
        //       manager_id: managerData.managerId, // needs to be from the dropdown    
-       task_header_id: selectedTaskId,
+            task_header_id: selectedTaskId,
             task_step_id: state.initialStepId, // 
             name: taskCleanName || 'Unknown Task', // 
-            automation_number: automationsNumber
+            automation_number: nextAutoNumber
         });
         
         
         addInformationCard({ //where get the data?
           'name': `${taskCleanName?.substring(0, 60) || 'Unknown Task'}...`,
-          'type': 'automation_task',
-          'answer': result.name,  // ?? answer is not defined 16:49 dec 5
-          'taskId': `${selectedTaskId?.substring(0, 8) || 'unknown'}...`,
-          'Auto-id': `${result.id?.substring(0, 8) || 'unknown'}...`
+          'type': 'auto_task',
+          'answer': state.currentItemId,  // ??
+          'taskId': selectedTaskId,   //?.substring(0, 8) || 'unknown'}...`,
+          'Auto-id': result.id  //?.substring(0, 8) || 'unknown'}...`
         });
         
         showToast('Task automation saved successfully!');
         //RELOAD <------------------------------  readSurveyView(surveyId);
-        reloadSurveyData(panel);  // new 20:47 Nov 29
+       renderSurveyStructure(panel); //render first reloads survey  // new 20:47 Nov 29
     } catch (error) { //console.log(error.message);
         showToast('Failed to save task automation: ' + error.message, 'error');
          automationsNumber--; // ROLLBACK: Decrement on failure
@@ -777,7 +759,7 @@ function addInformationCard(itemData) {
   //console.log('steps array:', state.items);
 }
 
-
+/*
 function getManagerName(managerSelect) {
     console.log('getManagerName()');
   // BETTER MANAGER SELECTION:
@@ -807,43 +789,33 @@ function getManagerName(managerSelect) {
   //console.log('Selected manager:', managerId, managerName);
   return { managerName: managerName, managerId: managerId };
 }
-
+*/
 
 
 async function handleSurveyAutomationSubmit(e, panel) {
     console.log('handleSurveyAutomationSubmit()');
     e.preventDefault();
-  
-  const taskSelect = panel.querySelector('#taskAutomationSelect');
-  const selectedTaskId = taskSelect?.value;
-
+     if (state.currentItemType != 'answer' ) {
+    console.log('Attempt to add auto without selecting answer. Type:', state.currentItemType);
+        showToast('Please click the answer first. Automations are applied to answers only.','warning');
+    return;
+   } 
+  const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
+  if (!saveSurveyAutomationBtn) {
+      showToast('Save button not found', 'error');
+      return;
+  } //how would we be here if button not found?
+let nextAutoNumber = findNumberInSurvey('auto_number');
   const surveyAutomationSelect = panel.querySelector('#surveyAutomationSelect');
   const selectedSurveyId = surveyAutomationSelect?.value;
   
   // Get the selected option text
   const selectedOption = surveyAutomationSelect?.options[surveyAutomationSelect.selectedIndex];
   const surveyCleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
-  
-  const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
-  if (!saveSurveyAutomationBtn) {
-      showToast('Save button not found', 'error');
-      return;
-  }
-  
+    
   saveSurveyAutomationBtn.disabled = true;
   saveSurveyAutomationBtn.textContent = 'Saving...'; //? 
-  automationsNumber++;    
-  
-  //this could be a function only for tasks... This was to know the source id, but is wrong for surveys
-
-  const initialStep = state.items.find(step => step.step_order === 3);
-  if (initialStep && initialStep.id) {
-      state.initialStepId = initialStep.id;
-      //console.log('Found initial step_id:', state.initialStepId);  // got it 10:58 Oct 15
-  } else {
-      throw new Error(`No initial step (step 3) found for task ${selectedTaskId}`);
-  }
-
+  //automationsNumber++;    
     
 try{
 /*console.log('state.initialStepId',state.initialStepId, //need this 
@@ -853,31 +825,27 @@ try{
 'auto#',automationsNumber); */
 
 //function needs:   const { survey_answer_id, survey_header_id, name, automation_number } = payload;
-
-
 const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBySurvey', { 
             survey_answer_id : state.currentItemId, //need this 
             survey_header_id : selectedSurveyId, 
             name: surveyCleanName, 
-            automation_number: automationsNumber
+            automation_number: nextAutoNumber
      });
      
      
      addInformationCard({
-      'name': result.name?.substring(0,30) || 'Name not returned',
-      'type': 'automation_survey',
-      //'step': stepOrder || 3,  // Show current step number
-      //'state.initialStepId':state.initialStepId?.substring(0, 8),
-      'autoNumber': automationsNumber, 
-      'survey id': result.id?.substring(0, 8) || 'unknown'
+      'name': surveyCleanName?.substring(0,30) || '???',
+      'type': 'auto_survey',
+      'autoNumber': nextAutoNumber || '???', 
+      'survey id': selectedSurveyId || '???'
       });
      
      showToast('Survey automation saved successfully!');
      //readSurveyView(surveyId);
-     reloadSurveyData(panel);
+    renderSurveyStructure(panel); //render first reloads survey
  } catch (error) {
      showToast('Failed to save survey automation: ' + error.message, 'error');
-      automationsNumber--; // ROLLBACK: Decrement on failure
+     // automationsNumber--; // ROLLBACK: Decrement on failure
  }
   saveSurveyAutomationBtn.disabled = false;
   saveSurveyAutomationBtn.textContent = 'Save Survey';
@@ -892,7 +860,13 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
   async function handleRelationshipAutomationSubmit(e, panel) {
     console.log('handleRelationshipAutomationSubmit()');
     e.preventDefault();
-    
+let nextAutoNumber = findNumberInSurvey('auto_number');
+    if (state.currentItemType != 'answer' ) {
+    console.log('Attempt to add auto without selecting answer. Type:', state.currentItemType);
+        showToast('Please click the answer first. Automations are applied to answers only.','warning');
+    return;
+   } 
+
     const approfileSelect = panel.querySelector('#approfileAutomationSelect'); // Changed ID to match task module
     const relationshipSelect = panel.querySelector('#relationshipAutomationSelect'); // Changed ID to match task module
     
@@ -916,19 +890,20 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
     e.target.disabled = true;
     e.target.textContent = 'Saving...';
 
-    automationsNumber++;        
+//    automationsNumber++;        
     
     try {  
-        // Save relationship automation to database
-//function needs: const { survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
+      console.log('state.currentItemId',state.currentItemId,'selectedApproId:', selectedApproId); //undefined here 16:15 Nov 26
+      // Save relationship automation to database
+//function needs:     const { survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
 //db needs 
-        //console.log('state.currentStepId',state.currentItemId, 'selectedApproId:', selectedApproId); //undefined here 16:15 Nov 26
         const result = await executeIfPermitted(state.user, 'createAutomationRelateBySurvey', { 
-            survey_answer_id:  state.currentAnswerId,    // NULL
+            survey_answer_id:state.currentItemId,  // 
+            //appro_is_id: null,
+            relationship: selectedRelationship,         
             of_appro_id: selectedApproId,       //of_appro_id     
             name: cleanName,                        
-            relationship: selectedRelationship,         
-            automation_number: automationsNumber   
+            automation_number: nextAutoNumber   
         });
         
         // Add information card - ADAPTED FOR TASKS
@@ -936,7 +911,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
             'name': `${result.name?.substring(0, 60) || cleanName?.substring(0, 60) || 'Unknown'}...`,
             'relationship': `${result.relationship?.substring(0, 8) || selectedRelationship?.substring(0, 8) || 'unknown'}...`,
             'type': 'automation_appro', 
-            'number':  automationsNumber, 
+            'number':  nextAutoNumber, 
            'answerNumber?':  '?',  // 
           'state.currentAnswerId': state.currentAnswerId?.substring(0,8) || 'unknown',
             'result.id': `${result.id?.substring(0, 8) || 'unknown'}...`,
@@ -945,10 +920,10 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
         
         showToast('Relationship automation saved successfully!');
         //readSurveyView(surveyId);
-        reloadSurveyData(panel);
+        renderSurveyStructure(panel); //render first reloads survey
     } catch (error) {
         showToast('Failed to save relationship automation: ' + error.message, 'error');
-         automationsNumber--; // Rollback on error
+        // automationsNumber--; // Rollback on error
     }
     
      // Re-enable the button:
@@ -964,22 +939,24 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
   
 async function insertNewQuestion(panel){
 console.log('insertNewQuestion()');
+const nextQuestionNumber = findNumberInSurvey('question_number');
     const stepName = panel.querySelector('#stepName')?.value.trim();
     const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
 try{
         //console.log('Creating new step: survey_header_id',state.currentSurveyId );//logs ok
         //function needs:   survey_header_id: surveyId, name: questionText, question_number:question_number,
-        await executeIfPermitted(state.user, 'createSurveyQuestion', {
+     const newQuestion =   await executeIfPermitted(state.user, 'createSurveyQuestion', {
           surveyId: state.currentSurveyHeaderId,  //error not defined 20:00 dec 4
           questionText:stepName,
           description:stepDescription,
-          question_number: state.currentItemNumber,
+          question_number: nextQuestionNumber,
           //stepUrl
         });
         showToast('New step created!', 'success');
-
+renderSurveyStructure(panel); //render first reloads survey
 //RELOAD <------------------------------  readSurveyView(surveyId);
-
+// immediately create an answer to go with the question
+// or set state.currentSurveyQuestionId = newQuestion.id; //???
 }catch (error) {
       //console.error('Error saving new item:', error);
       showToast('Failed to save new item: ' + error.message, 'error');
@@ -991,15 +968,16 @@ async function updateOldQuestion(panel){ //
 console.log('updateOldQuestion()');
     const stepName = panel.querySelector('#stepName')?.value.trim();
     const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
+//func needs const { questionId, questionName, questionDescription, questionNumber} = payload;    
  try{ await executeIfPermitted(state.user, 'updateSurveyQuestion', {
           questionId: state.currentItemId,
           questionName: stepName,
           questionDescription:stepDescription,
-          questionNumber: state.currentItemNumber,
+          questionNumber: state.currentItemNumber, // worked dec 9, fails dec 10 null
           //stepUrl
         });
         showToast('Updated successfully!', 'success');
-  
+  renderSurveyStructure(panel); //render first reloads survey
    //await activateQuestionsSection(panel);//added 19:37 dec 4 //why?
   
     }catch (error) {
@@ -1013,6 +991,25 @@ async function insertNewAnswer(panel){
 console.log('insertNewAnswer()');
     const stepName = panel.querySelector('#stepName')?.value.trim();
     const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
+try{
+        //console.log('Creating new Answer: surveyHeader:',state.currentSurveyHeaderId );//logs ok
+        //function needs:const { survey_question_id, answerName, answer_number } = payload;
+     const newAnswer =   await executeIfPermitted(state.user, 'createSurveyAnswer', {
+          survey_questionId: state.currentSurveyHeaderId,  //error not defined 20:00 dec 4
+          answerName:stepName,
+          //description:stepDescription,
+          answer_number: state.currentItemNumber,
+          //answer_description:stepDescription
+          
+        });
+        showToast('New step created!', 'success');
+renderSurveyStructure(panel); //render first reloads survey
+//RELOAD <------------------------------  readSurveyView(surveyId);
+// immediately create an answer to go with the question
+}catch (error) {
+      //console.error('Error saving new item:', error);
+      showToast('Failed to save new item: ' + error.message, 'error');
+    }
 }
 
 async function updateOldAnswer(panel){
@@ -1027,7 +1024,7 @@ console.log('updateOldAnswer()');
           //answerNumber: state.currentItemNumber,
         });
         showToast('Updated successfully!', 'success');
-  readSurveyView(state.currentSurveyHeaderId);
+  renderSurveyStructure(panel); //render first reloads survey
     }catch (error) {
       console.error('Error saving step:', error);
       showToast('Failed to save step: ' + error.message, 'error');
@@ -1084,7 +1081,8 @@ console.log('surveyId, name, description',state.currentSurveyHeaderId, stepName,
   
       showToast('Updated successfully!');
       saveBtn.textContent = 'Updated!';
-      //RELOAD <------------------------------ readSurveyView(surveyId);
+      renderSurveyStructure(panel); //render first reloads survey
+      //RELOAD <------
       // Update state
       state.currentSurveyHeader = updatedSurvey;
   
@@ -1117,12 +1115,12 @@ switch (state.currentItemType){//is it a question, answer or header? Is it an ol
   case 'question':{//selected question or answer uuid @ state.currentItemId number @ state.currentItemNumber
 
     if (state.currentItemId) updateOldQuestion(panel);
-else insertNewQuestion(panel);
+else insertNewQuestion(panel); // is this needed? listener goes directly to insert?
 } break;
 
   case 'answer':{//check in state.answers[] for state.currentItemId   
 if (state.currentItemId)  updateOldAnswer(panel);
-else insertNewAnswer(panel);
+else insertNewAnswer(panel); // is this needed? listener goes directly to insert?
  } break;
 
   case 'header':{updateHeader(panel);
@@ -1153,17 +1151,29 @@ e.textContent = 'Saving...';
     });
   }
   
-function findItemInSurvey(itemId,type){
+function findNumberInSurvey(itemName){
 const rows = state.currentSurveyView;
+//const search = 'row.' + itemName;
+let maxNumber =0;
 
+if(itemName === 'auto_number') {
   rows.forEach(row => { 
-   if (row.question_id !== itemId) {
-   // console.log("Question:",row.question_number, row.question_name , row.question_description, row.question_id);
-     
-   return {number:row.question_number, name:row.question_name, description:row.question_description};
-  }
+   if (row.auto_number > maxNumber) { maxNumber=row.auto_number;
+   console.log("ItemName:",itemName, 'row.auto_number:' , row.auto_number, 'maxNumber:',maxNumber);//correctly logs the autos incl deleted
+    }
+  }); const nextAutoNumber = maxNumber+1;
+  console.log('nextAutoNumber',nextAutoNumber);
+  return nextAutoNumber; // this is the next number to use for an automation. 
+} else if (itemName ==='question_number') {
 
-  });
+    rows.forEach(row => { 
+   if (row.question_number > maxNumber) { maxNumber=row.question_number;
+   console.log("ItemName:",itemName, 'row.question_number:' , row.question_number, 'maxNumber:',maxNumber);//correctly logs the autos incl deleted
+    }
+  }); const nextNumber = maxNumber+1;
+  console.log('nextNumber',nextNumber);
+  return nextNumber; // this is the next number to use for an automation. 
+}
  
 }
 
@@ -1186,7 +1196,6 @@ if(type ==='question'){
   panel.querySelector('#stepName').value = match.question_name || '';
   panel.querySelector('#stepDescription').value =match.question_description  || '';
    }
- // });
 }
 else if (type ==='answer'){
  // rows.forEach(row => {  
@@ -1198,7 +1207,11 @@ else if (type ==='answer'){
     
   //  console.log('Form filled with step data');
 }
-//});
+}
+else if (type==='auto') { //clear the display boxes to show that nothing editable is selected
+  console.log('yes,auto');
+  panel.querySelector('#stepName').value ='Auto selected';
+    panel.querySelector('#stepDescription').value ='Automations cannot be edited here. Delete & replace below';
 } //eo if
 }//eof
 
@@ -1210,7 +1223,8 @@ async function handleDeleteAutomationButton(panel, automationId){
     await executeIfPermitted(state.user, 'softDeleteAutomation', { automationId, deletedBy });
     showToast('Automation deleted');
     //RELOAD <------------------------------ readSurveyView(surveyId);
-reloadSurveyData(panel);
+
+renderSurveyStructure(panel);
      }catch(error) {       console.error('Error deleting:', error);
     showToast('Failed to delete automation', 'error');
   }
@@ -1236,7 +1250,11 @@ function attachStepsListeners(panel) {
       const clickedItemId = target.dataset.id; // is this an id or a DOM element?
       state.currentItemId = clickedItemId;
       state.currentItemType =type; 
-      
+switch (type) {
+case "question":  state.currentItemNumber = target.dataset.question_number; break;
+case "answer": state.currentItemNumber = target.dataset.answer_number; break;
+default: console.log('type of clickable item not recognised', type);
+}
 //      console.log('target.dataset',target.dataset);//DOMStringMap{Id->"9e63.."}
      // panel.querySelector('#stepOrder').value = stepOrder; // This is only used in editTask not in surveys
       if (saveBtn) { saveBtn.textContent = 'Edit'; saveBtn.disabled = false; }
@@ -1257,9 +1275,9 @@ function attachStepsListeners(panel) {
 
     } else if (target.classList.contains('deleteAutomationBtn')) {
       
-      console.log('Clicked the:',target.textContent);
-      const automationId = target.dataset.id;
-     
+      console.log('Clicked the:',target.textContent, 'target:',target);
+      const automationId = target.dataset.id; //data-id
+     //state.currentItemId = automationId;
       if(target.textContent ==   'Click to confirm Delete this automation') {handleDeleteAutomationButton(panel, automationId)}
       else target.textContent = 'Click to confirm Delete this automation' ;
 
@@ -1310,13 +1328,14 @@ function getTemplateHTML() {console.log('getTemplateHTML');
             <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
            
             <ul class="text-blue-700 text-sm mt-2 space-y-1">
-              <li>📋 Auto-fill from clipboard. Click the [Select] menu button </li>  
-              <li>• You can modify the name, description, and URL</li>
-              <li>• The name must be unique across all existing surveys</li>
-              <li>• Click "Update Survey" to save your changes</li>
-              <li>• Create a new question with the dropdown</li>
-              <li>• Edit existing questions or answers by clicking the summary or use the dropdown</li>
-              <li>• Click "Save question / svae answer" to save your changes</li>
+              <li>📋 Auto-fill from clipboard after you click the [Select] menu button </li>
+              <li>You choose an existing survey fro, the Select module</li>  
+              <li>• You can modify the name, description, and URL of the header, any existing question or answer</li>
+              <li>• The main name must be unique & will be auto checked across all existing surveys</li>
+              <li>• Click "Update Survey Header" of "Update step" to save your changes</li>
+              <li>• Create a new question with the buttons below the survey</li>
+              <li>• Edit existing questions or answers by clicking the summary</li>
+              <li>• Automations cannot beedited, just delete and add new ones</li>
               <li>• Automations are added in the section below the summary</li>
               <li>• Click "Save" Automation to add it to the displayed answer</li>  
             </ul>
@@ -1415,20 +1434,38 @@ function getTemplateHTML() {console.log('getTemplateHTML');
 
               <!--new 19:18 Nov 12 -->
 
+<div id="newQA" class="mt-6 bg-orange-50 p-4 rounded border border-green-300">
+  <h5 class="font-medium text-grey-800 mb-2">Add questions or answers. First load a survey. You can add an extra question. It will be added at the end of the survey.</h5>
+
+    <button type="button" id="addQuestionBtn" class="mt-2 bg-blue-600 text-white py-1 px-3 rounded hover:bg-purple-700">
+      + ${icons.question}add an extra question
+    </button>
+
+        <button type="button" id="addAnswerBtn" class="mt-2 bg-indigo-600 text-white py-1 px-3 rounded hover:bg-purple-700">
+      + ${icons.answer} add an answer, but first click the relevant question in the summary 
+    </button>
+
+  </div>  
+
+
 <div id="automationControls" class="mt-6 bg-green-50 p-4 rounded border border-green-300">
   <h5 class="font-medium text-green-800 mb-2">Add Step Automations</h5>
 
+  <!-- Add a task Section -->
+  
   <div class="mb-4">
-    <label for="surveyAutomationSelect" class="block text-sm font-medium text-gray-700">Assign a Task</label>
-    <select id="surveyAutomationSelect" class="w-full p-2 border rounded">
-      <option value="">Select a survey to assign</option>
+    <label for="taskAutomationSelect" class="block text-sm font-medium text-gray-700">Assign a Task</label>
+    <select id="taskAutomationSelect" class="w-full p-2 border rounded">
+      <option value="">Select a task to assign</option>
     </select>
     <button type="button" id="saveTaskAutomationBtn" class="mt-2 bg-purple-600 text-white py-1 px-3 rounded hover:bg-purple-700 opacity-50" style="pointer-events: none;">
       Save Task Automation
     </button>
   </div>
-<!-- Assign Survey Section -->
-              <div class="mt-4 p-3 bg-white rounded border mb-4">
+
+<!-- Add a Survey Section -->
+
+    <div class="mt-4 p-3 bg-white rounded border mb-4">
                 <h5 class="font-medium text-gray-800 mb-2">Assign a survey</h5>
                 <div class="flex gap-2">
                   <select id="surveyAutomationSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
@@ -1439,7 +1476,11 @@ function getTemplateHTML() {console.log('getTemplateHTML');
                     Save Survey Assignment automation
                   </button>
               </div>    
-  <div>
+  
+  
+<!-- add a Relation Section -->              
+
+<div>
     <label for="approfileAutomationSelect" class="block text-sm font-medium text-gray-700">Relate to a Category</label>
     <select id="approfileAutomationSelect" class="w-full p-2 border rounded mb-2">
       <option value="">Select an appro</option>
