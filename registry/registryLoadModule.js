@@ -81,7 +81,7 @@ export const registry = { // this registry is for loading a new page to the righ
 
 //////////          RELATIONS & HIERARCHY MANAGEMENT      AdminDash     /////////     
 'display-relations' :()=> import('../work/approfiles/displayRelations.js'),
-
+'delete-related-approfiles-dialogue' :()=> import('../work/approfiles/deleteRelation.js'),
 
 
 //////////          KNOWLEDGE MANAGEMENT         AdminDash  /////////           //Confusing naming      
@@ -93,7 +93,9 @@ export const registry = { // this registry is for loading a new page to the righ
 //'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),  
 'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
 'assign-survey-dialogue' :()=> import('../surveys/assignSurvey.js'),
-'edit-survey-dialogue':()=> import('../work/survey/EditSurvey.js'), // copied to work/ folder
+'edit-survey-dialogue':()=> import('../work/survey/editSurvey.js'), // copied to work/ folder
+
+
 //////////          SETTINGS            AdminDash      /////////                 
 'money-management-section': () => import('../dash/moneyManagementSection.js'),
 'open-permissions-dialogue': () => import('../db/permissionsModule.js'),   

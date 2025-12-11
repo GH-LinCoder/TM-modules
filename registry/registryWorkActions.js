@@ -811,6 +811,28 @@ readApprofileById:{
   }
 },
 
+readApprofileByTaskId:{// getthe appro id (plus name) from the taskId
+  metadata: {
+    tables: ['app_profiles'],
+    columns: ['id', 'name', 'email', 'created_at'],
+    type: 'SELECT',
+    requiredArgs: ['taskId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { taskId } = payload;
+    const { data, error } = await supabase
+      .from('app_profiles')
+      .select('id, name')
+      .eq('task_header_id', taskId)
+      .single();
+    
+    if (error) throw error;
+    return data;
+  }
+},
+
+
+
 //new 22:00 Nov 28 replacement of readApprofileRelationships to include type icon
 
 //APPRO
@@ -1117,10 +1139,10 @@ readRelationshipExists:{
     tables: ['approfile_relations'], 
     columns: ['rel_name', 'created_at', 'relation_id', 'approfile_is', 'of_approfile', 'relationship', 'rel_description','approfile_is_name', 'of_approfile.name'],
     type: 'SELECT',
-    requiredArgs: ['approfile_is', 'of_approfile', 'relationship'] 
+    requiredArgs: ['approfile_is', 'relationship', 'of_approfile'] 
   },
   handler: async (supabase, userId, payload) => {
-    const { approfile_is, of_approfile, relationship} = payload;
+    const { approfile_is, relationship, of_approfile} = payload;
   console.log('readRelationExists{}','payload:', payload);
     const { data, error } = await supabase
     .from('approfile_relations')

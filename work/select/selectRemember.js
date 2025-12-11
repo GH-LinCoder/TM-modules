@@ -2,7 +2,7 @@
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
-import { canAccessFeature } from '../../registry/permissions.js';
+//import { canAccessFeature } from '../../registry/permissions.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 
@@ -71,7 +71,8 @@ class DevDataSelector {
       taskApprofiles: null,
       surveyApprofiles: null, //added 9:26 Nov 1 2025
       tasks: null,
-      assignments:null
+      assignments:null, //need to display more info to be able to edit assignments
+      relations:null  // new 20:29 dec 11  need to list these to be able to delete
     };
     this.selectedItem = null;
     this.selectedAs = 'other';
@@ -153,6 +154,11 @@ class DevDataSelector {
               <input type="radio" name="view" value="assignments"> 👨‍🔧 Existing Assignments</label>
             </div>
 
+            <div title="See what relations exist.">     
+              <label class="flex items-center space-x-2 p-2 bg-indigo-50 border rounded hover:bg-gray-100 cursor-pointer" >
+              <input type="radio" name="view" value="relations"> 🖇️ Existing Relations</label>
+            </div>
+
 
         </div>
       </div>
@@ -186,6 +192,9 @@ class DevDataSelector {
             <div class="border-t my-2"></div>
             <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer">
             <input type="radio" name="as" value="assignment"> 👨‍🔧 Assignment</label>
+            <div class="border-t my-2"></div>
+            <label class="flex items-center space-x-2 p-2 bg-indigo-50 border rounded hover:bg-gray-100 cursor-pointer">
+            <input type="radio" name="as" value="realtion"> 🖇️ Relations</label>
 
 
             </div>
@@ -246,6 +255,8 @@ console.log('ViewChange:');
       await this.loadSurveys();
     } else if (view === 'assignments' && !this.loadedData.assignments)  {
       await this.loadAssignments();
+    } else if (view === 'relations' && !this.loadedData.relations)  {
+      await this.loadRelations();
     }
 
     // Populate list
@@ -298,24 +309,15 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
     }
   }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    async loadRelations() {
+    try {// reads array
+      this.loadedData.relations = await executeIfPermitted(appState.query.userId, 'readApprofile_relations_view', {});
+      console.log('Relations:',this.loadedData.relations);
+    } catch (error) {
+      console.error('Error loading relations:', error);
+      showToast('Failed to load', 'error');
+    }
+  }
 
 
     populateList(view) {
@@ -327,6 +329,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       'app-survey':'bg-yellow-50',
       'tasks': 'bg-red-50',
       'assignments':'bg-yellow-50',
+      'relations':'bg-indigo-50'
     }[view] || 'bg-gray-50';
 
     this.listContainer.className = `border rounded min-h-32 max-h-60 overflow-y-auto p-3 mb-4 ${bgColor}`;
@@ -354,11 +357,10 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       case 'assignments':
         items = this.loadedData.assignments || []; // PROBLEM  this view has task_name not name.
       break;
+      case 'relations':
+        items = this.loadedData.relations || []; //
+      break;
 
-
-      
-      
-      
       default:
         this.listContainer.innerHTML = '<div class="text-gray-500 text-center py-4">Select a type above</div>';
         return;
@@ -374,6 +376,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       'tasks': '🔧 Tasks',
       'surveys' : '📜 Surveys',
       'assignments':'👨‍🔧 assignments',
+      'realtions':'🖇️ relations',
     }[view] || 'Select a type above';
 
     this.listContainer.innerHTML = '';
@@ -384,17 +387,25 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       return;
     }
 
-    
-    items.forEach(item => {
+    let displayData = null;
+    items.forEach(item => { if (item.name) displayData = item.name; else displayData = this.assembleData(item);
       const div = document.createElement('div');
-      div.className = 'p-2 hover:bg-gray-200 cursor-pointer border-b border-gray-200 last:border-b-0';
-      div.textContent = item.name || item.task_name; //assignment view has differentiated names, This isn't going to work 
+      div.className = 'p-2 hover:bg-gray-200 cursor-pointer border-b border-gray-200 last:border-b-0';  
+      //div.textContent = item.name || item.task_name; //assignment view has differentiated names, This isn't going to work 
+      div.textContent = displayData; //assignment view has differentiated names, This isn't going to work 
       div.dataset.json = JSON.stringify(item);
       div.addEventListener('click', () => this.onItemClick(item));
       this.listContainer.appendChild(div);
     });
   }
 
+  assembleData(item){
+    if(item.name) return;
+    let displayData = null;
+    if(item.relation_id) displayData ='['+ item.approfile_is_name +'] is ['+ item.relationship +'] of ['+ item.of_approfile_name+']';
+    else if (item.assignment_id) displayData = item.student_name +' ] on: [ '+item.task_name;
+    return displayData;
+  }
 
   onItemClick(item) {  // set the 'AS' value to defaults that match the type of thing being selected, but user can over ride.
     this.selectedItem = item;
@@ -430,6 +441,17 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
           if (assignmentRadio) {
               assignmentRadio.checked = true;
           }
+                } else if (this.currentView === 'relations') { // no log 
+          console.log('relations view recognised');
+          this.selectedAs = 'relation';
+          // Check the radio button
+          const relationRadio = this.panel.querySelector('input[name="as"][value="relation"]');
+         console.log('relationRadio:',relationRadio); 
+          if (relationRadio) {
+              relationRadio.checked = true;
+          }
+
+          
       } else console.log('currenView', this.currentView);
 
       this.updateConfirmButton();  
@@ -443,15 +465,16 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
   }
 
   updateConfirmButton() {
+    this.displayName = null;
     if (this.selectedItem && this.currentView) {
       // Truncate long names for button
-      const textContent = this.selectedItem.name || this.selectedItem.task_name; // the latter is assignments
-      const displayName = textContent.length > 30 
+      const textContent = this.selectedItem.name || this.assembleData(this.selectedItem); // the latter is assignments
+       this.displayName = textContent.length > 30 
         ? textContent.substring(0, 30) + '...' 
         : textContent;
 
       this.confirmBtn.disabled = false;
-      this.confirmBtn.textContent = `Click to store: "${displayName}" ---- AS ---- "${this.selectedAs}"`;
+      this.confirmBtn.textContent = `Click to store: "${this.displayName}" ---- AS ---- "${this.selectedAs}"`;
     } else {
       this.confirmBtn.disabled = true;
       this.confirmBtn.textContent = 'Select item and category first';
@@ -461,18 +484,10 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
   confirmSelection() {
     if (!this.selectedItem || !this.currentView) return;
 
-
-
-
-
-
-
-
-
         const clipboardItem = {
       entity: {
         id: this.selectedItem.id,
-        name: this.selectedItem.name,
+        name: this.selectedItem.name || this.displayName,
         type: this.currentView,
         item: this.selectedItem
       },
