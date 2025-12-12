@@ -7,62 +7,13 @@ import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 
 console.log('deleteRelation.js loaded');
-let clipboardEntries = null;
-let deletedBy = appState.query.userId; // DEV only
-let selectedId = null;
+let relations = null;
 
 export function render(panel, query = {}) {
     console.log('deleteRelate.render '); 
     panel.innerHTML = getTemplateHTML();
-
-    attachListeners(panel);
     initClipboardIntegration(panel)
-
   }
-
-function attachListeners(panel){
-        console.log('attachListeners()');
-// Set up dropdown change listener
-  const relationSelect = panel.querySelector('#relationSelect');
-  if (relationSelect) {
-    relationSelect.addEventListener('change', () => { // this calls display even if select option 0 - no selection
-console.log('dropdown changed', 'relationSelect.value', relationSelect.value);//works 22:07 dec 12
-
-        displayRelation(panel, relationSelect); //enables button
-    });
-  }
-
-  //set up break relationship button listener
-  const breakRelationshipBtn = panel.querySelector('#breakRelationshipBtn');
-  if (breakRelationshipBtn) {
-    breakRelationshipBtn.addEventListener('click', () => { console.log('button clicked');
-              if(breakRelationshipBtn.textContent ==   'Click to confirm Delete this relationship') 
-                {softDeleteRelationship(panel);}
-      else breakRelationshipBtn.textContent = 'Click to confirm Delete this relationship' ;
-      
-    });
-  }
-
-}
-
-async function softDeleteRelationship(panel){
-    console.log('softDeleteRelation()');
- 
-  console.log('softDeleteRelationship','selectedId',selectedId, 'by', deletedBy);
-  try {//func needs const { relationId, deletedBy } = payload;
-    await executeIfPermitted(appState.user, 'softDeleteRelation', { relationId:selectedId, deletedBy });
-    showToast('Relationship removed');
-    //disable button, clear display?
-    const breakRelationshipBtn = panel.querySelector('#breakRelationshipBtn');
-    if (breakRelationshipBtn) breakRelationshipBtn.disabled = true;
-    const relationshipEl = panel.querySelector('#relationship');
-    if (relationshipEl) relationshipEl.textContent = 'not';
-    return; 
-    
-     }catch(error) {       console.error('Error deleting:', error);
-    showToast('Failed to delete relation', 'error');
-  }
-}
 
 function initClipboardIntegration(panel) {
     console.log('initClipboardIntegration()');
@@ -81,124 +32,73 @@ function getDataFromClipboard(panel) {
     const relationSelect = panel.querySelector('#relationSelect');
    if (!relationSelect) return; 
 
-  // Get clipboardEntries from clipboard
-  clipboardEntries = getClipboardItems({ as: 'relation', type: 'relations' });
+  // Get relations from clipboard
+  relations = getClipboardItems({ as: 'relation', type: 'relations' });
   
-  if (clipboardEntries.length === 0) return;
+  if (relations.length === 0) return;
         
-  console.log('Populating clipboardEntries dropdown with', clipboardEntries.length, 'entries', clipboardEntries);
-  addClipboardItemsToDropdown(clipboardEntries, relationSelect, panel);
+  console.log('Populating relations dropdown with', relations.length, 'items', relations);
+  addClipboardItemsToDropdown(relations, relationSelect, panel);
     
+
+// const item = relationSelect.value ? relations.find(t => t.entity.id === relationSelect.value) : relations[0];
+// if (!item) return;
+// console.log('Using clipboard item:', item);
+
   }
   
   
+function displayRelation(panel, relationSelect){
+//    const relationSelect = panel.querySelector('#relationSelect');
+   if (!relationSelect) return; 
+
+const selectedId = relationSelect.value;
+console.log('selectedId',selectedId)
+  const item = relations.find(r => r.entity.item.relation_id === selectedId);
+console.log('item',item);
+  if (!item) return;
 
 
-  
-function displayRelation(panel, relationSelect) {
-    console.log('displayRelation()');
- selectedId = relationSelect.value;
-console.log('selectedId',selectedId);
+      const approIs = panel.querySelector('#approIs');
+ const relationship = panel.querySelector('#relationship');
+ const ofAppro = panel.querySelector('#ofAppro'); 
 
-  const approIs = panel.querySelector('#approIs');
-  const relationshipEl = panel.querySelector('#relationship');
-  const ofAppro = panel.querySelector('#ofAppro');
-  const breakRelationshipBtn = panel.querySelector('#breakRelationshipBtn');
+// These three places on the screen should be injected with the info from the array relations[] but which element to pick depends on the value in the dropdown relationSelect
+ approIs.innerHTML = item.entity.item.approfile_is_name;
+  relationship.innerHTML = item.entity.item.relationship;
+  ofAppro.innerHTML = item.entity.item.of_approfile_name;
 
-  if (selectedId=='') {  // Clear display fields
-    if (approIs) approIs.textContent = 'item 1 is';
-    if (relationshipEl) relationshipEl.textContent = 'relationship';
-    if (ofAppro) ofAppro.textContent = 'of item 3';
-    if (breakRelationshipBtn) breakRelationshipBtn.disabled = true;return; }
 
-    // Find the item with matching relation_id
-  const entry = clipboardEntries.find(r => r.entity.item.relation_id === selectedId);
-  if (!entry) return;//if entry is "use the menu" does this return?
-  const { approfile_is_name, relationship, of_approfile_name } = entry.entity.item;
 
-  // Update the display boxes
-  if (approIs) approIs.textContent = approfile_is_name || '—';
-  if (relationshipEl) relationshipEl.textContent = relationship || '—';
-  if (ofAppro) ofAppro.textContent = of_approfile_name || '—';
-
-  // Enable the delete button
-
-  if (breakRelationshipBtn) breakRelationshipBtn.disabled = false;
 }
 
-function addClipboardItemsToDropdown(entries, selectElement, panel) {
+function addClipboardItemsToDropdown(items, selectElement, panel) {
     console.log('addClipboardItemsToDropdown()');
-  if (!entries || entries.length === 0) return;
- console.log('entries',entries);
-
-  // Clear only clipboard options (optional cleanup)
-  selectElement.querySelectorAll('option[data-source="clipboard"]').forEach(el => el.remove());
-
-  entries.forEach(entry => {
-    const option = document.createElement('option');
-    option.value = entry.entity.item.relation_id; // ✅ REAL ID
-    option.textContent = entry.entity.name;       // e.g. "[Test] is a member of Tasks"
-    option.dataset.source = 'clipboard';
-    selectElement.appendChild(option);
+  if (!items || items.length === 0) return;
+ console.log('items',items);
+  items.forEach(item => {
+    const existingOption = Array.from(selectElement.options).find(opt => opt.value === item.entity.id);
+    if (!existingOption) {
+      const option = document.createElement('option');
+      option.value = item.entity.id;
+      option.textContent = `${item.entity.name} (clipboard)`;
+      option.dataset.source = 'clipboard';
+      selectElement.appendChild(option);
+    }
   });
 
-  // Auto-select if only one
-  if (entries.length === 1 && !selectElement.value) {
-    selectElement.value = entries[0].entity.item.relation_id;
-    displayRelation(panel, selectElement);
-    // Optional info message
-    const infoSection = panel.querySelector('#informationSection');
-    if (infoSection) {
-      infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled relation: ${entries[0].entity.name}</div>`;
-    }
+  if (items.length === 1 && !selectElement.value) { 
+    selectElement.value = items[0].entity.id; // this displays the name.Ho does .id display a name???
+    console.log('selectElement.value',selectElement.value)
+    displayRelation(panel, selectElement)
+    const infoSection = document.querySelector('#informationSection');
+    infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled relation: ${items[0].entity.name}</div>`;
   }
+ 
+if(selectElement.value) displayRelation(panel, selectElement);
 
-  // Always display if a value is already set
-  if (selectElement.value) {
-    displayRelation(panel, selectElement);
-  }
 
 }
-/* Table definition (relevant parts only):
-.approfile_relations (
-  id uuid not null default gen_random_uuid (),
-  approfile_is uuid not null,
-  relationship text not null,
-  of_approfile uuid not null,
-
-  deleted_at timestamp with time zone null,
-  deleted_by uuid null,
-  is_deleted boolean null default false,
-*/
-
-/* registry function for soft delete 
-softDeleteRelation:{
-  metadata: {
-    tables: ['approfile_relations'],
-    columns: ['is_deleted', 'deleted_at', 'deleted_by'],
-    type: 'UPDATE',
-    requiredArgs: ['relationId', 'deletedBy']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { relationId, deletedBy } = payload;
-console.log('registry softDelete', relationId, 'by', deletedBy);
-    const { data, error } = await supabase
-      .from('approfile_relations')
-      .update({
-        is_deleted: true,
-        deleted_at: new Date().toISOString(),
-        deleted_by: deletedBy
-      })
-      .eq('id', relationId)
-      .select()
-      .single(); 
-
-    if (error) throw error;
-    return data; // returns the updated automation row
-  }
-},
-
-*/
 
 
 /*
@@ -273,24 +173,24 @@ function getTemplateHTML() {
                  style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
                  id="approIs" >
 
-                  item 1
-            </div> is
+                  item 1 is
+            </div>
          
             <div class="flow-box-relation" style="padding: 0.75rem 1.25rem; background-color: #d7e4e2; border: 2px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; font-size: 16px; font-style: italic; color: #4f46e5;"
               id ="relationship" >
               relationship
-            </div> of
+            </div>
 
             <div class="flow-box-other" 
                  style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
                  id="ofAppro" >
-                  item 3
+                  of item 3
             </div>          
             
         </div>
  
 
-<!--div class="relationship-flow" style="display: flex; justify-content: center; align-items: center; margin: 2rem auto; gap: 1rem;">
+<div class="relationship-flow" style="display: flex; justify-content: center; align-items: center; margin: 2rem auto; gap: 1rem;">
             <div class="flow-box-other" 
                  style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
                  data-subject-id="is">
@@ -304,9 +204,9 @@ function getTemplateHTML() {
                  data-subject-id="$">
                of  appro item 5
             </div>
-          </div-->
+          </div>
 
-          <button type="submit" id="breakRelationshipBtn" data-form="breakReltionshipBtn" 
+          <button type="submit" id="unrelateBtn" data-form="unrelateBtn" 
             class="w-full bg-purple-600 text-white py-2 px-4 rounded-md hover:bg-purple-700 focus:ring-2 focus:ring-purple-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             disabled>
             Break Relationship

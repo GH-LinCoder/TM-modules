@@ -1011,11 +1011,7 @@ async function handleTaskUpdate(e, panel) {
       return;
     }
   
-      // Task specific that steps 1 & 2 are system steps that cannot be edited
-    if (order < 3) {
-      showToast('Steps 1 and 2 are system-managed and cannot be edited.', 'error');
-      return;
-    }
+
     
     const order = parseInt(panel.querySelector('#stepOrder')?.value);//but if clicked summary?
     const stepName = panel.querySelector('#stepName')?.value.trim();
@@ -1023,7 +1019,11 @@ async function handleTaskUpdate(e, panel) {
     const stepUrl = panel.querySelector('#stepUrl')?.value.trim();
     const saveBtn = panel.querySelector('#saveStepBtn');
   
-  
+      // Task specific that steps 1 & 2 are system steps that cannot be edited
+    if (order < 3) {
+      showToast('Steps 1 and 2 are system-managed and cannot be edited.', 'error');
+      return;
+    }  
   
     saveBtn.disabled = true;
     saveBtn.textContent = 'Saving Step...';

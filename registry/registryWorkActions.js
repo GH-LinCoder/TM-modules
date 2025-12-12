@@ -538,7 +538,31 @@ createApprofileRelation: {
   }
 },
 
+softDeleteRelation:{
+  metadata: {
+    tables: ['approfile_relations'],
+    columns: ['is_deleted', 'deleted_at', 'deleted_by'],
+    type: 'UPDATE',
+    requiredArgs: ['relationId', 'deletedBy']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { relationId, deletedBy } = payload;
+console.log('registry softDelete', relationId, 'by', deletedBy);
+    const { data, error } = await supabase
+      .from('approfile_relations')
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString(),
+        deleted_by: deletedBy
+      })
+      .eq('id', relationId)
+      .select()
+      .single();
 
+    if (error) throw error;
+    return data; // returns the updated automation row
+  }
+},
 
 
 ///////////////////////////////////// UPDATE   /////////////////////
