@@ -15,10 +15,13 @@ let studentId = student.id;
 const userId = appState.query.userId;
 let panelEl = null;
  
+
+
 onClipboardUpdate(() => {
-//  console.log('onClipboardUpdate');
+console.log('onClipboardUpdate');
  let student = resolveSubject();
  studentId =student.id;
+
  
   render(panelEl);  // I made it a global to have the onclick outside the render function
 //  if (!isMyDash) populateApprofileSelect(panel); // optional
@@ -33,32 +36,47 @@ onClipboardUpdate(() => {
 
 
 export async function render(panel, query = {}) {
-  console.log('displayAllStudentTasks.js render() called');
+  console.log('displayTaskStudent.js render()');
 
   if (!panel || !panel.isConnected) {
     console.warn('Render target not found or disconnected');
     return;
   }
   
+
+const userId = appState.query.userId;  
 panelEl=panel;
+
+
+
+
 
 try {
     const assignments = await executeIfPermitted(userId, 'readStudentAssignments', {
       student_id: studentId,
       type: 'task'
     });
-console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
+//console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
     if (!assignments || assignments.length === 0) {
       panel.innerHTML = `<div class="text-gray-500 text-center py-8">No task assignments found.</div>`;
       return;
     } // does not display
 //console.log('panel:',panel); // logs a div "page-panel" 22:39 oct 27
-    panel.innerHTML = ''; // Clear panel 
+  
 
-    for (const assignment of assignments) {
+panel.innerHTML = ''; // Clear panel 
+
+
+
+for (const assignment of assignments) {
       const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', { // this happens
         task_header_id: assignment.task_header_id
       });
+
+ const taskExternalURL = assignment.task_external_url;
+                  console.log('assignment.task_external_url',assignment.task_external_url);
+
+
 //console.log('assignment:', assignment);
       const currentStep = assignment.step_order;
       const numberOfSteps = taskSteps.length;
@@ -66,7 +84,7 @@ console.log('assignments:',assignments, 'assignment.length', assignments.length)
       const taskName = assignment.task_name || 'Unnamed Task';
       const taskDescription = assignment.task_description;
 
-      const taskExternalURL = assignment.task_external_url;
+
 //console.log('');
       const currentStepName = assignment.step_name || 'Unnamed Step';
       const currentStepDescription = assignment.step_description || 'No description available';
@@ -103,7 +121,7 @@ console.log('assignments:',assignments, 'assignment.length', assignments.length)
 
       const card = document.createElement('div');
       card.classList.add('bg-white', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200');
-     console.log('checking consoleflow', card);  // 
+    // console.log('checking consoleflow', card);  // 
       //confirmed that program flows to here on first save & card =  <div class="bg-white rounded-lg shad… border border-gray-200">      
       
 

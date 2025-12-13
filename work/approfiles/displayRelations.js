@@ -296,7 +296,8 @@ function renderRelationships(panel, relationshipsData, approfileName) { // aprof
   const isRelationships = relationshipsData.is || [];
   const ofRelationships = relationshipsData.of || [];
   const iconMap = relationshipsData.iconMap || {};
-  
+ // console.log('isRel:',isRelationships);
+
   if (isRelationships.length === 0 && ofRelationships.length === 0) {
     container.innerHTML = `
       <div class="bg-yellow-50 border border-yellow-200 rounded p-4 text-center">
@@ -313,6 +314,8 @@ function renderRelationships(panel, relationshipsData, approfileName) { // aprof
   const groupRelationships = (rels) => {
     const groups = {};
     rels.forEach(rel => {
+       if (rel.is_deleted) { console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
+        return; }//don't display deleted items
       const relType = rel.relationship;
       if (!groups[relType]) groups[relType] = [];
       groups[relType].push(rel);
@@ -359,8 +362,10 @@ html += `
       `;
       
       group.items.forEach(rel => { console.log('rel:',rel);
-        
-        const subject = rel.approfile_is_name || rel.approfile_is;
+       console.log('forEach rel.is_deleted:',rel.relationship, rel.is_deleted); 
+       if (rel.is_deleted) { console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
+        return; }//don't display deleted items
+       const subject = rel.approfile_is_name || rel.approfile_is;
        const subjectIcon = iconMap[rel.approfile_is] || '🫗';
 
         const object = rel.of_approfile_name || rel.of_approfile;
@@ -416,7 +421,9 @@ html += `
         </div>
       `;
       
-      group.items.forEach(rel => {
+      group.items.forEach(rel => { //if deleted the section name is displayed still 19:23 dec 13
+         if (rel.is_deleted) { console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
+          return; }//don't display deleted items
         const subject = rel.approfile_is_name || rel.approfile_is;
         const subjectIcon = iconMap[rel.approfile_is] || '🫗';
         const object = rel.of_approfile_name || rel.of_approfile;

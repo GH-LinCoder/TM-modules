@@ -1122,7 +1122,7 @@ readManagerAssignments: {
       .from('task_assignment_view')
       .select(`
         assignment_id, student_id, student_name, task_header_id, task_name, task_description, 
-        step_order, step_name, step_description, manager_id, manager_name, assigned_at
+        step_order, step_name, step_description, manager_id, manager_name, assigned_at, task_external_url
       `)
       .eq('manager_id', manager_id)
       .order('task_name', { ascending: true })

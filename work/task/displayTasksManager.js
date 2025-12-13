@@ -8,17 +8,16 @@ import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils
 import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
 
 
-
 console.log('displayTasksManager.js loaded 12:45 Oct 26');
-
 
 let manager = resolveSubject();
 let managerId = manager.id;
-let managerName = manager.name;
-
 const userId = appState.query.userId;
 let panelEl = null;
- 
+let managerName = manager.name;
+
+
+
 onClipboardUpdate(() => {
   console.log('onClipboardUpdate');
  let manager = resolveSubject();
@@ -38,6 +37,8 @@ onClipboardUpdate(() => {
 
 
 export async function render(panel, query = {}) {
+      console.log('displayTaskManager.js render()');
+
     if (!panel || !panel.isConnected) {
         console.warn('Render target not found or disconnected');
         return;
@@ -106,12 +107,17 @@ export async function render(panel, query = {}) {
                 task_header_id: assignment.task_header_id
             });
 
-            const currentStep_order = assignment.step_order;
-            const currentStep = taskSteps.find(s => s.step_order === currentStep_order);
+ const taskExternalURL = assignment.task_external_url;
+                  console.log('assignment.task_external_url',assignment.task_external_url);
+
+
+            const currentStep_order = assignment.step_order;//student uses this as currentStep
+           //   const currentStep = assignment.step_order; // in student this works. Odd
+            const currentStep = taskSteps.find(s => s.step_order === currentStep_order);//different
             const numberOfSteps = taskSteps.length;
             const abandonStep = taskSteps.find(s => s.step_order === 1);
             //const taskDescription = assignment.task_description;
-
+                 
             const previousStep = currentStep_order > 3
                 ? taskSteps.find(s => s.step_order === currentStep_order - 1)
                 : currentStep_order === 3
@@ -127,6 +133,30 @@ export async function render(panel, query = {}) {
                 return taskSteps.find(s => s.step_order === currentStep_order + 1);
             })();
 
+
+        // Decide how to render the external URL
+    let externalContent = ''; console.log('taskExternalURL:',taskExternalURL);
+    if (taskExternalURL) { console.log('taskExternalURL: true');
+      if (taskExternalURL.startsWith('<iframe')) { console.log('startsWith(<iframe');//okay to here
+        // Treat as raw iframe markup
+        externalContent = `
+          <div class="mt-4">
+            ${taskExternalURL}
+          </div>`;
+      } else if (taskExternalURL.startsWith('http')) {
+        // Treat as plain link
+        externalContent = `
+          <div class="mt-4">
+            <a href="${taskExternalURL}" target="_blank" rel="noopener noreferrer"
+               class="text-blue-600 underline hover:text-blue-800">
+              Open external resource
+            </a>
+          </div>`;
+      }
+    }
+
+
+
             const card = document.createElement('div');
             card.className = 'bg-white rounded-lg shadow-lg p-6 mb-8 border border-indigo-500';
 
@@ -137,7 +167,8 @@ export async function render(panel, query = {}) {
                     <div class="text-sm text-gray-500">Student: ${assignment.student_name}</div>
                 </div>
 
-    <div class="rounded-lg p-6 shadow-md border relative"> ${assignment.task_description}</div 
+    <div class="rounded-lg p-6 shadow-md border relative"> ${assignment.task_description}</div> 
+    ${externalContent}
                 <div class="flex flex-row items-center justify-center gap-6">
                     ${renderStepCard(previousStep, 'gray', 'Previous Step')}
                     ${renderStepCard(currentStep, 'blue', 'Current Step', assignment.student_name)}

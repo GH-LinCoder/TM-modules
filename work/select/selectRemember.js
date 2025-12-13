@@ -388,7 +388,10 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
     }
 
     let displayData = null;
-    items.forEach(item => { if (item.name) displayData = item.name; else displayData = this.assembleData(item);
+    items.forEach(item => {
+      if (item.name) displayData = item.name; else displayData = this.assembleData(item);
+            if(item.is_deleted){console.log(displayData, 'is_deleted', item.is_deleted);return};
+      
       const div = document.createElement('div');
       div.className = 'p-2 hover:bg-gray-200 cursor-pointer border-b border-gray-200 last:border-b-0';  
       //div.textContent = item.name || item.task_name; //assignment view has differentiated names, This isn't going to work 
