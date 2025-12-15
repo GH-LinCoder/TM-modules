@@ -41,6 +41,10 @@ export async function loadAdminDashWithData() {
     count = await executeIfPermitted(null, 'respondentsCount', null);
     updateAll('[data-value="respondents-count-unique"]', count); //need change html students-count-unique
   
+    count = await executeIfPermitted(null, 'relationsCount', null);
+    updateAll('[data-value="relations-count"]', count); 
+
+
 
     
   }

@@ -123,6 +123,29 @@ approfilesCount:{
   }
 },
 
+//APPRO
+relationsCount:{
+  metadata: {
+    tables: ['approfile_relations'],
+    columns: ['id'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async  (supabase, userId) =>{
+    console.log('relationsCount()');
+    const { count, error } = await supabase
+    .from('approfile_relations')
+    .select('id', { count: 'exact', head: true }); // ← head: true = don't return rows, just count 
+
+    if (error) {
+      console.error('Error counting relations:', error.message);
+      throw new Error('Failed to count relations.');
+    }
+    
+    return count// if use {count} it would be in form  {count: 23}
+  }
+},
+
 
 //ASSIGNMENT
 assignmentsCount:{

@@ -47,7 +47,16 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-2xl font-bold text-blue-900" data-value="approfiles-count">?</p>
       <p class="text-xs text-blue-600">Humans + tasks + surveys + abstracts</p>
       <p class="text-xs text-blue-400 mt-1" data-delta="members-month">+? new this month</p>
+    </div> 
+
+        <!-- Approfile_relations -->
+    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="relations-stats">
+      <h3 class="text-sm font-medium text-blue-700 mb-1">Approfile Relations</h3>
+      <p class="text-2xl font-bold text-blue-900" data-value="relations-count">?</p>
+      <p class="text-xs text-blue-600">The number of links between appros</p>
+      <p class="text-xs text-blue-400 mt-1" data-delta="members-month">+? new this month</p>
     </div>
+
 
         <!-- Assignments -->
     <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-action="assignments-stats">

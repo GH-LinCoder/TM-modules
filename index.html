@@ -24,54 +24,73 @@
     </div>
 
     <!-- Login Form Modal (Initially Hidden) -->
-    <div id="login-modal" class="w-full max-w-sm transition-opacity duration-2000 ease-in-out opacity-0 pointer-events-none">
+    <div id="display-area" class="w-full max-w-sm transition-opacity duration-2000 ease-in-out opacity-0 pointer-events-none">
         
-        <!-- Header -->
-        <div class="bg-white p-8 rounded-xl border border-slate-200 shadow-xl w-full">
-            <div class="text-center mb-6">
-                <h1 class="text-2xl font-semibold text-slate-800">Welcome to your private T&M account</h1>
-                <p class="text-slate-500 mt-1 text-sm">Please sign in</p>
-            </div>
-    
-            <!-- Login Form -->
-            <form id="login-form">
-                <div class="mb-4">
-                    <input
-                        type="email"
-                        id="email-input"
-                        placeholder="Email Address"
-                        required
-                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm"
-                    >
-                </div>
-                <div class="mb-4">
-                    <input
-                        type="password"
-                        id="password-input"
-                        placeholder="Password"
-                        required
-                        class="w-full px-4 py-3 border border-slate-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-transparent text-sm"
-                    >
-                </div>
-                <div class="flex justify-end mb-6">
-                    <a href="#" class="text-sm font-medium text-sky-600 hover:text-sky-700">Forgot Password?</a>
-                </div>
-                <button
-                    type="submit"
-                    class="w-full bg-sky-600 hover:bg-sky-700 text-white font-medium py-3 rounded-lg transition-all duration-200 shadow-sm hover:shadow-lg"
-                >
-                    Sign In
-                </button>
-            </form>
-    
-            <div id="login-message" class="mt-4 text-center text-sm text-red-500"></div>
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-form bg-black p-6 rounded-lg shadow hidden  border border-slate-200">
+          <h2 class="text-xl font-bold text-center mb-4">Log In</h2>
+          <div id="login-error" class="text-red-500 text-sm hidden"></div>
+          <form class="space-y-3">
+            <input type="email" id="login-email" placeholder="Email" class="w-full p-2 border rounded" required />
+            <input type="password" id="login-password" placeholder="Password" class="w-full p-2 border rounded" required />
+            <button type="submit" id="loginBtn" class="w-full bg-green-600 text-white py-2 rounded">Log In</button>
+          </form>
+          <p class="text-center mt-2">
+            <button id="showReset" class="text-sm text-green-600 hover:underline">Forgot password?</button>
+          </p>
+          <p class="text-center mt-2">
+            <button id="showSignup" class="text-sm text-green-600 hover:underline">Create account</button>
+          </p>
         </div>
-    </div>
     
+    
+      <div class="w-full max-w-md space-y-6">
+        <!-- Signup Form -->
+        <div id="signupForm" class="auth-form bg-black p-6 rounded-lg shadow border border-slate-200"">
+          <h2 class="text-xl font-bold text-center mb-4">Create Account</h2>
+          <div id="signup-error" class="text-red-500 text-sm hidden"></div>
+          <div id="signup-success" class="text-green-500 text-sm hidden">Check your email to confirm!</div>
+          <form class="space-y-3">
+            <!--input type="text" id="full-name" placeholder="Full Name" class="w-full p-2 border rounded" required /-->
+            <input type="email" id="signup-email" placeholder="Email" class="w-full p-2 border rounded border border-slate-200" required />
+            <input type="password" id="signup-password" placeholder="Password (min 6 chars)" class="w-full p-2 border rounded" minlength="6" required />
+            <button type="submit" id="signupBtn" class="w-full bg-blue-600 text-white py-2 rounded">Sign Up</button>
+          </form>
+          <p class="text-center mt-4">
+            <button id="showLogin" class="text-blue-600 hover:underline">Already have an account? Log in</button>
+          </p>
+        </div>
+
+      <div class="w-full max-w-md space-y-6">
+        <!-- Reset Form -->
+        <div id="resetForm" class="auth-form bg-black p-6 rounded-lg shadow hidden border border-slate-200"">
+          <h2 class="text-xl font-bold text-center mb-4">Reset Password</h2>
+          <div id="reset-error" class="text-red-500 text-sm hidden"></div>
+          <div id="reset-success" class="text-green-500 text-sm hidden">Check your email for reset link!</div>
+          <form class="space-y-3">
+            <input type="email" id="reset-email" placeholder="Email" class="w-full p-2 border rounded" required />
+            <button type="submit" id="resetBtn" class="w-full bg-purple-600 text-white py-2 rounded">Send Reset Link</button>
+          </form>
+          <p class="text-center mt-4">
+            <button id="backToLogin" class="text-purple-600 hover:underline">Back to login</button>
+          </p>
+        </div>
+      </div>
+
+    </div>
+
+
+
+    </div>
+    <script type="module" src="./db/supabase.js" id='createSupabaseClient'>
+        import { createSupabaseClient } from './db/supabase.js';
+const supabase = createSupabaseClient();
+
+    </script>
     <script>
         // Get references to the modal elements
         const splashModal = document.getElementById('splash-modal');
-        const loginModal = document.getElementById('login-modal');
+        const displayArea = document.getElementById('display-area');
 
         const startAnimation = () => {
             // Step 1: Fade in the splash modal over 2 seconds.
@@ -86,10 +105,10 @@
                 // After another 2 seconds, remove splash from the document flow and make login interactive.
                 setTimeout(() => {
                     splashModal.style.display = 'none';
-                    loginModal.classList.remove('opacity-0', 'pointer-events-none');
-                    loginModal.classList.add('opacity-100');
+                    displayArea.classList.remove('opacity-0', 'pointer-events-none');
+                    displayArea.classList.add('opacity-100');
                 }, 2000); // This duration should be equal to the CSS transition duration
-            }, 3000);
+            }, 3000); render();
         };
 
         // Start the animation when the page loads
@@ -97,42 +116,76 @@
 
 
         
-        // Your login form submission logic would go here
-        const loginForm = document.getElementById('login-form');
+function showForm(formId) {
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
+  document.getElementById(formId).classList.remove('hidden');
+}
 
+async function render() {
+  
+//const supabase = createSupabaseClient();
+  // Attach tab buttons
+  document.getElementById('showLogin').onclick = () => showForm('loginForm');
+  document.getElementById('showSignup').onclick = () => showForm('signupForm');
+  document.getElementById('showReset').onclick = () => showForm('resetForm');
+  document.getElementById('backToLogin').onclick = () => showForm('loginForm');
 
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const email = document.getElementById('email-input').value;
-            const password = document.getElementById('password-input').value;
-            console.log("Attempting login with:", { email, password });
-              //window.location.href = 'https://preview--stage-master-hub.lovable.app/admin';
-              window.location.href = '/flexload.html';  //calls the script that creates the menus and containers and loads the initial main page
-        });
-/* the above loginForm.add can be replaced with
+  // Signup
+  document.getElementById('signupBtn').onclick = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+  //  const fullName = document.getElementById('full-name').value;
 
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const email = document.getElementById('email-input').value;
-  const password = document.getElementById('password-input').value;
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+   //   options: { data: { full_name: fullName } }
+    });
 
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password
-  });
+    if (error) {
+      document.getElementById('signup-error').textContent = error.message;
+      document.getElementById('signup-error').classList.remove('hidden');
+    } else {
+      document.getElementById('signup-success').classList.remove('hidden');
+      document.getElementById('signup-error').classList.add('hidden');
+    }
+  };
 
-  if (error) {
-    document.getElementById('login-message').textContent = error.message;
-    return;
-  }
+  // Login
+  document.getElementById('loginBtn').onclick = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-  // Optional: store session or redirect
-  window.location.href = '/flexload.html';
-});
-//needs to import & create client at top of script
-import{createSupabaseClient} from './supabase.js'; //const supabase = createSupabaseClient();
-*/
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
+    if (error) {
+      document.getElementById('login-error').textContent = error.message;
+      document.getElementById('login-error').classList.remove('hidden');
+    } else {
+      showToast('Login successful!', 'success');
+      window.location.href = '/flexload.html'; // your app
+    }
+  };
+
+  // Password reset
+  document.getElementById('resetBtn').onclick = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('reset-email').value;
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/flexload.html`
+    });
+
+    if (error) {
+      document.getElementById('reset-error').textContent = error.message;
+      document.getElementById('reset-error').classList.remove('hidden');
+    } else {
+      document.getElementById('reset-success').classList.remove('hidden');
+    }
+  };
+}
 
 </script>
 

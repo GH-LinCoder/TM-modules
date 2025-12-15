@@ -1,412 +1,129 @@
-//  ./work/dash/memberDash.js
-console.log('memberDash.js loaded');
+// ./work/auth/auth.js
+import { createSupabaseClient } from '../db/supabase.js';
+import { showToast } from '../ui/showToast.js';
 
-//import 
-
-function getTemplateHTML() { console.log('getTemplateHTML()');
+function getTemplateHTML() {
   return `
-<body class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-  <div class="w-full max-w-md bg-blue-100 rounded-lg shadow-md p-8">
-    <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Create Account</h1>
-    <div id="signupForm" class="auth-form">
-    <form id="signupForm" class="space-y-4">
-      <!-- signup User Name -->
-      <div>
-        <label for="signup-userName" class="block text-sm font-medium text-gray-700 mb-1">User name</label>
-        <input 
-          type="text" 
-          id="signup-userName" 
-          class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Johaness Von Doe"
-          required
-        />
+    <div id="authContainer" class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+      <div class="w-full max-w-md space-y-6">
+        <!-- Signup Form -->
+        <div id="signupForm" class="auth-form bg-white p-6 rounded-lg shadow">
+          <h2 class="text-xl font-bold text-center mb-4">Create Account</h2>
+          <div id="signup-error" class="text-red-500 text-sm hidden"></div>
+          <div id="signup-success" class="text-green-500 text-sm hidden">Check your email to confirm!</div>
+          <form class="space-y-3">
+            <!--input type="text" id="full-name" placeholder="Full Name" class="w-full p-2 border rounded" required /-->
+            <input type="email" id="signup-email" placeholder="Email" class="w-full p-2 border rounded" required />
+            <input type="password" id="signup-password" placeholder="Password (min 6 chars)" class="w-full p-2 border rounded" minlength="6" required />
+            <button type="submit" id="signupBtn" class="w-full bg-blue-600 text-white py-2 rounded">Sign Up</button>
+          </form>
+          <p class="text-center mt-4">
+            <button id="showLogin" class="text-blue-600 hover:underline">Already have an account? Log in</button>
+          </p>
+        </div>
+
+        <!-- Login Form -->
+        <div id="loginForm" class="auth-form bg-white p-6 rounded-lg shadow hidden">
+          <h2 class="text-xl font-bold text-center mb-4">Log In</h2>
+          <div id="login-error" class="text-red-500 text-sm hidden"></div>
+          <form class="space-y-3">
+            <input type="email" id="login-email" placeholder="Email" class="w-full p-2 border rounded" required />
+            <input type="password" id="login-password" placeholder="Password" class="w-full p-2 border rounded" required />
+            <button type="submit" id="loginBtn" class="w-full bg-green-600 text-white py-2 rounded">Log In</button>
+          </form>
+          <p class="text-center mt-2">
+            <button id="showReset" class="text-sm text-blue-600 hover:underline">Forgot password?</button>
+          </p>
+          <p class="text-center mt-2">
+            <button id="showSignup" class="text-sm text-gray-600 hover:underline">Create account</button>
+          </p>
+        </div>
+
+        <!-- Reset Form -->
+        <div id="resetForm" class="auth-form bg-white p-6 rounded-lg shadow hidden">
+          <h2 class="text-xl font-bold text-center mb-4">Reset Password</h2>
+          <div id="reset-error" class="text-red-500 text-sm hidden"></div>
+          <div id="reset-success" class="text-green-500 text-sm hidden">Check your email for reset link!</div>
+          <form class="space-y-3">
+            <input type="email" id="reset-email" placeholder="Email" class="w-full p-2 border rounded" required />
+            <button type="submit" id="resetBtn" class="w-full bg-purple-600 text-white py-2 rounded">Send Reset Link</button>
+          </form>
+          <p class="text-center mt-4">
+            <button id="backToLogin" class="text-blue-600 hover:underline">Back to login</button>
+          </p>
+        </div>
       </div>
-
-      <!-- signup Email -->
-      <div>
-        <label for="signup-email" class="block text-sm font-medium text-gray-700 mb-1">Email</label>
-        <input 
-          type="email" 
-          id="signup-email" 
-          class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="you@example.com"
-          required
-        />
-      </div>
-
-      <!-- signup Password -->
-      <div>
-        <label for="signup-password" class="block text-sm font-medium text-gray-700 mb-1">Password</label>
-        <input 
-          type="password" 
-          id="signup-password" 
-          class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="••••••••"
-          minlength="6"
-          required
-        />
-        <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
-      </div>
-
-      <!-- Confirm Password -->
-      <div>
-        <label for="signup-confirmPassword" class="block text-sm font-medium text-gray-700 mb-1">Confirm Password</label>
-        <input 
-          type="password" 
-          id="signup-confirmPassword" 
-          class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="••••••••"
-          required
-        />
-      </div>
-
-      <!-- Submit Button -->
-      <button 
-        type="submit" 
-        id="signupBtn"
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-      >
-        Sign Up
-      </button>
-    </form>
-
-    <!-- Success Message (hidden by default) -->
-    <div id="signup-successMessage" class="hidden mt-4 p-3 bg-green-100 text-green-800 rounded text-sm text-center">
-      Account created! Redirecting...
     </div>
-
-    <!-- Error Message -->
-    <div id="signup-errorMessage" class="hidden mt-4 p-3 bg-red-100 text-red-800 rounded text-sm"></div>
-
-    <!-- Link to Sign In -->
-    <p class="mt-6 text-center text-sm text-gray-600">
-      Already have an account? 
-<button id ="showLoginForm">Login/out</button>
-    </p>
-  </div>
-</div>
-<!-------------------------------------------        --------------------------------------->
-
-<body class="min-h-screen flex items-center justify-center bg-gray-50 px-4">
-    <div id="loginForm" class="auth-form hidden">
-<div class="w-full max-w-md bg-green-100 rounded-lg shadow-md p-8">
-    <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Log in to existing Account</h1>
-
-    <form id="loginForm" class="space-y-4">
-      <!-- login User Name -->
-      <div>
-        <label for="login-userName" class="block text-sm font-medium text-gray-700 mb-1">Enter your user name</label>
-        <input 
-          type="text" 
-          id="login-userName" 
-          class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="Johaness Von Doe"
-          required
-        />
-      </div>
-
-      <!-- login Email -->
-      <div>
-        <label for="login-email" class="block text-sm font-medium text-gray-700 mb-1">or enter Email</label>
-        <input 
-          type="email" 
-          id="login-email" 
-          class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="you@example.com"
-          required
-        />
-      </div>
-
-      <!-- login Password -->
-      <div>
-        <label for="login-password" class="block text-sm font-medium text-gray-700 mb-1">Password required</label>
-        <input 
-          type="password" 
-          id="login-password" 
-          class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          placeholder="••••••"
-          minlength="6"
-          required
-        />
-        <p class="text-xs text-gray-500 mt-1">Minimum 6 characters</p>
-      </div>
-
-
-      <!-- Submit Button -->
-      <button 
-        type="submit" 
-        id="loginBtn"
-        class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
-      >
-        (enter username OR email) plus password
-      </button>
-    </form>
-
-    <!-- Success Message (hidden by default) -->
-    <div id="login-successMessage" class="hidden mt-4 p-3 bg-green-100 text-green-800 rounded text-sm text-center">
-      Redirecting...
-    </div>
-
-    <!-- Error Message -->
-    <div id="login-errorMessage" class="hidden mt-4 p-3 bg-red-100 text-red-800 rounded text-sm"></div>
-
-    <!-- Link to Sign In -->
-    <!--p class="mt-6 text-center text-sm text-gray-600">
-      Don't have an account? 
-<button class="nav-btn" data-page="login-signup" data-action="login-signup">Sign-up for account</button>
-    </p-->
-  
-
-
-      <!-- Link to password change -->
-    <p class="mt-6 text-center text-sm text-red-600">
-      Can't remember password?
-
-    <form id="forgot-password-form">
-  <label for="password-email" class="text-center text-sm text-red-600">Enter email and click to renew password:</label>
-  <input type="email" id="password-email" name="password-email" placeholder="Enter email then click" required <input 
-          type="email" 
-          id="password-email" 
-          class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-200 focus:border-blue-500">
-<button  type="submit"  class="w-full bg-red-300 hover:bg-blue-500 text-white font-medium py-2 px-4 rounded-md transition-colors" data-action="password-change">Enter email then click to change password</button>  
- </form>
-      
-
-    </p>
-  </div>
-
-  </div>
-
-`}
-
-
-
-function showAuthForm(formName) {
-  document.querySelectorAll('.auth-form').forEach(form => {
-    form.classList.add('hidden');
-  });
-  document.getElementById(`${formName}Form`).classList.remove('hidden');
+  `;
 }
 
-
-/*
-
-ERROR: onclick showLoginForm is not defined  ??
-
-When you return to it, focus first on:
-1. **Unique element IDs**
-2. **Form visibility toggle**
-3. **Isolated error/success messaging**
-
-<!-- Signup -->
-<input id="signup-email" ...>
-<!-- Login -->
-<input id="login-email" ...>
-<!-- Reset -->
-<input id="reset-email" ...>
-
-<div id="signup-error" class="hidden ..."></div>
-<div id="login-error" class="hidden ..."></div>
-
-Wrap each form in a container with a unique ID and class:
-```html
-<div id="signupForm" class="auth-form">
-  <!-- signup fields -->
-</div>
-<div id="loginForm" class="auth-form hidden">
-  <!-- login fields -->
-</div>
-<div id="resetForm" class="auth-form hidden">
-  <!-- reset fields -->
-</div>
-
-Instead of one huge `render()` function, split logic:
-
-
-
-*/
-function showLoginForm(){
-  console.log('showLoginForm()');
-
+function showForm(formId) {
+  document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
+  document.getElementById(formId).classList.remove('hidden');
 }
 
-function initSignupForm() { /* ... */ }
-function initLoginForm() { /* ... */ }
-function initResetForm() { /* ... */ }
-
-export function renderNEW(panel, petition = {}) {
+export async function render(panel, query = {}) {
   panel.innerHTML = getTemplateHTML();
-  initSignupForm();
-  initLoginForm();
-  initResetForm();
-  showAuthForm('login'); // default
-}
+const supabase = createSupabaseClient();
+  // Attach tab buttons
+  document.getElementById('showLogin').onclick = () => showForm('loginForm');
+  document.getElementById('showSignup').onclick = () => showForm('signupForm');
+  document.getElementById('showReset').onclick = () => showForm('resetForm');
+  document.getElementById('backToLogin').onclick = () => showForm('loginForm');
 
-
-
-
-export function render(panel, petition = {}) {
-    console.log('memberDash Render(', panel, petition, ')');
-    panel.innerHTML = getTemplateHTML();
-
-     //? query.petitioner : 'unknown';
-    console.log('Petition:', petition);
-    panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
-
-//petitioner
-
-// is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
-//it has to be called prior to passing it in the query{} object when we call this module
-//in adminListeners.js, when we call appState.setQuery(), we need to have added petitioner: petition
-//then we can access it here in the render() function
-//we can also add a default value of 'unknown' if it is not passed
-//so we can see where we are when we open the a new page
-
-//the call here isn't from adminListeners it is from the menu button in the dashboard
-//so we need to also assign petitioner: {Module:'dashboard', Section:'menu', Action:'howTo'} when we call this module from the menu button
-//we can do this in the dashboardListeners.js file
-//we can also add a default value of 'unknown' if it is not passed
-
-
-
-
-
-
-
-  // Handle sign-up form
-  signupForm = document.getElementById('signupForm')
-  
-  signupForm.addEventListener('submit', async (e) => {
+  // Signup
+  document.getElementById('signupBtn').onclick = async (e) => {
     e.preventDefault();
-    
-    const signup_userName = signupForm.getElementById('signup-userName').value.trim();
-    const signup_email = signupForm.getElementById('signup-email').value.trim();
-    const signup_password = signupForm.getElementById('signup-password').value;
-    const signup_confirmPassword = signupForm.getElementById('signup-confirmPassword').value;
-    const signupBtn = signupForm.getElementById('signupBtn');
-    //const loginBtn = document.getElementById('loginBtn');
-    const signup_errorMessage = signupForm.getElementById('signup-errorMessage');
-    const signup_successMessage = signupForm.getElementById('signup-successMessage');
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-password').value;
+  //  const fullName = document.getElementById('full-name').value;
 
-    // Reset messages
-    signup_errorMessage.classList.add('hidden');
-    signup_successMessage.classList.add('hidden');
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+   //   options: { data: { full_name: fullName } }
+    });
 
-    // Validate
-    if (signup_password !== signup_confirmPassword) {
-      signup_errorMessage.textContent = 'Passwords do not match';
-      signup_errorMessage.classList.remove('hidden');
-      return;
+    if (error) {
+      document.getElementById('signup-error').textContent = error.message;
+      document.getElementById('signup-error').classList.remove('hidden');
+    } else {
+      document.getElementById('signup-success').classList.remove('hidden');
+      document.getElementById('signup-error').classList.add('hidden');
     }
+  };
 
-    if (signup_password.length < 6) {
-      signup_errorMessage.textContent = 'Password must be at least 6 characters';
-      signup_errorMessage.classList.remove('hidden');
-      return;
-    }
-
-    // Disable button
-    signupBtn.disabled = true;
-    signupBtn.textContent = 'Creating account...';
-
-    try {
-      const { data, error } = await supabase.auth.signUp({
-        signup_email,
-        signup_password,
-        options: {
-          data: {
-            full_name: userName,
-            avatar_url: null
-          }
-        }
-      });
-
-      if (error) {
-        signup_errorMessage.textContent = error.message;
-        signup_errorMessage.classList.remove('hidden');
-      } else {
-        signup_successMessage.classList.remove('hidden');
-        // Redirect after 1.5s
-        setTimeout(() => {
-          window.location.href = 'adminDash.html';
-        }, 1500);
-      }
-    } catch (err) {
-      signup_errorMessage.textContent = 'An unexpected error occurred';
-      signup_errorMessage.classList.remove('hidden');
-    } finally {
-      signupBtn.disabled = false;
-      signupBtn.textContent = 'Sign Up';
-    }
-  });
-
-
-  // Handle login form
-
-  const loginForm = document.getElementById('loginForm');
-  
-  loginForm.addEventListener('submit', async (e) => {
+  // Login
+  document.getElementById('loginBtn').onclick = async (e) => {
     e.preventDefault();
-    
-    const login_userName = loginForm.getElementById('login-userName').value.trim(); // can't use this?
-    const login_email = loginForm.getElementById('login-email').value.trim();
-    const login_password = loginForm.getElementById('login-password').value;
-    
-    const loginBtn = loginForm.getElementById('loginBtn');
-    const login_errorMessage = loginForm.getElementById('login-errorMessage');
-    const login_successMessage = loginForm.getElementById('login-successMessage');
+    const email = document.getElementById('login-email').value;
+    const password = document.getElementById('login-password').value;
 
-    // Reset messages
-    login_errorMessage.classList.add('hidden');
-    login_successMessage.classList.add('hidden');
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
 
-
-    if (login_password.length < 6) {
-      login_errorMessage.textContent = 'Password must be at least 6 characters';
-      login_errorMessage.classList.remove('hidden');
-      return;
+    if (error) {
+      document.getElementById('login-error').textContent = error.message;
+      document.getElementById('login-error').classList.remove('hidden');
+    } else {
+      showToast('Login successful!', 'success');
+      window.location.href = '/flexload.html'; // your app
     }
+  };
 
-    // Disable button
-    loginBtn.disabled = true;
-    loginBtn.textContent = 'Checking account...';
-    handleLogin(login_email,login_password)
-  
-  })
+  // Password reset
+  document.getElementById('resetBtn').onclick = async (e) => {
+    e.preventDefault();
+    const email = document.getElementById('reset-email').value;
 
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/flexload.html`
+    });
 
-
-async function handleLogin(email,password){
-try{
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-});
-}catch (error) {
-  login_errorMessage = "Password or email not recognised";
-  login_errorMessage.classList.remove('hidden');
-} finally {
-  loginBtn.disabled = false;
-  loginBtn.textContent = 'Login';
-  login_successMessage = "Logged in";
-  login_successMessage.classList.remove('hidden');
+    if (error) {
+      document.getElementById('reset-error').textContent = error.message;
+      document.getElementById('reset-error').classList.remove('hidden');
+    } else {
+      document.getElementById('reset-success').classList.remove('hidden');
+    }
+  };
 }
-}
-
-async function handleSignOut(){
-try{
-    const { error } = await supabase.auth.signOut();  
-  }catch (error) {
-  console.log("error", error);
-   }
-}
-
-async function handleNewPassword(){
-
-
-
-}
-
-
-}
-
