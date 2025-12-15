@@ -61,7 +61,7 @@ function styleCardByType(type){
   console.log('styleCardByType()',type);
   switch(type){
       case 'task':return 'bg-white p-2 rounded border mb-3 text-lg font-bold';
-      case 'step':return 'bg-yellow-100 p-2 rounded border mb-1 text-sm font-bold';
+      case 'step':return 'bg-yellow-100 p-2 rounded border mb-1 text-sm font-bold ml-2';
       case 'manager-assigned':return 'bg-orange-100 p-2 rounded border mb-1 text-sm font-style: italic ml-4';
       case 'automation_task':return 'bg-blue-100 p-2 border-dotted border-blue-500 rounded border mb-1 text-sm ml-6';    
       case 'automation_survey':return 'bg-green-100 p-2 border-dotted border-green-500 rounded border mb-1 text-sm ml-6';
@@ -223,7 +223,7 @@ async function reloadTaskData(panel){
 //in edit survey this called loadSurveyQuestions
 async function loadTaskSteps(panel, taskId) { //readTaskSteps 'id, name, description, step_order, external_url' excludes automations
     
-    console.log('loadTaskSteps()');
+    console.log('loadTaskSteps()',taskId);
     try {
       const steps = await executeIfPermitted(state.user, 'readTaskSteps', { taskId });
       state.steps = steps || [];
@@ -490,6 +490,8 @@ function attachListeners(panel) {
 
   descriptionInput?.addEventListener('input', e => {
     descriptionCounter.textContent = `${e.target.value.length}/2000 characters`;
+  saveTaskBtn.disabled = false;
+    saveTaskBtn.textContent = 'Update Task';
   });
 
   // Step field listeners
@@ -519,7 +521,7 @@ stepSelect?.addEventListener('change', (e) => {
       // Fill form with step data
       panel.querySelector('#stepName').value = step.name || '';
       panel.querySelector('#stepDescription').value = step.description || '';
-      panel.querySelector('#stepUrl').value = step.external_url || '';
+      panel.querySelector('#stepUrl').innerHTML = step.external_url || '';
       panel.querySelector('#stepOrder').value = stepOrder; 
       console.log('Form filled with step data');
 
@@ -1122,11 +1124,6 @@ console.log('state.currentStepId:',state.currentStepId); // should be == clicked
 const step = state.steps.find(s => s.id === clickedStepId); //extract this steps data from the array of al the steps data
   console.log('Looking for clickedStepId:', clickedStepId, 'in', state.steps.map(s => s.id));
   
-
-    
-
- 
-  
   if (step) { stepOrder = step.step_order;  console.log('state,steps:',state.steps,'stepId',stepId,'step.stepOrder:', step.step_order); // undefined 23:07 24 Nov
     // Fill form with step data
     panel.querySelector('#stepName').value = step.name || '';
@@ -1215,7 +1212,7 @@ function renderTaskHeaderCard(list, task) {
    //   card.dataset.taskId = task.id;//copied not tested dec 6
    //  card.dataset.type = 'header'; //copied not tested  dec 6
    // card.className = styleCardByType('survey');
-  card.className = 'clickable-step hover:scale-105 transition-transform bg-gray-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
+  card.className = 'clickable-step hover:scale-105 transition-transform bg-gray-50 border-l-4 border-orange-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
   card.innerHTML = `
     <strong>Task: ${task.name}</strong>
     ${task.description ? `<div class="text-sm text-gray-700">${task.description.substring(0,200) }...</div>` : ''}
@@ -1228,14 +1225,15 @@ function renderTaskHeaderCard(list, task) {
 
 function renderStepCard(summary,step){
 
-    const stepCard = document.createElement('p');
+    const stepCard = document.createElement('div');
     //edit survey has 'type' here  
-    stepCard.className = 'clickable-step hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
+    stepCard.className = 'clickable-step hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md ml-2';
     stepCard.dataset.stepId = step.id;//stepId? Never has a value.was and is null. 
     stepCard.innerHTML = `
       <strong>Step ${step.step_order}:</strong> ${step.name}
       <span class="block text-sm text-gray-600 whitespace-pre-line">${step.description || ''}</span>
-    `;
+     ${step.external_url ? `<div class="text-xs text-blue-600">${step.external_url}</div>` : ''}
+      `;
 
     summary.appendChild(stepCard);
 }

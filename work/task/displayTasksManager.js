@@ -226,7 +226,7 @@ export async function render(panel, query = {}) {
                     ${currentStep_order === 2 ? '<p class="text-sm text-blue-600">This step means completed.</p>' : ''}
                     ${currentStep_order === numberOfSteps ? '<p class="text-sm text-purple-600">This is the final step. Advancing will complete the task.</p>' : ''}
                 </div>
-            `;
+            ${petitionBreadcrumbs()} `
 
             cardContainer.appendChild(card);
         }

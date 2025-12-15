@@ -218,7 +218,7 @@ function getTemplateHTML() {
 
                     <div class="bg-indigo-100 space-y-6" data-list="my-tasks">
                         <!-- Tasks will be loaded here dynamically -->
-                                            </div>
+                                            </div> 
                 </div>
                 
                 <!-- RELATIONS SECTION -->
@@ -312,12 +312,15 @@ function getTemplateHTML() {
     </div>
 
 
-  </div>
+  </div> 
+
 </div>
-    </div>
-</div>
-        
         ${petitionBreadcrumbs()}
+</div>
+
+    </div>
+        
+
     `;
 }
 

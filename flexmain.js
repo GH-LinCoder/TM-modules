@@ -1,4 +1,4 @@
-//flexmain.js
+//flexmain.js  version 23:00 Dec 13 - commented out parts signalled as unused
 
 /**
  * === FLOW: Panel Management ===
@@ -47,10 +47,10 @@ function getDisplayArea() {
 //console.log('GetDisplayArea()');
 
 const destination=appState.query.petitioner.Destination;
-console.log('destination:',destination);
+//console.log('destination:',destination);
 if(destination==='new-panel') return document.querySelector('[data-panel="inject-here"]');
 else {const displayArea = document.querySelector(`[data-section="${destination}"]`);
-  console.log('displayArea:',displayArea );
+//  console.log('displayArea:',displayArea );
   return  displayArea;
 }
 
@@ -223,7 +223,8 @@ selectedModule.render(panel,query); // use the function that was obtained from t
 //  console.log('Available exports:', Object.keys(selectedModule));
 }
 
-}else  try {
+}
+/*else  try {
     // Load html content from a file
     console.log('Registry does not recognise', stubName, 'append panel, push details in array, then load html content instead');
     displayArea.appendChild(panel);
@@ -239,11 +240,11 @@ selectedModule.render(panel,query); // use the function that was obtained from t
     panel.innerHTML = `<div class="text-red-700 p-4">Error loading ${stubName}</div>`;
     displayArea.appendChild(panel);
     updatePanelLayout();
-  }
+  } */
   ///end of conditional on 'new-panel'
 
 }
-
+/*
 function renderSection(query, selectedModule,displayArea){// new 10:41 sept 10 2025
   
   displayArea = document.querySelector('[data-section="t&m-management"]');
@@ -259,7 +260,8 @@ function renderSection(query, selectedModule,displayArea){// new 10:41 sept 10 2
     }
       */
 
-}
+//} 
+
 /* my original verions
 async function backgroundProcess() {
     const action = appState.query.petitioner.Action;
@@ -310,7 +312,7 @@ export async function renderPanel(query) {// need change name from renderPanel t
 const stubName = appState.query.petitioner.Action; //legacy html to be phased-out FAILS - no effect of nav buttons
 
     const displayArea = getDisplayArea();
-  console.log('petitioner .Module:', appState.query.petitioner.Module, '.Action:', appState.query.petitioner.Action, '.Destination:', appState.query.petitioner.Destination);
+  //console.log('petitioner .Module:', appState.query.petitioner.Module, '.Action:', appState.query.petitioner.Action, '.Destination:', appState.query.petitioner.Destination);
   // Check if panel is already open
   const alreadyOpen = panelsOnDisplay.some(p => p.stubName === stubName);
   //console.log(panelsOnDisplay);//why does panelsOnDisplay have a 'stubName' ?
@@ -330,8 +332,9 @@ if(registryEntry) { console.log('Registry recognises', stubName, 'push details i
 const selectedModule = await registryEntry(); // Use the pointer to get the function
 //console.log('Loaded module functions:', selectedModule);
 
-if(true) renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); //was a test but never changed the if??
-else renderSection(query, selectedModule,displayArea);
+//if(true) 
+  renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); //was a test but never changed the if??
+//else renderSection(query, selectedModule,displayArea);
 ///below conditional on 'new-panel
 /*
 //moved here 9.44 Sep 10
@@ -410,7 +413,7 @@ function updatePanelLayout() {
 }
 
 
-
+/*
 // === FETCH STUB CONTENT ===
 async function getStubContent(stubName) { // legacy
 
@@ -424,7 +427,7 @@ async function getStubContent(stubName) { // legacy
   
   return await response.text();
 }
-
+*/
 
      // console.log('🔍 Checking if already open...');
      // console.log('   Looking for stubName:', stubName, 'type:', typeof stubName);
@@ -472,16 +475,16 @@ export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
         // 2nd Click on an open page
         if (isPageOpen) {
           // If already open, close it
-          console.log('Panel already open, closing it:', stubName);
+        //  console.log('Panel already open, closing it:', stubName);
           closePanel(stubName);
         } else 
   
-        {  console.log('Panel NOT open:', stubName);  // 1st Click for an ordinary page
+        { // console.log('Panel NOT open:', stubName);  // 1st Click for an ordinary page
           // Open new panel - this is to display a new side page that is not admin or member & not already open
 //changed 22:11 Oct 13
 
 const destination = appState.query.petitioner.Destination;
-console.log('destination:',destination);
+//console.log('destination:',destination);
 if(destination==='background') await backgroundProcess(); else
 {
           await renderPanel({...appState.query.petitioner, 'Action': stubName});
@@ -504,7 +507,7 @@ if(destination==='background') await backgroundProcess(); else
     }
 
 
-
+/*
 // === NAVIGATION HANDLING ===
 function setupNavigationListeners() {//unlike admiListeners navListeners have not been loading petition by reading html
     console.log('Setting up navigation listeners');
@@ -530,7 +533,7 @@ console.log('howToContext:',howToContext);
     //appState.query.petitioner.Action = pageName + '.html'; //keeping petitioner in sync with stubName
     appState.setPetitioner(petition); //keeping petitioner in sync with stubName
 
-    const stubName = pageName + '.html'; //????????????????
+   // const stubName = pageName + '.html'; //????????????????
 
 // Call the extracted function. true indicates it's from button click
 //await openClosePanelsByRule(stubName, true); 
@@ -545,7 +548,7 @@ console.log('howToContext:',howToContext);
 
   });
 }
-
+*/
 // === CLOSE ALL PANELS ===
 function closeAllPanels() {
     console.log('Closing all panels');

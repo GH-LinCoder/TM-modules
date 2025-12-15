@@ -386,12 +386,12 @@ if (task_header_id) {
     .limit (1);
 }
 
-if (existing && existing.data.length > 0) { console.log (existing);
+if (existing && existing.data.length > 0) { //console.log (existing);
   throw new Error('Assignment already exists for this student');
 }
 
 
-if(task_header_id) { console.log('task_header_id:', task_header_id);
+if(task_header_id) { //console.log('task_header_id:', task_header_id);
   const { data, error } = await supabase
   .from('task_assignments')
   .insert({
@@ -406,7 +406,7 @@ if(task_header_id) { console.log('task_header_id:', task_header_id);
     return data.id; //
   } 
   else 
-  if (survey_header_id) { console.log('survey_header_id:', survey_header_id);
+  if (survey_header_id) { //console.log('survey_header_id:', survey_header_id);
     const { data, error } = await supabase
   .from('task_assignments')
   .insert({
@@ -538,31 +538,7 @@ createApprofileRelation: {
   }
 },
 
-softDeleteRelation:{
-  metadata: {
-    tables: ['approfile_relations'],
-    columns: ['is_deleted', 'deleted_at', 'deleted_by'],
-    type: 'UPDATE',
-    requiredArgs: ['relationId', 'deletedBy']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { relationId, deletedBy } = payload;
-console.log('registry softDelete', relationId, 'by', deletedBy);
-    const { data, error } = await supabase
-      .from('approfile_relations')
-      .update({
-        is_deleted: true,
-        deleted_at: new Date().toISOString(),
-        deleted_by: deletedBy
-      })
-      .eq('id', relationId)
-      .select()
-      .single();
 
-    if (error) throw error;
-    return data; // returns the updated automation row
-  }
-},
 
 
 ///////////////////////////////////// UPDATE   /////////////////////
@@ -835,28 +811,6 @@ readApprofileById:{
   }
 },
 
-readApprofileByTaskId:{// getthe appro id (plus name) from the taskId
-  metadata: {
-    tables: ['app_profiles'],
-    columns: ['id', 'name', 'email', 'created_at'],
-    type: 'SELECT',
-    requiredArgs: ['taskId']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { taskId } = payload;
-    const { data, error } = await supabase
-      .from('app_profiles')
-      .select('id, name')
-      .eq('task_header_id', taskId)
-      .single();
-    
-    if (error) throw error;
-    return data;
-  }
-},
-
-
-
 //new 22:00 Nov 28 replacement of readApprofileRelationships to include type icon
 
 //APPRO
@@ -886,12 +840,12 @@ readApprofileRelationships: {
         ...ofRels.data.map(r => r.approfile_is)        // is-appros
       ];
        
-console.log('ids:',ids);
+//console.log('ids:',ids);
     const profiles = await supabase
       .from('app_profiles')
       .select('id, auth_user_id, survey_header_id, task_header_id')
       .in('id', ids);
-console.log('profiles:',profiles);
+//console.log('profiles:',profiles);
     // build a lookup map of appro id → icon
     const profileMap = {};
     for (const ap of profiles.data || []) {
@@ -905,7 +859,7 @@ console.log('profiles:',profiles);
       }
       profileMap[ap.id] = icon;
     }
-console.log('profileMap',profileMap);
+//console.log('profileMap',profileMap);
     return {
       is: isRels.data || [],
       of: ofRels.data || [],
@@ -994,7 +948,7 @@ console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   //.single(); //Return single object
 
   if (error) throw error;
-  console.log('readThisAssignment{} data:',data);
+  //console.log('readThisAssignment{} data:',data);
     return data; //
   } 
 },
@@ -1019,7 +973,7 @@ console.log('readAllAssignment{}','id:',assignment_id,'payload:', payload);
   //.single(); //Return single object
 
   if (error) throw error;
-  console.log('readThisAssignment{} data:',data);
+  //console.log('readThisAssignment{} data:',data);
     return data; //
   } 
 },
@@ -1045,7 +999,7 @@ console.log('readAssignment2Exists()');
   //.single(); //Return single object
 
   if (error) throw error;
-  console.log('readAssignmentExists() data:',data);
+  //console.log('readAssignmentExists() data:',data);
     return data; //
   } 
 },
@@ -1122,7 +1076,7 @@ readManagerAssignments: {
       .from('task_assignment_view')
       .select(`
         assignment_id, student_id, student_name, task_header_id, task_name, task_description, 
-        step_order, step_name, step_description, manager_id, manager_name, assigned_at, task_external_url
+        step_order, step_name, step_description, manager_id, manager_name, assigned_at
       `)
       .eq('manager_id', manager_id)
       .order('task_name', { ascending: true })
@@ -1163,10 +1117,10 @@ readRelationshipExists:{
     tables: ['approfile_relations'], 
     columns: ['rel_name', 'created_at', 'relation_id', 'approfile_is', 'of_approfile', 'relationship', 'rel_description','approfile_is_name', 'of_approfile.name'],
     type: 'SELECT',
-    requiredArgs: ['approfile_is', 'relationship', 'of_approfile'] 
+    requiredArgs: ['approfile_is', 'of_approfile', 'relationship'] 
   },
   handler: async (supabase, userId, payload) => {
-    const { approfile_is, relationship, of_approfile} = payload;
+    const { approfile_is, of_approfile, relationship} = payload;
   console.log('readRelationExists{}','payload:', payload);
     const { data, error } = await supabase
     .from('approfile_relations')
@@ -1176,9 +1130,9 @@ readRelationshipExists:{
     .eq('of_approfile', of_approfile)
     .select() //Return the inserted row
     //.single(); //Return single object
-  console.log('data-readRelationshipExists:',data);
+  //console.log('data-readRelationshipExists:',data);
     if (error) throw error;
-    console.log('readRelationshipExists{} data:',data);
+   // console.log('readRelationshipExists{} data:',data);
       return data; //
     } 
   },
@@ -1193,14 +1147,14 @@ readApprofile_relations_view:{
   },
   handler: async (supabase, userId, payload) => {
 //    const { approfile_is, of_approfile, relationship} = payload;
-  //console.log('approfile_relations_view{}','payload:', payload);
+  console.log('approfile_relations_view{}','payload:', payload);
     const { data, error } = await supabase
     .from('approfile_relations_view')
     .select('*')
     .order('approfile_is_name');
-  console.log('approfile_relations_view:',data);
+  //console.log('approfile_relations_view:',data);
     if (error) throw error;
-    console.log('approfiel_relations_view data:',data);
+    //console.log('approfiel_relations_view data:',data);
       return data; //
     }
 },
@@ -1442,14 +1396,15 @@ handler: async (supabase, userId, payload) => {
       type: 'SELECT',
       requiredArgs:['supabase', 'userId', 'taskId']
     },
-    handler: async (supabase, userId, taskId) => {// assume receive {task_header_id:task_header_id}
-      taskId = taskId.task_header_id;  //this is weird
-  //  console.log('readTaskWithSteps for taskId;',taskId);
+    handler: async (supabase, userId, payload) => {// assume receive {task_header_id:task_header_id}
+    // taskId = taskId.task_header_id;  //this is weird
+    const { taskId } = payload;
+    console.log('readTaskWithSteps for taskId;',taskId);
       const { data, error } = await supabase
         .from('task_with_steps_view')
-        .select('task_name, step_id, step_order, step_name, step_description')
+        .select('task_name, task_description, task_external_url, step_id, step_order, step_name, step_description, step_external_url')// changed 20:14 Dec 14
 //        .select('id, name, description, task_steps(*)')
-        .eq('task_id', encodeURIComponent(taskId));  // encodeURIComponent(value) for .eq() & .like()
+        .eq('task_id', taskId);  // encodeURIComponent(value) for .eq() & .like()
       if (error) throw error;
       return data; //an array of the steps
     }
@@ -1650,15 +1605,15 @@ updateSurveyQuestion: {
   },
   handler: async (supabase, userId, payload) => {
 
-    const { questionId, questionName, questionDescription, questionNumber} = payload;
-    console.log('UpdateQuestion:',questionName, 'userId:',userId, 'questionId:',questionId, 'question_number:',questionNumber);
+    const { questionId, questionName, questionDescription} = payload;
+    console.log('UpdateQuestion:',questionName, 'userId:',userId, 'questionId:',questionId);
     const { data, error } = await supabase
 
     .from('survey_questions')
       .update({
         name: questionName,
         description :  questionDescription || null,
-      question_number:questionNumber 
+      //  author_id: userId 
       })
       .eq('id', questionId) 
       .select()
@@ -1718,7 +1673,7 @@ createSurveyAnswer: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => {
-    const { survey_question_id, answerName, answer_number } = payload;
+    const { questionId, answerText, answer_number } = payload;
 
     // Check for duplicate name  ???
   /*
@@ -1740,8 +1695,8 @@ createSurveyAnswer: {
     const { data, error } = await supabase
       .from('survey_answers')
       .insert({
-        survey_question_id: survey_question_id,
-        name: answerName,
+        survey_question_id: questionId,
+        name: answerText,
         answer_number:answer_number,
         //external_url: taskUrl || null,
         //author_id: userId // ← no such column use passed userId
@@ -1769,7 +1724,7 @@ updateSurveyAnswer: {
       .update({
         name: answerName,
         description:answerDescription || null
-        //answer_number:answerNumber,
+        //external_url: taskUrl || null,
         //author_id: userId // ← no such column use passed userId
       })
       .eq('id', answerId)
@@ -2235,7 +2190,7 @@ createAutomationDeleteRelationByTask,
 createAutomationDeleteRelationBySurvey, 
 */
 
-/*
+
 //AUTOMATIONS  //this function tries to do too much. It has spawned the above narrower versions
 createSurveyAutomation:{
   metadata: {
@@ -2287,7 +2242,7 @@ console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id)
     if (error) throw error;
     return data; // ← returns { id, name, description, ... }
   }
-}, */
+},
 
 //SURVEYS     DELETE (soft)
 softDeleteAutomation:{
@@ -2381,7 +2336,7 @@ readSurveyAnswers:{
     requiredArgs: ['questionId'] 
   },
   handler: async (supabase, userId, payload) => {
-    console.log('readSurveyAnswers()');
+    console.log('readSurveyHeaders()');
    const { questionId } = payload;
     const { data, error } = await supabase
       .from('survey_answers')

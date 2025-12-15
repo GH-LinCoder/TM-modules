@@ -57,13 +57,14 @@ export const registry = { // this registry is for loading a new page to the righ
 'editTask': () => import('../work/task/editTask.js'), //legacy?
 //'-management-section': ()=> import('../work/dash/ManagementSection.js'),
 
-'display-students':()=> import('../work/task/displayTasksManager.js'),
+'display-students':()=> import('../work/task/displayTasksManager.js'),//display the tasks that the current student manages
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),
 'moveStudent': () => import('../work/student/moveStudent.js'),//legacy?
 
 
 //'display-tasks' :()=> import('../work/task/displayTasks.js'), // changed 20:29 Oct 21
-'display-tasks' :()=> import('../work/task/displayTasksStudent.js'),
+'display-tasks' :()=> import('../work/task/displayTasksStudent.js'),//display the tasks for this student
+'display-task-summary':()=> import('../work/task/taskSummaryRender.js'),
 
 
 //////////          APPRO MANAGEMENT    AdminDash       /////////                 
@@ -89,7 +90,9 @@ export const registry = { // this registry is for loading a new page to the righ
 
 'create-survey-dialogue': () => import('../work/survey/createSurvey.js'),  // copied to work/ folder Nov 22 2025
 'display-survey-dialogue' : () => import('../work/survey/displaySurvey.js'), // copied to work/ folder
-'display-this-survey' :()=> import('../surveys/displaySurveyQwen.js'), // copied to work/ folder
+//'display-this-survey' :()=> import('../surveys/displaySurveyQwen.js'), // copied to work/ folder
+'display-this-survey' :()=> import('../work/survey/displaySurvey.js'), //changed fro,m above 23:22 dec 14
+
 //'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),  
 'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
 'assign-survey-dialogue' :()=> import('../surveys/assignSurvey.js'),

@@ -25,6 +25,14 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <p class="text-xs text-blue-600">This searches the users. If you want to search all approfiles, try the other section. </p>
   </div>
 
+  <!-- view --> 
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="display-task-summary">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Display a task summary 👁️🔧</h3>
+    <p class="text-xs text-blue-600">Tasks can be displayed in summary, click a step to enlarge it.</p>
+  </div>
+
+
+
       <!-- Create -->
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="create-task-dialogue">
     <h3 class="text-sm font-medium text-blue-700 mb-1">Create a task 🔧</h3>

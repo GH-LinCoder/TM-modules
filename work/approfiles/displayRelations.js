@@ -13,7 +13,7 @@ console.log('displayRelations.js loaded 12:45 Oct 26');
 const userId = appState.query.userId;
 
 const defaultId=appState.query.userId;
-const defaultName='default';
+//const defaultName='default';
 let currentSelection=defaultId;
 
 
@@ -24,13 +24,13 @@ function attachDropdownListener(panel) {
 
   // Check if listener already attached
   if (select.dataset.listenerAttached === 'true') {
-    console.log('Listener already attached, skipping');
+   // console.log('Listener already attached, skipping');
     return;
   }
 
   // Add the listener
   select.addEventListener('change', async (e) => {
-    console.log('DropdownChange,NameFound calling loadAndRender');
+   // console.log('DropdownChange,NameFound calling loadAndRender');
     const approfileId = e.target.value;
     const selectedName = e.target.options[e.target.selectedIndex].textContent;
     if (approfileId) { console.log('approfileId:',approfileId); 
@@ -42,7 +42,7 @@ function attachDropdownListener(panel) {
 
   // Mark as attached AFTER successfully adding listener
   select.dataset.listenerAttached = 'true';
-  console.log('Dropdown listener attached');
+//  console.log('Dropdown listener attached');
 }
 
 function attachClickItemListener(panel) {
@@ -53,7 +53,7 @@ function attachClickItemListener(panel) {
       const subjectId = flowBox.dataset.subjectId;
       const subjectName = flowBox.textContent.replace(' is', '').replace('of ', '').trim();
      // console.log('Exploring subject:', subjectId, subjectName);
-      console.log('FlowBox Clicked - calling laodAndRender');
+    //  console.log('FlowBox Clicked - calling laodAndRender');
 
       await loadAndRenderRelationships(panel, subjectId, subjectName);
     }
@@ -134,7 +134,9 @@ function getTemplateHTML() {
 
 
 
-function showInformation(approName) {
+function showInformation(panel, approName) {
+const  informationFeedback = panel.querySelector('informationFeedback');
+if(!informationFeedback) return;
   informationFeedback.innerHTML += `<div class="my-2 p-3 bg-white border rounded shadow-sm flex items-center justify-between">
         <div>
           <div class="font-medium">${approName}</div>
@@ -192,7 +194,7 @@ function showInformation(approName) {
     applyPresentationRules(panel, isMyDash);
   
     const subject = resolveSubject();
-    console.log('subjectId', subject.id);
+    console.log('init()');
     loadAndRenderRelationships(panel, subject.id, subject.name);
   
     onClipboardUpdate(() => {
@@ -218,7 +220,7 @@ async function populateApprofileSelect(panel) {
     .concat(getClipboardItems({ type: 'app-task' }))
     .concat(getClipboardItems({ type: 'app-abstract' }));
   */
-console.log('length:',approfiles.length);
+console.log('populateappro select()');
 
   const select = panel.querySelector('[data-role="subject-dropdown"]');
   if (!select) {currentSelection = defaultId } // previously return    changed 12:00 Oct 27
@@ -252,7 +254,7 @@ else  currentSelection = select.value;
 
 async function loadAndRenderRelationships(panel, approfileId, approfileName) {  // aprofileId is an object ?
  
-  console.log('loadAndRenderRelationships approfileId:',approfileId, 'name', approfileName);
+  console.log('loadAndRenderRelationships approfileId()');
   try {
     const relationships = await loadRelationships(approfileId);
     renderRelationships(panel, relationships, approfileName);
@@ -275,7 +277,7 @@ async function loadRelationships(approfileId) {
     approfileId: approfileId 
   });
   
-console.log('Raw result:', result);// object { is:[] , of:[] , iconMap:{} }
+//console.log('Raw result:', result);// object { is:[] , of:[] , iconMap:{} }
   return result || { is: [], of: [], iconMap:{} };
 }
 
@@ -314,7 +316,7 @@ function renderRelationships(panel, relationshipsData, approfileName) { // aprof
   const groupRelationships = (rels) => {
     const groups = {};
     rels.forEach(rel => {
-       if (rel.is_deleted) { console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
+       if (rel.is_deleted) { //console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
         return; }//don't display deleted items
       const relType = rel.relationship;
       if (!groups[relType]) groups[relType] = [];
@@ -361,8 +363,8 @@ html += `
         </div>
       `;
       
-      group.items.forEach(rel => { console.log('rel:',rel);
-       console.log('forEach rel.is_deleted:',rel.relationship, rel.is_deleted); 
+      group.items.forEach(rel => { //console.log('rel:',rel);
+     //  console.log('forEach rel.is_deleted:',rel.relationship, rel.is_deleted); 
        if (rel.is_deleted) { console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
         return; }//don't display deleted items
        const subject = rel.approfile_is_name || rel.approfile_is;
@@ -452,7 +454,7 @@ html += `
     });
     html += `</div>`;
   }
-  showInformation(approfileName);
+  showInformation(panel, approfileName);
 
   container.innerHTML = html;
 

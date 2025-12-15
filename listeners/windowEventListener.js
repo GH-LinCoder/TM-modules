@@ -10,8 +10,8 @@ export function windowEventListener(){
     
     window.addEventListener('state-change', async (e) => {
         const { type, payload } = e.detail;
-        console.log('State change event at window.addEventListener:', type, payload);
-        console.log('Action:',payload.petitioner.Action,' to ', payload.petitioner.Destination);
+        console.log('State change event at window.addEventListener:', type, payload, 'Action:',payload.petitioner.Action,' to ', payload.petitioner.Destination);
+      //  console.log('Action:',payload.petitioner.Action,' to ', payload.petitioner.Destination);
      //   console.log('appState.query in state-change event:', appState.query.pr); //global
         switch (type) {
           case 'QUERY_UPDATE':
@@ -32,7 +32,7 @@ export function windowEventListener(){
        
     
           case 'DATA_LOADED':
-            updateUI(payload.data); //what is this?
+          //  updateUI(payload.data); //what is this?
             break;
         }
       });
