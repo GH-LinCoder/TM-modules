@@ -38,6 +38,61 @@ readGenericTable: {
   }
 },
 
+// AUTH
+/*
+getUser: {
+  metadata: {
+    tables: ['auth'],
+    columns: ['id'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+   const {user} = supabase.auth.getUser();
+return user || []
+}, */
+
+getAuthenticatedUser: {
+  metadata: { type: 'AUTH', requiredArgs: [] },
+  handler: async (supabase, userId, payload) => {
+    const { data, error } = await supabase.auth.getUser();
+    if (error) throw error;
+
+    const user = data?.user;
+
+    // Return minimal safe user data (never raw session tokens)
+    return {
+      id: user?.id,
+      email: user?.email,
+      created_at: user?.created_at,
+      // role: user?.role, // if you add custom claims
+      // user?.user_metadata?.full_name, etc.
+      isAuthenticated: !!user
+    };
+  }
+},
+
+
+
+// APPRO 
+createOrUpdateApprofile: { 
+  metadata: { 
+    tables: ['app_profiles'], 
+    columns: ['id', 'name', 'email', 'auth_user_id', 'created_at'], 
+    type: 'UPSERT', 
+    requiredArgs: ['authUserId', 'name', 'email'] }, 
+    handler: async (supabase, userId, payload) => { 
+    const { authUserId, name, email } = payload; 
+    const { data, error } = await supabase 
+    .from('app_profiles') 
+    .upsert({ auth_user_id: authUserId, name, email }, 
+      { onConflict: 'auth_user_id' }) 
+      .select() 
+      .single(); 
+      if (error) throw error; 
+      return data; } 
+},
+
 
 // For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
 autoAssignTask: {
@@ -768,7 +823,7 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
 }, 
 
 
-
+/*
 //APPRO
 readProfilesByIds:{// possibly not used
   metadata: {
@@ -789,7 +844,7 @@ handler: async (supabase, userId, payload) => {
     if (error) throw error;
   return data;
  }
-},
+}, */
 
 //APPRO
 readApprofileByName:{
@@ -833,6 +888,29 @@ readApprofileById:{
     return data;
   }
 },
+
+readApprofileByUserId: { 
+  metadata: { 
+    tables: ['app_profiles'], 
+    columns: ['id', 'name', 'email', 'created_at'], 
+    type: 'SELECT', 
+    requiredArgs: ['authUserId'] }, 
+    handler: async (supabase, userId, payload) => { 
+      const { authUserId } = payload; 
+      const { data, error } = await supabase 
+      .from('app_profiles')
+       .select('id, name, email, created_at') 
+       .eq('auth_user_id', authUserId) 
+       .single(); 
+       if (error) throw error; 
+  return data; } 
+},
+
+
+
+
+
+
 
 //new 22:00 Nov 28 replacement of readApprofileRelationships to include type icon
 
@@ -1042,7 +1120,7 @@ readStudentAssignments: {
   },
   handler: async (supabase, userId, payload) => {
     const { student_id, type } = payload;
-
+//console.log('Registry-student_id', student_id);
     let taskData = [];
     let surveyData = [];
 
@@ -1059,7 +1137,7 @@ readStudentAssignments: {
       if (error) throw error;
       taskData = data;
     }
-
+//console.log('registry-reponse', taskData);
     if (!type || type === 'survey') {
       const { data, error } = await supabase
         .from('survey_assignment_view')
@@ -1421,13 +1499,13 @@ handler: async (supabase, userId, payload) => {
     },
     handler: async (supabase, userId, payload) => {// assume receive {task_header_id:task_header_id}
     // taskId = taskId.task_header_id;  //this is weird
-    const { taskId } = payload;
-    console.log('readTaskWithSteps for taskId;',taskId);
+    const { task_header_id } = payload;
+    console.log('readTaskWithSteps for taskId;',task_header_id);
       const { data, error } = await supabase
         .from('task_with_steps_view')
         .select('task_name, task_description, task_external_url, step_id, step_order, step_name, step_description, step_external_url')// changed 20:14 Dec 14
 //        .select('id, name, description, task_steps(*)')
-        .eq('task_id', taskId);  // encodeURIComponent(value) for .eq() & .like()
+        .eq('task_id', task_header_id);  // encodeURIComponent(value) for .eq() & .like()
       if (error) throw error;
       return data; //an array of the steps
     }

@@ -253,7 +253,7 @@ else  currentSelection = select.value;
 }
 
 async function loadAndRenderRelationships(panel, approfileId, approfileName) {  // aprofileId is an object ?
- 
+ if(!approfileId) {const approfile = await resolveSubject(); approfileId=approfile.id, approfileName = approfile.name; };
   console.log('loadAndRenderRelationships approfileId()');
   try {
     const relationships = await loadRelationships(approfileId);

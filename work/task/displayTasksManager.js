@@ -10,19 +10,19 @@ import {  detectContext,resolveSubject, applyPresentationRules} from '../../util
 
 console.log('displayTasksManager.js loaded 12:45 Oct 26');
 
-let manager = resolveSubject();
-let managerId = manager.id;
+let manager = null;
+let managerId = null;
 const userId = appState.query.userId;
 let panelEl = null;
-let managerName = manager.name;
+let managerName = null;
 
 
 
 onClipboardUpdate(() => {
   console.log('onClipboardUpdate');
- let manager = resolveSubject();
- managerId =manager.id;
- managerName = manager.name;
+// let manager = resolveSubject();
+// managerId =manager.id;
+// managerName = manager.name;
  
   render(panelEl);  // I made it a global to have the onclick outside the render function
 //  if (!isMyDash) populateApprofileSelect(panel); // optional
@@ -38,6 +38,12 @@ onClipboardUpdate(() => {
 
 export async function render(panel, query = {}) {
       console.log('displayTaskManager.js render()');
+
+let manager = await resolveSubject();
+ managerId =manager.id;
+ managerName = manager.name;
+ 
+
 
     if (!panel || !panel.isConnected) {
         console.warn('Render target not found or disconnected');

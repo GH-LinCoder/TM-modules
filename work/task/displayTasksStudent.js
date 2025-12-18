@@ -10,8 +10,8 @@ import {  detectContext,resolveSubject, applyPresentationRules} from '../../util
 
 console.log('displayTasksStudent.js loaded 19:54 Oct 27');
 
-let student = resolveSubject();
-let studentId = student.id;
+let student = null;
+let studentId = null;
 const userId = appState.query.userId;
 let panelEl = null;
  
@@ -19,8 +19,6 @@ let panelEl = null;
 
 onClipboardUpdate(() => {
 console.log('onClipboardUpdate');
- let student = resolveSubject();
- studentId =student.id;
 
  
   render(panelEl);  // I made it a global to have the onclick outside the render function
@@ -37,25 +35,25 @@ console.log('onClipboardUpdate');
 
 export async function render(panel, query = {}) {
   console.log('displayTaskStudent.js render()');
+ student = await resolveSubject();
+
+console.log('resolved subject:',student);
+
+ studentId =student.id;
 
   if (!panel || !panel.isConnected) {
     console.warn('Render target not found or disconnected');
     return;
   }
   
-
 const userId = appState.query.userId;  
 panelEl=panel;
-
-
-
-
-
+console.log('calling readStudentAssignments with id:', studentId);
 try {
     const assignments = await executeIfPermitted(userId, 'readStudentAssignments', {
-      student_id: studentId,
+      student_id: studentId, 
       type: 'task'
-    });
+    });//when seeing myDash for first time studentId not assigned
 //console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
     if (!assignments || assignments.length === 0) {
       panel.innerHTML = `<div class="text-gray-500 text-center py-8">No task assignments found.</div>`;

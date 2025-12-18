@@ -12,11 +12,10 @@ let subject=null;
 
 export async function loadMyDashWithData() {
   console.log('loadMyDashWithData()');
-subject = await resolveSubject();
+
   updateProfileAndStats();
 
   // Load each section via petition system Only do this once !
-  loadSection('profile');
        loadSection('surveys'); 
         loadSection('tasks'); //the tasks that the student is on
         loadSection('relations');
@@ -29,15 +28,15 @@ subject = await resolveSubject();
 function respondToClipboardChange(){
 
         onClipboardUpdate(() => {
-          
+          subject = resolveSubject();
           updateProfileAndStats(); 
         }); 
 }
 
 
 
-async function updateProfileAndStats(){
-    subject = await resolveSubject();
+function updateProfileAndStats(){
+    subject = resolveSubject();
     loadStudentProfile();
     updateQuickStats();
 }
@@ -78,7 +77,7 @@ function  getCurrentSubjectId() {
             const nameEl = document.querySelector('[data-user="name"]');
             const emailEl = document.querySelector('[data-user="email"]');
             const initialsEl = document.querySelector('[data-user="initials"]');
-            const userIdEl = document.querySelector('[data-user="user-id"]');
+            const studentIdEl = document.querySelector('[data-user="student-id"]');
             const studentJoinedEl = document.querySelector('[data-user="join-date"]');
 
             //Needs joined
@@ -86,7 +85,7 @@ function  getCurrentSubjectId() {
             
             if (nameEl) nameEl.textContent = studentProfile.name || 'Unknown';
             if (emailEl) emailEl.textContent = studentProfile.email || 'No email';
-            if (userIdEl) userIdEl.textContent = subject.id.substring(0, 8) + '...';
+            if (studentIdEl) studentIdEl.textContent = subject.id.substring(0, 8) + '...';
             if (studentJoinedEl) studentJoinedEl.textContent = studentProfile.created_at.substring(0, 10) || 'error';
             // Set initials
             if (initialsEl && studentProfile.name) {

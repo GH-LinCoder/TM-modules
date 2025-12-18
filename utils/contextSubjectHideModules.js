@@ -1,6 +1,6 @@
 import { appState } from '../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
-
+import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 
 // new functions to find data - External file to be imported by each module
 
@@ -12,11 +12,11 @@ export function detectContext(panel) {
   }
 
   // Return the latest item from the clipboard. If nothing there return the default value from appState (which is a person's id and name)
-export  function resolveSubject() {
+export async function resolveSubject() {
     const clipboardItems = getClipboardItems(); // no type filter
     console.log('clipboardItems', clipboardItems);
   
-    if (clipboardItems.length > 0) {
+    if (clipboardItems.length > 0) { //treat the first item on the clipboard as the subject? (first is most recent?)
       const entity = clipboardItems[0].entity;
       return {
         id: entity.id,
@@ -24,8 +24,22 @@ export  function resolveSubject() {
         type: entity.type || ''
       };
     }
-  
-    return {
+  //only here if there was nothing on the clipboard.
+//check if there is someone logged in. If so use that id
+
+
+const authUser = await executeIfPermitted(
+                null,
+                'getAuthenticatedUser',
+                { approfileId: null }
+            );
+            console.log('authUser',authUser);
+            if (authUser ) return {
+              id:authUser.id, 
+            name:authUser.name || authUser.email,
+          type: 'app-human'}; 
+          else
+  return {
       id: appState.query.userId,
       name: appState.query.userName,
       type: appState.query.userType

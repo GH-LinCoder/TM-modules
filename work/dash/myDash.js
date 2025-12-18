@@ -32,7 +32,7 @@ function getTemplateHTML() {
             <div class="container mx-auto px-4 py-8 flex flex-col gap-8">
                 
                 <!-- PROFILE CARD -->
-                <div class="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row items-center md:items-start gap-8" data-component="profile-card">
+                <div class="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row items-center md:items-start gap-8" data-section="profile-section">
                     <div class="flex-shrink-0 text-center">
                         <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-semibold" data-user="avatar">
                             <span data-user="initials">D-U N</span>
@@ -44,7 +44,7 @@ function getTemplateHTML() {
                         <div class="space-y-3 text-sm text-gray-600">
                             <div class="flex items-center gap-2 flex-wrap">
                                 📧<span data-user="email">????.???@example.com</span>
-                                <span data-user="mid"><b>🆔</b> <span data-user="student-id">???</span></span>       
+                                <span data-user="mid"><b>🆔</b> <span data-user="user-id">???</span></span>       
                                 <span ><b>Joined:</b><span data-user="join-date"> ???? ?? ??</span></span>
                                 <span data-user="last-login"><b>Last login:</b> ??:?? PM ???? ?? ??</span>
                             </div>

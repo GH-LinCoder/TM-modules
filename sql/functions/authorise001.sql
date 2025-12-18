@@ -1,5 +1,5 @@
 
-declare
+declare --not used dec 16
   bind_permissions int;
   user_role public.app_role;
 begin

@@ -1,5 +1,5 @@
 
-BEGIN
+BEGIN -- auth schema has changed. No longer valid
   UPDATE profiles
   SET email = NEW.email,
       username = NEW.username,

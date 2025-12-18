@@ -81,7 +81,7 @@ export const panelsOnDisplay = [];
       // If no file is specified the app crashes with unresponsive menu buttons, 
       // but if wrong name used app runs, flags 'Error loading file.html' & menu works so can then load any dashboard
 
-      // in dev we start with adminDash.html
+      // in dev we start with adminDash.html.. This was changed to myDash 10:45 Dec 18 2025
       // in deployed app the intial page is based on login & permissions, but could have default page
 
       // the page/module to display is stored in the appState.query.petitioner objec
@@ -95,7 +95,7 @@ try {
   if (appState) {
   //  console.log('appState has been successfully loaded:', appState);
 
-    const petition = {'Module':'adminDash','Section': 'jsDevMock','Action': 'adminDash', 'Destination':'new-panel'};
+    const petition = {'Module':'myDash','Section': 'jsDevMock','Action': 'myDash', 'Destination':'new-panel'}; //changed from adminDash to myDash 10:42 Dec 18
     appState.setPetitioner(petition); //dev set-up of petitioner object 14:39 7 Sept 2025
 
   //  console.log('appState.query in flexmain after setQuery:', appState.query); //global

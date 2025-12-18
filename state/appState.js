@@ -21,6 +21,9 @@ clipboard:[],
 //const userId:'e9b82fd0-067e-43f1-b514-c2dbbfd10cba',//Jubbul  step 3  2 tasks
 //const 
 //default DEV values
+
+userIdSession:null, // added 11:23 Dec 18 2025
+
 userId :'e0c6201d-66e0-4b1c-8826-027ec059d523',//Huyie T&M vidoes task, member of TestMock,
 userName:'Huyie',
 userType: 'app-human',
@@ -45,10 +48,10 @@ defaultManagerName:'Lin Coder',
       //recordId: null, //not sure if needed
       
       // simple description of the request. Not sure if useful
-      READ_request: false,
-      INSERT_request: false,
-      DELETE_request: false,
-      UPDATE_request: false,
+      READ_request: false,  //not used
+      INSERT_request: false, //not used
+      DELETE_request: false, //not used
+      UPDATE_request: false, //not used
       
       petitioner:{},  // Module: name, Section: name, Action: name Destination: name  as data-* attributes, 
       // destination 'a section by name' || 'new-panel' , 
@@ -61,7 +64,7 @@ defaultManagerName:'Lin Coder',
       
       response: [], //contains read from DB & status of permission & other response of query DB
 
-      remember: [],// redundant ??
+      remember: [],// redundant LEGACY ??
 
       //cliboard:[]
     },
