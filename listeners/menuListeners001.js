@@ -15,7 +15,7 @@ export function menuListeners() {//unlike admiListeners navListeners have not be
     e.stopPropagation();
 
     const pageName = btn.dataset.page; //pageName is set in flexload.html Nothing else set there
-markMenuButton(pageName, btn);
+
     if(pageName === 'howTo'){ // store the existing petition for later use to give context related howTo
 const howToContext = appState.query.petitioner;  //legacy ? to be removed? now using petitioner & history?
 console.log('howToContext:',howToContext);
@@ -42,15 +42,3 @@ console.log('howToContext:',howToContext);
 
   });
 }
-
-function markMenuButton(pageName, btn){
-  console.log('markMenuButton()', pageName, btn);
-  document.querySelectorAll('.nav-btn').forEach(el => {
-    console.log('el.dataset.page',el.dataset.page, 'currentpage',pageName);
-    el.classList.toggle('ring-4', el.dataset.page === pageName);
-    el.classList.toggle('ring-blue-500', el.dataset.page === pageName);
-    el.classList.toggle('bg-blue-100', el.dataset.page === pageName);
-  });
-
-
-} 

@@ -190,11 +190,15 @@ if(!informationFeedback) return;
 
 
   function init(panel) { // called from render() 2nd function to run
+    console.log('init()');
+
     const isMyDash = detectContext(panel);
     applyPresentationRules(panel, isMyDash);
   
     const subject = resolveSubject();
-    console.log('init()');
+    if(subject.type==='relation') 
+    loadFromRelations(panel, subject.id); 
+    else
     loadAndRenderRelationships(panel, subject.id, subject.name);
   
     onClipboardUpdate(() => {
@@ -210,7 +214,11 @@ if(!informationFeedback) return;
     }
   }
     
+function loadFromRelations(panel, subjectId){
+//needs to display the one relation referred to.
+console.log('needs to display the one relation referred to');
 
+}
 
 async function populateApprofileSelect(panel) {
 
@@ -253,8 +261,13 @@ else  currentSelection = select.value;
 }
 
 async function loadAndRenderRelationships(panel, approfileId, approfileName) {  // aprofileId is an object ?
- if(!approfileId) {const approfile = await resolveSubject(); approfileId=approfile.id, approfileName = approfile.name; };
+ if(!approfileId) {
+  const approfile = await resolveSubject(); approfileId=approfile.id, approfileName = approfile.name; 
+if(approfile.type ==='relations') loadFromRelations(panel, approfile.id); return};// should render the one relationship
+
+
   console.log('loadAndRenderRelationships approfileId()');
+
   try {
     const relationships = await loadRelationships(approfileId);
     renderRelationships(panel, relationships, approfileName);

@@ -49,6 +49,10 @@ console.log('resolved subject:',student);
 const userId = appState.query.userId;  
 panelEl=panel;
 console.log('calling readStudentAssignments with id:', studentId);
+
+if(student.type==='relations'){panel.innerHTML='';
+            return;}
+else
 try {
     const assignments = await executeIfPermitted(userId, 'readStudentAssignments', {
       student_id: studentId, 
@@ -79,9 +83,10 @@ for (const assignment of assignments) {
       const currentStep = assignment.step_order;
       const numberOfSteps = taskSteps.length;
       const studentName = assignment.student_name || 'Unknown Student';
+      const managerName = assignment.manager_name || 'Unknown Manager'; // new 20:39 dec 20
       const taskName = assignment.task_name || 'Unnamed Task';
       const taskDescription = assignment.task_description;
-
+      const taskId = assignment.task_header_id;
 
 //console.log('');
       const currentStepName = assignment.step_name || 'Unnamed Step';
@@ -150,10 +155,12 @@ for (const assignment of assignments) {
       card.innerHTML = `
         <div class="flex justify-between items-center mb-4">
           <h3 class="text-xl font-semibold text-gray-900">${taskName}</h3>
-          <div class="text-sm text-gray-500">Student: ${studentName}</div>
+          <div class="text-sm text-gray-500"> Manager: ${managerName}</div><div class="text-sm text-gray-500">${taskId}</div><div class="text-sm text-gray-500"> Student: ${studentName}</div>
         </div>
         <div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"> ${taskDescription}</div>
-${externalContent};
+${externalContent}
+
+
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 
           ${renderStepCard('Previous Step', previousStep,studentName , true, 'gray')}

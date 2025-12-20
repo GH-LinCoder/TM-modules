@@ -21,31 +21,48 @@ export async function resolveSubject() {
       return {
         id: entity.id,
         name: entity.name || entity.id, // fallback to ID if name is missing
-        type: entity.type || ''
+        type: entity.type || '',
+        source:'clipboard'
       };
     }
   //only here if there was nothing on the clipboard.
 //check if there is someone logged in. If so use that id
 
 
-const authUser = await executeIfPermitted(
-                null,
-                'getAuthenticatedUser',
-                { approfileId: null }
-            );
-            console.log('authUser',authUser);
-            if (authUser ) return {
+const authUser = await executeIfPermitted( null,'getAuthenticatedUser', {approfileId: null });
+
+console.log('authUser',authUser);
+
+if (authUser ) return {
               id:authUser.id, 
-            name:authUser.name || authUser.email,
-          type: 'app-human'}; 
-          else
-  return {
+              name:authUser.name || 'unknown',
+              email:authUser.email,
+              type: 'app-human',
+              source:'authUser'}
+              ; 
+  
+              else return {
       id: appState.query.userId,
       name: appState.query.userName,
-      type: appState.query.userType
+      type: appState.query.userType,
+      source:'appState'
     };
   }
   
+/* return from registry
+{
+      id: user?.id,
+      email: user?.email,
+      created_at: user?.created_at,
+      confirmed_at:user?.confirmed_at,
+      
+      last_sign_in_at: user?.identities.last_sign_in_at  //fails? not available here, can get in local storage
+ 
+       // role: user?.role, // if you add custom claims
+      // user?.user_metadata?.full_name, etc.
+      //isAuthenticated: user?.isAuthenticated, //fails?
+}
+*/
 
 export function applyPresentationRules(panel, isMyDash) {
     const dropdownContainer = panel.querySelector('[data-role="subject-dropdown"]')?.closest('div');

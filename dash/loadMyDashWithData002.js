@@ -38,7 +38,7 @@ function respondToClipboardChange(){
 
 async function updateProfileAndStats(){
    subject = await resolveSubject(); // why calling this again? Commented-out 22:39 Dec 19 BECAUSE needs it if clipboard is changing the subject
-  // loadStudentProfile();
+   loadStudentProfile();
     updateQuickStats();
 }
 
@@ -63,7 +63,7 @@ function  getCurrentSubjectId() {
         return  appState.query.userId;
     }
 */
-/*
+
     async function loadStudentProfile() {  //works 11:00 Oct 27 - will read id from clipboard if exists when myDash renders
        if(subject.type!='relations')
         try {
@@ -106,7 +106,7 @@ function  getCurrentSubjectId() {
           // Update stats after profile loads
     //await this.updateQuickStats();
     }
-*/
+
   async function updateQuickStats() { // seems to be working 11:14 Oct 27  (tried two different subjectIds)
         console.log('updateQuickStats()');
       if(subject.type !='relations')  

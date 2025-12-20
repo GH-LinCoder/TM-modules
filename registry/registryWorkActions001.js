@@ -99,6 +99,7 @@ autoRelateAppro: {
 
 
 
+
 /////////////////////////////////////   COUNT   ///////////////////////
 //APPRO
 approfilesCount:{
@@ -1884,7 +1885,8 @@ createAutomationDeleteRelationByTask:{
         appro_is_id, 
         of_appro_id, 
         name: name || 'Delete Relation Automation', 
-        automation_number: automation_number || null, relationship: 'DELETE' }) 
+        automation_number: automation_number || null, 
+        relationship: 'DELETE' }) 
         .select() 
         .single(); 
         if (error) throw error; 
@@ -1979,7 +1981,8 @@ createAutomationDeleteRelationBySurvey:{
         appro_is_id, 
         of_appro_id, 
         name: name || 'Delete Relation by Survey Automation', 
-        automation_number: automation_number || null, relationship: 'DELETE' }) 
+        automation_number: automation_number || null, 
+        relationship: 'DELETE' }) 
         .select() 
         .single(); 
         if (error) throw error; 

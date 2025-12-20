@@ -33,7 +33,8 @@ function getTemplateHTML() {
                 
                 <!-- PROFILE CARD -->
                 <div class="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row items-center md:items-start gap-8" data-section="profile-section">
-                    <div class="flex-shrink-0 text-center">
+
+                    <!--div class="flex-shrink-0 text-center">
                         <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-lg font-semibold" data-user="avatar">
                             <span data-user="initials">D-U N</span>
                         </div>
@@ -55,8 +56,9 @@ function getTemplateHTML() {
                                 Edit <span class="inline-block bg-gray-100 text-gray-800 px-2 py-1 rounded text-sm" data-user="role">my</span>🪪 Profile
                             </button>
                         </div>
-                    </div>
-                </div>
+                    </div-->
+                
+            </div>
                 
 
 <!--  INSTRUCTIONS   -->                           

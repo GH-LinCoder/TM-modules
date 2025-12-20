@@ -113,8 +113,12 @@ export const registry = { // this registry is for loading a new page to the righ
 'auto-execute-automations':() => import('../utils/autoExecuteAutomations.js'), //this imports the above 2
 
 
-
-
+//////////          myDash    - uses same functions a adminDash?               /////////
+"display-profile"  : () => import('../work/approfiles/displayProfile.js'),
+// "display-surveys"  : () => import('../work/survey/displaySurveysQwen.js'),
+// "display-tasks"  : () => import('../work/tasks/displayTaskStudent.js'),
+// "display-relations"  : () => import('../work/approfiles/displayRelations.js'),
+//"display-students"  : () => import('../work/task/displayTasksManager.js'),
 
 
 //possible further modules for admin dashboard

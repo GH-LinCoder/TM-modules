@@ -95,7 +95,9 @@ let manager = await resolveSubject();
             <div id="managerTaskCards" class="space-y-6"></div>
         </div>
     `;
-
+if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 text-center py-8">You are not managing any tasks.</div>`;
+            return;} 
+            else 
     try {
         const assignments = await executeIfPermitted(userId, 'readManagerAssignments', {
             manager_id: managerId

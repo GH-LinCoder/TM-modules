@@ -501,6 +501,32 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
         id: `clipboard-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
       }
     };
+//console.log('clipboardItem',clipboardItem);
+/* 
+clipboardItem:
+Object { entity: {…}, as: "other", meta: {…} }
+as: "other"
+entity: Object { id: "6004dc44-a451-417e-80d4-e9ac53265beb", name: "cannie", type: "app-human", … }
+id: "6004dc44-a451-417e-80d4-e9ac53265beb"
+item: Object { id: "6004dc44-a451-417e-80d4-e9ac53265beb", name: "cannie", email: "can@not.do", … }
+auth_user_id: "6004dc44-a451-417e-80d4-e9ac53265beb"
+avatar_url: null
+created_at: "2025-09-20T19:09:44.614635+00:00"
+description: null
+email: "can@not.do"
+external_url: null
+id: "6004dc44-a451-417e-80d4-e9ac53265beb"
+name: "cannie"
+notes: null
+phone: null
+sort_int: 42
+survey_header_id: null
+task_header_id: null
+updated_at: null
+
+*/
+
+
 
     // Store
     if (!appState.clipboard) appState.clipboard = [];

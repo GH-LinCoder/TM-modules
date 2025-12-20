@@ -59,15 +59,17 @@ getAuthenticatedUser: {
     if (error) throw error;
 
     const user = data?.user;
-
+//console.log('getAuthUser',user);
     // Return minimal safe user data (never raw session tokens)
     return {
       id: user?.id,
       email: user?.email,
       created_at: user?.created_at,
+      confirmed_at:user?.confirmed_at,
       // role: user?.role, // if you add custom claims
       // user?.user_metadata?.full_name, etc.
-      isAuthenticated: !!user
+      //isAuthenticated: user?.isAuthenticated, //fails?
+      last_sign_in_at: user?.identities.last_sign_in_at  //fails? not available here, can get in local storage
     };
   }
 },
@@ -151,7 +153,32 @@ autoRelateAppro: {
   }
 },
 
+//RELATIONS  APPRO RELATIONSHIP  DELETE
+softDeleteRelation:{
+  metadata: {
+    tables: ['approfile_relations'],
+    columns: ['is_deleted', 'deleted_at', 'deleted_by'],
+    type: 'UPDATE',
+    requiredArgs: ['relationId', 'deletedBy']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { relationId, deletedBy } = payload;
 
+    const { data, error } = await supabase
+      .from('approfile_relations')
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString(),
+        deleted_by: deletedBy
+      })
+      .eq('id', relationId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data; // returns the updated relation row
+  }
+},
 
 
 /////////////////////////////////////   COUNT   ///////////////////////
@@ -420,17 +447,39 @@ handler: async  (supabase, userId) =>{
   },
   handler: async (supabase, userId, payload) => {
     console.log('Create Approfile()');
-    const { name, description } = payload;
+    const { name, description, authUserId } = payload;
 
     const { data, error } = await supabase
       .from('app_profiles')
-      .insert({name:name, description:description})
+      .insert({name:name, description:description, auth_user_id:authUserId})
       .select() //Return the inserted row
       .single(); //Return single object
     if (error) throw error;
     return data; // ✅ Return the array of task headers
   }
  },
+
+ createApproFromNewAuthUser: {// created 22:25 Dec 18 2025 --needs db function 
+  metadata: {
+    type: 'RPC',
+    requiredArgs: ['authUserId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const {approName, approDescription, approEmail, authId} = payload;
+//db func needs create_appro_from_new_auth_user( approName text , approDescription text, approEmail text, authId uuid )
+    const { data, error } = await supabase.rpc('create_appro_from_new_auth_user', {
+      approName:approName,
+      approDescription:approDescription,
+      approEmail:approEmail, 
+      authId:authId
+    });
+
+    if (error) throw error;
+
+    return { appro: data };
+  }
+},
+
 
 //ASSIGNMENT
 createAssignment:{
@@ -889,7 +938,7 @@ readApprofileById:{
   }
 },
 
-readApprofileByUserId: { 
+readApprofileByAuthUserId: { 
   metadata: { 
     tables: ['app_profiles'], 
     columns: ['id', 'name', 'email', 'created_at'], 
