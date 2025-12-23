@@ -43,7 +43,7 @@ console.log('howToContext:',howToContext);
   });
 }
 
-function markMenuButton(pageName, btn){
+export function markMenuButton(pageName, btn){
   console.log('markMenuButton()', pageName, btn);
   document.querySelectorAll('.nav-btn').forEach(el => {
     console.log('el.dataset.page',el.dataset.page, 'currentpage',pageName);

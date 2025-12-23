@@ -30,7 +30,7 @@ console.log('Imported: flexmain.js');
 import { adminListeners } from './listeners/adminListeners.js';
 import { windowEventListener } from './listeners/windowEventListener.js';
 import { menuListeners } from './listeners/menuListeners.js';
-
+import {markMenuButton}  from './listeners/menuListeners.js';
 
 
 // === GLOBALS
@@ -166,8 +166,12 @@ async function onAppLoad() {
   await loadPageWithData(name.replace('.html','')); //changed 14:49 7 Sept 2025
 
     // Set active button   //redundant?
-    const adminBtn = document.querySelector('[data-page="adminDash"]');
-    if (adminBtn) adminBtn.classList.add('active');
+//    const adminBtn = document.querySelector('[data-page="adminDash"]');
+//    if (adminBtn) adminBtn.classList.add('active');
+//below new 15:00 Dec 21
+    const myDashBtn = document.querySelector('[data-page="myDash"]');
+markMenuButton('myDash', myDashBtn);
+
   }
 // changed to external function 10:47 spet 14 2025
 
@@ -224,64 +228,9 @@ selectedModule.render(panel,query); // use the function that was obtained from t
 }
 
 }
-/*else  try {
-    // Load html content from a file
-    console.log('Registry does not recognise', stubName, 'append panel, push details in array, then load html content instead');
-    displayArea.appendChild(panel);
-    panelsOnDisplay.push({ stubName, panel, query });
-    const html = await getStubContent(stubName);
-    panel.innerHTML = html;
-    //set Module?
 
-    // Update layout based on number of panels
-    updatePanelLayout();
-  } catch (error) {
-    console.error(`Error loading ${stubName}:`, error);
-    panel.innerHTML = `<div class="text-red-700 p-4">Error loading ${stubName}</div>`;
-    displayArea.appendChild(panel);
-    updatePanelLayout();
-  } */
-  ///end of conditional on 'new-panel'
 
 }
-/*
-function renderSection(query, selectedModule,displayArea){// new 10:41 sept 10 2025
-  
-  displayArea = document.querySelector('[data-section="t&m-management"]');
- // console.log('renderSection(',displayArea,')');
-  
-  displayArea.innerHTML+='TO BE DELETED';
-  /*
-  try {
-    selectedModule.render(displayArea,query); // use the function that was obtained from the registry
-    } catch (error) {
-      console.error('Failed to load module:', error);
-      console.log('Available exports:', Object.keys(selectedModule));
-    }
-      */
-
-//} 
-
-/* my original verions
-async function backgroundProcess() {
-    const action = appState.query.petitioner.Action;
-    let registryEntry = await registry[action]; //send string to lookup object, get a pointer to a function (don't need await)
-
-    if(!registryEntry) { console.log('Registry unknown', action, ' not here');}
-    else  console.log('Registry recognises', action);
-    
-    
-    const selectedModule = await registryEntry(); // Use the pointer to get the function
-    //console.log('Loaded module functions:', selectedModule);
-    
-    try {
-        selectedModule.render(panel,query); // use the function that was obtained from the registry
-        } catch (error) {
-          console.error('Failed to load module:', error);
-          console.log('Available exports:', Object.keys(selectedModule));
-        }
-}
-replaced with below */ 
 
 async function backgroundProcess() {
     
@@ -334,46 +283,6 @@ const selectedModule = await registryEntry(); // Use the pointer to get the func
 
 //if(true) 
   renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); //was a test but never changed the if??
-//else renderSection(query, selectedModule,displayArea);
-///below conditional on 'new-panel
-/*
-//moved here 9.44 Sep 10
-const panel = document.createElement('div');
-panel.className = 'page-panel';
-panel.dataset.pageName = stubName; //what is this?
-//
-
-//moved here  9.42 sep 10
-displayArea.appendChild(panel);
-panelsOnDisplay.push({ stubName, panel, query });
-//
-
-try {
-selectedModule.render(panel,query); // use the function that was obtained from the registry
-} catch (error) {
-  console.error('Failed to load module:', error);
-  console.log('Available exports:', Object.keys(selectedModule));
-}
-
-}else  try {
-    // Load html content from a file
-    console.log('Registry does not recognise', stubName, 'append panel, push details in array, then load html content instead');
-    displayArea.appendChild(panel);
-    panelsOnDisplay.push({ stubName, panel, query });
-    const html = await getStubContent(stubName);
-    panel.innerHTML = html;
-    //set Module?
-
-    // Update layout based on number of panels
-    updatePanelLayout();
-  } catch (error) {
-    console.error(`Error loading ${stubName}:`, error);
-    panel.innerHTML = `<div class="text-red-700 p-4">Error loading ${stubName}</div>`;
-    displayArea.appendChild(panel);
-    updatePanelLayout();
-    */
-  ///end of conditional on 'new-panel'
-
     }
 
 }
@@ -411,31 +320,6 @@ function updatePanelLayout() {
     });
   }
 }
-
-
-/*
-// === FETCH STUB CONTENT ===
-async function getStubContent(stubName) { // legacy
-
-  const pageUrl = `htmlStubs/${stubName}`;
-  console.log('getStubContent(', stubName, ') from:', pageUrl);
-
-  const response = await fetch(pageUrl);
-  if (!response.ok) {
-    throw new Error(`Failed to load ${stubName}: ${response.status} ${response.statusText}`);
-  }
-  
-  return await response.text();
-}
-*/
-
-     // console.log('🔍 Checking if already open...');
-     // console.log('   Looking for stubName:', stubName, 'type:', typeof stubName);
-     // console.log('   panelsOnDisplay:', panelsOnDisplay);
-     // console.log('   Match found:', panelsOnDisplay.some(p => p.stubName === stubName));
-     // console.log('   All stubNames:', panelsOnDisplay.map(p => ` "${p.stubName}" `));
-
-
 
 
 // === OPEN/CLOSE PANELS BY RULE ===
@@ -506,49 +390,6 @@ if(destination==='background') await backgroundProcess(); else
       }
     }
 
-
-/*
-// === NAVIGATION HANDLING ===
-function setupNavigationListeners() {//unlike admiListeners navListeners have not been loading petition by reading html
-    console.log('Setting up navigation listeners');
-
-    document.addEventListener('click', async (e) => {
-    console.log('Navigation click event:', e.target);
-    
-    const btn = e.target.closest('.nav-btn');
-    if (!btn) return;
-
-    e.preventDefault();
-    e.stopPropagation();
-
-    const pageName = btn.dataset.page; //pageName is set in flexload.html Nothing else set there
-
-    if(pageName === 'howTo'){ // store the existing petition for later use to give context related howTo
-const howToContext = appState.query.petitioner;
-console.log('howToContext:',howToContext);
-    }
-
-    console.log('Navigation button clicked for page:', );
-    const petition={'Section':'menu','Action':pageName+'.html', 'Destination':'new-panel'}; //new petitioner object 23:22 7 Sept 2025
-    //appState.query.petitioner.Action = pageName + '.html'; //keeping petitioner in sync with stubName
-    appState.setPetitioner(petition); //keeping petitioner in sync with stubName
-
-   // const stubName = pageName + '.html'; //????????????????
-
-// Call the extracted function. true indicates it's from button click
-//await openClosePanelsByRule(stubName, true); 
-
-//this is where we handle the logic for opening/closing panels based on button clicks
-//I want to extract this logic into its own function so I can call it from other places if needed 
-//but when I tried this it ceased to work. need to understand why.
-
-    // Remove active class from all buttons
-//    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-
-
-  });
-}
-*/
 // === CLOSE ALL PANELS ===
 function closeAllPanels() {
     console.log('Closing all panels');
@@ -566,74 +407,3 @@ function closeAllOtherPanels(keepStubName) {
     closePanel(panel.stubName);
   });
 }
-
-
-
-
-
-/*
-// === ADMIN LISTENERS ===
- function adminListeners() {
-    console.log('within main: Setting up admin listeners');
-  // Setup sign out button
-  const signOutBtn = document.querySelector('[data-action="sign-out"]');
-  if (signOutBtn) {
-    signOutBtn.addEventListener('click', async (e) => {
-      e.preventDefault();
-      if (confirm('Are you sure you want to sign out?')) {
-        console.log('User signed out');
-      }
-    });
-  }
- } */
-/*
-  export function showToast(message, options = {}) {
-    const {
-      duration = 3000,
-      background = '#333',
-      color = '#fff',
-      position = 'bottom-right'
-    } = options;
-  
-    // Remove any existing toast
-    const existing = document.querySelector('.toast');
-    if (existing) existing.remove();
-  
-    // Create toast element
-    const toast = document.createElement('div');
-    toast.className = 'toast';
-    toast.textContent = message;
-    toast.style.position = 'fixed';
-    toast.style.zIndex = '9999';
-    toast.style.padding = '0.75rem 1.25rem';
-    toast.style.borderRadius = '0.5rem';
-    toast.style.background = background;
-    toast.style.color = color;
-    toast.style.fontSize = '0.875rem';
-    toast.style.boxShadow = '0 2px 6px rgba(0,0,0,0.2)';
-    toast.style.transition = 'opacity 0.3s ease';
-  
-    // Positioning
-    if (position === 'bottom-right') {
-      toast.style.bottom = '1rem';
-      toast.style.right = '1rem';
-    } else if (position === 'top-right') {
-      toast.style.top = '1rem';
-      toast.style.right = '1rem';
-    } else if (position === 'bottom-left') {
-      toast.style.bottom = '1rem';
-      toast.style.left = '1rem';
-    } else if (position === 'top-left') {
-      toast.style.top = '1rem';
-      toast.style.left = '1rem';
-    }
-  
-    document.body.appendChild(toast);
-  
-    // Auto-dismiss
-    setTimeout(() => {
-      toast.style.opacity = '0';
-      setTimeout(() => toast.remove(), 300);
-    }, duration);
-  }
-  */

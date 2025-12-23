@@ -115,7 +115,7 @@ autoAssignTask: {
         manager_id: manager_id, // or derive from context
         task_header_id: task_header_id,
         step_id: step_id,
-        assigned_by_automation: assigned_by_automation // Your audit trail column
+        assigned_by_automation: assigned_by_automation // audit trail column
       })
       .select()
       .single();
@@ -462,16 +462,24 @@ handler: async  (supabase, userId) =>{
  createApproFromNewAuthUser: {// created 22:25 Dec 18 2025 --needs db function 
   metadata: {
     type: 'RPC',
-    requiredArgs: ['authUserId']
+    requiredArgs: ['appro_name', 'appro_description', 'appro_email','authId']
   },
-  handler: async (supabase, userId, payload) => {
-    const {approName, approDescription, approEmail, authId} = payload;
-//db func needs create_appro_from_new_auth_user( approName text , approDescription text, approEmail text, authId uuid )
-    const { data, error } = await supabase.rpc('create_appro_from_new_auth_user', {
-      approName:approName,
-      approDescription:approDescription,
-      approEmail:approEmail, 
-      authId:authId
+  handler: async (supabase,  userId,  payload) => {
+    const {appro_name, appro_description, appro_email, auth_id} = payload;
+console.log ('Received:', appro_name, appro_description, appro_email, auth_id);
+  console.log('Calling RPC with:', {
+    appro_name: appro_name,
+    appro_description: appro_description,
+    appro_email: appro_email,
+    auth_id: auth_id
+  });
+
+//db func needs create_appro_from_new_auth_user( approname text , approdescription text, approemail text, authid uuid )
+    const { data, error } = await supabase.rpc('create_appro_from_new_auth_user_v2', {
+      appro_name:appro_name,
+      appro_description:appro_description,
+      appro_email:appro_email, 
+      auth_id:auth_id
     });
 
     if (error) throw error;
@@ -1177,7 +1185,7 @@ readStudentAssignments: {
       const { data, error } = await supabase
         .from('task_assignment_view')
         .select(`
-          assignment_id, student_id, student_name, task_header_id, task_name, task_description, 
+          assignment_id, student_id, student_name, task_header_id, task_name, task_description, step_id,
           step_order, step_name, step_description, manager_id, manager_name, assigned_at, task_external_url
         `)
         .eq('student_id', student_id)
@@ -1542,7 +1550,7 @@ handler: async (supabase, userId, payload) => {
   readTaskWithSteps: {
     metadata: {
       tables: ['task_with_steps_view'], // VIEW not a table
-      columns: ['task_id', 'task_name','step_id', 'step_order', 'step_description'],
+      columns: ['task_id', 'task_name','step_id', 'step_order', 'step_description'],//lots more columns now  dec 23
       type: 'SELECT',
       requiredArgs:['supabase', 'userId', 'taskId']
     },
@@ -1551,8 +1559,8 @@ handler: async (supabase, userId, payload) => {
     const { task_header_id } = payload;
     console.log('readTaskWithSteps for taskId;',task_header_id);
       const { data, error } = await supabase
-        .from('task_with_steps_view')
-        .select('task_name, task_description, task_external_url, step_id, step_order, step_name, step_description, step_external_url')// changed 20:14 Dec 14
+        .from('task_view')
+        .select('*')// changed 20:14 Dec 14
 //        .select('id, name, description, task_steps(*)')
         .eq('task_id', task_header_id);  // encodeURIComponent(value) for .eq() & .like()
       if (error) throw error;

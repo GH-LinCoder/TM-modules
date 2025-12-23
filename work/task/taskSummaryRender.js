@@ -37,7 +37,7 @@ export async function render(panel, query = {}) {
 // state.currentTask = await readTaskFromDb('abc9ae7f-5948-4079-862c-eaa73053f0ce');
 
  initClipboardIntegration(panel);
-await loadAndDisplay(panel, 'abc9ae7f-5948-4079-862c-eaa73053f0ce');
+//await loadAndDisplay(panel, 'abc9ae7f-5948-4079-862c-eaa73053f0ce');
 //console.log ('task',state.currentTask);  //array equal to number of steps maybe?
 /*
 each element repeats the header details + have a step associated? includes step 1 & tep 2
@@ -52,7 +52,7 @@ array[2] is step 3
 
 async function loadAndDisplay(panel, taskId){
 state.currentTask = await readTaskFromDb(taskId);
-console.log ('task',state.currentTask);  //array equal to number of steps maybe?
+console.log ('taskId', taskId,'task',state.currentTask);  //array equal to number of steps maybe?
 
   renderTaskStructure(panel); 
  
@@ -132,8 +132,10 @@ function addClipboardItemsToDropdown(items, selectElement) {
 
 async function readTaskFromDb(taskId){
      try {console.log('readTaskFromDb', taskId);
+      //func needs: const { task_header_id } = payload;
+
     const task = await executeIfPermitted(state.user, 'readTaskWithSteps', {
-     taskId :  taskId
+     task_header_id :  taskId
     });
     return task;
   } catch (error) {
@@ -289,7 +291,7 @@ const header = taskData[0];
   card.className = 'clickable-step hover:scale-105 transition-transform bg-orange-50 border-l-4 border-orange-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
   card.innerHTML = `
     <strong>Task: ${header.task_name}</strong>
-      ${header.task_description ? `<div class="text-sm text-gray-700  whitespace-pre-line">${header.task_description }...</div>` : ''}
+      ${header.task_description ? `<div class="text-sm text-gray-700  whitespace-pre-line">${header.task_description }</div>` : ''}
  ${header.task_external_url ? `<div class="text-xs text-blue-600">${header.task_external_url}</div>` : ''}
   `;
 
@@ -336,7 +338,7 @@ function renderTaskStructure(panel) {
     console.log('renderTaskStructure()');
   const summaryEl = panel.querySelector('#taskSummary');
   if (!summaryEl) return;
-const task = state.currentTask;
+const task = state.currentTask;//14:00 Dec 21 almost all null
 console.log('renderTaskStructure()-state:', state, 'stepOrder:', stepOrder, 'stepId',stepId);
 
   //summaryEl.innerHTML = '<h3>Summary:</h3><br>';

@@ -189,22 +189,23 @@ if(!informationFeedback) return;
 //moved the above to own file 16:47 Oct 27
 
 
-  function init(panel) { // called from render() 2nd function to run
+async  function init(panel) { // called from render() 2nd function to run
     console.log('init()');
 
     const isMyDash = detectContext(panel);
     applyPresentationRules(panel, isMyDash);
   
-    const subject = resolveSubject();
+    const subject = await resolveSubject();
+    console.log('subject',subject);
     if(subject.type==='relation') 
     loadFromRelations(panel, subject.id); 
     else
     loadAndRenderRelationships(panel, subject.id, subject.name);
   
     onClipboardUpdate(() => {
-      const updatedSubject = resolveSubject();
-      loadAndRenderRelationships(panel, updatedSubject.id, updatedSubject.name);
-      if (!isMyDash) populateApprofileSelect(panel); // optional
+checkClipboardThenNormalRender(panel);
+//      loadAndRenderRelationships(panel,subject.id, subject.name);
+     // if (!isMyDash) populateApprofileSelect(panel); // optional
     });
   
     if (!isMyDash) {
@@ -214,6 +215,13 @@ if(!informationFeedback) return;
     }
   }
     
+async function checkClipboardThenNormalRender(panel){
+const subject = await resolveSubject();
+      loadAndRenderRelationships(panel,subject.id, subject.name);
+
+}
+
+
 function loadFromRelations(panel, subjectId){
 //needs to display the one relation referred to.
 console.log('needs to display the one relation referred to');
@@ -263,7 +271,9 @@ else  currentSelection = select.value;
 async function loadAndRenderRelationships(panel, approfileId, approfileName) {  // aprofileId is an object ?
  if(!approfileId) {
   const approfile = await resolveSubject(); approfileId=approfile.id, approfileName = approfile.name; 
-if(approfile.type ==='relations') loadFromRelations(panel, approfile.id); return};// should render the one relationship
+console.log('subject',approfile);
+
+  if(approfile.type ==='relations') loadFromRelations(panel, approfile.id); return};// should render the one relationship
 
 
   console.log('loadAndRenderRelationships approfileId()');

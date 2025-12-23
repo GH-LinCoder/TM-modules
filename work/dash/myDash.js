@@ -1,10 +1,10 @@
 // ./work/dash/myDash.js
-import { appState } from '../../state/appState.js';
-import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-import { showToast } from '../../ui/showToast.js';
+//import { appState } from '../../state/appState.js';
+//import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
+//import { showToast } from '../../ui/showToast.js';
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
-import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
-import { icons } from '../../registry/iconList.js';
+//import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
+//import { icons } from '../../registry/iconList.js';
 
 
 //  ./work/dash/adminDash.js
@@ -317,7 +317,7 @@ function getTemplateHTML() {
   </div> 
 
 </div>
-        ${petitionBreadcrumbs()}
+        ${petitionBreadcrumbs()}  //this reads 'petition' and prints the values at bottom of the render panel
 </div>
 
     </div>
@@ -330,10 +330,7 @@ export function render(panel, petition = {}) {
     console.log('adminDash Render(', panel, petition, ')');
    panel.innerHTML = getTemplateHTML(); // 
 
-     //? query.petitioner : 'unknown';
- //   console.log('Petition:', petition);
-  //  panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;
-   // panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
+
   }
 //petitioner
 

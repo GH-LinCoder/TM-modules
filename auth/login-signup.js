@@ -31,10 +31,10 @@ function getTemplateHTML() {
           <div id="login-error" class="text-red-500 text-sm hidden"></div>
           <form class="space-y-3">
 
-            <label for"email">Email:</label>
+            <label for="email">Email:</label>
             <input type="email" name='email' id="login-email" placeholder="Click to autoload" class="w-full p-2 border rounded" required autocomplete='email'/>
 
-            <label for"current-password">Password:</label>
+            <label for="current-password">Password:</label>
             <input type="password" name='current-password' id="login-password" placeholder="Click to autoload" class="w-full p-2 border rounded" autocomplete='current-password' aria-describedby="password-constraints"   required />
      
             <button type="submit" id="loginBtn" class="w-full bg-green-600 text-white py-2 rounded">Log In</button>
@@ -53,13 +53,13 @@ function getTemplateHTML() {
           <h2 class="text-xl font-bold text-center mb-4">Create free Account</h2>
           
           <form class="space-y-3">
-          <label for"user-name">User name:</label>
+          <label for="user-name">User name:</label>
             <input type="text" name="user-name" id="user-name" placeholder="Choose a unique name" class="w-full p-2 border rounded" required title="The user name will be visible to others. It will be checked to make sure it is unique">
             
-            <label for"new-email">Email:</label>
+            <label for="new-email">Email:</label>
             <input type="email" name="new-email" id="signup-email" placeholder="For confirmation link" class="w-full p-2 border rounded" required title="You will be sent an email to confirm the sign-up."/>
 
-            <label for"new-password">Create a password:</label>
+            <label for="new-password">Create a password:</label>
             <input type="password" name="new-password" id="signup-password" placeholder="Password (min 6 chars)" class="w-full p-2 border rounded" minlength="6" required title="You can change the password later by clicking 'forgotten' on the login form"/>
             <!--button id="toggle-password" type="button" aria-label="Show password as plain text. Warning: this will display your password on the screen.">👁️ Show password </button-->
 
@@ -87,7 +87,7 @@ function getTemplateHTML() {
           <div id="reset-error" class="text-red-500 text-sm hidden"></div>
           <div id="reset-success" class="text-green-500 text-sm hidden">Check your email for reset link!</div>
           <form class="space-y-3">
-            <label for"email">Email:</label>
+            <label for="email">Email:</label>
             <input type="email" name='email' id="reset-email" placeholder="Enter the email you registered with" class="w-full p-2 border rounded" autocomplete='email' title='You will be sent a link' required />
             <button type="submit" id="resetBtn" class="w-full bg-purple-600 text-white py-2 rounded">Send Reset Link</button>
           </form>

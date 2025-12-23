@@ -15,6 +15,29 @@ let studentId = null;
 const userId = appState.query.userId;
 let panelEl = null;
  
+//NEEDS TO EXECUTE AUTOMATIONS if found on current tsep of the task
+
+async function loadStepAutomations(stepId) {
+  try {console.log('loadStepAutomations for currentStep',stepId); //console.log('currentStep', currentStep, 'taskName',taskName, 'stepId', stepId );
+
+    const automations = await executeIfPermitted(studentId, 'readTaskAutomations', {
+      source_task_step_id: stepId
+    });
+    console.log('automations',automations);
+   // renderAutomationCards(container, automations);
+  } catch (error) {
+    console.error('Failed to load automations:', error);
+    showToast('Could not load automations', 'error');
+  }
+}
+
+async function executeAutomation(){ //how do this?
+
+
+} 
+
+
+
 
 
 onClipboardUpdate(() => {
@@ -54,7 +77,7 @@ if(student.type==='relations'){panel.innerHTML='';
             return;}
 else
 try {
-    const assignments = await executeIfPermitted(userId, 'readStudentAssignments', {
+    const assignments = await executeIfPermitted(userId, 'readStudentAssignments', {//from task_assignement_view
       student_id: studentId, 
       type: 'task'
     });//when seeing myDash for first time studentId not assigned
@@ -71,7 +94,7 @@ panel.innerHTML = ''; // Clear panel
 
 
 for (const assignment of assignments) {
-      const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', { // this happens
+      const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', { // reads (*) from task_view  Dec 23 23:07
         task_header_id: assignment.task_header_id
       });
 
@@ -80,13 +103,17 @@ for (const assignment of assignments) {
 
 
 //console.log('assignment:', assignment);
-      const currentStep = assignment.step_order;
+      const currentStep = assignment.step_order; //important: to decide when to execute automations
       const numberOfSteps = taskSteps.length;
       const studentName = assignment.student_name || 'Unknown Student';
       const managerName = assignment.manager_name || 'Unknown Manager'; // new 20:39 dec 20
       const taskName = assignment.task_name || 'Unnamed Task';
       const taskDescription = assignment.task_description;
       const taskId = assignment.task_header_id;
+      const stepId = assignment.step_id;
+
+      loadStepAutomations(stepId); //new 22:13 dec 23 func needs stepId
+
 
 //console.log('');
       const currentStepName = assignment.step_name || 'Unnamed Step';
@@ -226,8 +253,10 @@ function renderStepCard(title, step, color, studentName = null, showCheckmark = 
     const name = step.step_name || 'Unnamed';
     const description = step.step_description || 'No description available';
     const externalUrl = step.external_url || null;
+
+   
   
-    const bgColor = {
+  const bgColor = {
       gray: 'bg-gray-50 border-gray-200',
       blue: 'bg-blue-50 border-blue-200',
       green: 'bg-green-50 border-green-200',
