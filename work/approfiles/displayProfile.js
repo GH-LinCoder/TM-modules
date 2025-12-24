@@ -16,19 +16,20 @@ export async function render(panel, query = {}) { //Called from loader (standard
     return;
   }
   panel.innerHTML = getTemplateHTML();
-    // 1. Try to read profile
+
 updateProfile();
 respondToClipboardChange();
 
   subject = await resolveSubject(); // Has this already been done by loadMyDashWithData??
-  console.log('resolveSubject',resolveSubject);
+  console.log('resolveSubject',resolveSubject);//this may be != to auth id of that person
 if(!subject) {console.log('Error - no subject returned'); return}
 
   let profile=null;
 
   try { // check if the subject already has an appro
-    profile = await executeIfPermitted(subject.id, 'readApprofileByAuthUserId', {
-      authUserId: subject.id
+    //func needs     const { approfileId } = payload;
+    profile = await executeIfPermitted(subject.id, 'readApprofileById', {//chamged from ByAuthId 18:50 dec 24
+      approfileId: subject.id
     });
   } catch (err) {
     console.error('No profile found:', err.message); // NEW auth user?

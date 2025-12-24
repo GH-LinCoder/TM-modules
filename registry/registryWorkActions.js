@@ -106,8 +106,24 @@ autoAssignTask: {
   },
   handler: async (supabase, userId, payload) => {
     const { task_header_id, step_id, student_id, manager_id, assigned_by_automation } = payload;
-    console.log('autoAssignTask()', payload);
+    console.log('autoAssignTASK-registry()', payload);
     
+
+let existing=null;
+
+if (task_header_id) {
+  existing = await supabase
+    .from('task_assignments')
+    .select('id')
+    .eq('student_id', student_id)
+    .eq('task_header_id', task_header_id)
+    .limit (1);
+} 
+
+if (existing && existing.data.length > 0) { //console.log (existing);
+  console.log('This assignment of a task ',task_header_id, ' already exists for this student. Automation ignored'); return;
+}
+
     const { data, error } = await supabase
       .from('task_assignments')
       .insert({
@@ -125,6 +141,54 @@ autoAssignTask: {
   }
 },
 
+
+// For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
+autoAssignSurvey: {
+  metadata: {
+    tables: ['task_assignments'],
+    columns: ['id', 'step_id', 'sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'assigned_by_automation'],
+    type: 'INSERT',
+    requiredArgs: ['survey_header_id', 'step_id', 'assigned_by_automation']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { survey_header_id,  student_id, assigned_by_automation } = payload;
+    console.log('autoAssignSURVEY-registry()','survey:', survey_header_id, 'student:',  student_id,'assigned by:', assigned_by_automation );
+    
+let existing=null;
+
+if (survey_header_id) {
+  existing = await supabase
+    .from('task_assignments')
+    .select('id')
+    .eq('student_id', student_id)
+    .eq('survey_header_id', survey_header_id)
+    .limit (1);
+}
+
+if (existing && existing.data.length > 0) { //console.log (existing);
+  console.log('This Assignment of a survey',survey_header_id ,'already exists for this student. Automation ignored'); return;
+}
+
+
+
+    const { data, error } = await supabase
+      .from('task_assignments')
+      .insert({
+        survey_header_id: survey_header_id,
+        student_id: student_id,
+        assigned_by_automation: assigned_by_automation // audit trail column
+      })
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data.id;
+  }
+},
+
+
+
+
 // For auto-relate-appro
 autoRelateAppro: {
   metadata: {
@@ -136,6 +200,20 @@ autoRelateAppro: {
   handler: async (supabase, userId, payload) => {
     const { approfile_is, relationship, of_approfile, assigned_by_automation } = payload;
     console.log('autoRelateAppro()', payload);
+
+let existing=null;
+
+if (relationship) { //added this check 19:10 Dec 24
+  existing = await supabase
+    .from('approfile_relations')
+    .select('id')
+    .eq('approfile_is', approfile_is)
+    .eq('relationship',relationship)
+    .eq('of_approfile', of_approfile)
+    .limit (1);
+}
+if (existing && existing.data.length > 0) { //console.log (existing);
+  console.log('This relation ',of_approfile,' already exists for this appro_is. Automation ignored'); return;}
 
     const { data, error } = await supabase
       .from('approfile_relations')
@@ -946,7 +1024,7 @@ readApprofileById:{
   }
 },
 
-readApprofileByAuthUserId: { 
+readApprofileByAuthUserId: { //why by authUserId?
   metadata: { 
     tables: ['app_profiles'], 
     columns: ['id', 'name', 'email', 'created_at'], 
@@ -957,7 +1035,7 @@ readApprofileByAuthUserId: {
       const { data, error } = await supabase 
       .from('app_profiles')
        .select('id, name, email, created_at') 
-       .eq('auth_user_id', authUserId) 
+       .eq('auth_user_id', authUserId) //but what is passed is the appro id which can be != auth id
        .single(); 
        if (error) throw error; 
   return data; } 
@@ -1177,6 +1255,8 @@ readStudentAssignments: {
   },
   handler: async (supabase, userId, payload) => {
     const { student_id, type } = payload;
+console.log('student_id',student_id, 'type', type);//why is type undefined???
+
 //console.log('Registry-student_id', student_id);
     let taskData = [];
     let surveyData = [];
@@ -1205,7 +1285,7 @@ readStudentAssignments: {
         .eq('student_id', student_id)
         .order('assigned_at', { ascending: false });
 
-      if (error) throw error;
+      if (error){ console.log('Error readStudentAssignments', error.message);throw error;}
       surveyData = data;
     }
 
@@ -1928,7 +2008,7 @@ readTaskAutomations: {
   handler: async (supabase, userId, payload) => {
     const { source_task_step_id} = payload;
 console.log('registryReadTaskAutomations-stepId:',source_task_step_id);
-    // Validate required args
+    // Validate required args. This code always threw an error
  /*
     for (const arg of ['source_task_step_id']) {
       if (payload[arg] === undefined || payload[arg] === null) {

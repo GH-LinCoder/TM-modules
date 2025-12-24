@@ -64,7 +64,7 @@ export const registry = { // this registry is for loading a new page to the righ
 
 //'display-tasks' :()=> import('../work/task/displayTasks.js'), // changed 20:29 Oct 21
 'display-tasks' :()=> import('../work/task/displayTasksStudent.js'),//display the tasks for this student
-'display-task-summary':()=> import('../work/task/taskSummaryRender.js'),
+'display-task-summary':()=> import('../work/task/displayTaskSummary.js'),
 
 
 //////////          APPRO MANAGEMENT    AdminDash       /////////                 
