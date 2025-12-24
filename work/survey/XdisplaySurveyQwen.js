@@ -1,14 +1,14 @@
 import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
-//import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
+import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import { icons } from '../../registry/iconList.js'; 
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
 
 // Export function as required by the module loading system
 export function render(panel, query = {}) { //is query relevant???
-    console.log('displaySurvey.render query:',query);
+    console.log('displaySureveyQwen.render query:',query);
 
     if (!panel || !panel.isConnected) {
         console.warn('Render target not found or disconnected');
@@ -23,7 +23,6 @@ export function render(panel, query = {}) { //is query relevant???
 
 class SurveyDisplay {
     constructor() {
-      this.subject=null;
       this.subjectId = null;
       this.subjectName = null;
       this.subjectType = null;
@@ -41,27 +40,20 @@ class SurveyDisplay {
     }
   
     // 🔹 Resolve current subject from clipboard or appState
-async    resolveCurrentSubject() {
-       this.subject = await resolveSubject();
-      this.subjectId = this.subject.id;
-      this.subjectName = this.subject.name;
-      this.subjectType = this.subject.type;
-      console.log('subject, name, id:',this.subject, this.subjectName, this.subjectId);//name unknown
+   async resolveCurrentSubject() {
+      const subject =  await resolveSubject();
+      this.subjectId = subject.id;
+      this.subjectName = subject.name;//not known
+      this.subjectType = subject.type;
+      console.log('subject, name, id:', subject, this.subjectName, this.subjectId);//this.subjectId OK
     }
   
     // 🔹 Fetch survey assignments for a person
-    async findAssignedSurveys() {
-      try {
-
-console.log("Survey call payload:", {
-  student_id: this.subjectId,
-  type: 'survey'
-});
-
-
-        const assignments = await executeIfPermitted(this.userId, 'readStudentAssignments', {
-          student_id: this.subjectId,
-          type: 'survey'
+    async findAssignedSurveys() {console.log('findAssignedSurveys()-this.subjectId', this.subjectId)
+      try { //func needs const { student_id, type } = payload;
+        const assignments = await executeIfPermitted(this.userId, 'readStudentAssignments', { // registry says type is undefined
+          student_id: this.subjectId, // works
+          type:'survey'
         });
         return assignments.map(a => a.survey_header_id);
       } catch (error) {
@@ -108,11 +100,10 @@ console.log("Survey call payload:", {
   
     // 🔹 Main render method
     async render(panel) {
-      console.log('displaySurvey.render()');
       if (!panel || !panel.isConnected) return;
       this.panelEl = panel;
       panel.innerHTML = '';
-      await this.resolveCurrentSubject();
+      this.resolveCurrentSubject();
   
       let surveyIds = [];
       const isMyDash = detectContext(panel);

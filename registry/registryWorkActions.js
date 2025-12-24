@@ -1255,7 +1255,7 @@ readStudentAssignments: {
   },
   handler: async (supabase, userId, payload) => {
     const { student_id, type } = payload;
-console.log('student_id',student_id, 'type', type);//why is type undefined???
+console.log('Registry -student_id',student_id, 'type', type);//why is type undefined when being sent 'survey'???
 
 //console.log('Registry-student_id', student_id);
     let taskData = [];

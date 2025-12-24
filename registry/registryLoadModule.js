@@ -94,7 +94,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'display-this-survey' :()=> import('../work/survey/displaySurvey.js'), //changed fro,m above 23:22 dec 14
 
 //'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),  
-'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
+//'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
 'assign-survey-dialogue' :()=> import('../surveys/assignSurvey.js'),
 'edit-survey-dialogue':()=> import('../work/survey/editSurvey.js'), // copied to work/ folder
 
@@ -115,7 +115,7 @@ export const registry = { // this registry is for loading a new page to the righ
 
 //////////          myDash    - uses same functions a adminDash?               /////////
 "display-profile"  : () => import('../work/approfiles/displayProfile.js'),
-// "display-surveys"  : () => import('../work/survey/displaySurveysQwen.js'),
+ "display-surveys"  : () => import('../work/survey/displaySurvey.js'), //changed to remove Qwen 22:29 dec 24
 // "display-tasks"  : () => import('../work/tasks/displayTaskStudent.js'),
 // "display-relations"  : () => import('../work/approfiles/displayRelations.js'),
 //"display-students"  : () => import('../work/task/displayTasksManager.js'),

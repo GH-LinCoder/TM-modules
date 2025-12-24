@@ -17,7 +17,7 @@ subject = await resolveSubject();
 
   // Load each section via petition system Only do this once !
   loadSection('profile');
-       loadSection('surveys'); 
+       loadSection('surveys'); //return;
         loadSection('tasks'); //the tasks that the student is on
         loadSection('relations');
         loadSection('students'); //the tasks that the student manages (these are 'my students')
