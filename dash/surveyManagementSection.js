@@ -35,7 +35,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
         <!-- Display -->
   <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="display-survey-dialogue">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">View a survey  👁️📜</h3>
+    <h3 class="text-sm font-medium text-blue-700 mb-1">View a survey  (lost this module Dec 26 2025)</h3>
     <p class="text-xs text-blue-600">Surveys can be viwed based on the survey id.</p>
   </div>
     

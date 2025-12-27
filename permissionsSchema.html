@@ -16,7 +16,7 @@
                         success: '#16a34a',
                         warning: '#d97706',
                         danger: '#dc2626',
-                        info: '#0891b2'
+                        info: '#EECEEE'
                     }
                 }
             }
@@ -39,6 +39,11 @@
             background: linear-gradient(135deg, #10b981, #047857);
             color: white;
         }
+        .relationship-badge {
+            background: linear-gradient(135deg, #9d10b9, #780478);
+            color: white;
+        }
+
         .flow-diagram {
             position: relative;
             padding: 2rem;
@@ -79,39 +84,51 @@
         <header class="text-center mb-12">
             <h1 class="text-4xl font-bold text-gray-900 mb-4">🛡️ Granular Permission System Architecture</h1>
             <p class="text-lg text-gray-600 max-w-4xl mx-auto">
-                A comprehensive column-level, row-level, and table-level permission system for volunteer-driven organizations
+                A comprehensive column-level, row-level, and table-level permission system a volunteer-driven organization
             </p>
         </header>
 
         <!-- Overview Cards -->
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <div class="bg-white rounded-xl p-6 shadow-lg permission-card border-l-primary">
+            
+            <div class="bg-gray-50 rounded-xl p-6 shadow-lg permission-card border-l-primary">
                 <div class="text-3xl mb-3">🧬</div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">Atomic Permissions</h3>
-                <p class="text-gray-600">Smallest permission units: CRUD + Table + Column</p>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">permission_atoms</h3>
+                <p class="text-gray-600">All possible atoms are stored in the Table: n = CRUD * Table * Column</p>
             </div>
-            <div class="bg-white rounded-xl p-6 shadow-lg permission-card border-l-success">
+
+            <div class="bg-gray-50 rounded-xl p-6 shadow-lg permission-card border-l-primary">
                 <div class="text-3xl mb-3">🧫</div>
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Permission Molecules</h3>
-                <p class="text-gray-600">Collections of atomic permissions</p>
+                <p class="text-gray-600">Is the name of an array of atomic permissions</p>
             </div>
+
 
                 <div class="bg-green-50 rounded-xl p-6 shadow-lg permission-card border-l-success">
                 <div class="text-3xl mb-3">🧫</div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">Permission Role Molecules</h3>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">permission molecule roles</h3>
                 <p class="text-gray-600">Collections of atomic permissions granted to a role</p>
             </div>
 
-                            <div class="bg-red-50 rounded-xl p-6 shadow-lg permission-card border-l-success">
+
+                <div class="bg-green-50 rounded-xl p-6 shadow-lg permission-card border-l-success">
                 <div class="text-3xl mb-3">🧫</div>
-                <h3 class="text-xl font-semibold text-gray-900 mb-2">Permission Required Molecules</h3>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">permission molecule granted</h3>
+                <p class="text-gray-600">Collections of atomic permissions granted to an individual</p>
+            </div>
+
+                <div class="bg-red-50 rounded-xl p-6 shadow-lg permission-card border-l-warning">
+                <div class="text-3xl mb-3">🧫</div>
+                <h3 class="text-xl font-semibold text-gray-900 mb-2">permission molecule required</h3>
                 <p class="text-gray-600">Collections of atomic permissions required to run a function</p>
             </div>
             
-            <div class="bg-white rounded-xl p-6 shadow-lg permission-card border-l-warning">
+
+
+            <div class="bg-green-50 rounded-xl p-6 shadow-lg permission-card border-l-success">
                 <div class="text-3xl mb-3">🔗</div>
                 <h3 class="text-xl font-semibold text-gray-900 mb-2">Appro Relations</h3>
-                <p class="text-gray-600">Graph-based permission assignment system</p>
+                <p class="text-gray-600">Permission assignment & collection via graph-mapping</p>
             </div>
             <div class="bg-white rounded-xl p-6 shadow-lg permission-card border-l-danger">
                 <div class="text-3xl mb-3">⚡</div>
@@ -125,6 +142,8 @@
             <div class="p-6 border-b border-gray-200">
                 <h2 class="text-2xl font-bold text-gray-900">System Architecture Flow</h2>
             </div>
+
+
             <div class="flow-diagram">
                 <div class="relative">
                     <div class="flow-line hidden md:block"></div>
@@ -132,24 +151,24 @@
                     <div class="flow-step">
                         <div class="flow-icon">1</div>
                         <div>
-                            <h3 class="font-semibold text-lg text-gray-900">Permission Definition</h3>
-                            <p class="text-gray-600">Admin creates role using syntax: {{EDITOR@SURVEYS#questions}}</p>
+                            <h3 class="font-semibold text-lg text-gray-900">Basic Permission Grant</h3>
+                            <p class="text-gray-600">Admin can grant specific atomic permissions: {{INSERT@task_headers#name}} {{INSERT@task_headers#description}}</p>
                         </div>
                     </div>
                     
                     <div class="flow-step">
                         <div class="flow-icon">2</div>
                         <div>
-                            <h3 class="font-semibold text-lg text-gray-900">Parsing & Storage</h3>
-                            <p class="text-gray-600">Converts to atomic permissions, stores in permission_molecules table</p>
+                            <h3 class="font-semibold text-lg text-gray-900">Storage</h3>
+                            <p class="text-gray-600">Which can be stored (as a text array) in the permission molecule granted table for that user</p>
                         </div>
                     </div>
                     
                     <div class="flow-step">
                         <div class="flow-icon">3</div>
                         <div>
-                            <h3 class="font-semibold text-lg text-gray-900">Assignment</h3>
-                            <p class="text-gray-600">Link permission molecule to user via appro relations</p>
+                            <h3 class="font-semibold text-lg text-gray-900">Use</h3>
+                            <p class="text-gray-600">When that user attempts to create a task...</p>
                         </div>
                     </div>
                     
@@ -157,11 +176,79 @@
                         <div class="flow-icon">4</div>
                         <div>
                             <h3 class="font-semibold text-lg text-gray-900">Runtime Authorization</h3>
-                            <p class="text-gray-600">Function calls set context, security function validates permissions</p>
+                            <p class="text-gray-600">The system compares this permission to the permission molecule required table</p>
                         </div>
                     </div>
                 </div>
             </div>
+
+
+            <div class="flow-diagram">
+                <div class="relative">
+                    <div class="flow-line hidden md:block"></div>
+                    
+                                    
+                    <div class="flow-step">
+                        <div class="flow-icon">1</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Role Permission Grant</h3>
+                            <p class="text-gray-600">Relate the user to the resource, via the relationship. This uses the existing relate appros module.</p>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="flow-icon">2</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Runtime permissions view mapping</h3>
+                            <p class="text-gray-600">A database function iteratively searches the permission view to assemble the user's permissions</p>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <div class="flow-icon">3</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Runtime Authorization</h3>
+                            <p class="text-gray-600">The databse function compares the collected text array of atomic permission with the text array of required permissions to permit the action</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="flow-diagram">
+                <div class="relative">
+                    <div class="flow-line hidden md:block"></div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-icon">1</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Role creation</h3>
+                            <p class="text-gray-600">Admin can define a role: {{EDITOR@SURVEYS#questions}}</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-icon">2</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Parsing & Storage</h3>
+                            <p class="text-gray-600">Converted to a molecule of atomic permissions, stored in permission_molecule_role table</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="flow-icon">3</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900">Preparing granting system</h3>
+                            <p class="text-gray-600">{{EDITOR@SURVEYS#questions}} also becomes a row in the relationships table. This makes it possible to relate a user to a resource linked by this relationship.</p>
+                        </div>
+                    </div>
+                  
+                </div>
+            </div>
+
+            
+
         </div>
 
         <!-- Database Schema -->
@@ -174,19 +261,37 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Core Tables</h3>
                         <div class="space-y-4">
-                            <div class="bg-blue-50 p-4 rounded-lg">
-                                <h4 class="font-medium text-blue-900 mb-2">function_registry</h4>
+                            <div class="bg-red-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-blue-900 mb-2">permission_molecue_required</h4>
                                 <ul class="text-sm text-blue-800 space-y-1">
-                                    <li>• feature_id (UUID) - Primary Key</li>
-                                    <li>• feature_name (TEXT)</li>
-                                    <li>• permission_molecule (JSONB)</li>
+                                    <li>• id (UUID) - Primary Key</li>
+                                    <li>• function_name (TEXT)</li>
+                                    <li>• molecule (TEXT[])</li>
                                 </ul>
                             </div>
+                          
+
                             <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-green-900 mb-2">permission_molecule_granted</h4>
+                                <ul class="text-sm text-green-800 space-y-1">
+                                    <li>• id (UUID)</li>
+                                    <li>• atom (TEXT) - UPDATE@survey_headers#name</li>
+                                                                    </ul>
+                            </div>
+
+                                                        <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-green-900 mb-2">permission_molecule_roles</h4>
+                                <ul class="text-sm text-green-800 space-y-1">
+                                    <li>• id (UUID)</li>
+                                    <li>• atom (TEXT) - UPDATE@survey_headers#name</li>
+                                                                    </ul>
+                            </div>
+
+                            <div class="bg-gray-50 p-4 rounded-lg">
                                 <h4 class="font-medium text-green-900 mb-2">permission_atoms</h4>
                                 <ul class="text-sm text-green-800 space-y-1">
                                     <li>• id (UUID)</li>
-                                    <li>• atom (TEXT) - CREATE@survey_headers#name</li>
+                                    <li>• atom (TEXT) - UPDATE@survey_headers#name</li>
                                                                     </ul>
                             </div>
                         </div>
@@ -194,21 +299,24 @@
                     <div>
                         <h3 class="text-lg font-semibold text-gray-900 mb-4">Relationship Tables</h3>
                         <div class="space-y-4">
-                            <div class="bg-purple-50 p-4 rounded-lg">
+                            <div class="bg-gray-50 p-4 rounded-lg">
                                 <h4 class="font-medium text-purple-900 mb-2">appro_relations</h4>
                                 <ul class="text-sm text-purple-800 space-y-1">
                                     <li>• id (UUID)</li>
-                                    <li>• appro_is (UUID) - User/Group</li>
-                                    <li>• relationship (TEXT) - {{ROLE@SCOPE#RESTRICTION}}</li>
-                                    <li>• of_appro (UUID) - Target object</li>
+                                    <li>• appro_is (UUID)</li>
+                                    <li>• relationship (TEXT)</li>
+                                    <li>• of_appro (UUID)</li>
                                 </ul>
                             </div>
                             <div class="bg-orange-50 p-4 rounded-lg">
-                                <h4 class="font-medium text-orange-900 mb-2">permission_molecules</h4>
+                                <h4 class="font-medium text-orange-900 mb-2">permissions_view (approfile_relations)</h4>
                                 <ul class="text-sm text-orange-800 space-y-1">
-                                    <li>• molecule_id (UUID)</li>
-                                    <li>• relationship_syntax (TEXT)</li>
-                                    <li>• atomic_permissions (JSONB array)</li>
+                                    <li>• id (UUID)</li>
+                                    <li>• appro_is (UUID)  - User/Group</li>
+                                    <li>• relationship(TEXT-syntax for granting permissions - {{ROLE@SCOPE#RESTRICTION}})</li>
+                                    <li>• of_appro (UUID)  - Target resource</li>
+                                    <li>• appro_is_name (TEXT)</li>
+                                    <li>• of_appro_name (TEXT)</li>
                                 </ul>
                             </div>
                         </div>
@@ -216,6 +324,67 @@
                 </div>
             </div>
         </div>
+
+
+        <!-- Appro Schema -->
+        <div class="bg-white rounded-xl shadow-lg mb-12">
+            <div class="p-6 border-b border-gray-200">
+                <h2 class="text-2xl font-bold text-gray-900">Appro Schema</h2>
+            </div>
+            <div class="p-6">
+                <div class="grid md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Core Appros</h3>
+                        <div class="space-y-4">
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-blue-900 mb-2">All Tasks</h4>
+                                <ul class="text-sm text-blue-800 space-y-1">
+                                    <li>• id (UUID) - Primary Key</li>
+                                    <li>• name (TEXT)</li>
+                                    <li>• description (TEXT)</li>
+                                    <li>. Every task is automatically assigned as a member of this appro on creation. Using this as the object in a permission grant gives very wide scope</li>
+                                </ul>
+                            </div>
+
+                            <div class="bg-green-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-blue-900 mb-2">All Surveys</h4>
+                                <ul class="text-sm text-blue-800 space-y-1">
+                                    <li>• id (UUID) - Primary Key</li>
+                                    <li>• name (TEXT)</li>
+                                    <li>• description (TEXT)</li>
+                                    <li>. Every survey is automatically assigned as a member of this appro on creation. Using this as the object in a permission grant gives very wide scope</li>
+                                </ul>
+                            </div>
+                          
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Specific Appros</h3>
+                        <div class="space-y-4">
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-purple-900 mb-2">Welcome Survey</h4>
+                                <ul class="text-sm text-purple-800 space-y-1">
+                                    <li>• id (UUID)</li>
+                                    <li>• name (TEXT)</li>
+                                    <li>• Description (TEXT)</li>
+                                    <li>• This survey header appro, created automatically when the survey header was inserted, can be used as the object of a permission grant. It limits scope to this single survey</li>
+                                </ul>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg">
+                                <h4 class="font-medium text-purple-900 mb-2">Learn First Aid</h4>
+                                <ul class="text-sm text-orange-800 space-y-1">
+                                    <li>• id (UUID)</li>
+                                    <li>• name (TEXT)</li>
+                                    <li>• description (TEXT)</li>
+                                    <li>• This task header appro, created automatically when the survey header was inserted, can be used as the object of a permission grant. It limits scope to this single task</li>
+
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>        
 
         <!-- Permission Syntax Examples -->
         <div class="bg-white rounded-xl shadow-lg mb-12">
@@ -229,21 +398,21 @@
                             <span class="atom-badge px-3 py-1 rounded-full text-sm font-medium mr-2">Atomic</span>
                             <code class="text-sm bg-white px-2 py-1 rounded">INSERT@task_header#name</code>
                         </div>
-                        <p class="text-gray-600 text-sm">Grant insert permission on name column only</p>
+                        <p class="text-gray-600 text-sm">Grant INSERT permission on name column only, not update, delete or select</p>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg">
                         <div class="flex items-center mb-2">
                             <span class="molecule-badge px-3 py-1 rounded-full text-sm font-medium mr-2">Molecule</span>
-                            <code class="text-sm bg-white px-2 py-1 rounded">{{EDITOR@TASKS}}</code>
+                            <code class="text-sm bg-white px-2 py-1 rounded">{INSERT@task_header#name, SELECT@task_header#name, INSERT@task_header#description, SELECT@task_header#description}</code>
                         </div>
-                        <p class="text-gray-600 text-sm">Expands to all CRUD operations on all task-related tables and columns</p>
+                        <p class="text-gray-600 text-sm">A minimal practical molecule allowing the creation of a task header and reading the information back</p>
                     </div>
                     <div class="bg-gray-50 p-4 rounded-lg">
                         <div class="flex items-center mb-2">
-                            <span class="molecule-badge px-3 py-1 rounded-full text-sm font-medium mr-2">Molecule</span>
+                            <span class="relationship-badge px-3 py-1 rounded-full text-sm font-medium mr-2">Relationship/Role</span>
                             <code class="text-sm bg-white px-2 py-1 rounded">{{READER@SURVEYS#questions}}</code>
                         </div>
-                        <p class="text-gray-600 text-sm">Read-only access to survey questions only, not answers or automations</p>
+                        <p class="text-gray-600 text-sm">A possible defintion of a read-only access to survey questions only, not answers or automations</p>
                     </div>
                 </div>
             </div>
@@ -305,41 +474,486 @@
                     <div class="flex items-start">
                         <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
                         <div>
-                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Build Core Tables</h3>
-                            <p class="text-gray-600">Create permission_atoms, function_registry, permission_molecules, and appro_relations tables</p>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">What already exists</h3>
+                            <p class="text-gray-600">Use of existing tables and methods: appro_relations table, relationships table, relate two appros module.</p>
                         </div>
                     </div>
-                    <div class="flex items-start">
+
+<div class="flex items-start">
                         <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
-                        <div>
-                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Implement Permission Parser</h3>
-                            <p class="text-gray-600">Create functions to convert {{ROLE@SCOPE#RESTRICTION}} syntax into atomic permission collections</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start">
-                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
-                        <div>
-                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Create Aggregation Function</h3>
-                            <p class="text-gray-600">Build PostgreSQL recursive CTE function to collect all user permissions</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start">
-                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
-                        <div>
-                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Implement Security Layer</h3>
-                            <p class="text-gray-600">Create authorization function using session variables and RLS policies</p>
-                        </div>
-                    </div>
-                    <div class="flex items-start">
-                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">5</div>
                         <div>
                             <h3 class="font-semibold text-lg text-gray-900 mb-2">Admin Interface</h3>
                             <p class="text-gray-600">Build UI for administrators to create and assign permissions using controlled syntax</p>
                         </div>
                     </div>
+
+
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Functions</h3>
+                            <p class="text-gray-600">Gradually migrate from javascript function registry to database functions, generate molecules for the most important database functions (deletion, updating, and personal info reading)</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Tables</h3>
+                            <p class="text-gray-600">Populate permission_molecule_required for each of the migrated functions. </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">5</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Assign permissions</h3>
+                            <p class="text-gray-600">To start these can be assembled from the permission_atoms table into molecules placed in a single row in the granted table </p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">6</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Create the database <em>executeIfPermitted()</em> function</h3>
+                            <p class="text-gray-600">This compares permission_molecule_required against permission_molecule_granted. Execute action or explain refusal.</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">7</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Implement Security Layer</h3>
+                            <p class="text-gray-600">Use the above authorization function and session variables and RLS policies to protect the data</p>
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">8</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Develop Permission definitions and Parser</h3>
+                            <p class="text-gray-600">Determine syntax and create functions to convert strings like {{ROLE@SCOPE#RESTRICTION}} into molecules</p>
+                        </div>
+                    </div>
+                    <div class="flex items-start">
+                        <div class="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">9</div>
+                        <div>
+                            <h3 class="font-semibold text-lg text-gray-900 mb-2">Create Aggregation Function</h3>
+                            <p class="text-gray-600">Build PostgreSQL recursive CTE function to collect all user permissions</p>
+                        </div>
+                    </div>
+
                 </div>
             </div>
-        </div>
+</div>
+
+<div class="mb-12"></div>
+<div><h2 class="bg-info  font-semibold text-lg text-gray-900 mb-4" >Discussion, challenges & unknowns</h2></div>
+<div class=" rounded-xl shadow-lg">
+    <div class=" p-6 border-b border-blue-200">
+
+<h3 class="font-semibold text-lg text-gray-900 mb-2">🛡️ 1. Restricting database access</h3> 
+
+<p>
+The call to the db is a request to run a function that resides on the db. The javascript sends no API query
+
+Therefore malicious users of the client cannot simply alter SQL and can't evade the permissions system. They may be able to get control of the permission granting, but they can't just alter the code being sent.
+</p><p>
+The database function has access to a table which shows the function name and the REQUIRED permissions (the molecule) associated with the query.
+(The required permissions are stored in a table. This means there is a central place that lists all the required permissions related to each & every database accessing function)
+
+The required molecule is stored as a text array. The user's granted permission are stored in a separate table using a text array.
+
+The db compares the two text arrays to determine if the required array is within the granted array. This determines whether the user has a set of permissions sufficient to match the permissions required by the function. 
+
+If it finds the correct permissions the query is then run. 
+</p>
+
+<div class="mb-12"></div>
+<p>
+The restrictions are on TABLES, ROWS & COLUMNS not just tables and rows. All CRUD actions can be restricted to individual table, row or column.  
+</p><p>
+<div class="mb-12">
+
+
+<h3 class="bg-white  font-semibold text-lg text-gray-900 mb-4" >2. Column level specification and checking</h3>
+
+The javascript functions that want to query the database can only do so by calling a database function. These db functions have known characteristic needs to access a specific table(s), specific columns and a specific action (CRUD). These needs are in a look-up table. 
+
+These specifics are pre-recorded when the function is developed or the coding is changed. It is regarded as a constant and is not evaluated during execution of the function.
+
+In javascript all that is called is the name of the database function that eventually queries the database. The javascript cannot spoof.  The function details and the required permissions are not directly known to the javascript (but can be read if the permissions are held in a table. The advantage is the JS can evaluate whether the the current user has relevant permissions & thereby avoid pointless db queries. But the JS can't grant actual access because that is hard coded into the functions). 
+
+</div>
+<div class="mb-12">
+
+<h3 class="font-semibold text-lg text-gray-900 mb-2">Terms & syntax:</h3>
+
+<b>atoms:</b>
+The word 'atom' is used to mean the most basic permission which consists of an 
+ACTION (SELECT, INSERT, UPDATE,DELETE) 
+followed by a separator '@' 
+followed by a table_name (written exactly as the actual table name). 
+An optional next part is a separator '#' 
+followed by a column_name (written exactly as the actual column name). 
+
+An example:  
+SELECT@task_headers#name -This is permission to read the name column of the task_headers table.
+UPDATE@survey_headers  -This is permission to edit any column of survey_headers  (Perhas we could use #* ?)
+
+
+<div class="mb-6"></div>
+<b>molecules:</b>
+A collection of permission atoms is called a 'permission molecule'. These are stored as TEXT [ ] which is a native Postgre array.
+{ atom , atom , atom }
+
+<div class="mb-12"></div><div>
+<h3 class="font-semibold text-lg text-gray-900 mb-2">TABLES:</h3>
+<div>
+<b>permission_atoms:</b> All possible atoms are stored in the Table permission_atoms as a reference. Comprising 
+id:uuid, 
+atom:text [ ]
+(There were 516 rows in this table based on 11 tables)
+</div>
+<div class="mb-6"></div>
+<div>
+<b>permission_molecule_required:</b> 
+id uuid,
+function_name text,
+permissions_required text[],
+created_at,
+created_by uuid
+The column 'permissions_required' contains the permissions that are required to run the function as a collection of formalised atomic permissions (smallest possible permission pieces) (this collection is called ‘a permission molecule’). The format chosen is on the assumption of this being the best for fast database use. The format could be changed if another is superior.
+
+</div>
+<div class="mb-6"></div>
+<div>
+
+<b>permission_molecule_granted</b>
+user_id uuid,
+granted_permissions text[],
+cached_at timestamp,
+expires_at timestamp 
+</div>
+<div>
+This table lists the permissions that each user has. 
+It is calculated and then stored
+A database function collects the required permission molecule from the _required Table and will later compare this to the collection of granted atomic permissions. 
+If every atomic permission in the permission molecule is within the granted permission collection, then the access is permitted. 
+If even one atom is missing, then access is denied.
+The Table ‘permission_atoms’ contains the smallest possible permission (an 'atom') in each row. 
+This is in a controlled syntax which specifies the CRUD action, the tableName, a single column in that table. 
+The total number of rows would therefore be 4 times the total number of columns in all the tables subject to these column level rules plus any access which is not related to columns such as count.
+(The format is a string) 
+Conversion from human/work based permission specification into a machine matchable permission molecule.
+When a query is received by the database it looks-up by name of the function to read the required moelecue. 
+That is the name of the function is used to look-up the predetermined necessary permissions that are required for handling the query.
+That is how the database discovers what permissions are required for the query.
+That explains how permissions are defined and compared.
+
+</div>
+<div class="mb-6"></div>
+<div>
+<b>permission_molecule_roles:</b>
+id uuid, 
+role text,  
+molecule text[],   
+created_at, 
+created_by
+This table is to make granting permissions simpler, by having prepackaged molecules which have been defined under arbitrary role names. 
+The column 'molecule' contains the permissions associated with the name in the 'role' column. 
+The format is the same as in the _required table. 
+The role name column could contain terms such as EDITOR which are human understandable. Admin will either use preset template versions of what 'EDITOR' implies
+or admin can create new roles or edit existing ones. 
+If changing from preset role templates admin have to define the atoms that need to be placed into the molecule in the in the 'molecule' column.
+(A molecule is an array of permission atoms.) 
+This table begins with default, standard roles. 
+The admin can also add new roles with their own definitions.
+
+</div>
+</div>
+
+<div class="mb-12"></div>
+
+<b>Granting permissions:</b>
+Permissions are granted in two parts. This uses an existing system within the app called appros and their relations. 
+
+</div><div>
+An 'appro' is the name of a simple name tag that resides in the app_profiles table. It consists of an 
+id:uuid, 
+a name:text, 
+a description:text and 
+often, but not always, a column entry containing a foreign key id:uuid. This foreign key is only present if the appro represents 
+1) an authenticated user
+2) a task 
+3) A survey 
+(appros have many other columns which are not relevant here)
+</div><div class="mb-12"></div><div>
+Each authenticated user is represented by a unique appro. 
+Each task is represented by a unique appro. 
+Each survey is represented by a unique appro. 
+In addition there are abstract appros representing anything that the users want to be able tor track or assign to a task. 
+Appros can be connected to each other (related to each other) via a link called a relationship. (Relationships are edges and appros are nodes.) This relating of appros is used in the app for various things, one of which will be the granting of permissions.
+
+<div class="mb-12"></div>
+
+When a relationship is used to relate 2 appros the relationship (which is usually represented by a term such as member ) can form a phrase in English such as   "John IS a member OF TestGroup". 
+Where John is an authenticated user represented by his appro and TestGroup is an abstract entity representing some group probably involved with tests.
+
+<div class="mb-12"></div>
+
+To clearly differentiate permissions from these other uses, there is a restricted and controlled syntax in the relationships that grant permissions (see later). 
+The relations table contains all relations between appros. 
+<div class="mb-12"></div>
+There is a permissions_view which extracts and displays only those relationships which grant permissions. The permissions_view is where functions would traverse the table to build permissions that have been granted directly or vicariously (iteratively)
+
+The permissions relationship syntax specifies the type of permission followed by optional restrictions by general type and then by specific limitations.
+
+The relationship is applied to the person and a target. The target could be the appro that represents a specific task or a specific survey or an appro that defines a broad group. 
+<div class="mb-12"></div>
+The first two can be resolved as referring to specific rows in a table and the possible sub-tables. 
+The last one (the abstract target) either is one that is recognised by the system as having a meaning or if not the permission will be denied.
+
+The syntax used within the relationship is such that it can be easily parsed into a permission molecule (a collection of atomic permissions). Also many common roles will already have been parsed into permission molecules and stored in the database.
+<div class="mb-12"></div>
+The permission relations are stored with all the other relations such that any appro can be used to find all its relations. But for permissions we use a permissions_view which extracts just those relations that are permissions.    
+With a userId the permissions_view can be searched and the permissions granted to that user can be collected.  
+The complication is that some permissions may be vicarious. 
+<div class="mb-12"></div>
+User John may have permissions by way of being in a group that has cascading permissions (being part of that group may mean inheriting those rights). 
+Therefore, some iterative searching is required.
+Having iteratively searched the permissions_view, the permissions are assembled from what may be several permission molecules or even permission atoms. 
+
+The final part in defining the granted permission is to examine the appro at the end of the relation.
+
+</div><div class="mb-12"></div><div>
+
+The node-edge relationship system called ‘appros’ where  [appro_is] -- [relationship] -- [of_appro ] assigns permission sets over the [of_appro], where [of_appro] can be anything within the system.
+
+The of_appro sets the limit of the permission by for example being the appro of a specific survey. In this case whatever the permissions were they only apply to survey with id== the appro survey_header_id
+
+</div>
+
+<div class="mb-12"></div><div>
+
+<h3 class="font-semibold text-lg text-gray-900 mb-2">🎨 Creating a permission and turning into a machine readable form (The Slow Process)</h3>
+The complex process of creating parsing and storing permissions is done once during creation of the permission which is the system's core caching strategy.
+<div class="mb-12"></div> 
+<b>Syntax Construction</b>
+A possible method is that Admin selects permissions via sequential dropdowns/lists. 
+With forced syntax.  Limits choices based on structure of the involved tables.
+The UI shows permissions being removed (faded out).  
+Visually subtracts atomic permissions to clarify the narrowing scope, improving administrative safety. 
+Could be color coded to the sections of the relationship syntax  SUBJECT@ - one color MAJOR-RESOURCE - other color
+<b>Parsing at Definition</b>
+The full path string (e.g., EDITOR@surveys#questions) is saved and immediately parsed. 
+Some default values will already exist in a table, others can be added as invented. 
+This is to speed-up processing of often used compound permissions.  
+javascript writes to a table that stores the molecule for fast access
+
+</div><div class="mb-12"></div><div>
+<div  class="bg-gray-50">
+<h3 class="font-semibold text-lg text-gray-900 mb-2">📜  The Permission Syntax</h3>
+All authority is in structured syntax, stored in the permissions_molecules table with a fk link from the relationship in the relationships table.
+ (All relationships are constrained to be unique in name. 
+Permission relationships also have unique syntax & only these can be used to relate permissions):
+<div class="mb-12"></div>
+<b>Appro_is -> relationship -> of_appro</b>
+Where relationship indicates that it is a PERMISSION relationship by having a name beginning and ending with double curly braces {{   
+followed by UPPER CASE for the overall role such as EDITOR, followed by the separator '@' followed by the table_name in lower case & with underscores such as task_headers 
+
+The syntax of a permission relationship is to be meaningful to humans, but machine convertible to atoms.
+
+If the permission is to be restricted to a specific part this is shown after the separator # and specifies (in lower case) the specific resource to be limited to such as automations. 
+
+The  #restricted resource restricts the permission and excludes subgroups. 
+(Therefore @SURVEYS#quesions  is giving permission only for survey questions, not answers or automations.)
+
+  {{ ROLE @ table_name # restricted to this column }}  
+
+The part after the '@' is never uppercase.  table_names are always lower case.  
+
+</div><div class="bg-gray-50">
+Roles are different to permissions. Permissions represented by the molecule which is an array of atoms.
+Roles are something that humans can define and apply without directly thinking of the possible dozens of specific atomic permissions they entail.
+
+The syntax of roles is likely to differ a bit from the syntax of atoms. This will become apparent when we tackle defining and applying roles.
+
+<div class="mb-12"></div>
+<b>Draft of syntax of roles. - for discussion</b>
+<div class="mb-4"></div>
+EDITOR without any further references applies to all sections
+<div class="mb-4"></div>
+EDITOR @ TASKS breaches the syntax explained elsewhere
+EDITOR_TASKS  would be more in line with syntax. 
+<div class="mb-4"></div>
+EDITOR@TASKS#automations syntax error no such column
+EDITOR@automations   would be for the table 'automations'  ('automations isn't a column)
+<div class="mb-4"></div>
+EDITOR@SURVEYS#questions syntax error 'SURVEYS' isn't a tableName,
+EDITOR@questions fits sysntax
+<div class="mb-4"></div>
+Role (e.g., EDITOR, ADMIN, READER): The broad capability being granted.
+'@' Separator: Followed by LIMIT of scope which cascades to lower scope
+'#' Separator: Followed by LIMIT of scope which does not cascade to lower scope
+<div class="mb-4"></div>
+The following are not atoms and therefore not allowed
+INSERT@TASK#description#name,  (not atomic as there is no db thing called TASK)  ?  INSERT@TASK_HEADER#description,name? (still not atomic as the columns are a combination)
+<div class="mb-4"></div>
+These are atomic:
+INSERT@task_header#description
+INSERT@task_header#name
+<div class="mb-4"></div>
+</div><div>
+
+Anything to the right of # is a restriction to that specific item
+
+In addition when this relationship is applied it has a subject (the person being granted the permissions - the appro_is) 
+and an object (the of_appro).  
+
+The role is specific to the of_appro.  
+If the of_appro is a task, then the permission is only relevant to that single task.
+<div class="mb-4"></div>
+
+The of_appro could be ‘All tasks’ or ‘All surveys’ or ‘The App’ etc. These have to be appros known to the functions as having specific meaning. Relating to a new or arbitrary appro will be rejected.
+<div class="mb-4"></div>
+To ensure that permissions are clearly visible and to avoid confusion with other appro relations, the relationships for permissions use restricted syntax and symbols to differentiate them.
+
+Permissions relationships start and end with double curly braces {{   }}  and have enforced UPPERCASE and lowercase with enforced separators. Any relationship that does not parse will be treated as not granting permissions. 
+Therefore if [John] IS [a member] of [Admin], John does not get admin permissions. 
+<div class="mb-4"></div>
+However, if a permission relationship were EDITOR@TASK which isn’t atomic we could manually convert that into atomic form. It may be possible to encode the method for automatic conversion.  This can be slowly generated at the time of inventing this role. It can then be stored as a TEXT array of the atoms (a molecule of permissions (a collection of atoms) )
+
+This syntax and how to interpret it needs further study and testing.
+
+</div><div class="mb-12"></div><div>
+<div class="bg-blue-50">
+<h3 class="font-semibold text-lg text-gray-900 mb-2">⚡  Runtime Authorization (The Fast Gate)</h3> 
+The system relies on speed at the point of action.
+Aggregation
+On user login the page to be displayed is probably 'myDash' which will need to access the database to find the surveys, tasks & relations for this user. Therefore, we need to collect this user's permissions. (We may have standard default permissions that are assumed such that these initial database queries can be carried out without detailed checking of permissions)
+
+Login: Read cache; recompute only if cache_version mismatch or TTL expired.
+
+Permission changes: On molecule edit or relation grant/revoke, bump cache_version and emit an appState event (e.g., permissions:changed).
+
+UI listeners: Modules subscribe to appState and re-fetch capability map when permissions change.
+
+Persistent cache:
+
+Benefit: Login stays fast; recomputation happens only on changes.
+
+Guard: Provide a manual “refresh permissions” action for admins in case of missed invalidations.
+
+</div><div>
+<div class="mb-4"></div>
+At some point the actual permissions will need to be assembled. 
+
+Recursive CTE: A PostgreSQL function traverses the appro_relations graph (handling groups and bundles) to aggregate all stored Atomic Permission Arrays into a single user_permissions_array. This is stored in the permission_user_cache
+
+Function Metadata
+The permision_molecule_required table holds the CRUD , tables and columns the function needs to access. That table holds the permission molecule for that function.
+
+Comparison 
+Fast array lookup compares the function permission molecule required with the atomic permissions cache for the user. All the required atoms have to be present in the user cache molecule.
+</div>
+
+<div><div class="mb-12"></div><div>
+    <h3 class="font-semibold text-lg text-gray-900 mb-2">🔄 5. Key System Features</h3>
+Positive Permissions Only: The system avoids negative permissions (NOT...), relying on the path syntax to define the inclusion set.
+Inheritance: Handled robustly by the Recursive CTE traversing custom AUTH_GRANT relationships.
+
+Atomic Definitions: The atomic_permissions table provides a clear, auditable definition of every legal database action (CRUD@table_name#column_name), ensuring security consistency between the frontend guide and the backend gate.
+The appro relations are used for more than permissions. 
+
+
+</div>
+
+<div class="mb-12"></div><div>
+<div class="bg-red-50">
+<h3 class="font-semibold text-lg text-gray-900 mb-2">Implementation</h3>
+
+Data Structures, The Aggregation Function (The Translator/Recursion), and The Enforcement Layer (The Gate).
+1. Data Structures (The Tables)
+Tables to store the permission policies and the assignment cache:
+</div><div class="mb-4"></div><div>
+
+2. The Aggregation Function (The Recursive CTE)
+This is the most complex part, executed when the system needs to know all of a user's permissions. This logic is bundled into a single, high-performance PostgreSQL function.
+Goal: Take a user_id and return a single, complete user_permissions_array (a flat list of all effective atomic permission strings).
+</div><div class="mb-4"></div><div>
+A. The Recursive CTE (Graph Traversal)
+The function uses a Recursive CTE (defined using WITH RECURSIVE) to handle inheritance:
+Anchor Permissions: Finds all direct permissions granted to the user_id and all permission granting groups that grant permission to the user.
+Recursion: Continuously joins back to the appro_relations table to find groups within groups (group:A is a permission receiver  from group:B), stopping only when no new permission granters are found.
+</div><div class="mb-4"></div><div>
+Recursion limits
+1) If visited this appro already: return.
+2) If more than 5 levels don't go deeper (probably anything found would not have been planned to have distant effects )
+3) A timeout of some kind
+</div>
+<div class="mb-4"></div>
+<div>
+
+Aggregation: During this traversal, the CTE joins to the permissions_molecules table to fetch the atomic_atoms_array (the cached TEXT[ ] column) for every assigned permission relationship.
+
+
+B. The Final Output
+The function uses PostgreSQL's array functions to efficiently flatten and combine all the retrieved atomic permission arrays into one single list of unique strings.
+</div><div class="mb-4"></div><div>
+
+4. The Enforcement Layer (The Fast Gate)
+This is the final security check, which must be executed instantly every time a user attempts a database operation.
+</div><div class="mb-4"></div><div>
+A. The Security Function (The Gate)
+A simple, fast function (e.g., check_user_permission(user_id, required_atom_string)) is defined:
+It calls the Aggregation Function (or references a cache of its result).
+It checks if the required_atom_string is present in the returned user_permissions_array.
+It returns TRUE or FALSE.
+</div><div class="mb-4"></div><div>
+B. Row-Level Security (RLS)
+This is the security mechanism that uses the function above:
+Apply RLS policies directly to the data tables (e.g., task_headers, survey_questions).
+The RLS policy uses the security function to enforce access before any data is returned or modified.
+Example RLS Policy on survey_headers:
+CREATE OR REPLACE POLICY survey ON survey_headers FOR ALL USING ( check_user_permission(current_user_id()) );    --??????
+Identical rule on every table subject to user access.  Exact wording to be designed. 
+</div><div class="mb-4"></div><div>
+This ensures that the security check is run for every single query, and it cannot be bypassed by client-side code.
+
+The first check would be if (!isAuthenticated_user) return denied. 
+ The permissions_molecules table is an intermediate store. 
+
+When a permission structure is first defined with EDITOR_SURVEYS@survey_headers (This is prior to anyone being assigned this role/relationship, the code is converted into the collection of permission atoms and stored in the permissions_molecules table. 
+
+Then when this relationship is applied to a person and a target object, the relationship does not need to be parsed because that stage was done at the moment of creation of the relationship. Instead the rows in the permission_molecules can be read into an array. This set of permission atoms is then assigned to whatever of_appro it is connected to.
+
+This breaks the processing into different stages.
+
+Define a relationship (without specifying who or over what), parse and store so now it is just a look-up when handling the stage of Subject - that relationship - object.
+</div><div class="mb-4"></div><div>
+
+All tasks & surveys have their own auto-generated appro which has the task or survey id. 
+Therefore if the permission has been set as appro_is → permission_relationship -> of_appro(task) then we refer to this if userId==appro_is , relationship if of type ‘permissions’ and of_appro has an id.  
+
+Does the row id == appro id ?
+<div class="mb-4"></div>
+
+But if the appro is abstract, such as,  ‘All Tasks’ this is an appro with an ID which does not refer to any specific task, how does the db make use of that?
+The db function must be aware of these system wide efinitions enshrined inthe appro. That is we have codified certain standard appro names.  
+“All”  “All Tasks” “All Surveys” “All (some new invention) ?”  
+
+<div class="mb-4"></div>
+There are many unknowns and there will be many challenges as we implement this concept. 
+
+
+<div class="mb-4"></div>
+<b>(Aggregation is scheduled to be the last part of the permission system to be built. 
+The immediate plan is for the permission_molecule_required to take precendence, 
+then the permission_molecule_granted which can then be tested by migrating functions from the javascript registry to the db functions.)
+</b>b>
+</div>
+</div>
 
         <!-- Footer -->
         <footer class="text-center mt-12 text-gray-500">

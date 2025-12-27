@@ -7,6 +7,11 @@ import { icons } from '../../registry/iconList.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
 
+//NOTE: the automation functions herein read from the automations Table
+//BUT those functions also exist in an importable version which expect different names for variables because
+// the importable version is built to use data from survey_view or task_view which clearly distinguish
+//between source-columns and target-columns (Is the stepId from the source task or from the task you want to assign?)
+//At some time this module should refator to use the task_view instead of direct table access Dec 25 20252
 
 console.log('displayTasksStudent.js loaded 19:54 Oct 27');
 
@@ -214,7 +219,7 @@ export async function render(panel, query = {}) {
   console.log('displayTaskStudent.js render()');
  subject = await resolveSubject();
 
-console.log('resolved subject:',subject);
+//console.log('resolved subject:',subject);
 
  subjectId =subject.id;
 
@@ -225,9 +230,9 @@ console.log('resolved subject:',subject);
   
 const userId = appState.query.userId;  
 panelEl=panel;
-console.log('calling readStudentAssignments with id:', subjectId);
+//console.log('calling readStudentAssignments with id:', subjectId);
 
-if(subject.type==='relations'){panel.innerHTML='';
+if(subject.type==='relations'){panel.innerHTML=''; //??
             return;}
 else
 try {
@@ -235,7 +240,7 @@ try {
       student_id: subjectId, 
       type:'task'
     });//when seeing myDash for first time subjectId not assigned
-console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
+//console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
     if (!assignments || assignments.length === 0) {
       panel.innerHTML = `<div class="text-gray-500 text-center py-8">No task assignments found.</div>`;
       return;
@@ -251,9 +256,9 @@ for (const assignment of assignments) { // this only displays one assignment
       const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', { // reads (*) from task_view  Dec 23 23:07
         task_header_id: assignment.task_header_id
       });
-console.log('assignment',assignment);
+//console.log('assignment',assignment);
  const taskExternalURL = assignment.task_external_url;
-                  console.log('assignment.task_external_url',assignment.task_external_url);
+ //                 console.log('assignment.task_external_url',assignment.task_external_url);
 
 
 //console.log('assignment:', assignment);
@@ -310,9 +315,9 @@ console.log('assignment',assignment);
       
 
         // Decide how to render the external URL
-    let externalContent = ''; console.log('taskExternalURL:',taskExternalURL);
-    if (taskExternalURL) { console.log('taskExternalURL: true');
-      if (taskExternalURL.startsWith('<iframe')) { console.log('startsWith(<iframe');//okay to here
+    let externalContent = '';// console.log('taskExternalURL:',taskExternalURL);
+    if (taskExternalURL) { //console.log('taskExternalURL: true');
+      if (taskExternalURL.startsWith('<iframe')) { //console.log('startsWith(<iframe');//okay to here
         // Treat as raw iframe markup
         externalContent = `
           <div class="mt-4">

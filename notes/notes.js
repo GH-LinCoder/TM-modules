@@ -31,7 +31,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
                 </div>
                 <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection004">
                   <input type="checkbox" id="tag-main-lab" name="main" value="lab" class="mr-2 text-blue-600">
-                  <label for="tag-main-lab">lab</label>
+                  <label for="tag-main-lab">message</label>
                 </div>
                 <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection005">
                   <input type="checkbox" id="tag-main-reply" name="main" value="reply" class="mr-2 text-blue-600">

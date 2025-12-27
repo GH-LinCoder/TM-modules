@@ -64,6 +64,7 @@ getAuthenticatedUser: {
     return {
       id: user?.id,
       email: user?.email,
+      name:user?.name,
       created_at: user?.created_at,
       confirmed_at:user?.confirmed_at,
       // role: user?.role, // if you add custom claims
@@ -213,7 +214,7 @@ if (relationship) { //added this check 19:10 Dec 24
     .limit (1);
 }
 if (existing && existing.data.length > 0) { //console.log (existing);
-  console.log('This relation ',of_approfile,' already exists for this appro_is. Automation ignored'); return;}
+  console.log('This relation ',of_approfile,' already exists for this appro_is.' ,approfile_is ,' Automation ignored'); return;}
 
     const { data, error } = await supabase
       .from('approfile_relations')
@@ -1024,7 +1025,7 @@ readApprofileById:{
   }
 },
 
-readApprofileByAuthUserId: { //why by authUserId?
+readApprofileByAuthUserId: { //By authUserId because approId may != authId. This function looks at the auth_user_id column
   metadata: { 
     tables: ['app_profiles'], 
     columns: ['id', 'name', 'email', 'created_at'], 
@@ -1523,7 +1524,6 @@ metadata: {
   columns:['note_id', 'note_category_id'],
   requiredArgs:['rows']
 },
-
 handler: async(supabase, userId, payload) => {
 const {rows} = payload; 
 const { error } = await supabase
@@ -2359,6 +2359,7 @@ createAutomationDeleteRelationBySurvey: {
         throw new Error("Missing required argument: " + arg);
       }
     } */
+   console.log()
     const { data, error } = await supabase
       .from('automations')
       .insert({

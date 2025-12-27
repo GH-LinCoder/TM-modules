@@ -72,7 +72,7 @@ created_by
 The column 'molecule' contains the permissions associated with the name in the 'role' column. The format is the same as in the _required table. The role column would contain terms such as EDITOR  or EDITOR@surveys  which are human understandandle and have been defined in the 'molecule' column as an array of permission atoms. This table contains default, standard roles. The admin can also add new roles with their own definitions.  (THIS NEEDS DEEPER ANALYSIS & DESIGN)
 
 
-permission_user_cache
+permission_molecule_user
 user_id uuid,
 granted_permissions text[],
 cached_at timestamp,

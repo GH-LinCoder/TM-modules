@@ -43,8 +43,9 @@ function getIconFromStatus(status) {
     return '';
 }
 
-export async function reactToNoteClick(noteId) {
-    console.log(`reactToNoteClick(${noteId})`);
+
+export async function reactToStatusClick(noteId){
+  console.log(`reactToStatusClick(${noteId})`);
 
     const noteElement = document.querySelector(`[data-note-id="${noteId}"]`);
     if (!noteElement) {
@@ -95,7 +96,8 @@ console.log('statusBar.dataset.notesStatus:', statusBar.dataset.notesStatus);
         clearTimeout(debounceTimers.get(noteId));
         debounceTimers.delete(noteId);
     }
-    
+    console.log('noteId', noteId);
+        console.log('nextStatus', nextStatus);
     // Set a new timer to update the database after a delay
     const timer = setTimeout(async () => {
         if (Number.isInteger(nextStatus)) {
@@ -106,7 +108,51 @@ console.log('statusBar.dataset.notesStatus:', statusBar.dataset.notesStatus);
     }, 2000);
     
     debounceTimers.set(noteId, timer);
+
 }
+
+
+
+export async function reactToNoteClick(noteId) { // this is a click to handle the note, not the status
+    console.log(`reactToNoteClick(${noteId})`);
+
+    const noteElement = document.querySelector(`[data-note-id="${noteId}"]`);//this find the status panel not the text of the note
+    if (!noteElement) {
+        console.error(`Note element with ID ${noteId} not found`);
+        return;
+    }
+
+    
+
+
+    
+    // Update the UI
+    noteElement.innerHTML += `
+        <span>*</span>
+    `;
+    
+    // Clear any existing timer for this note
+    if (debounceTimers.has(noteId)) {
+        clearTimeout(debounceTimers.get(noteId));
+        debounceTimers.delete(noteId);
+    }
+    
+    /*
+    // Set a new timer to update the database after a delay
+    const timer = setTimeout(async () => {
+        if (Number.isInteger(nextStatus)) {
+           // const supabase = createSupabaseClient();
+            await saveNoteStatus(noteId, nextStatus);
+        }
+        debounceTimers.delete(noteId);
+    }, 2000);
+    
+    debounceTimers.set(noteId, timer);
+*/
+
+    }
+
+
 
 export async function saveNoteStatus(noteId, newStatus) {
     console.log("saveNoteStatus()", newStatus);

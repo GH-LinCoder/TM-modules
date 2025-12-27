@@ -6,7 +6,7 @@ console.log("setupNotesListeners.js loaded");
 import { reactToClearAllButton } from './reactToClearAllButton.js';
 import { reactToSaveButton } from './reactToSaveButton.js';
 import { reactToPageButton } from './reactToPageButton.js';
-import { reactToNoteClick } from './reactToNoteClick.js';
+import { reactToStatusClick, reactToNoteClick } from './reactToNoteClick.js';
 
 export function setupNotesListeners() {
   console.log("setupNotesListeners()");
@@ -52,13 +52,26 @@ export function setupNotesListeners() {
       return;
     }
 
+    // ✅ Note card click  on narrow change-status div
+    button = target.closest('[data-action="change-status"]');
+    if (button) {  //this fails 14:28 Dec 25
+      const noteId = button.dataset.noteId;
+      await reactToStatusClick(noteId);
+      return;
+    } //this listener reacts when we want the below to react then the below reacts
 
-    // ✅ Note card click
+
+// ✅ Note card click
     button = target.closest('[data-note-id]');
     if (button) {
       const noteId = button.dataset.noteId;
       await reactToNoteClick(noteId);
       return;
     }
+
+
+
+
+
   });
 }

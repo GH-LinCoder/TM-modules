@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>12:55 Nov 4</title>
+
+  <body>
+<textarea id="code"></textarea>
+<button onclick="run()">Generate</button>
+<pre id="output"></pre>
+
+<div>
+
+
+</div>
+
+</body>
+
+
+<script>
+function run() {
+    const code = document.getElementById("code").value;
+    const atoms = extractAtoms(code);
+    document.getElementById("output").textContent = atoms.join("\n");
+}
+
+export function extractAtoms(handlerCode) {
+    const atoms = new Set();
+
+    // 1. Extract table name from .from('table')
+    const fromMatch = handlerCode.match(/\.from\(['"`]([\w_]+)['"`]\)/);
+    const table = fromMatch ? fromMatch[1] : null;
+
+    if (!table) return [];
+
+    // 2. Detect CRUD action
+    let action = null;
+    if (/\.select\(/.test(handlerCode)) action = "SELECT";
+    if (/\.insert\(/.test(handlerCode)) action = "INSERT";
+    if (/\.update\(/.test(handlerCode)) action = "UPDATE";
+    if (/\.delete\(/.test(handlerCode)) action = "DELETE";
+
+    // 3. Extract columns from const destructuring
+    const constMatch = handlerCode.match(/const\s*{\s*([^}]+)\s*}\s*=\s*payload/);
+    if (constMatch) {
+        const cols = constMatch[1].split(",").map(c => c.trim());
+        cols.forEach(col => atoms.add(`${action}@${table}#${col}`));
+    }
+
+    // 4. Extract columns from .eq('column', ...)
+    const eqMatches = [...handlerCode.matchAll(/\.eq\(['"`]([\w_]+)['"`]/g)];
+    eqMatches.forEach(m => atoms.add(`${action}@${table}#${m[1]}`));
+
+    return [...atoms];
+}
+</script>

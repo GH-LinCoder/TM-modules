@@ -114,7 +114,7 @@ function getTemplateHTML() {
 
         <div id="relationshipsContainer" class="min-h-32">
           <div class="text-gray-500 text-center py-8">
-            No approfile selected. Please select an approfile.
+            waiting for database or waiting for you to use [Select] module to choose what to display
           </div>
         </div>
       </div>
@@ -321,7 +321,7 @@ function renderRelationships(panel, relationshipsData, approfileName) { // aprof
   const isRelationships = relationshipsData.is || [];
   const ofRelationships = relationshipsData.of || [];
   const iconMap = relationshipsData.iconMap || {};
- // console.log('isRel:',isRelationships);
+  //console.log('isRel:',isRelationships, 'array[0].approfile_is:', isRelationships[0]?.approfile_is);
 
   if (isRelationships.length === 0 && ofRelationships.length === 0) {
     container.innerHTML = `
@@ -374,8 +374,9 @@ html += `
   if (groupedIs.length > 0) {
     html += `
       <div class="section" style="margin-bottom: 24px; border: 1px solid #2a0985; border-radius: 24px; padding: 16px;">
-        <div class="section-title" style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #374151; text-align: center;">
-          ${approfileName} is
+      
+      <div class="section-title" style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #374151; text-align: center;">
+          ${approfileName}  is
         </div>
     `;
     
@@ -412,11 +413,12 @@ html += `
                  title="Click to explore ${object}">
               of ${object} ${objectIcon}
             </div>
+
           </div>
         `;
       });
-    });
-    html += `</div>`;
+    }); 
+    html += ` </div>`;
   }
   
   // OF SECTION
@@ -471,7 +473,8 @@ html += `
                  title="Click to explore ${object}">
               of  ${object} ${objectIcon}
             </div>
-          </div>
+
+            </div>
         `;
       });
     });

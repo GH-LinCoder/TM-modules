@@ -153,20 +153,25 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
       
           
           return `
-              <div class="mb-3" data-note-id="${note.note_id}" data-status="${statusAttr}">
-          <div class="bg-white p-4 rounded-lg border ${statusClass} hover:shadow-sm transition-all cursor-pointer group"
-               data-note-id="${note.note_id}">
+              <div class="mb-3"  ">
+          <div   class="bg-white p-4 rounded-lg border  hover:shadow-sm transition-all cursor-pointer group"
+               >
             
             <!-- Status bar - top center -->
-            <div data-notes-status="${statusAttr}" class="status-bar flex items-center justify-center mb-3 py-1 bg-gray-50 rounded text-xs font-medium text-gray-600" >
-              <span>Status: ${statusText}</span>
+
+            <div data-action="change-status" data-note-id="${note.note_id}" ${statusClass} class=" flex items-center justify-center mb-3 py-1 bg-gray-50 rounded text-xs font-medium text-gray-600" >
+              
+            <div class="status-bar"  >
+            <span ">Status: ${statusText}</span>
               ${iconHTML ? `<span class="ml-2">${iconHTML}</span>` : ''}
               <span class="mx-2">•</span>
               <span>Click anywhere to cycle through status choices</span>
-            </div>
+           </div>
+              
+           </div>
                 
                 <!-- Note content -->
-                <div class="space-y-2 text-sm text-gray-800">
+                <div data-note-id="${note.note_id}-text"class="space-y-2 text-sm text-gray-800">
                   <p class="flex items-center">
                     <span class="font-medium w-20">#:</span>
                     <span class="text-gray-600">${note.sort_int}</span>

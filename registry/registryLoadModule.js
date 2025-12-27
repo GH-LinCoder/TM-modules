@@ -89,7 +89,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'survey-management-section': ()=> import('../dash/surveyManagementSection.js'),
 
 'create-survey-dialogue': () => import('../work/survey/createSurvey.js'),  // copied to work/ folder Nov 22 2025
-'display-survey-dialogue' : () => import('../work/survey/displaySurvey.js'), // copied to work/ folder
+//'display-survey-dialogue' : () => import('../work/survey/XdisplayStudentSurveys.js'), // lost the module. Dec 26 2025
 //'display-this-survey' :()=> import('../surveys/displaySurveyQwen.js'), // copied to work/ folder
 'display-this-survey' :()=> import('../work/survey/displaySurvey.js'), //changed fro,m above 23:22 dec 14
 

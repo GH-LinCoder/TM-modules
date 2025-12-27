@@ -1,8 +1,8 @@
-import { appState } from '../state/appState.js';
-import { executeIfPermitted } from '../registry/executeIfPermitted.js';
-import { showToast } from '../ui/showToast.js';
+import { appState } from '../../state/appState.js';
+import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
+import { showToast } from '../../ui/showToast.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
-import { icons } from '../registry/iconList.js'; 
+import { icons } from '../../registry/iconList.js'; 
 
 
 // displaySurveys.js - Modified to read from task_assignments

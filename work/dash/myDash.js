@@ -183,7 +183,7 @@ function getTemplateHTML() {
                     <div class="flex items-center justify-between mb-6">
                         <h2 class="text-2xl font-bold">Have your say (surveys) 📜</h2>
                         <div class="flex gap-2" class="border border-red-200" data-action="display-student-surveys" >
-                        </div>
+                        </div><!-- this data-action isn't used. The surveys are in module that loads the surveys-->
                     
                     <div class="bg-orange-100 space-y-6" data-list="my-surveys">
                         <!-- Surveys will be loaded here dynamically -->
