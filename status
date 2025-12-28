@@ -1,0 +1,245 @@
+[33m4e11be8[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m Add setup instructions for Supabase client
+[33m3b645a6[m Update Supabase connection and remove keys
+[33mdfa39b4[m refactor editSurvey based on editTask
+[33me648775[m added table definitions and functions
+[33m857cb7c[m editSurvey -delete buttons
+[33ma7b342f[m editTask-maybe fixed the lack of source step id
+[33ma01a36b[m editTask-autos on step 4
+[33ma4de61a[m icons on display realtions
+[33ma58ad85[m editAppro, relateAppro,Selector
+[33m90b41af[m SQL triggers
+[33m921d4b4[m editTask-infofeedback
+[33m2cc4593[m edite task more madness
+[33m4c17f08[m delete automations
+[33me7e22e1[m login etc + assignTask manager +
+[33mdc1e0bc[m createTask now got 3 autos?
+[33m7f25cb7[m working on createTask & editTask autos
+[33ma819d1d[m moved files back. Horrible path errors
+[33m5df55fa[m moved surveys to inside work
+[33m23b6c79[m added surveys count to quick stats
+[33m2ca43eb[m deleted duplicate
+[33m60a310c[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33m11c4cb2[m added to registry automations
+[33m3aeba9c[m downed functions-triggers-fk-manually
+[33m95629f0[m supabase nonsense
+[33m391f762[m added lock-key
+[33mb7adff5[m draft of Module.js
+[33m06a7a33[m Create permissionsModule.js
+[33m6ae2d89[m added permissions link
+[33mbf4a2ac[m added permissions data-action
+[33mf00df82[m Update securityPermissions.md
+[33mf912e29[m Everything has an appro.
+[33mfa92b52[m Using TEXT [ ] & lowercase table names
+[33mcb0b1ae[m Revise using TEXT []
+[33m6b7e0e9[m Added role & required permission molecules
+[33m5a69abf[m Add permissionsSchema.html for permission system overview
+[33mb752027[m Removed context idea
+[33ma501431[m Revise security permissions documentation
+[33mfb8d6e1[m Revise security permissions documentation for clarity
+[33m8aa68f9[m Add detailed security permissions documentation
+[33md19898d[m notes bug fix,
+[33mbfa3359[m Editsurvey Automations Added
+[33me835a40[m editSurevy-autofill from summary
+[33m2496ae0[m editSurvey can update header
+[33m0643d1b[m split of createSurvey into base
+[33maaa689b[m Implement CreateSurvey class for survey creation
+[33mfaf3b4d[m Rename createSurveyQwen.js to createSurveyQwenWORKS.js
+[33mb83f1f0[m Update constructor to handle panel and query
+[33m7847786[m Move functions to surveyBase for shared access
+[33me1fdbb6[m Add imports to surveyBase.js
+[33m9cd5697[m surveyBase.js  to beging the split of createSurvey
+[33m1b46727[m edits to notes. fully rendering
+[33m6392008[m notes adaptation partly done
+[33m634d467[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33ma181588[m Download notes code
+[33mbc3c51c[m Add notes system overview and future plans
+[33mfe2237c[m Add files via upload
+[33mf555fed[m Comment out Supabase client import in tags.js
+[33m551561c[m Refactor import paths in reactToSaveButton.js
+[33m112207f[m Comment out Supabase client import
+[33m71d5ab0[m Add reactToClearAllButton.js file
+[33m315824f[m Update import statements in displayNotes.js
+[33mb0df93f[m Add reactToClearAllButton function in new file
+[33m4b97298[m Update imports in displayNotes.js
+[33mf96b171[m Add cleanupNoteInput function for note input reset
+[33mae51b0c[m functions for category and tag management
+[33mdfb1d32[m Update imports in saveNotesWithTags.js
+[33ma15ca23[m Add labNotesToInclude.js for note management
+[33me103106[m Add comments for lab notes integration
+[33mf4d0aef[m Add saveNoteWithTags function for saving notes
+[33m70a3366[m Add note action listeners in noteListeners.js
+[33m4dc1204[m Add reactToSaveButton function for note saving
+[33m3d2f012[m Add reactToPageButton function for pagination
+[33m27253ef[m Add reactToNoteClick and saveNoteStatus functions
+[33m5fc8c36[m Update favicon.ico file
+[33m5162303[m Add favicon.ico file
+[33m3cb78c5[m Add renderNotes function to display notes
+[33m6acfd8b[m Implement displayNotes function to fetch and render notes
+[33m7f5876d[m Add collectUserChoices function to gather user input
+[33m00297f1[m bug-report import in registryLoadModule.js
+[33mef9f73e[m Turned HTML into his module to be loaded
+[33m0d56d5a[m Create notes.js with initial load message
+[33m370f784[m note-taking interface with tagging options
+[33m623a1d8[m adding bug-report in registryLoadModule - commented out
+[33m81c62da[m Update page title in flexload.html
+[33mdfd38dd[m Update navigation buttons in flexload.html
+[33mc747823[m Revise project overview and update app functionalities
+[33md7d0b4e[m added icons to dash
+[33m29b59fe[m nameMeans&thoughts
+[33m7f2b3eb[m 2 explanatory pages T&M & Org OS
+[33mf2a7066[m handling db created Q1 & A1 on surveys
+[33m00d4604[m surveys now auto assign task (as well as relate)
+[33m6c90ad1[m split assignTask + NEW assignSurvey
+[33m63becbf[m displaySurveys better
+[33medddff6[m refactor myDash & 4 modules
+[33m48e5d2e[m tasksByManager
+[33m56b7fef[m myDash tasks partly done
+[33m186549d[m CreateTask passed first tests
+[33md67ab6f[m createTask taskauto mostly good
+[33mb7fbf6a[m task automation seems to work
+[33mb81433b[m automation of task from survey. Tested
+[33m9b8a32f[m minor changes to displayRelations
+[33m93e6814[m displayRelationships - clickable
+[33meba8a7e[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33md7a87bf[m select icons and colors
+[33m68189d0[m Rename thoughts-26-sept-2025 to thoughts-9-oct-2025
+[33m1c92d2d[m Update thoughts-26-sept-2025
+[33m4c2a68d[m Update thoughts-26-sept-2025
+[33m5e868a4[m Add files via upload
+[33m66e1eb8[m Survey Major advance - petition & payload
+[33m2a3a52c[m more survey
+[33mc89b651[m surevy multi questions
+[33m5bfcaee[m stepByStepSurvey
+[33m9709a3c[m surveys debug - questions & answers
+[33m44cc33c[m icons = wrorking
+[33m4ba9678[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33mc78dfb4[m surveyManagementSection
+[33m54d8330[m Create qwen.js
+[33mfe1cdcb[m Create copilot.js
+[33m488cad6[m Create gemini.js
+[33m4c7ccdd[m Update thoughts-27-sept-2025
+[33m018913a[m create thoughts-26-sept-2025
+[33m7806dff[m Update ReadMe.md
+[33maad2345[m Update ReadMe.md
+[33m5b7edf4[m Update ReadMe.md
+[33m9d83c61[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33m8cd3404[m moeny first steps
+[33m4d5e862[m Rename MemberDash-Screenshot from 2025-09-25 21-53-17.png to Dash-Screenshot from 2025-09-25 21-53-17.png
+[33m58f8cb3[m Rename T&m AdminMenu Screenshot 2025-09-25 21-49-40.png to AdminMenu Screenshot 2025-09-25 21-49-40.png
+[33m07953cf[m Screenshots of admin & member dashboards
+[33m3f22f68[m displayRelations-beautiful
+[33mdd9712b[m memberDash
+[33m1567109[m main forms autofilling magic
+[33ma65aab2[m working selector/remember basic
+[33mb21942c[m symantic clipboard part 1 (remember)
+[33maf9f256[m more approfile & task edit forms
+[33m01c9cd3[m sortMyList + added functions to registry
+[33m6e75d0b[m all 4 quick acts now done (I hope)
+[33mb5e23ff[m moveStudent + part relateApprofiles
+[33m2570bb1[m quikActs-createTask Done, assign Part done
+[33m92e6ce0[m movedFiles&folders
+[33md808285[m Milestone! QuickStats now read through registry
+[33m48f5526[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33m8243d47[m lots of bad registry ideas
+[33m63c8dac[m Update gemini-function-registry
+[33m0dedc7c[m Update gemini-executeIfPermitted.js
+[33ma756635[m Update gemini-permissions.js
+[33m45d87e6[m Update gemini-executeIfPermitted.js
+[33m24289b5[m Update gemini-demo.js
+[33m4c3c1ca[m Update gemini-demo.js
+[33mac8d723[m Update gemini-permissions.js
+[33m8f71441[m Update gemini-executeIfPermitted.js
+[33me130fec[m Update gemini-demo.js
+[33m77857c7[m Update gemini-executeIfPermitted.js
+[33maf81d5a[m Update gemini-executeIfPermitted.js
+[33m9325146[m Update gemini-demo.js
+[33m9d23f6e[m Update gemini-demo.js
+[33mf46e30f[m Update gemini-demo.js
+[33md66d124[m Update gemini-demo.js
+[33mb06559b[m Update gemini-demo.js
+[33m5d1fc7f[m Update and rename gemini-checkPermissions.js to gemini-executeIfPermitted.js
+[33m317cbb9[m Update gemini-checkPermissions.js
+[33m44db269[m Update gemini-checkPermissions.js
+[33mf53b091[m Update gemini-demo.js
+[33m75a84bb[m Update gemini-demo.js
+[33m102014b[m Update gemini-permissions.js
+[33m1506586[m Update gemini-demo.js
+[33m1e9f5ac[m Update gemini-demo.js
+[33m7154925[m Update gemini-demo.js
+[33m255697b[m Update gemini-function-registry
+[33m5ec5182[m Update gemini-demo.js
+[33me94cb40[m Update gemini-demo.js
+[33m720f535[m Update gemini-demo.js
+[33mb60d554[m Update gemini-demo.js
+[33m16a0bdc[m Create gemini-demo.js
+[33m4167b09[m Create gemini-checkPermissions.js
+[33m0195e53[m Create gemini-permissions.js
+[33mc2225e6[m Create gemini-function-registry
+[33m653ac1b[m howTo-context-instructions
+[33m225eb5a[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33m3838379[m added breadcrumb petition
+[33mc7881a5[m Create dbCentralIdeas.js
+[33mc17c701[m t&M management section modules
+[33ma5578e5[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33md050891[m conflict over new mutate folder?
+[33md0cab17[m Update CardVisualRegistry.js
+[33m2136efe[m Update registry.js
+[33me611036[m Rename registry/CardVisualRegistry.js to dash/mutate/CardVisualRegistry.js
+[33m5c6051c[m Create CardVisualRegistry.js
+[33m4685ec8[m Update sectionMutator.js
+[33m1763caf[m Update registry.js
+[33mb44fdbd[m Update sectionMutator.js
+[33mf29393a[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33m25ced56[m changed file names, quick-stats load modules
+[33m9bbdd7f[m Update registry.js
+[33m0fed6df[m Update registry.js
+[33mb98ff88[m Update and rename registry to registry.js
+[33md93bebc[m Update sectionMutator.js
+[33m154b787[m Create sectionMutator.js
+[33mf0668ea[m Update dispatcher.js
+[33m3e33349[m Update dispatcher.js
+[33m1985bf2[m Create dispatcher.js
+[33me07718a[m Create registry
+[33mea54bc8[m dashes as modules
+[33m1e72d58[m more modules + registry +plans
+[33m51ae424[m modules & petition
+[33m75074db[m moveStudent now displays as module DatabaseCentral
+[33me978719[m Merge pull request #1 from GH-LinCoder/GH-LinCoder-patch-1
+[33m6408455[m Removed local query{}. Worked on module loading
+[33m488d489[m Create changeInRestOfCode.js
+[33m7c57540[m Create createTask.js
+[33mbe01401[m working on forms
+[33m791e91c[m Merge branch 'main' of https://github.com/GH-LinCoder/TM-modules
+[33md375e10[m no idea whether this is going to up or down
+[33ma81cbe1[m Create mockPermissionsPage.html
+[33m2ccbe6a[m Create possibleCallDynamicLoads.js
+[33m3dfaabd[m Create studentMove003.html
+[33ma830bb6[m Create moveStudentComplete.html
+[33m0074e90[m Create moveStudent.js
+[33m272ca53[m Update dynamicLoadScript.html
+[33m61b04a9[m Create dynamicLoadScript.html
+[33mfdcb01c[m extracting js from flexmain.js
+[33m073eb37[m changes to moveStudent js
+[33mde2fbfe[m copied images from TM php project
+[33m494a57f[m Update horizontalFlexload.html
+[33m230695c[m Update horizontalFlexload.html
+[33m7bf95b5[m Create horizontalFlexload.html
+[33m29209fb[m Create renderListB.html
+[33m90f5017[m Create renderList.html
+[33m0ef1918[m Create renderAnyRow.js
+[33m16fef50[m Create renderForm.js
+[33m90b0058[m Create relateApprofiles.html
+[33mc4735e6[m Rename moveStudent01.html to moveStudentVertical.html
+[33m044d567[m Create moveStudent.html
+[33ma2abba2[m Create moveStudent01.html
+[33mf12ef61[m adjusting form styling to remove full screen
+[33mf358f99[m changing to open work pages in the panel instead of modal
+[33mad963e0[m new folder + loadAdminDashWithData
+[33ma31020b[m New multi dashboard loading
+[33m9a4c967[m added memberDash.html
+[33m1d6f510[m updating
+[33m2eb0693[m Three pages working, but odd double click behaviour
+[33mbf6d300[m moved ui out of html folder
+[33md168173[m Replacing with Lab working software
+[33mfe1e745[m initial code for flexload
+[33m9a92108[m Create .gitignore
