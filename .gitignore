@@ -10,7 +10,7 @@
 *.userosscache
 *.sln.docstates
 *.env
-./db/supabase.js #contains keys
+db/supabase.js #contains keys
 
 
 # User-specific files (MonoDevelop/Xamarin Studio)
