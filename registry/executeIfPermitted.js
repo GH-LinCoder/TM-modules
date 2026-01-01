@@ -51,25 +51,34 @@ async function execute(userId, action, payload) {
 
 
 
-
+const TEST_permission_db_function = false; //set 'true' to connect to the db is_permitted RPC function
 
 
 
 export async function executeIfPermitted(userId, action, payload={}) {
  console.log('executIfPermitted()action&payload:',action, payload);
 
-  const funcEntry = registryWorkActions[action];
+  const funcEntry = registryWorkActions[action];//does this execute?
 
   if (!funcEntry) {
     throw new Error(`Function '${action}' not found in the registry.`);
   }
 
-  // Perform the critical security check.
+if (TEST_permission_db_function)
+{console.log('executeIfPermitted - DATABASE ');
+  const{data,error}=await supabase.rpc('is_permitted',{p_function_name:action,p_user_id:userId, p_row_id:null}); //the old functions don't pass rowId. Therefore only generic permission can be granted
+  if (error || !data) {
+    console.log(`Permission denied: User '${userId}' does not have access to function '${action}'.`, error);
+    throw new Error(`Permission denied: User '${userId}' does not have access to function '${action}'.`);
+  }
+}
+else {console.log('executeIfPermitted OLD');
+  // Perform the critical security check.  //the placeholder 'permissions' function is to be rplaced by the above call to a RPC database "is_permitted". Later registry function all migrate to rpc
   const hasPermission = permissions(userId, action, payload);
   if (!hasPermission) {// one of many possible problems
     throw new Error(`Permission denied: User '${userId}' does not have access to function '${action}'.`);
   }
-
+}
   // If the check passes, call the private execute function with all arguments.
   // We return the result of this call directly.
   return await execute(userId, action, payload);

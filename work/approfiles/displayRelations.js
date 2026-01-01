@@ -402,16 +402,16 @@ html += `
                  style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-green-400;"
                  data-subject-id="${rel.approfile_is}"
                  title="Click to explore ${subject}">
-            ${subjectIcon}  ${subject}  is
-            </div>
+            ${subjectIcon}  ${subject}  
+            </div>is
             <div class="flow-box-relation" style="padding: 0.75rem 1.25rem; background-color: #d7e4e2; border: 2px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; font-size: 16px; font-style: italic; color: #4f46e5;">
               ${rel.relationship}
-            </div>
+            </div>of
             <div class="flow-box-other" 
                  style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
                  data-subject-id="${rel.of_approfile}"
                  title="Click to explore ${object}">
-              of ${object} ${objectIcon}
+               ${object} ${objectIcon}
             </div>
 
           </div>
@@ -462,16 +462,16 @@ html += `
                  style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
                  data-subject-id="${rel.approfile_is}"
                  title="Click to explore ${subject}">
-                 ${subjectIcon} ${subject} is
-            </div>
+                 ${subjectIcon} ${subject} 
+            </div>is
             <div class="flow-box-relation" style="padding: 0.75rem 1.25rem; background-color: #d7e4e2; border: 2px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; font-size: 16px; font-style: italic; color: #4f46e5;">
               ${rel.relationship}
-            </div>
+            </div>of
             <div class="flow-box-subject" 
                  style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-green-400;"
                  data-subject-id="${rel.of_approfile}"
                  title="Click to explore ${object}">
-              of  ${object} ${objectIcon}
+               ${object} ${objectIcon}
             </div>
 
             </div>

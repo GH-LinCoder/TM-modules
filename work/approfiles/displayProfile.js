@@ -161,7 +161,7 @@ console.log('updateProfile');
 async function createAppro(subject){
   console.log('createAppro');// id  name:admin@test  type app-human
   // direct create an appro then load editor?
-const newId = await executeIfPermitted(subject.id, 'create_appro_from_new_auth_user', { authUserId: subject.id });
+const newId = await executeIfPermitted(subject.id, 'createApproFromNewAuthUser', { authUserId: subject.id });
 subject.id = newId;
 updateAppro(subject)
 }

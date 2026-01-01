@@ -13,10 +13,23 @@ let panelEl = null;
 let subject = null;
 let subjectId = null;
 
+
+function checkClipboardForSurveys(panel) {
+console.log('checkClipboardForSurveys()');  
+  // Get tasks or surveys from clipboard
+  const surveys = getClipboardItems({ as: 'survey', type: 'surveys' });
+  if (surveys.length === 0) return; //nothing yet selected
+
+  //at least one survey is in the clipboard so let's use it
+ render(panel); //moved here from init  19:31 dec 9
+}
+
+
+
 export async function render(panel, query = {}) {
 
     onClipboardUpdate(() => {
-render(panel);
+checkClipboardForSurveys(panel);
     });
 
 console.log('displaySurvey().render())');
