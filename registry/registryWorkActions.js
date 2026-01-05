@@ -12,6 +12,52 @@
 
 // Possibly better to order by table. If done could split into smaller files ? Not sure how this file is loaded. Is there a better arrangement?
 
+/*
+// Get your approfile ID  TEST    REMOVE THUIS <--------------------------------------------------
+const { data: { user } } = await supabase.auth.getUser();
+console.log('Auth user ID:', user.id);
+
+// Check what's actually in app_profiles
+const { data: allProfiles } = await supabase
+  .from('app_profiles')
+  .select('id, auth_user_id');
+
+console.log('All profiles:', allProfiles);
+
+// Find your profile
+const yourProfile = allProfiles.find(p => p.auth_user_id === user.id);
+console.log('Your profile:', yourProfile);
+
+
+
+const   {data}  = await supabase
+  .from('app_profiles')
+  .select('id')
+  .eq('auth_user_id', (await supabase.auth.getUser()).data.user.id);
+
+const approId = data[0].id;
+
+// Check if you have generic Appros scope
+const {  data: permissions } = await supabase
+  .from('approfile_relations')
+  .select('relationship', 'of_approfile')
+  .eq('approfile_is', "9066554d-1476-4655-9305-f997bff43cbb")
+  .eq('relationship', '(]readApprofiles[)');
+
+console.log('Your readApprofiles permissions:', permissions);
+
+// Look for the generic scope UUID
+const hasGenericScope = permissions.some(p => 
+  p.of_approfile === 'd2cdbb9b-9ab5-4c21-9aca-c43574b95d74'
+);
+
+console.log('Has generic Appros scope?', hasGenericScope);
+
+//  end of test ----------------------------------------------------------------------------------
+*/
+
+
+
 
 export const registryWorkActions = {
 
@@ -56,7 +102,7 @@ getAuthenticatedUser: {
   metadata: { type: 'AUTH', requiredArgs: [] },
   handler: async (supabase, userId, payload) => {
     const { data, error } = await supabase.auth.getUser();
-    if (error) throw error;
+    if (error) return { data: null, error };
 
     const user = data?.user;
 //console.log('getAuthUser',user);
@@ -273,11 +319,11 @@ approfilesCount:{
     console.log('approfilesCount()');
     const { count, error } = await supabase
     .from('app_profiles')
-    .select('*', { count: 'exact', head: true }); // ← head: true = don't return rows, just count 
+    .select('id', { count: 'exact', head: true }); // ← head: true = don't return rows, just count 
 
     if (error) {
-      console.error('Error counting members:', error.message);
-      throw new Error('Failed to count members.');
+      console.error('Error counting appros:', error.message);
+     // throw new Error('Failed to count members.');
     }
     
     return count// if use {count} it would be in form  {count: 23}
@@ -352,9 +398,14 @@ handler: async  (supabase, userId) =>{
 
   if (error) {
     console.error('Error counting authors:', error.message);
-    throw new Error('Failed to count authors.');
+    //throw new Error('Failed to count authors.');
   }
   
+
+
+
+
+
   return count// if use {count} it would be in form  {count: 23}
 }
 },
@@ -377,7 +428,7 @@ handler: async  (supabase, userId) =>{
 
   if (error) {
     console.error('Error counting managers:', error.message);
-    throw new Error('Failed to count managers.');
+    //throw new Error('Failed to count managers.');
   }
   
   return count// if use {count} it would be in form  {count: 23}
@@ -388,7 +439,7 @@ handler: async  (supabase, userId) =>{
   membersCount:{
     // Metadata for the permissions system
     metadata: {
-      tables: ['profiles'],
+      tables: ['app_profiles'],
       columns: [],
       type: 'SELECT',
       requiredArgs:['supabase', 'userId']
@@ -398,12 +449,12 @@ handler: async  (supabase, userId) =>{
   handler: async  (supabase, userId) =>{
     console.log('membersCount()');
     const { count, error } = await supabase
-    .from('profiles')
-    .select('*', { count: 'exact', head: true }); // ← head: true = don't return rows, just count 
-
+    .from('app_profiles')
+    .select('id', { count: 'exact', head: true }) // ← head: true = don't return rows, just count 
+    .not('auth_user_id','is', null);  //.not('colname', 'is', null); works 19:18 when no rls
     if (error) {
       console.error('Error counting members:', error.message);
-      throw new Error('Failed to count members.');
+      //throw new Error('Failed to count members.');
     }
     
     return count// if use {count} it would be in form  {count: 23}
@@ -991,7 +1042,7 @@ readApprofileByName:{
     requiredArgs: ['approfileName']
   },
 handler: async (supabase, userId, payload) => {
-    console.log('readProfilesByName');
+    console.log('readApprofilesByName');
     const { approfileName } = payload;
     if (approfileName===null) { return []; }
   
@@ -1013,6 +1064,7 @@ readApprofileById:{
     requiredArgs: ['approfileId']
   },
   handler: async (supabase, userId, payload) => {
+    console.log('readApprofileById');
     const { approfileId } = payload;
     const { data, error } = await supabase
       .from('app_profiles')
@@ -1024,6 +1076,28 @@ readApprofileById:{
     return data;
   }
 },
+/*
+readApprofileByAuthUserId: { //By authUserId because approId may != authId. This function looks at the auth_user_id column
+  metadata: { 
+    tables: ['app_profiles'], 
+    columns: ['id', 'name', 'email', 'created_at'], 
+    type: 'SELECT', 
+    requiredArgs: ['authUserId'] }, 
+    handler: async (supabase, userId, payload) => { 
+      const { authUserId } = payload; 
+//      const db= supabase.with({global: {headers: {'function_name': 'readApprofileByAuthUserId'}}});
+console.log('calling supabase approfiles');
+      const { data, error } = await supabase  //new 19:38 Jan 2
+      .from('app_profiles')
+       .select('id, name, email, created_at') 
+       .eq('auth_user_id', authUserId) //but what is passed is the appro id which can be != auth id
+       .single()
+//       .headers({ 'function_name': 'readApprofileByAuthUserId' }); // added 19:55 Jan 2
+       if (error) throw error; 
+  return data; } 
+},
+
+*/  //reverted to version from github 20:50
 
 readApprofileByAuthUserId: { //By authUserId because approId may != authId. This function looks at the auth_user_id column
   metadata: { 
@@ -1038,11 +1112,12 @@ readApprofileByAuthUserId: { //By authUserId because approId may != authId. This
        .select('id, name, email, created_at') 
        .eq('auth_user_id', authUserId) //but what is passed is the appro id which can be != auth id
        .single(); 
-       if (error) throw error; 
-  return data; } 
+       if (error) {
+  return { data: null, error };
+}
+return { data, error: null };
+ } 
 },
-
-
 
 
 
