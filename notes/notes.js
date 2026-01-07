@@ -5,6 +5,8 @@
 import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { setupNotesListeners } from './noteListeners.js';
 import { displayNotes } from './displayNotes.js';
+import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
+import { showToast } from '../ui/showToast.js';
 /*
 need to add the js from the lab notes.js
 need adjust paths of all imports
@@ -16,31 +18,50 @@ console.log('notes.js loaded');
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `  <div id="notes-panel" data-module="notes-panel" >         <div class="flex w-full" >           
-            <!-- Tagging above the note input -->
-            <!-- Main Tags -->
+        
+            <!-- Message Buttons -->
             <div class="mb-6" id="TagSection001">
               <h4 class="text-md font-semibold mb-3 text-gray-700">🌐 Main click the word</h4>
               <div class="flex flex-wrap gap-2 mb-3">
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection002">
-                  <input type="checkbox" id="tag-main-bug" name="main" value="bug" checked class="mr-2 text-blue-600">
-                  <label for="tag-main-bug">bug</label>
+
+                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center">
+                  <input type="radio" id="message-reply" name="message-mode" value="reply" class="mr-2 text-blue-600">
+                  <label for="tag-message-reply">reply</label>
                 </div>
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection003">
-                  <input type="checkbox" id="tag-main-t&m" checked name="main" value="t&m" class="mr-2 text-blue-600">
-                  <label for="tag-main-t&m">t&m</label>
+                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center">
+                  <input type="radio" id="message-to" name="message-mode" value="to" class="mr-2 text-blue-600">
+                  <label for="tag-message-to">to</label>
                 </div>
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection004">
-                  <input type="checkbox" id="tag-main-lab" name="main" value="lab" class="mr-2 text-blue-600">
-                  <label for="tag-main-lab">message</label>
-                </div>
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection005">
-                  <input type="checkbox" id="tag-main-reply" name="main" value="reply" class="mr-2 text-blue-600">
-                  <label for="tag-main-reply">reply</label>
+                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center">
+                  <input type="radio" id="message-from" name="message-mode" value="from" class="mr-2 text-blue-600">
+                  <label for="tag-message-from">from</label>
                 </div>
               </div>
             </div>
-                    
-            <!-- Importance Tags -->
+          </div><!--closes flex-->
+
+
+          <!-- Audience/Author Dropdown -->
+            <div class="space-y-2">
+              <label for="respondentSelect" class="block text-sm font-medium text-gray-700">
+              Use [Select] menu to choose a name & the buttons to choose to: or from:</label>
+              <select id="respondentSelect" data-form="relationSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm "  >
+                <option value="">Use the menu [Select] button then this dropdown to select author/audience</option>
+              </select>
+            </div>
+
+      
+         <!-- Note Content Input -->
+          <div class="mb-6">
+            <textarea   id="note-content" 
+                      placeholder="Enter your notes here & press [Save/send]... (Use the checkboxes to tag your note for later search & retrieval ) The saved notes can be seen by scrolling down. When you look at saved notes you can click them to mark them as pending, completed or abandonded." 
+                      class="w-full h-32 p-3 border border-gray-300 rounded-lg resize:both; focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+          </div>
+
+
+          <!-- Tagging Section -->
+          
+          <!-- Importance Tags -->
             <div class="mb-6" id="TagSection025">
               <h4 class="text-md font-semibold mb-3 text-gray-700">📶 Important?</h4>
               <div class="flex flex-wrap gap-2 mb-3">
@@ -64,21 +85,30 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
                   <input type="radio" id="importance-5" name="importance" value="importance-5" class="mr-2 text-blue-600">
                   <label for="importance-5">5</label>
                 </div>
-              </div>
-            </div> <!--Closes div class="mb-6" -->
-          </div><!--closes flex-->
 
-      
-         <!-- Note Content Input -->
-          <div class="mb-6">
-            <textarea id="note-content" 
-                      placeholder="Enter your notes here & press [Save/send]... (Use the checkboxes to tag your note for later search & retrieval ) The saved notes can be seen by scrolling down. When you look at saved notes you can click them to mark them as pending, completed or abandonded." 
-                      class="w-full h-32 p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-          </div>
-          <!-- More Tagging Section -->
+                <!-- special HELP! tag -->
+               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection004">
+                  <input type="checkbox" id="tag-main-help" name="main" value="help" class="mr-2 text-blue-600">
+                  <label for="tag-main-help">Help!</label>
+                </div>
+                </div>  
+            </div> <!--Closes div class="mb-6" -->
+
+
           <!--event tags-->             
           <div class="mb-6" id="TagSection006">
             <div class="flex flex-wrap gap-2 mb-3">
+
+
+               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection002">
+                  <input type="checkbox" id="tag-main-bug" name="main" value="bug" checked class="mr-2 text-blue-600">
+                  <label for="tag-main-bug">bug</label>
+                </div>
+                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection003">
+                  <input type="checkbox" id="tag-main-t&m" checked name="main" value="t&m" class="mr-2 text-blue-600">
+                  <label for="tag-main-t&m">t&m</label>
+                </div>
+
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection007">📝
                 <input type="checkbox" id="tag-events-diary" name="events" value="diary" checked class="mr-2 text-blue-600">
                 <label for="tag-events-diary">diary</label>
@@ -189,11 +219,82 @@ export function render(panel, petition = {}) {
 
 setupNotesListeners();
 displayNotes();
-     //? query.petitioner : 'unknown';
+
+
+initClipboardIntegration(panel)
+     // query.petitioner : 'unknown';
     //console.log('Petition:', petition);
     //panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
+
+
+  }
+
+///// CLIPBOARD AWARE ////
+
+function initClipboardIntegration(panel) {
+    console.log('initClipboardIntegration()');
+  // Check clipboard immediately
+  populateFromClipboard(panel);
+  // Listen for future changes
+  onClipboardUpdate(() => {
+    populateFromClipboard(panel);
+  
+  });
 }
 
+function ifOnlyOneItemInDropdownloadAndRenderSurvey(panel, respondents, respondentSelect){
+console.log('ifonlyOneItem...');
+  if (respondents.length === 1 && !respondentSelect.value) {
+    const respondentId =  respondents[0].entity.id;
+    respondentSelect.value = respondentId;
+    const infoSection = document.querySelector('#informationSection');
+    if(infoSection) infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled Survey: ${respondents[0].entity.name}</div>`;
+  //  console.log('surveySelect.value',surveySelect.value);//uuid
+    //state.currentrespondentHeaderId = respondentSelect.value;
+console.log('there is an info section');
+   // loadAndDisplay(panel, respondentId)// this displays summary if/when there is a single item in the dropdown
+    //but no display of new respondent 13:19 Dec 14 - it is displaying it appending to previous summary.
+    //need to reset to ''
+    }
+}
+
+
+function populateFromClipboard(panel) {
+  // Get items from clipboard (adjust type/as as needed)
+  let items = getClipboardItems({ as: 'other', type: 'app-human' });
+       // items += getClipboardItems({ as: 'other', type: 'app-abstract' }); //fails
+
+
+    if (items.length === 0) return;
+  
+  const respondentSelect = panel.querySelector('#respondentSelect');
+  if(!respondentSelect) return;
+  addClipboardItemsToDropdown(items, respondentSelect);
+
+  ifOnlyOneItemInDropdownloadAndRenderSurvey(panel, items, respondentSelect)
+}
+
+function addClipboardItemsToDropdown(items, selectElement) {
+    console.log('addClipboardItemsToDropdown()');
+  if (!items || items.length === 0) return;
+  
+  items.forEach(item => {
+    const existingOption = Array.from(selectElement.options).find(opt => opt.value === item.entity.id);
+    if (!existingOption) {
+      const option = document.createElement('option');
+      option.value = item.entity.id;
+      option.textContent = `${item.entity.name}`;
+      option.dataset.source = 'clipboard';
+      selectElement.appendChild(option);
+    }
+  });
+}
+
+
+
+
+
+/// eof clipboard
 
 
 

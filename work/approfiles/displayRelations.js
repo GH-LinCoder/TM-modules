@@ -336,26 +336,44 @@ function renderRelationships(panel, relationshipsData, approfileName) { // aprof
   }
   
   // Group and sort relationships by type (alphabetically)
-  const groupRelationships = (rels) => {
+  const groupRelationships = (rels) => { // this is a function called from below twice
     const groups = {};
-    rels.forEach(rel => {
+    rels.forEach(rel => {//console.log('rel',rel);
        if (rel.is_deleted) { //console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
         return; }//don't display deleted items
-      const relType = rel.relationship;
+
+
+      let relType = rel.relationship;
+if (relType.startsWith('(]')) { relType = 'Permissions'; }// list all permission in one section
+
+
+
       if (!groups[relType]) groups[relType] = [];
       groups[relType].push(rel);
     });
     
     // Sort relationship types alphabetically
-    return Object.keys(groups)
-      .sort()
-      .map(relType => ({
-        relationship: relType,
-        items: groups[relType]
-      }));
+   return Object.keys(groups)
+  .sort()
+  .map(relType => {
+    let items = groups[relType];
+
+    // Special sorting for Permissions
+    if (relType === 'Permissions') {
+      items = [...items].sort((a, b) =>
+        a.relationship.localeCompare(b.relationship)
+      );
+    }
+
+    return {
+      relationship: relType,
+      items
+    };
+  });
+
   };
   
-  const groupedIs = groupRelationships(isRelationships);
+  const groupedIs = groupRelationships(isRelationships); // this calls the above definition
   const groupedOf = groupRelationships(ofRelationships);
   
   let html = '';

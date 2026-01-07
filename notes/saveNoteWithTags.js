@@ -37,7 +37,7 @@ const formattedMetadata = JSON.stringify({
 }, null, 2); // ← adds indentation and line breaks
 
 //note.content += `\n\nmetadata:\n${formattedMetadata}`;
-console.log('meta:', formattedMetadata);
+//console.log('meta:', formattedMetadata);
 
 const enhancedContent = content;  // next line would add metadata to the note
 //const enhancedContent = content + `{{{metadata:\n${formattedMetadata}`;
@@ -45,13 +45,13 @@ const enhancedContent = content;  // next line would add metadata to the note
 // Only relevant for some notes. It should be a choice or only added in some filters
 //There is some code in render to split the main note from the meta but it hasn't been fully worked
 
-console.log('enhancedContent:', enhancedContent);
+//console.log('enhancedContent:', enhancedContent);
 
-  console.log('Saving note with tags:', { title, tags });
+  console.log('Saving note with tags:', { tags });
 
   console.log('📥 [save] params:', params);
 console.log('📥 [save] tags:', tags);
-console.log('📥 [save] tags type:', typeof tags, 'is array?', Array.isArray(tags));
+//console.log('📥 [save] tags type:', typeof tags, 'is array?', Array.isArray(tags));
 
   try {
     const noteId = await executeIfPermitted(userId, 'insertNote', {
@@ -87,13 +87,13 @@ export async function tagNoteByNames(noteId, tagNames = []) {
     throw new TypeError('tagNames must be an array');
   }
 
-  const categoryMap = await readCategoryMap(); // Map<string, id>
+  const categoryMap = await readCategoryMap(); // This reads from notes_categories. 
   const categoryIds = tagNames
     .map(name => categoryMap.get(name))
     .filter(Boolean);
 
   if (categoryIds.length === 0) {
-    console.warn('No valid categories found for tags:', tagNames);
+    console.warn('No valid categories found for tags:', tagNames);//<-------------- throws error here Jan 7
     return;
   }
 
@@ -103,7 +103,7 @@ export async function tagNoteByNames(noteId, tagNames = []) {
 export async function readCategoryMap() {
   console.log('readCategoryMap()');
   const data = await executeIfPermitted(userId, 'readCategoryMap', {} );
-   // data is an array of 34 items in handler but here undefined
+
  console.log('Categories:', data);
   return new Map(data.map(cat => [cat.category_name, cat.id]));
 }

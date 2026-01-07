@@ -315,9 +315,14 @@ const stepUrl = step.step_external_url;
     stepCard.dataset.stepId = stepId;//stepId? Never has a value.was and is null. 
     stepCard.innerHTML = `
       <strong>Step ${stepOrder}:</strong> ${stepName}
-      <div class="block text-sm text-gray-600 whitespace-pre-line">${stepDescription || ''}</div>
+      <div class="block text-sm text-gray-600 whitespace-pre-line">
+      <span class="step-description"></span>
+
+      
+      </div>
       ${stepUrl ? `<div class="text-xs text-blue-600">${stepUrl}</div>` : ''}
     `;
+stepCard.querySelector('.step-description').textContent = stepDescription || '';
 
     summary.appendChild(stepCard);
 }

@@ -34,6 +34,9 @@ console.log('context  authUser',authUser);
 //func needs { authUserId } = payload;  // if auth doesn't know a name, get the name from the appro for that auth user
 //remeber that appro id != authId. The app mostly does not use authId. auth_user_id is a column in the appro & may be != to the appro id
 //sorry for the complication. It is based on the idea that not exposing authId is safer.
+
+if(authUser) appState.userIdentified = true; //use to skip functions that need authId
+
 if(authUser && !authUser.name) { const userTempData  = await executeIfPermitted( null,'readApprofileByAuthUserId', {authUserId: authUser.id });  
 authUser.name = userTempData.name; } 
 

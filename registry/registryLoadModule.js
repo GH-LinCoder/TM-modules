@@ -95,7 +95,7 @@ export const registry = { // this registry is for loading a new page to the righ
 
 //'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),  
 //'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
-'assign-survey-dialogue' :()=> import('../surveys/assignSurvey.js'),
+'assign-survey-dialogue' :()=> import('../work/survey/assignSurvey.js'),
 'edit-survey-dialogue':()=> import('../work/survey/editSurvey.js'), // copied to work/ folder
 
 

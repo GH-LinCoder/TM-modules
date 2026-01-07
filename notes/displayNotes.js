@@ -9,7 +9,7 @@ const userId = appState.query.userId;
 
 export async function displayNotes(page = 1, totalCount = null) {
   console.log('displayNotes()', { page, totalCount });
-  const pageSize = 10;
+  const pageSize = 100;
   
   try {
     const result = await executeIfPermitted(userId, 'fetchNotes', { page, pageSize});  
@@ -18,7 +18,7 @@ export async function displayNotes(page = 1, totalCount = null) {
 
     const {notes: data, totalCount: count } = result;
     const notes = data || [];
-    const actualTotalCount = totalCount || result.totalCount;
+    const actualTotalCount = totalCount || result.totalCount;// why using the label rather than the var & how is it 414 when ther are far fewer?
     
     console.log('displayNotes fetch result:', { notes: notes.length, totalCount: actualTotalCount, page });
     
@@ -145,7 +145,8 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
           const statusText = statusAttr || 'No status';
       
       console.log('Rendering note:', {
-        id: note.note_id,
+        id: note.id,
+        author:note.name,
         rawStatus: note.status,
         statusAttr: statusAttr,
         statusText: statusText
@@ -159,7 +160,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
             
             <!-- Status bar - top center -->
 
-            <div data-action="change-status" data-note-id="${note.note_id}" ${statusClass} class=" flex items-center justify-center mb-3 py-1 bg-gray-50 rounded text-xs font-medium text-gray-600" >
+            <div data-action="change-status" data-note-id="${note.id}" ${statusClass} class=" flex items-center justify-center mb-3 py-1 bg-gray-50 rounded text-xs font-medium text-gray-600" >
               
             <div class="status-bar"  >
             <span ">Status: ${statusText}</span>
@@ -171,14 +172,14 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
            </div>
                 
                 <!-- Note content -->
-                <div data-note-id="${note.note_id}-text"class="space-y-2 text-sm text-gray-800">
+                <div data-note-id="${note.id}-text"class="space-y-2 text-sm text-gray-800">
                   <p class="flex items-center">
                     <span class="font-medium w-20">#:</span>
                     <span class="text-gray-600">${note.sort_int}</span>
                   </p>
                   <p class="flex items-center">
                     <span class="font-medium w-20">Author:</span>
-                    <span class="text-gray-600">${note.author_id.slice(0, 8)}</span>
+                    <span class="text-gray-600">${note.name}</span>
                   </p>
                   <p class="flex items-center">
                     <span class="font-medium w-20">Created:</span>

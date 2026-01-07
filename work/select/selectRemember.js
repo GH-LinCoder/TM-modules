@@ -283,7 +283,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
   async loadTasks() {
     try {
       this.loadedData.tasks = await executeIfPermitted(appState.query.userId, 'readTaskHeaders', {});
-    } catch (error) {
+    } catch (error) { // if access is forbidden by RLS there is no error
       console.error('Error loading tasks:', error);
       showToast('Failed to load', 'error');
     }
@@ -383,7 +383,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
     this.listContainer.appendChild(header);
 
     if (items.length === 0) {
-      this.listContainer.innerHTML += '<div class="text-gray-500 text-center py-4">No items found</div>';
+      this.listContainer.innerHTML += '<div class="text-gray-500 text-center py-4">No items found. Do you have permission? Please check. </div>';
       return;
     }
 
@@ -462,7 +462,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
 
 
   onAsChange(e) {
-    console.log('asChange:',e.target);  //detects slection AS assignement.
+    console.log('asChange:',e.target);  //detects selection of some kind of AS .
     this.selectedAs = e.target.value;
     this.updateConfirmButton();
   }

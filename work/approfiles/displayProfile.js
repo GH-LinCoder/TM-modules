@@ -24,6 +24,10 @@ respondToClipboardChange();
   console.log('resolveSubject',resolveSubject);//this may be != to auth id of that person
 if(!subject) {console.log('Error - no subject returned'); return}
 
+if(!appState.userIdentified) showToast('There is no authenticated user detected. You may wish to login');
+
+ else{ 
+  
   let profile=null;
 
   try { // check if the subject already has an appro
@@ -37,8 +41,10 @@ if(!subject) {console.log('Error - no subject returned'); return}
      
 //    console.log('inside error: profile', profile);
   }
-if(profile) console.log('profile:', profile, 'name', profile.name); //profile ok here 
 
+
+if(profile) console.log('profile:', profile, 'name', profile.name); //profile ok here 
+ 
 /*  typical appro for auth user   
 { 
 id: "51cf02e4-a69c-41f3-bcff-52d0208df529", 
@@ -67,14 +73,14 @@ else
 if(!profile.name) updateAppro(profile);
 
 attachListener(panel, profile);
-
-
+ }
+ 
 //    onClipboardUpdate(() => {
   //    subject = resolveSubject();
      // loadAndRenderRelationships(panel, updatedSubject.id, updatedSubject.name);
      
  //   });
-
+ 
 
 }
 
@@ -105,14 +111,16 @@ async function updateProfile(){
 console.log('updateProfile');
  subject = await resolveSubject(); // why calling this again? Commented-out 22:39 Dec 19 BECAUSE needs it if clipboard is changing the subject
   
- if(subject.type!='relations') loadStudentProfile();
+ //profiles are based on appros, but the uuid could be a task, survey, relation, assignment etc. Not sure if .type covers them all
+ console.log(subject.type);// if the subject is from the clipboard it could be any of the things that Selection handles 
+ if(subject.type!='relations' && subject.type!='surveys' && subject.type !='tasks' && subject.type !='assignments') loadStudentProfile();
 
 
 }
 
 
     async function loadStudentProfile() {  //works 11:00 Oct 27 - will read id from clipboard if exists when myDash renders
-       if(subject.type!='relations')
+       if(subject.type!='relations' && subject.type!='surveys' && subject.type !='tasks' && subject.type !='assignments')
         try {
             const studentProfile = await executeIfPermitted(
                 subject.id,

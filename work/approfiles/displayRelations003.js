@@ -114,57 +114,6 @@ function getTemplateHTML() {
 
 
 
-/*
-async function init(panel, query) {
-  console.log('displayRelations.init()');
-//set defualt values if nothing else used
-
-
-  //////////  myDASH change behaviour  // data-module='myDash' is in the myDash HTML
-const moduleContext = panel.closest('[data-module]')?.dataset.module || 'standalone';// standalone?? what is that? - never used
-const isMyDash = moduleContext === 'myDash';
-console.log('moduleContext:', moduleContext);
-if (isMyDash) {
-    const instructions = panel.querySelector('[data-action="selector-dialogue"]');
-    const dropdownContainer = panel.querySelector('#approfileSelect')?.closest('div');
-    if (instructions) instructions.style.display = 'none';
-    if (dropdownContainer) dropdownContainer.style.display = 'none';
-  }
-  else console.log('not myDash');
-  // Initialize with empty state
-  renderRelationships(panel, null, null);
-  
-  // Load approfiles from clipboard
-  const approfileLength= populateApprofileSelect(panel);
-if (isMyDash && approfileLength<1){loadAndRenderRelationships(panel,defaultId,defaultName);}
-  
-  // Listen for clipboard updates
-  onClipboardUpdate(() => {
-    populateApprofileSelect(panel);
-  });
-  
-  // ATTACH CLICK LISTENER TO PANEL (persists through re-renders)
-  panel.addEventListener('click', async (e) => {
-    const flowBox = e.target.closest('.flow-box-subject, .flow-box-other');
-    if (flowBox && flowBox.dataset.subjectId) {
-      const subjectId = flowBox.dataset.subjectId;
-      const subjectName = flowBox.textContent.replace(' is', '').replace('of ', '').trim();
-     // console.log('Exploring subject:', subjectId, subjectName);
-      console.log('FlowBox Clicked - calling laodAndRender');
-
-      await loadAndRenderRelationships(panel, subjectId, subjectName);
-    }
-  });
-//  if (isMyDash))
-  panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
- // Handle approfile selection from dropdown 
- attachDropdownListener(panel);
-
- informationFeedback = panel.querySelector('#informationFeedback');
-
-}
-*/
-
 function showInformation(approName) {
   informationFeedback.innerHTML += `<div class="my-2 p-3 bg-white border rounded shadow-sm flex items-center justify-between">
         <div>
@@ -208,7 +157,7 @@ function showInformation(approName) {
     const instructions = panel.querySelector('[data-action="selector-dialogue"]');
     if (isMyDash) {
       if (dropdownContainer) dropdownContainer.style.display = 'none';
-      if (instructions) instructions.style.display = 'none';
+      if (instructions) instructions.style.display = 'none';  // what is this?  Jan 6 2026
     } //else {
      // if (dropdownContainer) dropdownContainer.style.display = '';
     //  if (instructions) instructions.style.display = '';
@@ -332,9 +281,9 @@ function renderRelationships(panel, relationshipsData, approfileName) { // aprof
   }
   
   // Group and sort relationships by type (alphabetically)
-  const groupRelationships = (rels) => {
+  const groupRelationships = (rels) => {//rels?  what is this? How can it contain anything?
     const groups = {};
-    rels.forEach(rel => {
+    rels.forEach(rel => { console.log('rel',rel);
       const relType = rel.relationship;
       if (!groups[relType]) groups[relType] = [];
       groups[relType].push(rel);
