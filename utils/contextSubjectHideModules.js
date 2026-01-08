@@ -12,7 +12,22 @@ export function detectContext(panel) {
   }
 
   // Return the latest item from the clipboard. If nothing there return the default value from appState (which is a person's id and name)
-export async function resolveSubject() {
+/*
+
+resolveSubject
+Returns three possible types of info on the current subject
+
+check result.source
+
+='clipboard' - the subject has been selected by the user via the clipboard. This is probably not the current user.  
+
+='appState' there was no one on the clipboard and no one is logged in. This is a default identity 
+
+='authUser' The data is for the logged in current user. This will include the auth id, the appro id for that user (may be different), name, email and created_at
+
+*/
+
+  export async function resolveSubject() {
     const clipboardItems = getClipboardItems(); // no type filter
     console.log('clipboardItems', clipboardItems);
   
@@ -36,15 +51,19 @@ console.log('context  authUser',authUser);
 //sorry for the complication. It is based on the idea that not exposing authId is safer.
 
 if(authUser) appState.userIdentified = true; //use to skip functions that need authId
+let approUserId=null;
+if(authUser && !authUser.name) { 
+  const userTempData  = await executeIfPermitted( null,'readApprofileByAuthUserId', {authUserId: authUser.id });  
+authUser.name = userTempData.data.name;   
+approUserId = userTempData.data.id, 
+console.log('userTempData',userTempData,'approUserId', approUserId) } 
 
-if(authUser && !authUser.name) { const userTempData  = await executeIfPermitted( null,'readApprofileByAuthUserId', {authUserId: authUser.id });  
-authUser.name = userTempData.name; } 
 
-
-console.log('authUser',authUser);
+console.log('authUser',authUser, 'approId',approUserId);
 
 if (authUser ) return {
               id:authUser.id, 
+              approUserId:approUserId,
               name:authUser.name || 'unknown',
               email:authUser.email,
               type: 'app-human',

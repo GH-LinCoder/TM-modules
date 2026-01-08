@@ -31,7 +31,7 @@ async function execute(userId, action, payload) {
     throw error; // optional: rethrow to bubble up
   }
 if (Array.isArray(result) && result.length === 0) {
-  console.warn("⚠️ Possible RLS denial: query returned 0 rows");
+  console.warn("⚠️ Possible RLS denial: query returned 0 rows. Check the permissions matrix for clues?");
 }
 
   //console.log('result:', result);

@@ -28,10 +28,11 @@ export function setupNotesListeners() {
     let button;
 
     // ✅ Clear All button
-    button = target.closest('[data-action="clear-all"]');
+    button = target.closest('[data-action="moreClicksMoreNotes"]');
     if (button) {
       event.preventDefault();
-      await reactToClearAllButton();
+      console.log('moreNotes -need code function');
+    //  await reactToMoreButton();
       return;
     }
 
@@ -40,6 +41,15 @@ export function setupNotesListeners() {
     if (button) {
       event.preventDefault();
       await reactToSaveButton();
+      return;
+    }
+
+        // ✅ Clear All button
+    button = target.closest('[data-action="moreClicksFewerNotes"]');
+    if (button) {
+      event.preventDefault();
+      console.log('fewerNotes -need code function');
+    //  await reactToFewerButton();
       return;
     }
 

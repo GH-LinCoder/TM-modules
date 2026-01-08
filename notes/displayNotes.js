@@ -5,23 +5,90 @@ console.log('displayNotes.js');
 //import { renderNotes } from "./labNotesToInclude.js";  
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { appState } from '../state/appState.js';
+import { collectUserChoices, messageAddress } from './collectUserChoices.js';
+
 const userId = appState.query.userId;
 
 export async function displayNotes(page = 1, totalCount = null) {
   console.log('displayNotes()', { page, totalCount });
-  const pageSize = 100;
+  const pageSize = 20;
   
   try {
-    const result = await executeIfPermitted(userId, 'fetchNotes', { page, pageSize});  
+    const pageOfNotes = await executeIfPermitted(userId, 'fetchNotes', { page, pageSize});  
     //returns { notes: data, totalCount: count };
-    console.log('Raw result from fetchNotes:', result);
+    console.log('Raw pageOfNotes from fetchNotes:', pageOfNotes);
 
-    const {notes: data, totalCount: count } = result;
+    const {notes: data, totalCount: count } = pageOfNotes;
     const notes = data || [];
-    const actualTotalCount = totalCount || result.totalCount;// why using the label rather than the var & how is it 414 when ther are far fewer?
+    const actualTotalCount = totalCount || pageOfNotes.totalCount;// why using the label rather than the var & how is it 414 when ther are far fewer?
     
-    console.log('displayNotes fetch result:', { notes: notes.length, totalCount: actualTotalCount, page });
+    console.log('displayNotes fetch pageOfNotes:', { notes: notes.length, totalCount: actualTotalCount, page });
     
+/*
+
+NEED THE FILTERING HERE prior to calling the render function
+
+'pageOfNotes'   holds the data
+
+
+The filtering is by reading the checkboxes and radio tags and dropdown (or being passed their value)
+
+collectUserChoices();// read all the checkboxes & radio
+
+switch (messageAddress){// the message radio buttons are important in filtering
+case 'to': //find the person in the dropdown break; // see messages to that person. Use this also for to self  
+case 'self': //No filtering effect (it could mean my messages only, but is then a poor default; break;
+case 'from': //read the dropdown to find notes from that person; break;
+case 'reply':// find your replies to anyone or any replies to you?; break;
+default: console.log('messageAddress unknown:', messageAddress)}
+
+other tags
+radio - importance   will be matching the level= ? (Not this level + nor this level-)
+
+Whether the tags are || or && is determined by the state of the two buttons mentioned above. The highlight function can be adapted to highlight the two buttons that change the logic of the checkboxes (see below) Listeners are already attached (Either set a state variable or let the listener choose one of two functions.
+
+The filtering is done prior to passing the results to the renderNotes() function. 
+'pageOfNotes'   holds the data
+
+
+Read which state has been set from the two buttons
+
+Branch to an OR selection or an AND selection
+
+Loop through the pageOfNotes  forEach mapping into what is to be sent to renderNotes.
+
+
+ <button data-action="moreClicksMoreNotes" id="more-clicks-more-notes" class="px-4 py-2 bg-green-50 text-black rounded hover:bg-green-100 transition-colors"
+          title="The more boxes I click I expect MORE pageOfNotess  (Show me notes that fit this box PLUS notes that fit the other box)">
+            More clicks - more notes
+          </button>
+       
+          <button data-action="save-note" id="save-notes" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
+            Save/Send
+          </button>
+       
+          <button data-action="moreClicksFewerNotes" id="more-clicks-fewer-notes" class="px-4 py-2 bg-red-50 text-black rounded hover:bg-red-100 transition-colors"
+          title="The more boxes I click I expect FEWER pageOfNotess (Only show me a note if it fits ALL the boxes I click)">
+            More clicks - fewer notes
+          </button>
+
+========================================= highlight function
+
+function highlight(cardClicked){
+  console.log('highlight()', cardClicked, 'dataset',cardClicked.dataset);
+  document.querySelectorAll(`[data-note-id]`).forEach(el => {
+   // console.log('el:',el, 'cardClicked', cardClicked);
+    el.classList.toggle('ring-4', el === cardClicked);
+    el.classList.toggle('ring-blue-500', el === cardClicked);
+    el.classList.toggle('bg-blue-100', el === cardClicked);
+  });
+} 
+
+//audience is to whom the message is sent. Reply & to are valid for sending
+// only use the value in the dropdown if 'to' has been selected
+
+console.log('messageAddress:',messageAddress);
+*/
     // Render the notes
     renderNotes(notes, actualTotalCount, page, pageSize);
     console.log('displayNotes() completed');
@@ -117,8 +184,9 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
 
         const notesHtml = notes
           .map(note => {
-            // Skip if sort_int is the same as the previous one.  The view is normalised, so one row for each tag.
+            // Skip if sort_int is the same as the previous one.  The view had >1 entry for each note because one row for each tag.
             // although asking for a page of 10, how many notes depends on how may tags each note has. Probably get 3 to 6
+            //BUT Jan 7 2026 this has changed to a view that has the tags in an array in one column
             if (note.sort_int === previousInt) {
               return null;
             }
@@ -145,8 +213,10 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
           const statusText = statusAttr || 'No status';
       
       console.log('Rendering note:', {
+  note,
         id: note.id,
         author:note.name,
+        authorId:note.author_id,
         rawStatus: note.status,
         statusAttr: statusAttr,
         statusText: statusText
@@ -172,7 +242,14 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
            </div>
                 
                 <!-- Note content -->
-                <div data-note-id="${note.id}-text"class="space-y-2 text-sm text-gray-800">
+                <div data-note-id="${note.id}-body" 
+                
+                data-note-content= "${content}" 
+                data-note-name="${note.name}" 
+                data-note-int="${note.sort_int}"  
+                data-note-author-id="${note.author_id}"
+            
+            "class="space-y-2 text-sm text-gray-800">
                   <p class="flex items-center">
                     <span class="font-medium w-20">#:</span>
                     <span class="text-gray-600">${note.sort_int}</span>
