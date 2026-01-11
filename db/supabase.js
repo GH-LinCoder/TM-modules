@@ -9,6 +9,9 @@ const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey =import.meta.env.VITE_SUPABASE_ANON_KEY
 let supabaseClient;
 
+if(!supabaseUrl) console.log('Missing env URL');
+if(!supabaseAnonKey) console.log('Missing env anon');
+
 export function createSupabaseClient() {
 
 //console.log('URL:', import.meta.env.VITE_SUPABASE_URL);
