@@ -17,8 +17,11 @@ adapt db write
 console.log('notes.js loaded');
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
-  return `  <div id="notes-panel" data-module="notes-panel" >         <div class="flex w-full" >           
-        
+  return `  <div id="notes-panel" data-module="notes-panel" >         
+  
+   <!-- added 13:10 Jan 9  Ends on line 234--> <div id="inputs"> 
+  <div class="flex w-full" >           
+     
             <!-- Message Buttons -->
             <div class="mb-6" id="TagSection001">
               <h4 class="text-md font-semibold mb-3 text-gray-700">🌐 Main click the word</h4>
@@ -201,21 +204,37 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
         <!-- Buttons -->
         <div class="flex space-x-4">
        
-        <button data-action="moreClicksMoreNotes" id="more-clicks-more-notes" class="px-4 py-2 bg-green-50 text-black rounded hover:bg-green-100 transition-colors"
+        <div class="bg-green-50" 
+        title="The more boxes I click I expect MORE results  (Show me notes that fit this box PLUS notes that fit the other box)">
+        <input type="radio" id="more-clicks-more-notes" name="clickLogic" value='more-clicks-more-notes' class=" text-blue-600" checked>
+        <label for="more-clicks-more-notes"> more-clicks-more-notes</label>
+       </div>
+
+
+        <!--button type="radio" id="more-clicks-more-notes" name="clickLogic" value='more-clicks-more-notes'    class="px-4 py-2 bg-green-50 text-black rounded hover:bg-green-100 transition-colors"
           title="The more boxes I click I expect MORE results  (Show me notes that fit this box PLUS notes that fit the other box)">
             More clicks - more notes
-          </button>
+          </button-->
        
           <button data-action="save-note" id="save-notes" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
             Save/Send
           </button>
        
-          <button data-action="moreClicksFewerNotes" id="more-clicks-fewer-notes" class="px-4 py-2 bg-red-50 text-black rounded hover:bg-red-100 transition-colors"
+        <div class="bg-red-50" 
+        title="The more boxes I click I expect FEWER results  (Only show me a note if it fits ALL the boxes I click)">
+        <input type="radio" id="more-clicks-fewer-notes" name="clickLogic" value='more-clicks-fewer-notes' class=" text-blue-600">
+        <label for="more-clicks-fewer-notes"> more-clicks-fewer-notes</label>
+       </div>
+
+
+          <!--button type="radio" name="clickLogic" value='click-fewer-seen' checked data-action="moreClicksFewerNotes" id="more-clicks-fewer-notes" class="px-4 py-2 bg-red-50 text-black rounded hover:bg-red-100 transition-colors"
           title="The more boxes I click I expect FEWER results (Only show me a note if it fits ALL the boxes I click)">
             More clicks - fewer notes
-          </button>
+          </button-->
        
-          </div>
+        </div>
+</div><!-- added jan 10-->
+   
         <!-- Future Functionality Info -->
         <div data-action='output' id='output' class="mt-8 p-4 bg-blue-50 border border-blue-200 rounded-lg">
           <p class="text-blue-800">

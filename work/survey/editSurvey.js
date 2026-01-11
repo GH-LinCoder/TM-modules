@@ -954,7 +954,7 @@ async function updateOldAnswer(panel){
 console.log('updateOldAnswer()');
     const stepName = panel.querySelector('#stepName')?.value.trim();
     const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
-//func needs const { answerId, answerName, answerDescription} = payload;    
+//func needs     const { answerId, answerName, answerDescription} = payload;  
  try{ await executeIfPermitted(state.user, 'updateSurveyAnswer', {
           answerId: state.currentItemId,
           answerName: stepName,
@@ -964,8 +964,8 @@ console.log('updateOldAnswer()');
         showToast('Updated successfully!', 'success');
   renderSurveyStructure(panel); //render first reloads survey
     }catch (error) {
-      console.error('Error saving step:', error);
-      showToast('Failed to save step: ' + error.message, 'error');
+      console.error('Error updateSurveyAnswer:', error);
+      showToast('Failed updateSurveyAnswer: ' + error.message, 'error');
     }
 
 }

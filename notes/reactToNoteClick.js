@@ -3,8 +3,9 @@ console.log('ui/reactToNoteClick.js');
 
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { appState } from '../state/appState.js';
+import { showToast } from '../ui/showToast.js';
 import { resolveSubject, detectContext, applyPresentationRules } from '../utils/contextSubjectHideModules.js';
-import { collectUserChoices, messageAddress } from './collectUserChoices.js';
+import { collectUserChoices, messageAddress} from './collectUserChoices.js';
 
 
 const userId = appState.query.userId;
@@ -17,6 +18,12 @@ const statusMap = {
 };
 
 const debounceTimers = new Map();
+
+
+let authorName , authorId, noteContent, noteId, noteInt, audienceId =    null;
+
+
+
 
 function findNextStatus(currentStatus) {
   if (currentStatus === 'No status') {
@@ -116,65 +123,92 @@ console.log('statusBar.dataset.notesStatus:', statusBar.dataset.notesStatus);
 }
 
 
+///////////////////////////////////// HANDLE NOTE CLICKS  - can only set-up toggles and variables.
+
+export async function reactToNoteClick(noteId) { // this is a click to handle the note, not the status
+    console.log(`reactToNoteClick(${noteId})`);//the id has '-body' attached as a suffix
+
+    const noteElement = document.querySelector(`[data-note-id="${noteId}"]`);//this find the status panel not the text of the note
+    if (!noteElement) {
+        console.error(`Note element with ID ${noteId} not found`);
+        return;
+    }
+
+    const data =   storeNoteDetails(noteElement); 
+    // Update the UI
+    //    noteElement.innerHTML += `<span>*</span>`;  // places an asterix on card -temporary indicator
+
+
+    highlight(noteElement); // changes note color and border when selected
+    
+    // Clear any existing timer for this note
+    if (debounceTimers.has(noteId)) {
+        clearTimeout(debounceTimers.get(noteId));
+        debounceTimers.delete(noteId);
+    }
+
+    moveNoteIntoTextArea(noteElement);//noteId has '--body' as suffix
+
+    let userAuthId = null;
+    const subject = await resolveSubject();
+    console.log('subject:',subject, 'Source:',subject.source);
+
+if(subject && subject.source =='authUser') {//the user data is authenticated. We have auth & approuserId
+//what actions should be allowed if user is from clipboard or default?  Not sure
+//perhaps there are limited abilties - allows admin to see what another user sees.
+userAuthId = subject.id;
+}
+
+if(userAuthId===authorId) handleOwnNotes(data); 
+else handleOthersNotes(data);
+
+}
+
+
+
 
 ///////////  HANDLE OWN NOTES
 
 
-function handleOwnReply(data){  //similar to self - but this is a thread
-        console.log('handleOwnReply: similar to self - but this is a thread');
-//udience = user.id;  //need chcek where the approIs is
-//INSERT with own id as audience
+function handleOwnReply(data){  //similar to self - but this should be a thread which references the specific note
+    //system can't currently differentiate between a reply to the author and a reply to a specific note
+showToast('The setting will send to self, but threads are not yet implemented', 'warning');
+//        console.log('handleOwnReply: similar to self - but this should be a thread');
+
 }
 
 function handleOwnSelf(data){  //similar to own reply, but this is a new post unconnected
-        console.log('handleOwnSelf: similar to reply - but this is a new independent post');    
-//audience = user.id;  //need check where the approIs is
-
+        //console.log('handleOwnSelf: similar to reply - but this is a new independent post to self');    
+// the process of sending goes through because the original code runs. Perhaps these branches should toggle something
+showToast('The setting is sending to self', 'warning');
 }
 
 function handleOwnTo(data){//
-    console.log('handleOwnTo: forwarding');
-let audience=null; 
-const respondentSelected = document.getElementById('respondentSelect')?.value;
-audience = respondentSelected === '' ? null : respondentSelected;
-//INSERT with audience from dropdown
+    console.log('handleOwnTo: forwarding'); //Note clicked - load the audience with the author from the note, but audience is read only from collectUserChoices()
+showToast('Please check if you are replying to the author or you do want to forward somewhere else', 'warning');
+
+// the process of sending goes through because the original code runs.
+// this branch needs to load the note author id.  BUT should the the reply be to the note Id  somehow?
 
 }
 
 function handleOwnFrom(data){
-        console.log('handleOwnFrom: Change filter - warn on button - disable');
-const audience = null;
+       // console.log('handleOwnFrom: Change filter - warn on button - disable');
+// 'save-notes'
+//const saveBtn = document.getElementById('save-notes'); //if disabled it won't be re-enabled
+//saveBtn.disabled=true; // a clicked note currently has no from action (It could mean display other items from this person)
+showToast('(From) currently does nothing to affect a clicked note.','warning');
 }
 
 
 function handleOwnNotes(data){
 console.log('handleOwnNotes()');
-const {authorId =    data.noteAuthorId,
-    noteContent = data.noteContent,
-    noteId=       data.noteId.substring(0, data.noteId.length - 5),//remove the suffix -body
-    noteInt =     data.noteInt,
-    authorName=   data.noteName
-} = data;  // not used locally? just pass ?
+//This is after a note has been clicked, but before [send/save]. 
 
-//check the message radio buttons  self / reply / to / from
+collectUserChoices();// read all the checkboxes & radio -- but not assigned to anything???
 
-// reply -> going to be an INSERT marked id of the note it is replying to "Reply to this note"
-// self    -> going to be an UPDATE of current note. Change button to "Update this note"
-// to    -> going to be an insert marked with audienceId collected from the dropdown "Forward this note"
-//from -> Change button "From filters the diplayed notes." disable button?
-
-/*the possible actions
-
-1)edit/UPDATE -  how choose update vs insert?
-2)Edit for new INSERT  
-3)INSERT (with or without edit) send to someone else
-4)Delete
-*/
- 
-collectUserChoices();// read all the checkboxes & radio
-
-switch (messageAddress){
-case 'to': handleOwnTo(data); break;  
+switch (messageAddress){ // messageAddress is imported from collectUserChoices
+case 'to': handleOwnTo(data); break;  //Note clicked - load the aduience with the audthor from the note
 case 'self': handleOwnSelf(data); break; // not happening
 case 'from': handleOwnFrom(data); break;
 case 'reply':handleOwnReply(data); break;
@@ -193,48 +227,29 @@ console.log('messageAddress:',messageAddress);
 
 function handleOtherReply(data){  //reply to the note's author
         console.log('handleOtherReply: similar to self - but this is a thread');
-//udience = user.id;  //need chcek where the approIs is
-//INSERT with Other id as audience
+showToast('The setting will send to the author, but threads are not yet implemented', 'warning');
+
 }
 
 function handleOtherSelf(data){  //repost other's note as your own
-        console.log('handleOtherSelf: similar to reply - but this is a new independent post');    
-//audience = user.id;  //need check where the approIs is
-
+showToast('Do you want to send this to yourself?', 'warning');
 }
 
 function handleOtherTo(data){//forward someone else's note
-    console.log('handleOtherTo: forwarding');
-let audience=null; 
-const respondentSelected = document.getElementById('respondentSelect')?.value;
-audience = respondentSelected === '' ? null : respondentSelected;
-//INSERT with audience from dropdOther
+showToast('The setting will forward the note to whoever you select from the dropdown', 'warning');
+
 
 }
 
 function handleOtherFrom(data){//filter displayed notes disable button
-        console.log('handleOtherFrom: Change filter - warn on button - disable');
-const audience = null;
-}
+showToast('(From) currently does not do anything clever with a clicked note', 'warning');
 
+}
 
 
 function handleOthersNotes(data){
 console.log('handleOthersNotes()');
-const {authorId =    data.noteAuthorId,
-    noteContent = data.noteContent,
-    noteId=       data.noteId.substring(0, data.noteId.length - 5),//remove the suffix -body
-    noteInt =     data.noteInt,
-    authorName=   data.noteName
-} = data;
 
-/** the possible actions
-
-* 1)Copy(edit) and repost INSERT
- * 2)Reply (edit)
- * 3)Forward (edit)
- * 
- */
 
 collectUserChoices();// read all the checkboxes & radio
 
@@ -256,73 +271,36 @@ console.log('messageAddress:',messageAddress);
 
 
 
-async function getApproIdFromAuthId(authId){
 
-return  await executeIfPermitted('readApprofileByAuthUserId:', {authUserId:authId});
 
+function storeNoteDetails(cardClicked){
+    //store the metadata in globals //noteId has '--body' as suffix
+console.log('storeNoteDetails()');
+    const data=cardClicked.dataset;
+authorId =    data.noteAuthorId;
+noteContent = data.noteContent;
+noteId=       data.noteId.substring(0, data.noteId.length - 5);//remove the suffix -body
+noteInt =     data.noteInt;
+authorName=   data.noteName;
+
+console.log('authorId',authorId, 'noteInt',noteInt,'authorName',authorName);
+
+/** result in log:
+authorId 9066554d-1476-4655-9305-f997bff43cbb 
+noteInt 241 
+authorName Lin Coder
+*/
+//console.log('data','authorId:',authorId, 'noteContent',noteContent,'noteId', noteId, 'noteInt',noteInt,'authorName', authorName );//looks oay 19:17 Jan 8
+return data;
 }
 
 
 async function moveNoteIntoTextArea(cardClickedEl){
 console.log('moveNoteIntoTextArea(',cardClickedEl,')');
-let userApproId = null; let userAuthId = null;
-    const subject = await resolveSubject();
-console.log('subject:',subject, 'Source:',subject.source);
-
-if(subject && subject.source =='authUser') {//the user data is authenticated. We have auth & approuserId
-//what actions should be allowed if user is from clipboard or default?  Not sure
-//perhaps there are limited abilties - allows admin to see what another user sees.
-userAuthId = subject.id;
-}
-
-
-
-  //place text in textarea  //noteId has '--body' as suffix
-
-
-const data=cardClickedEl.dataset;
-const authorId =    data.noteAuthorId;
-const noteContent = data.noteContent;
-const noteId=       data.noteId.substring(0, data.noteId.length - 5);//remove the suffix -body
-const noteInt =     data.noteInt;
-const authorName=   data.noteName;
-
-/** result in log:
-noteAuthorId: "9066554d-1476-4655-9305-f997bff43cbb"
-noteContent: "react to save"
-noteId: "e22f6f0e-6086-4ef6-bb48-4579482263b4-body"  <--- note SUFFIX
-noteInt: "219"
-noteName: "Lin Coder"
- * 
-*/
-/*
-data 
-DOMStringMap(4) { noteId → "e22f6f0e-6086-4ef6-bb48-4579482263b4-body", 
-noteContent → "react to save", noteName → "Lin Coder", noteInt → "219" }
-noteContent: "react to save"
-noteId: "e22f6f0e-6086-4ef6-bb48-4579482263b4-body" //<--SUFFIX
-noteInt: "219"
-noteName: "Lin Coder"
-*/
-
-console.log('data','authorId:',authorId, 'noteContent',noteContent,'noteId', noteId, 'noteInt',noteInt,'authorName', authorName );//looks oay 19:17 Jan 8
-
-
+  //place text in textarea //
 let textarea = document.getElementById("note-content");
 console.log('textarea',textarea);
 textarea.value = noteContent;
-
-    //if id == user set button to self? else set to reply?
-//if()    
-
-if(userAuthId===authorId) handleOwnNotes(data); 
-else handleOthersNotes(data);
-
-
-
-
-
-
 }
 
 
@@ -337,49 +315,7 @@ function highlight(cardClicked){
 } 
 
 
-export async function reactToNoteClick(noteId) { // this is a click to handle the note, not the status
-    console.log(`reactToNoteClick(${noteId})`);//the id has '-body' attached as a suffix
 
-    const noteElement = document.querySelector(`[data-note-id="${noteId}"]`);//this find the status panel not the text of the note
-    if (!noteElement) {
-        console.error(`Note element with ID ${noteId} not found`);
-        return;
-    }
-
-    
-    // Update the UI
-//    noteElement.innerHTML += `<span>*</span>`;  // places an asterix on card -temporary indicator
-
-
-highlight(noteElement); // changes note color and border when selected
-    
-    // Clear any existing timer for this note
-    if (debounceTimers.has(noteId)) {
-        clearTimeout(debounceTimers.get(noteId));
-        debounceTimers.delete(noteId);
-    }
-
-    moveNoteIntoTextArea(noteElement);//noteId has '--body' as suffix
-
-
-
-    /*
-    // Set a new timer to update the database after a delay
-    const timer = setTimeout(async () => {
-        if (Number.isInteger(nextStatus)) {
-           // const supabase = createSupabaseClient();
-            await saveNoteStatus(noteId, nextStatus);
-        }
-        debounceTimers.delete(noteId);
-    }, 2000);
-    
-    debounceTimers.set(noteId, timer);
-*/
-
-
-
-
-    }
 
 
 
@@ -393,6 +329,4 @@ export async function saveNoteStatus(noteId, newStatus) {
     if (!result?.success) {
       console.error(`❌ Failed to update status for note ${noteId}:`, result?.message);
     }    
-
-
 }

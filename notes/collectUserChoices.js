@@ -1,7 +1,7 @@
 // collectUserChoices.js
 console.log("collectUserChoices.js");
 const checkboxGroups = ['main', 'events', 'process', 'business', 'resource'];
-const radioGroups = ['importance', 'message-mode'];
+const radioGroups = ['importance', 'message-mode', "clickLogic"];
 
 /**
  * Reads selected checkboxes and radio buttons and returns an array of tag values.
@@ -9,7 +9,8 @@ const radioGroups = ['importance', 'message-mode'];
  */
 
 export let messageAddress = 'self';
-
+export let clickLogic = null;
+export let audience = null;
 
 
 export function collectUserChoices() {
@@ -29,18 +30,18 @@ export function collectUserChoices() {
   // Handle importance & message buttons
   for (const group of radioGroups) {
     const selected = document.querySelector(`input[name="${group}"][type="radio"]:checked`);
-    if (selected) { console.log('checkedRadio:',selected.value);
+    if (selected) { //console.log('checkedRadio:',selected.value);
       tagsArray.push(selected.value);
 
 if(group == 'message-mode' ) {messageAddress = selected.value; console.log('Collect: messgeAddress', messageAddress);}
 
+if(group == 'clickLogic' ) { clickLogic = selected.value;  console.log('Collect: clickLogic', selected.value);}
+
     }
   }
 
-//set a local variable?  let messageAddress = 'self';
+audience = document.getElementById('respondentSelect').value;
 
-
-
-  console.log('Tags collected:', tagsArray);
+  console.log('Tags collected:', tagsArray, 'audience',audience);
   return tagsArray;
 }

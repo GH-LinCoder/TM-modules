@@ -44,14 +44,6 @@ export function setupNotesListeners() {
       return;
     }
 
-        // ✅ Clear All button
-    button = target.closest('[data-action="moreClicksFewerNotes"]');
-    if (button) {
-      event.preventDefault();
-      console.log('fewerNotes -need code function');
-    //  await reactToFewerButton();
-      return;
-    }
 
     // ✅ Pagination: Older / Newer
     button = target.closest('[data-page-action]');

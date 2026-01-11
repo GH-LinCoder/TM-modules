@@ -5,25 +5,38 @@ console.log('displayNotes.js');
 //import { renderNotes } from "./labNotesToInclude.js";  
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { appState } from '../state/appState.js';
-import { collectUserChoices, messageAddress } from './collectUserChoices.js';
+import { collectUserChoices, messageAddress, clickLogic } from './collectUserChoices.js';
 
 const userId = appState.query.userId;
 
-export async function displayNotes(page = 1, totalCount = null) {
-  console.log('displayNotes()', { page, totalCount });
-  const pageSize = 20;
-  
-  try {
-    const pageOfNotes = await executeIfPermitted(userId, 'fetchNotes', { page, pageSize});  
-    //returns { notes: data, totalCount: count };
-    console.log('Raw pageOfNotes from fetchNotes:', pageOfNotes);
 
-    const {notes: data, totalCount: count } = pageOfNotes;
-    const notes = data || [];
-    const actualTotalCount = totalCount || pageOfNotes.totalCount;// why using the label rather than the var & how is it 414 when ther are far fewer?
-    
-    console.log('displayNotes fetch pageOfNotes:', { notes: notes.length, totalCount: actualTotalCount, page });
-    
+function filterNotesAccordingToUserChoices(notes){
+console.log('filterNotesAccordingToUserChoices(notes)');
+let filteredNotes=notes;
+const userChoices = collectUserChoices()
+//also have direct access to messageAddress and clickLogic
+
+//but the inputs are passive - changing them will not trigger the code to do anything.
+//could have listener on all the inputs OR a single listener refresh button
+// a listener for change would be enough
+
+console.log('messageAddress:',messageAddress,'clickLogic:', clickLogic);
+
+/*
+userChoices 
+Array(6) [ "bug", "t&m", "diary", "importance-3", "self", "more-clicks-more-notes" ]
+0: "bug"
+1: "t&m"
+2: "diary"
+3: "importance-3"
+4: "self"
+5: "more-clicks-more-notes"
+length: 6
+*/
+console.log('userChoices', userChoices);
+
+
+
 /*
 
 NEED THE FILTERING HERE prior to calling the render function
@@ -88,9 +101,41 @@ function highlight(cardClicked){
 // only use the value in the dropdown if 'to' has been selected
 
 console.log('messageAddress:',messageAddress);
+
+// Prevent empty audience when in "to" mode  mode?
+if (mode === 'to' && !audience_id) {
+  showToast('Please select a recipient', 'error');
+  return;
+}
+
+
 */
+
+return filteredNotes;
+}
+
+
+
+export async function displayNotes(page = 1, totalCount = null) {
+  console.log('displayNotes()', { page, totalCount });
+  const pageSize = 5;
+  
+  try {
+    const pageOfNotes = await executeIfPermitted(userId, 'fetchNotes', { page, pageSize});  
+    //returns { notes: data, totalCount: count };
+    console.log('Raw pageOfNotes from fetchNotes:', pageOfNotes);
+
+    const {notes: data, totalCount: count } = pageOfNotes;
+    const notes = data || [];
+    const actualTotalCount = totalCount || pageOfNotes.totalCount;// why using the label rather than the var & how is it 414 when ther are far fewer?
+    
+    console.log('displayNotes fetch pageOfNotes:', { notes: notes.length, totalCount: actualTotalCount, page });
+ 
+    
+  const filteredNotes = filterNotesAccordingToUserChoices(notes);
+
     // Render the notes
-    renderNotes(notes, actualTotalCount, page, pageSize);
+    renderNotes(filteredNotes, actualTotalCount, page, pageSize);
     console.log('displayNotes() completed');
     
   } catch (error) {
@@ -172,18 +217,17 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
 
 
 
-
-
-
-      export function renderNotes(notes, totalCount, page, pageSize) {
+     export async function renderNotes(notes, totalCount, page, pageSize) {
         console.log('renderNotes 12 Nov()');
+
+//add the name of the audience to the stored notes - why don't we store that in the notes view?
 
         const output = document.getElementById('output');
         
         let previousInt = null;
 
         const notesHtml = notes
-          .map(note => {
+          .map(note  =>  {
             // Skip if sort_int is the same as the previous one.  The view had >1 entry for each note because one row for each tag.
             // although asking for a page of 10, how many notes depends on how may tags each note has. Probably get 3 to 6
             //BUT Jan 7 2026 this has changed to a view that has the tags in an array in one column
@@ -212,17 +256,24 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
           const statusClass = statusClasses[statusAttr] || 'bg-white border-gray-200';
           const statusText = statusAttr || 'No status';
       
+
+
+
+
       console.log('Rendering note:', {
   note,
         id: note.id,
+        int:note.sort_int,
         author:note.name,
         authorId:note.author_id,
+        audienceId:note.audience_id, //14:47 Jan 10
+        audienceName :note.audience_name,
         rawStatus: note.status,
         statusAttr: statusAttr,
         statusText: statusText
       });
       
-          
+         
           return `
               <div class="mb-3"  ">
           <div   class="bg-white p-4 rounded-lg border  hover:shadow-sm transition-all cursor-pointer group"
@@ -233,7 +284,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
             <div data-action="change-status" data-note-id="${note.id}" ${statusClass} class=" flex items-center justify-center mb-3 py-1 bg-gray-50 rounded text-xs font-medium text-gray-600" >
               
             <div class="status-bar"  >
-            <span ">Status: ${statusText}</span>
+            <span>Status: ${statusText}</span>
               ${iconHTML ? `<span class="ml-2">${iconHTML}</span>` : ''}
               <span class="mx-2">•</span>
               <span>Click anywhere to cycle through status choices</span>
@@ -248,6 +299,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
                 data-note-name="${note.name}" 
                 data-note-int="${note.sort_int}"  
                 data-note-author-id="${note.author_id}"
+                data-note-audience-id=${note.audience_id}" 
             
             "class="space-y-2 text-sm text-gray-800">
                   <p class="flex items-center">
@@ -256,7 +308,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
                   </p>
                   <p class="flex items-center">
                     <span class="font-medium w-20">Author:</span>
-                    <span class="text-gray-600">${note.name}</span>
+                    <span class="text-gray-600">${note.name} -> Audience: ${note.audience_name}</span>
                   </p>
                   <p class="flex items-center">
                     <span class="font-medium w-20">Created:</span>

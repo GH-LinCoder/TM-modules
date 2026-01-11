@@ -10,13 +10,13 @@ export function showToast(message, type = 'info', duration = 10000) {
     container.id = 'toast-container';
     Object.assign(container.style, {
       position: 'fixed',
-      bottom: '20px',
+      top: '220px',
       left: '50%',
       transform: 'translateX(-50%)',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
-      gap: '10px', // spacing between toasts
+      gap: '100px', // spacing between toasts makes no difference
       zIndex: 9999
     });
     document.body.appendChild(container);
