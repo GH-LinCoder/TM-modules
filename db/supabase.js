@@ -5,10 +5,8 @@ console.log('Imported: supabase.js');
 import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
 
 
-
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey =import.meta.env.VITE_SUPABASE_ANON_KEY
-
 let supabaseClient;
 
 export function createSupabaseClient() {
@@ -26,10 +24,10 @@ export function createSupabaseClient() {
     console.log('🎉 Supabase client created successfully!');
 
 
-console.log('🔍 CLIENT TEST:');
-console.log('Has from?', typeof supabaseClient.from);
-console.log('Has rpc?', typeof supabaseClient.rpc);
-console.log('URL:', supabaseClient.supabaseUrl);
+//console.log('🔍 CLIENT TEST:');
+//console.log('Has from?', typeof supabaseClient.from);
+//console.log('Has rpc?', typeof supabaseClient.rpc);
+//console.log('URL:', supabaseClient.supabaseUrl);
 
 
 
