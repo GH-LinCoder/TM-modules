@@ -1516,7 +1516,7 @@ handler: async (supabase,userId, payload) => {
     content,
     status = null
   } = payload;
-  console.log("📝 insertNote data:", { author_id, content, title }); // Debug
+  console.log("📝 insertNote data:", {'author_id': author_id,'content': content,'title': title, 'audience_id':audience_id, 'reply_to':reply_to_id, 'status':status }); // Debug
   try {
     const { data, error } = await supabase
       .from('notes')

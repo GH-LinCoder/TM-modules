@@ -18,7 +18,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'plans' :() => import('../plans.js'),
 'login-signup':()=>import('../auth/login-signup.js'),
 'login':()=>import('../auth/login.js'),
-
+'privacy':()=>import('../legal/privacy.js'),
 
 //////////          QUICK STATS   AdminDash           /////////                 
 'quick-stats-section.html': ()=> import('../dash/quickStatsSection.js'),

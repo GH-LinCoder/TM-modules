@@ -41,7 +41,7 @@ if(group == 'clickLogic' ) { clickLogic = selected.value;  console.log('Collect:
   }
 
 audience = document.getElementById('respondentSelect').value;
-
+if(audience=='') audience=null; //sending empty string to the database will be seen as a bad uuid. The column accepts null but not '' 
   console.log('Tags collected:', tagsArray, 'audience',audience);
   return tagsArray;
 }

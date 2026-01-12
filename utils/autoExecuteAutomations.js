@@ -1,5 +1,5 @@
-import { appState } from '../../state/appState.js';
-//import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
+import { appState } from '../state/appState.js';
+//import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import {autoRelateAppro} from '../work/approfiles/autoRelateAppro.js'
 import {autoAssignTask} from '../work/task/autoAssignTask.js'
 

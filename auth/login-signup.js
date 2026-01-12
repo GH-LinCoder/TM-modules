@@ -145,7 +145,7 @@ const supabase = createSupabaseClient();
       document.getElementById('login-error').textContent = error.message;
       document.getElementById('login-error').classList.remove('hidden');
     } else {  //  showToast('Login successful!', 'success');
-      window.location.href = '/flexload.html'; // the app
+      window.location.href = '/organise.html'; // the app
     }
   };
 
@@ -160,7 +160,7 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     else { const app = document.getElementById('authContainer'); 
       app.style.opacity = '0'; // trigger fade 
       setTimeout(() => { 
-    window.location.href = '/index.html'; 
+    window.location.href = '/organise.html'; 
   }); 
 
 }
@@ -217,7 +217,7 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
         }
       } else {
         if (successEl) successEl.classList.remove('hidden');
-        setTimeout(() => window.location.href = '/flexload.html', 1500);
+        setTimeout(() => window.location.href = '/index.html', 1500);
       }
     }
   });

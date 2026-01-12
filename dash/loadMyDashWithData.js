@@ -1,6 +1,6 @@
 import { appState } from '../state/appState.js';
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
-//import { showToast } from '../ui/showToast.js';
+import { showToast } from '../ui/showToast.js';
 //import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
 import { resolveSubject, detectContext, applyPresentationRules } from '../utils/contextSubjectHideModules.js';
@@ -12,6 +12,10 @@ let subject=null;
 
 export async function loadMyDashWithData() {
   console.log('loadMyDashWithData()');
+
+showToast('This website uses cookies. [ ] I agree so I can use the site.  [ ] I refuse and will not use the site');
+
+
 subject = await resolveSubject();  
   updateProfileAndStats();
 
