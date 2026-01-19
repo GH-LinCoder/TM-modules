@@ -1,0 +1,112 @@
+We have a TABLE 'automations_registry'. This contains the name of the database function exactly as named in snake_case. Plus the expected_parameters and a description::text
+
+This is to make the actions and parameters possible to check and be consistent. Any new auto_function added to the app has to be listed here.
+
+There automations would have a fk constraint on the action_name.
+
+The current judge builds a json and returns it when an error is found. The action functions do the same. One of the problems I have foud, which is being solved, is knowing which function is sending the error. I am making sure they name themselves in their messages they also return the value that they are saying is wrong.
+
+But initially the anonymity was confusing because 'wrong appro- r68955-....'  from the judge may mean a different problem than the same from the action function. (Plus uuid are meaningless and take a lot of checking)
+
+Having spent a full day trying to debug my conclusion was that the system is too complicated. I had hoped to not have to refactor because that will break many things, but I want a system that is easier to understand.
+
+The judge just judges and sends back a decision. The previous function then looks up in a table to find the name of the correct function to call. That called function returns json on failure or success. The json is returned to the client.
+
+Currently within the javascript the source_petition is assembled in various functions because the data is defined in some functions and not in others. It is then passed as a json parameter. This always raises possible errors of deconstruction. I am thinking of changing this to holding the values in appState which is a global in the app. That reduces those naming errors. Which just leaves the eventual passing of this to the db function.
+
+I have thought about how to subdivide the object to make comparison easier. I am almost certainly going for radical change of the tables too, because better to do it now rather than later. (I was hoping to avoid this)
+
+
+------------------------
+assignments TABLE (new version)
+id
+created_at
+created_by
+completed_at
+abandoned_at
+deleted_at
+deleted_by
+is_deleted
+manager_id
+current_step
+student_id 
+assignment_type { task || survey || (future expansion) }
+assignment{header:   , secondary: }
+--------------
+
+attach the petition to the global 
+appState.query
+
+.auto_petition
+
+.user
+authId
+approId
+
+.existing
+automations_id
+assignments_id
+
+.sourceType: 'task'||'survey||relate||unrelate||message|| etc
+.source
+header:  task_header_id || surveyHeader_id || (future )
+secondary: task_step_id || survey_question_id ? ||
+
+.targetType: 'task'||'survey||relate||unrelate||message|| etc
+.target: task_header_id, task_step_id || surveyHeader_id || appro_is, relationship, of_appro || (future )
+
+
+
+TABLE automations (rebuild)
+id
+name
+description
+created_at
+created_by
+deleted_at
+deleted_by
+is_deleted
+source_type  'task'||'survey||relate||unrelate||message|| etc
+source: {header:  , secondary: }
+target_type  'task'||'survey||relate||unrelate||message|| etc
+target: {task_header_id, task_step_id || surveyHeader_id || appro_is, relationship, of_appro || (future ) }
+
+
+
+in checking 
+petition.user 
+   auth checked with current session
+   appro can be checked that it relates to auth
+
+AUTOMATIONS CHECKS
+.existing used to read a row in automations
+.sourceType = automations.source_type
+.source = automations.source
+.targetType = automations.target_type
+.target = automations.target
+
+ASSIGNMENTS CHECKS
+.existing used to read a row in assignments
+.appro = assignments.student_id
+.sourceType = assignments.assignment_type
+.source = assignments.assignment
+
+In TABLES source_type, target_type & assignment_type would all be fk to the existing automations_registry
+that lists the auto_functions
+
+------------
+-- Diagnostic Loop for Source Validation
+FOR v_key IN SELECT jsonb_object_keys(v_auto.source)
+LOOP
+    IF (p_petition->'source'->v_key) IS DISTINCT FROM (v_auto.source->v_key) THEN
+        RETURN jsonb_build_object(
+            'status', 'FAIL',
+            'origin', 'JUDGE_SOURCE_VALIDATION',
+            'error_key', v_key,
+            'expected_val', v_auto.source->v_key,
+            'received_val', p_petition->'source'->v_key,
+            'hint', 'Ensure JavaScript is passing ' || v_key || ' correctly.'
+        );
+    END IF;
+END LOOP;
+
