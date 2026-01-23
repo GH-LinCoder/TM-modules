@@ -1566,11 +1566,7 @@ readAssignmentsTasks: {
 console.log('readAssignmentsTasks()');
         const { data, error } = await supabase
         .from('assignments_task_view')
-        .select(`
-          assignment_id, task_name, task_description, student_id, student_name, manager_id, manager_name, current_step,  
-          assignment_type, step_name, step_description, step_order, assignment, created_at, completed_at, abandoned_at, 
-          deleted_at, deleted_by,is_deleted
-        `)
+        .select('*')
         .eq('student_id', student_id)
         .order('task_name', { ascending: true });
       if (error){ console.log('Error readAssignmentsTasks', error.message);throw error;}
