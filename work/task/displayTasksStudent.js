@@ -271,7 +271,7 @@ console.log('assignment',assignment, '.task_header',assignment.assignment.task_h
       });
 
  const taskExternalURL = assignment.task_external_url;
- //                 console.log('assignment.task_external_url',assignment.task_external_url);
+                 console.log('assignment.task_external_url',assignment.task_external_url);
 
 
 //console.log('assignment:', assignment);
@@ -330,11 +330,7 @@ console.log('assignment',assignment, '.task_header',assignment.assignment.task_h
 
 
 
-      const card = document.createElement('div');
-      card.classList.add('bg-white', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200');
-    // console.log('checking consoleflow', card);  // 
-      //confirmed that program flows to here on first save & card =  <div class="bg-white rounded-lg shad… border border-gray-200">      
-      
+
 
         // Decide how to render the external URL
     let externalContent = '';// console.log('taskExternalURL:',taskExternalURL);
@@ -357,7 +353,11 @@ console.log('assignment',assignment, '.task_header',assignment.assignment.task_h
       }
     }
 
-
+      const card = document.createElement('div');
+      card.classList.add('bg-white', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200');
+    // console.log('checking consoleflow', card);  // 
+      //confirmed that program flows to here on first save & card =  <div class="bg-white rounded-lg shad… border border-gray-200">      
+      
 
 
       card.innerHTML = `
@@ -373,7 +373,7 @@ ${externalContent}
 
           ${renderStepCard('Previous Step', previousStep,studentName , true, 'gray')}
 
-<!-- need to pass the contents of the 'external_url' column so the url can be displayed just for the current step -->
+<!-- need to pass the contents of the 'external_ url' column so the url can be displayed just for the current step -->
 
           ${renderStepCard('Current Step', {
             step_name: currentStepName,
@@ -446,7 +446,7 @@ function renderStepCard(title, step, color, studentName = null, showCheckmark = 
   
     // Decide how to render the external URL
     let externalContent = '';
-    if (title === 'Current Step' && externalUrl) {
+    if (externalUrl) {
       if (externalUrl.startsWith('<iframe')) {
         // Treat as raw iframe markup
         externalContent = `
