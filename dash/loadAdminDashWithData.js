@@ -13,6 +13,18 @@ export async function loadAdminDashWithData() {
 
     //19:13 Sept 19 2025 deleted all the old diret calls & the loading of functions from dataReaders 
     let count; // this was done line by line to test each one. Could be done in a loop
+
+    //signups  new 13:26 Jan 13 2026
+count = await executeIfPermitted(null, 'tempSignupCount', null); 
+console.log('loadAdmin..:temp count',count);    
+updateAll('[data-value="tempSignup-count"]', count);  
+
+    count = await executeIfPermitted(null, 'signupCount', null); 
+    console.log('loadAdmin..:count',count);
+    updateAll('[data-value="signup-count"]', count);
+
+
+
     count = await executeIfPermitted(null, 'membersCount', null); 
     updateAll('[data-value="members-count"]', count);
     
@@ -44,7 +56,7 @@ export async function loadAdminDashWithData() {
     count = await executeIfPermitted(null, 'relationsCount', null);
     updateAll('[data-value="relations-count"]', count); 
 
-
+readRecentLogs();
 
     
   }
@@ -117,4 +129,38 @@ function formatTimeAgo(dateString) {
 function updateStat(key, value) {
   const selector = `[data-stat="${key}"]`;
   updateAll(selector, value);
+}
+
+
+
+async function readRecentLogs() {
+console.log('LoadAdminDash... logs');
+
+  const activityList = document.getElementById('activity-list');
+  if (!activityList) return;
+  try {
+  const events = await executeIfPermitted(null,'readRecentLogs',{number:'5'});
+
+
+    if (!events || events.length === 0) {
+      activityList.innerHTML = '<p class="text-gray-500 text-sm">No recent activity</p>';
+      return;
+    }
+
+    // Render each event
+    activityList.innerHTML = events.map(event => `
+      <div class="activity-item" data-activity="db">
+        <p class="text-sm">Table: <strong> ${event.source_table_name || 'Unknown table'}</strong></p>
+                              <!--p class="text-xs text-gray-600">${event.source_row_id ? event.source_row_id.substring(0, 8) : '—'}</p-->
+        <p class="text-xs text-gray-600">row id:${event.source_row_id}</p>
+        <p class="text-xs text-gray-600"><strong> ${event.event_i_u_d || 'EVENT'}</strong> </p>
+        <p class="text-xs text-gray-400">${new Date(event.created_at).toLocaleString()}</p>
+        <p class="text-xs text-gray-600">item number:${event.sort_int}</p>
+      </div>
+    `).join('');
+
+  } catch (err) {
+    console.error('Failed to load recent activity:', err);
+    activityList.innerHTML = '<p class="text-red-500 text-sm">Failed to load activity</p>';
+  }
 }

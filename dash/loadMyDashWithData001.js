@@ -113,20 +113,21 @@ function  getCurrentSubjectId() {
             // Get all assignments for current student
             const assignments = await executeIfPermitted(
                 subject.id, 
-                'readStudentAssignments', 
+                'readAssignmentsTask', 
                 { student_id: subject.id }
             );
-            
+            console.log('quick-stats, assignments',assignments);
             if (!assignments || assignments.length === 0) {
-                setStatsValues(0, 0, 0, 0, 0, 0);
+               // setStatsValues(0, 0, 0, 0, 0, 0);
                 return;
             }
             
             // Count different assignment types
+            /*
             const activeTasks = assignments.filter(a => a.step_order >= 3).length;
             const completedTasks = assignments.filter(a => a.step_order === 2).length;
             const abandonedTasks = assignments.filter(a => a.step_order === 1).length;
-            
+            */
             // Get surveys (when implemented)
             
             const surveys = await getAssignedSurveys();
@@ -170,7 +171,7 @@ async function getAssignedSurveys() {
         // Read from task_assignments where survey_header_id is not null
         const { data, error } = await executeIfPermitted(
             appState.query.userId,
-            'readStudentAssignments', 
+            'readAssignmentsSurveys', 
             { student_id: subject.id }
         );
         

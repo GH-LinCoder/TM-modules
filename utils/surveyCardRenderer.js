@@ -6,14 +6,15 @@ import { icons } from '../registry/iconList.js';
  * @param {Array} surveyRows - from readSurveyView
  * @returns {string} HTML string
  */
-export function renderSurveyAsDisplayCards(surveyRows) {
+export function renderSurveyAsDisplayCards(surveyRows,assignmentId) {
+  console.log('renderSurvey-Cards assignmentId',assignmentId);
   if (!surveyRows?.length) return '';
 
   const surveyInfo = surveyRows[0];// rows end with something unique. It could be an automation, but if no automation then the answer would be unique. (If no answer then the question is unique & probably an oversight)
   //therefore the first part of every row is the name and description of the survey. This isn't just in rows[0]
   
   let html = `                     
-    <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200">
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200"data-assignment="${assignmentId}">
       <div class="text-center mb-4">
         <h2 class="text-xl font-bold text-gray-900">${surveyInfo.survey_name}</h2>
         <p class="text-sm text-gray-600">${new Date(surveyInfo.survey_created_at).toLocaleDateString()}</p>
@@ -29,26 +30,27 @@ export function renderSurveyAsDisplayCards(surveyRows) {
   const questions = [...new Map(surveyRows.map(r => [r.question_id, r])).values()];
   for (const q of questions) {
     const answers = surveyRows.filter(r => r.question_id === q.question_id);
-    html += renderQuestionCard(q, answers);
+    html += renderQuestionCard(q, answers, assignmentId);
   }
 
   html += `</div>`;
   return html;
 }
 
-function renderQuestionCard(question, answers) {
-  console.log('renderQuestionCard()');
+function renderQuestionCard(question, answers, assignmentId) {
+  console.log('renderQuestionCard()', 'assignmentId', assignmentId);
   const answersHTML = answers.map(a => {
     // Check if answer has automations (for icon)
     console.log('a',a);//nothing logs
   
     const hasAutomations = a.auto_id;
-  console.log('has', hasAutomations);
+  console.log('has automation', hasAutomations, 'assignmentId', assignmentId);
     const icon = hasAutomations ? `<span class="ml-2 text-blue-600">${icons.automation}  ${a.auto_name} Auto_id:${a.auto_id}</span>` : '';
     
     return `
       <div class="clickable-item data-type='answer' hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md ml-2">
         <input type="radio" 
+        data-assignment="${assignmentId}"
                id="ans_${a.answer_id}" 
                name="survey_${question.survey_id}_q${question.question_number}" 
                value="${a.answer_id}"

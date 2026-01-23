@@ -18,7 +18,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- DASHBOARD TITLE + DESCRIPTION-->   
    <div>
-      <h1 class="text-2xl font-bold" data-dash-title="admin">Admin Dashboard  -version 21:50 Nov 3</h1>
+      <h1 class="text-2xl font-bold" data-dash-title="admin">Admin Dashboard</h1>
       <p class="text-sm text-gray-500" data-dash-sub_title="admin">See data, manage members, tasks, relations & knowledge.</p>
       <p class="text-sm text-gray-500" data-dash-sub_title="admin">Click the menu <em>How?</em> button for help</p>
     </div>
@@ -32,6 +32,25 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <h2 class="text-lg font-semibold mb-2">Quick Stats 🧮</h2>
     <p class="text-sm text-gray-500 mb-4">Summaries: Click for details. They open in a new panel to the right. Click card again to close.</p>
   <div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
+
+
+
+        <!-- tempSignup -->
+    <div class="bg-orange-50 border border-blue-100 rounded-lg p-4" data-action="tempSignup-stats">
+      <h3 class="text-sm font-medium text-blue-700 mb-1">Temp signups</h3>
+      <p class="text-2xl font-bold text-blue-900" data-value="tempSignup-count">?</p>
+      <p class="text-xs text-blue-600">Signed-up, not yet confirmed</p>
+      <p class="text-xs text-blue-400 mt-1" data-delta="tempsignups-month">+? new this month</p>
+    </div> 
+
+        <!-- Signup-onfirmed -->
+    <div class="bg-orange-50 border border-blue-200 rounded-lg p-4" data-action="signup-stats">
+      <h3 class="text-sm font-medium text-blue-700 mb-1">Confirmed signups</h3>
+      <p class="text-2xl font-bold text-blue-900" data-value="signup-count">?</p>
+      <p class="text-xs text-blue-600">Signed-up, and confirmed</p>
+      <p class="text-xs text-blue-400 mt-1" data-delta="confirmed-month">+? new this month</p>
+    </div>
+
 
     <!-- Approfiles Human -->
     <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="humans-stats">

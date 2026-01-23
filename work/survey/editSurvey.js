@@ -11,7 +11,7 @@ console.log('editSurvey.js loaded');
 
 ///Globals
 const state = {
-  user: appState.query.userId,
+  user : null,
   currentSurveyHeader: null,
   currentSurveyHeaderId: null,
   
@@ -43,7 +43,7 @@ export function render(panel, query = {}) {
 
 async function readSurveyView(surveyId){
   console.log('readSurveyView');
-    const userId = appState.query.userId;
+    const userId = appState.query.userId;  // this is what ? it is huyie. Why use this?
 const rows = await executeIfPermitted(userId, 'readSurveyView', { survey_id: surveyId});
 state.currentSurveyView = rows; //turn the survey into a global for this module 
 //console.log('readSurveyView', state.currentSurveyView);
@@ -664,11 +664,12 @@ addInformationCard({
 
 //function needs:  const { survey_answer_id, task_header_id, task_step_id, name, automation_number } = payload;
         const result = await executeIfPermitted(state.user, 'createAutomationAddTaskBySurvey', { 
-            survey_answer_id : state.currentItemId, // where get annswer id?
+          source_survey_header_id  : state.currentSurveyHeaderId, 
+          source_survey_answer_id : state.currentItemId, // where get annswer id?
 
        //       manager_id: managerData.managerId, // needs to be from the dropdown    
-            task_header_id: selectedTaskId,
-            task_step_id: state.initialStepId, // 
+            target_task_header_id: selectedTaskId,
+            taget_task_step_id: state.initialStepId, // 
             name: taskCleanName || 'Unknown Task', // 
             automation_number: nextAutoNumber
         });
@@ -739,7 +740,7 @@ async function handleSurveyAutomationSubmit(e, panel) {
   } //how would we be here if button not found?
   let nextAutoNumber = findNumberInSurvey('auto_number');
   const surveyAutomationSelect = panel.querySelector('#surveyAutomationSelect');
-  const selectedSurveyId = surveyAutomationSelect?.value;
+  const selectedAutoSurveyId = surveyAutomationSelect?.value; // this used the same name as the source selectedSurveyId
   
   // Get the selected option text
   const selectedOption = surveyAutomationSelect?.options[surveyAutomationSelect.selectedIndex];
@@ -750,10 +751,15 @@ async function handleSurveyAutomationSubmit(e, panel) {
   //automationsNumber++;    
     
 try{
-//function needs:   const { survey_answer_id, survey_header_id, name, automation_number } = payload;
+//function needs:    source_survey_answer_id, source_survey_header_id,target_survey_header_id, name, automation_number } = payload;
+console.log('source_survey in state?',state, 'target survey',selectedAutoSurveyId , 'state.currentItemId',state.currentItemId);// survey_id is not in state. 
+
 const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBySurvey', { 
-            survey_answer_id : state.currentItemId, //need this 
-            survey_header_id : selectedSurveyId, 
+
+           source_survey_answer_id : state.currentItemId, //21:35 Jan18 NULL in the table, but logs here as state.currentItemId 3dabd698-52d8-4855-bebf-5d9f04206a54
+            source_survey_header_id: state.currentSurveyHeaderId,
+     
+            target_survey_header_id : surveyAutomationSelect.value, //21:16 Jan 18
             name: surveyCleanName, 
             automation_number: nextAutoNumber
      });
@@ -763,7 +769,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
       'name': surveyCleanName?.substring(0,30) || '???',
       'type': 'auto_survey',
       'autoNumber': nextAutoNumber || '???', 
-      'survey id': selectedSurveyId || '???'
+      'survey id': selectedAutoSurveyId || '???'
       });
      
      showToast('Survey automation saved successfully!');
@@ -817,10 +823,11 @@ let nextAutoNumber = findNumberInSurvey('auto_number');
     try {  
   //    console.log('state.currentItemId',state.currentItemId,'selectedApproId:', selectedApproId); //undefined here 16:15 Nov 26
       // Save relationship automation to database
-//function needs:     const { survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
+//function needs:    const { source_survey_header_id, source_survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
         const result = await executeIfPermitted(state.user, 'createAutomationRelateBySurvey', { 
-            survey_answer_id:state.currentItemId,  // 
-            //appro_is_id: null,
+          source_survey_header_id: state.currentSurveyHeaderId,  
+          source_survey_answer_id:state.currentItemId, 
+          //  appro_is_id: state.user,  // Usually it is the reader whoe appro is used. Unlikely we would specify it when creating the survey
             relationship: selectedRelationship,         
             of_appro_id: selectedApproId,       //of_appro_id     
             name: cleanName,                        
@@ -891,7 +898,7 @@ console.log('updateOldQuestion()');
           questionId: state.currentItemId,
           questionName: stepName,
           questionDescription:stepDescription,
-          questionNumber: state.currentItemNumber, // worked dec 9, fails dec 10 null
+          questionNumber: state.currentItemNumber, // worked dec 9, fails dec 10 null Fails Jan 20
           //stepUrl
         });
         showToast('Updated successfully!', 'success');
@@ -930,11 +937,11 @@ let stepDescription = panel.querySelector('#stepDescription')?.value.trim();
 
     try{
         //console.log('Creating new Answer: surveyHeader:',state.currentSurveyHeaderId );//logs ok
-        //function needs:const { survey_question_id, answerName, answer_number } = payload;
+        //function needs:    const { survey_question_id, answer_name, answer_number } = payload;
         //survey_question_id: survey_question_id,name: answerName, answer_number:answer_number,
      const newAnswer =   await executeIfPermitted(state.user, 'createSurveyAnswer', {
           survey_question_id: state.currentItemId,  //the question has to be clicked prior to inserting answer
-          answerName:stepName,         
+          answer_name:stepName,         
           //description:stepDescription,
           answer_number: nextNumber,
           //answer_description:stepDescription
@@ -1044,9 +1051,12 @@ console.log('updateHeader()');
     console.log('handleStepUpdate()');//e is the saveStepbtn button
     //console.log('type:',state.currentItemType);//22:32 dec 6 null - because when editing the existing displayed header this has not been set
 
-    if (!state.currentSurveyHeaderId || !state.user) {  //20:00 dec 6 null when select new from dropdown  
-    showToast('Survey not loaded or user missing', 'error');
-      return;
+    if (!state.currentSurveyHeaderId) {  //20:00 dec 6 null when select new from dropdown  
+    showToast('Survey not loaded', 'error');
+      return;}
+          if (!state.user) {  //20:00 dec 6 null when select new from dropdown  
+    showToast('User missing', 'error');
+      //return;
     }
 
 switch (state.currentItemType){//is it a question, answer or header? Is it an old or new one?

@@ -16,7 +16,16 @@ const userId = appState.query.userId;
 let panelEl = null;
 let managerName = null;
 
-
+let autoPetition = {
+    auth_id:'',  // from resolveSubject
+    appro_id:'',  // from resolveSubject
+    task_id:'',//from task_assignment table
+    step_id:'',//from task_assignment table
+    survey_id:null, //
+    survey_answer_id:null, //
+    assignment_id:'',  //from task_assignments
+    automation_id:'' //from  next file executeAutomations?
+}
 
 onClipboardUpdate(() => {
   console.log('onClipboardUpdate');
@@ -40,7 +49,7 @@ export async function render(panel, query = {}) {
       console.log('displayTaskManager.js render()');
 
 let manager = await resolveSubject();
- managerId =manager.id;
+ managerId =manager.approUserId;
  managerName = manager.name;
  
 
@@ -98,7 +107,7 @@ let manager = await resolveSubject();
 if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 text-center py-8">You are not managing any tasks.</div>`;
             return;} 
             else 
-    try {
+    try {console.log('try readManagerAss..',managerId);
         const assignments = await executeIfPermitted(userId, 'readManagerAssignments', {
             manager_id: managerId
         });
@@ -111,15 +120,16 @@ if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 
         const cardContainer = panel.querySelector('#managerTaskCards');
         
         for (const assignment of assignments) {
+            console.log('task header:',assignment.task_header);
             const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', {
-                task_header_id: assignment.task_header_id
+                task_header_id: assignment.assignment.task_header
             });
 
  const taskExternalURL = assignment.task_external_url;
-                  console.log('assignment.task_external_url',assignment.task_external_url);
+                  console.log('assignment.',assignment,'   ',assignment.assignment);
 
 
-            const currentStep_order = assignment.step_order;//student uses this as currentStep
+            const currentStep_order = assignment.current_step;//student uses this as currentStep
            //   const currentStep = assignment.step_order; // in student this works. Odd
             const currentStep = taskSteps.find(s => s.step_order === currentStep_order);//different
             const numberOfSteps = taskSteps.length;

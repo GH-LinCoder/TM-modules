@@ -128,9 +128,9 @@ const supabase = createSupabaseClient();
       document.getElementById('signup-error').textContent = error.message;
       document.getElementById('signup-error').classList.remove('hidden');
     } else {
-      document.getElementById('signup- please check your email').classList.remove('hidden');
+      document.getElementById('signup- please check your email. It may take a while.').classList.remove('hidden');
       document.getElementById('signup-error').classList.add('hidden');
-   await createAppros(userName, description, email, data.user.id);
+   await createAppros(userName, description, email, data.user.id);//can this work? If not auth user will this fail? Can a user get here without being auth user?
     }
   };
 
@@ -160,7 +160,7 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
     else { const app = document.getElementById('authContainer'); 
       app.style.opacity = '0'; // trigger fade 
       setTimeout(() => { 
-    window.location.href = '/organise.html'; 
+    window.location.href = '/index.html'; 
   }); 
 
 }

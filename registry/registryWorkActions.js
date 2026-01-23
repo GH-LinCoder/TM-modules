@@ -268,7 +268,7 @@ if (existing && existing.data.length > 0) { //console.log (existing);
         approfile_is: approfile_is,
         relationship: relationship,
         of_approfile: of_approfile,
-        assigned_by_automation: assigned_by_automation // Your audit trail column
+        assigned_by_automation: assigned_by_automation // audit trail column
       }])
       .select()
       .single();
@@ -401,11 +401,6 @@ handler: async  (supabase, userId) =>{
     //throw new Error('Failed to count authors.');
   }
   
-
-
-
-
-
   return count// if use {count} it would be in form  {count: 23}
 }
 },
@@ -512,6 +507,64 @@ handler: async  (supabase, userId) =>{
   return count// if use {count} it would be in form  {count: 23}
 }
 },
+
+tempSignupCount:{ //new 13:46 Jan 13 2026
+  metadata: {
+    tables: ['temp_signups'],
+    columns: ['id'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async  (supabase, userId) =>{
+    console.log('tempSignupCount()');
+    const { count, error } = await supabase
+    .from('temp_signups')
+    .select('id', { count: 'exact', head: true }); // ← head: true = don't return rows, just count 
+
+    if (error) {
+      console.error('Error counting temp signups:', error.message);
+     // throw new Error('Failed to count.');
+    }
+    console.log('count',count);
+    return count// if use {count} it would be in form  {count: 23}
+  }
+},
+
+signupCount:{ //new 13:46 Jan 13 2026
+  metadata: {
+    tables: ['temp_signups'],
+    columns: ['id'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async  (supabase, userId) =>{
+    console.log('signupCount()');
+/*    
+const { count, error } = await supabase
+  .from('temp_signups')
+  .select('completed_at', {
+    count: 'exact',
+    head: true,
+    filter: 'completed_at.not.is.null'
+  });
+*/
+
+const { data, count, error } = await supabase //this was showing bizarre behaviour that when no orws, count became an empty array. Added 'data' in hope to prevent this
+.from('temp_signups') 
+.select('completed_at', { count: 'exact' }) // no head:true 
+.not('completed_at', 'is', null);
+
+    if (error) {
+      console.error('Error counting temp signups:', error.message);
+     // throw new Error('Failed to count.');
+    }
+        console.log('count',count);
+    return count// if use {count} it would be in form  {count: 23}
+  }
+},
+
+
+
 
 surveysCount:{
   // Metadata for the permissions system
@@ -629,8 +682,102 @@ createAssignment:{
   optionalArgs: ['task_header_id','step_id','manager_id', 'survey_header_id', 'survey_question_id'] // depends on task or survey
 }, // Should this check for duplicate assignment???
 handler: async (supabase, userId, payload) => {
+  const { task_header_id, step_id, student_id, student_name, manager_id, survey_header_id, survey_question_id,assigned_by } = payload;
+console.log('registry -createAssignment() survey_header_id',survey_header_id);//failed to write this Jan 18
+//this says duolicate even when no such thing 
+
+let existing=null;
+
+if (task_header_id) {
+  existing = await supabase
+    .from('assignments_task_view')
+    .select('assignment_id')
+    .eq('student_id', student_id)
+.eq('assignment->>task_header', task_header_id)
+
+//    .eq('task_header_id', task_header_id)
+    .limit (1);
+} else if (survey_header_id) {
+  existing = await supabase
+    .from('assignments_survey_view')
+    .select('assignment_id')
+    .eq('student_id', student_id)
+.eq('assignment->>survey_header', survey_header_id)
+
+    //.eq('survey_header_id', survey_header_id)
+    .limit (1);
+}
+
+if (existing && existing.data.length > 0) { //console.log (existing);
+  throw new Error('Assignment already exists for this student');
+}
+
+console.log('assignTask createAssignment:',
+    'student_id:', student_id,
+    'student_name:',student_name,
+    'manager_id:', manager_id,
+    
+    'task_header:', task_header_id, 
+    'step_id:', step_id,
+
+    'survey_header:survey_header_id',
+    'question_id', survey_question_id,
+    'assigned_by:',assigned_by);
+
+
+
+    if(task_header_id) { //console.log('task_header_id:', task_header_id);
+  const { data, error } = await supabase
+  .from('assignments')
+  .insert({
+    student_id: student_id,
+    student_name:student_name,
+    manager_id: manager_id || null,
+    assignment_type:'task',
+    assignment: {"task_header": task_header_id, 
+    "step_id": step_id},
+    assigned_by:assigned_by
+  })
+  .select() //Return the inserted row
+  .single(); //Return single object
+  if (error) throw error;
+    return data.id; //
+  } 
+  else 
+  if (survey_header_id) { console.log('writing survey_header_id:', survey_header_id);
+    const { data, error } = await supabase
+  .from('assignments')
+  .insert({
+    student_id: student_id,
+    student_name:student_name,
+    assignment_type:'survey',
+    assignment:{
+    "survey_header_id": survey_header_id,
+    "survey_question_id": survey_question_id},
+    assigned_by:assigned_by
+  })
+  .select() //Return the inserted row
+  .single(); //Return single object
+  if (error) throw error;
+  return data.id; //
+
+  } 
+}  
+},
+
+
+/* //ASSIGNMENT  replacing with refactor above 11:26 Jan 22
+createAssignment:{
+  metadata: {
+  tables: ['task_assignments'],
+  columns: ['id', 'step_id','sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'survey_header_id', 'survey_question_id'],
+  type: 'INSERT',
+  requiredArgs: [ 'student_id'], 
+  optionalArgs: ['task_header_id','step_id','manager_id', 'survey_header_id', 'survey_question_id'] // depends on task or survey
+}, // Should this check for duplicate assignment???
+handler: async (supabase, userId, payload) => {
   const { task_header_id, step_id, student_id, manager_id, survey_header_id, survey_question_id } = payload;
-console.log('registry -createAssignment()');
+console.log('registry -createAssignment() survey_header_id',survey_header_id);//failed to write this Jan 18
 //this says duolicate even when no such thing 
 
 let existing=null;
@@ -671,7 +818,7 @@ if(task_header_id) { //console.log('task_header_id:', task_header_id);
     return data.id; //
   } 
   else 
-  if (survey_header_id) { //console.log('survey_header_id:', survey_header_id);
+  if (survey_header_id) { console.log('writing survey_header_id:', survey_header_id);
     const { data, error } = await supabase
   .from('task_assignments')
   .insert({
@@ -686,8 +833,7 @@ if(task_header_id) { //console.log('task_header_id:', task_header_id);
 
   } 
 }  
-},
-
+}, */
 
 
 //TASK
@@ -1107,6 +1253,8 @@ readApprofileByAuthUserId: { //By authUserId because approId may != authId. This
     requiredArgs: ['authUserId'] }, 
     handler: async (supabase, userId, payload) => { 
       const { authUserId } = payload; 
+console.log('readAppro by auth:',authUserId);
+
       const { data, error } = await supabase 
       .from('app_profiles')
        .select('id, name, email, created_at') 
@@ -1265,6 +1413,30 @@ console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   } 
 },
 
+//ASSIGMENTS (NEW) 17:10 Jan 19 2026
+readAllAssignmentsNew:{// VIEW  not a table returns all rows )
+  metadata: {
+  tables: ['task_assignment_view2'],  //VIEW not a table
+  columns: ['step_id', 'step_name','step_description', 'task_name', 'manager_id', 'step_order','student_id', 'assigned_at', 'abandoned_at', 'completed_at','manager_name','student_name','assignment_id', 'task_header_id', 'task_description'],
+  type: 'SELECT',
+  requiredArgs: []
+},
+handler: async (supabase) => {
+//  const { assignment_id} = payload;
+console.log('readAllAssignmentNEW{}');
+  const { data, error } = await supabase
+  .from('assignments')
+  .select('*')
+  if (error) throw error;
+  console.log('readAssignmentNew{} data:',data);
+    return data; //
+  } 
+},
+
+
+
+
+
 //TASK_ASSIGMENT
 readAllAssignments:{// VIEW  not a table returns all rows )
   metadata: {
@@ -1315,8 +1487,129 @@ console.log('readAssignment2Exists()');
     return data; //
   } 
 },
+/* assignments table schema Jan 21 2026  
+  id uuid not null default gen_random_uuid (),
+  created_at timestamp with time zone not null default now(),
+  student_id uuid not null,
+  student_name text not null,
+  assignment_type text not null,
+  assignment jsonb not null,
+  manager_id uuid null,
+  current_step integer null,
+  completed_at timestamp with time zone null,
+  abandoned_at timestamp with time zone null,
+  deleted_at time with time zone null,
+  deleted_by uuid null,
+  is_deleted boolean null,  */
+readStudentAssignments: {
+  metadata: {
+    tables: ['assignments_task_view, assignments_survey_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['student_id'],
+    optionalArgs: ['type'] // Add 'type' as an optional argument
+  },
+  handler: async (supabase, userId, payload) => {
+    const { student_id, type } = payload;
+console.log('Registry -student_id',student_id, 'type', type);//why is type undefined when being sent 'survey'???
+
+//console.log('Registry-student_id', student_id);
+    let taskData = [];
+    let surveyData = [];
+
+    if (!type || type === 'task') {
+      const { data, error } = await supabase
+        .from('assignments_task_view')
+        .select(`
+          assignment_id, task_name, task_description, student_id, student_name, manager_id, manager_name, current_step,  
+          assignment_type, step_name, step_description, step_order, assignment, created_at, completed_at, abandoned_at, 
+          deleted_at, deleted_by,is_deleted
+        `)
+        .eq('student_id', student_id)
+        .order('task_name', { ascending: true });
+
+      if (error) throw error;
+      taskData = data;
+    }
+//console.log('registry-reponse', taskData);
+    if (!type || type === 'survey') {
+      const { data, error } = await supabase
+        .from('assignments_survey_view')
+        .select(`
+          assignment_id, survey_name, survey_description, student_id, student_name, assignment_type, assignment, created_at, completed_at, abandoned_at, 
+          deleted_at, deleted_by,is_deleted       `)
+        .eq('student_id', student_id)
+        .order('survey_name', { ascending:true });
+
+      if (error){ console.log('Error readStudentAssignments', error.message);throw error;}
+      surveyData = data;
+    }
+//    const combinedData = [...taskData, ...surveyData]//.sort((a, b) =>
+      //new Date(b.assigned_at) - new Date(a.assigned_at) //don't mix the two & keep in name order not date
+    //);  // why combine? Maybe there is a reason
+
+    return   {taskData,surveyData} //combinedData;
+  }
+},
 
 
+readAssignmentsTasks: {
+  metadata: {
+    tables: ['assignments_task_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['student_id'],
+    optionalArgs: ['type'] // Add 'type' as an optional argument
+  },
+  handler: async (supabase, userId, payload) => {
+    const { student_id} = payload;
+console.log('readAssignmentsTasks()');
+        const { data, error } = await supabase
+        .from('assignments_task_view')
+        .select(`
+          assignment_id, task_name, task_description, student_id, student_name, manager_id, manager_name, current_step,  
+          assignment_type, step_name, step_description, step_order, assignment, created_at, completed_at, abandoned_at, 
+          deleted_at, deleted_by,is_deleted
+        `)
+        .eq('student_id', student_id)
+        .order('task_name', { ascending: true });
+      if (error){ console.log('Error readAssignmentsTasks', error.message);throw error;}
+      else console.log('task data, data');
+      return data || [];
+    }
+  },
+
+
+readAssignmentsSurveys: {
+  metadata: {
+    tables: ['assignments_survey_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['student_id'],
+    optionalArgs: ['type'] // Add 'type' as an optional argument
+  },
+  handler: async (supabase, userId, payload) => {
+    const { student_id} = payload;
+console.log('readAssignmentsSurveys()');
+      
+       const { data, error } = await supabase
+        .from('assignments_survey_view')
+        .select(`
+          assignment_id, survey_name, survey_description, student_id, student_name, assignment_type, assignment, created_at, completed_at, abandoned_at, 
+          deleted_at, deleted_by,is_deleted       `)
+        .eq('student_id', student_id)
+        .order('survey_name', { ascending:true });
+
+      if (error){ console.error('Error readStudentAssignments', error.message);throw error;}
+      else console.log('survey data, data');
+ return data || [];
+  }
+},
+
+
+
+
+/* version Jan 20 2026
 readStudentAssignments: {
   metadata: {
     tables: ['task_assignment_view', 'survey_assignment_view'],
@@ -1372,10 +1665,10 @@ console.log('Registry -student_id',student_id, 'type', type);//why is type undef
     return combinedData;
   }
 },
-
+*/
 readManagerAssignments: {
   metadata: {
-    tables: ['task_assignment_view'],
+    tables: ['assignment_task_view'],
     columns: [
       'assignment_id', 'student_id', 'student_name', 'task_header_id', 'task_name', 'task_description', 
       'step_order', 'step_name', 'step_description', 'manager_id', 'manager_name', 'assigned_at'
@@ -1387,11 +1680,8 @@ readManagerAssignments: {
     const { manager_id } = payload;
 
     const { data, error } = await supabase
-      .from('task_assignment_view')
-      .select(`
-        assignment_id, student_id, student_name, task_header_id, task_name, task_description, 
-        step_order, step_name, step_description, manager_id, manager_name, assigned_at
-      `)
+      .from('assignments_task_view')
+      .select(`*`)
       .eq('manager_id', manager_id)
       .order('task_name', { ascending: true })
       .order('student_name');
@@ -1987,7 +2277,7 @@ createSurveyAnswer: {
     requiredArgs: ['surveyName', 'surveyDescription'] // ← payload fields  WRONG
   },
   handler: async (supabase, userId, payload) => {
-    const { questionId, answerText, answer_number } = payload;
+    const { survey_question_id, answer_name, answer_number } = payload;
 
     // Check for duplicate name  ???
   /*
@@ -2009,8 +2299,8 @@ createSurveyAnswer: {
     const { data, error } = await supabase
       .from('survey_answers')
       .insert({
-        survey_question_id: questionId,
-        name: answerText,
+        survey_question_id: survey_question_id,
+        name: answer_name,
         answer_number:answer_number,
         //external_url: taskUrl || null,
         //author_id: userId // ← no such column use passed userId
@@ -2086,21 +2376,25 @@ readTaskAutomations: {
 console.log('registryReadTaskAutomations-stepId:',source_task_step_id);
     // Validate required args. This code always threw an error
  /*
-    for (const arg of ['source_task_step_id']) {
-      if (payload[arg] === undefined || payload[arg] === null) {
-        throw new Error("Missing required argument: " + arg);
-      }
-    } */
+automations.source_data
+{
+  "target": {
+    "type": "task",
+    "header": "72c4250c-956a-4463-9cbf-3b9a09cf08b2",
+    "secondary": "c83496a0-8c5e-47e5-bcee-19b121191c68"
+  }, */
 
     // Query automations table
     const { data, error } = await supabase
       .from('automations')
       .select('*')
-      
-      .eq('source_task_step_id', source_task_step_id)
+      //.eq('source_task_step_id', source_task_step_id)
+      //.filter('source_data->target->>secondary', 'eq', source_task_step_id)  // this was source_data->target  but there is no target in source_data
+.filter('source_data->>secondary', 'eq', source_task_step_id)
+      //.eq('source_task_step_id', source_task_step_id)
       .is('deleted_at', null) // exclude soft-deleted
       .order('created_at', { ascending: true });
-
+console.log('readTaskAutomations;',data);// empty  23:46 Jan 22
     if (error) {
       console.error('Error reading task automations:', error.message);
       throw new Error('Failed to read task automations.');
@@ -2179,21 +2473,34 @@ createAutomationAddTaskByTask: {
     requiredArgs: ['source_task_step_id', 'task_header_id', 'task_step_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { source_task_step_id, task_header_id, task_step_id, name, automation_number } = payload;
-   /*
-    for (const arg of this.metadata.requiredArgs) {
-      if (payload[arg] === undefined || payload[arg] === null) {
-        throw new Error("Missing required argument: " + arg);
-      }
-    }*/
+    const { source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number } = payload;
+const autoRegistryId = '5473de51-a0d7-466f-8cea-ac342bf16d90';//the place to find what kind of function this is
     const { data, error } = await supabase
       .from('automations')
       .insert({
         source_task_step_id,
-        task_header_id,
-        task_step_id,
+        source_task_header_id,
+        task_step_id:source_task_step_id,
         name: name || 'Assign Task Automation',
-        automation_number: automation_number || null
+              //  source_data: { source_task_step_id }, 
+              //  target_data: { task_header_id, task_step_id },
+        automation_number: automation_number || null,
+        auto_registry_id:autoRegistryId,
+  source_data: {
+    type:  'task',   // 'task' | 'survey' | 'relate' | 'unrelate' | 'message' | 'future'
+    header: source_task_header_id,      // task_header_id | survey_header_id | null  <--- is this needed YES
+    secondary: source_task_step_id,    // task_step_id | survey_question_id | null
+    tertiary: null
+  },
+
+  target_data: { target:{
+    type: 'task',        // same enum as above
+    header: target_task_header_id,     // task_header_id | survey_header_id | appro_is | null
+    secondary:target_task_step_id,    // task_step_id | survey_question_id | relationship | of_appro | null
+    },
+   payload:{}
+ 
+  }
       })
       .select()
       .single();
@@ -2210,31 +2517,43 @@ createAutomationAddSurveyByTask: {
     requiredArgs: ['source_task_step_id', 'survey_header_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { source_task_step_id, survey_header_id, name, automation_number } = payload;
-  //  for (const arg of this.metadata.requiredArgs) {
-  //    if (payload[arg] === undefined || payload[arg] === null) {
-  //      throw new Error("Missing required argument: " + arg);
-   //   }
-  //  }
-
-    console.log('stpId',source_task_step_id, //need this 
-      'surveyId',survey_header_id, 
+    const { source_task_header_id, source_task_step_id, target_survey_header_id, name, automation_number } = payload;
+    console.log('source_task_header_id',source_task_header_id,
+      'source_task_step_id',source_task_step_id, //need this 
+      'target_survey_header_id',target_survey_header_id, 
       'name',name, 
     'auto#',automation_number);
 
-//automations table needs: source_task_step_id, survey_header_id, name, automation_number
-
+//automations table needs: 
+const  autoRegistryId ='5cacda57-e77e-4356-a2d6-ea881ce56f0a';//the place to find what kind of function this is
     const { data, error } = await supabase
       .from('automations')
       .insert({
         source_task_step_id,
-        survey_header_id,
+//        survey_header_id:target_survey_header_id,
         name: name || 'Assign Survey Automation',
-        automation_number: automation_number
+        automation_number: automation_number,
+        auto_registry_id:autoRegistryId,
+  source_data: {
+    type:  'task',   // 'task' | 'survey' | 'relate' | 'unrelate' | 'message' | 'future'
+    header: source_task_header_id,      // task_header_id | survey_header_id | null  <--- is this needed YES
+    secondary: source_task_step_id,    // task_step_id | survey_question_id | null
+    tertiary: null
+  },
+
+  target_data: { target:{
+    type: 'survey',        // same enum as above
+    header: target_survey_header_id,     // task_header_id | survey_header_id | appro_is | null
+    secondary:null,    // task_step_id | survey_question_id | relationship | of_appro | null
+    },
+   payload:{}
+ 
+  }
       })
       .select()
       .single();
     if (error) throw error;
+    console.log('registry... +surveyByTask data:', data);
     return data;
   }
 },
@@ -2247,21 +2566,49 @@ createAutomationRelateByTask: {
     requiredArgs: ['source_task_step_id', 'appro_is_id', 'relationship', 'of_appro_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
+    const { source_task_header_id, source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
   //  for (const arg of this.metadata.requiredArgs) {
   //    if (payload[arg] === undefined || payload[arg] === null) {
   //      throw new Error("Missing required argument: " + arg);
   //    }
   //  }
+  const autoRegistryId = '2869b9ae-453e-4c74-badf-22a96e9609c4';//the place to find what kind of function this is
+
     const { data, error } = await supabase
       .from('automations')
       .insert({
         source_task_step_id,
-        appro_is_id, //?? usually should be respondent not specified when creating automation
+      //  appro_is_id, //?? usually should be respondent not specified when creating automation
         relationship,
         of_appro_id, // bug 16:35 Nov 26 'null'
         name: name || 'error name missing createAutomationRelateByTask',
-        automation_number: automation_number || null
+       auto_registry_id : autoRegistryId,
+    //   source_data: {source_task_step_id},
+     //  target_data: {appro_is_id, relationship,of_appro_id}, 
+        automation_number: automation_number || null,
+  source_data: {
+    type:  'task',   // 'task' | 'survey' | 'relate' | 'unrelate' | 'message' | 'future'
+    header: source_task_header_id,      // task_header_id | survey_header_id | null  <--- is this needed YES
+    secondary: source_task_step_id,    // task_step_id | survey_question_id | null
+    tertiary: null
+  },
+
+  target_data: { target:{
+    type: 'relate',        // same enum as above
+    header: "approfile_relations",     // task_header_id | survey_header_id | appro_is | null
+    secondary:null,    // task_step_id | survey_question_id | relationship | of_appro | null
+  }, payload:{
+      //  appro_is_id: appro_is_id, //usually not known at this stage. The person is whoever lands on this task in future
+        relationship:relationship,
+        of_appro_id:of_appro_id,
+}
+
+
+  }  // should relate use a 'payload' instead? There could be future functions with >3 parameters
+
+
+
+        
       })
       .select()
       .single();
@@ -2269,7 +2616,6 @@ createAutomationRelateByTask: {
     return data;
   }
 },
-
 createAutomationDeleteRelationByTask: {
   metadata: {
     tables: ['automations'],
@@ -2278,12 +2624,13 @@ createAutomationDeleteRelationByTask: {
     requiredArgs: ['source_task_step_id', 'appro_is_id', 'of_appro_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { source_task_step_id, appro_is_id, of_appro_id, name, automation_number } = payload;
+    const { source_task_step_id, appro_is_id,relationship, of_appro_id, name, automation_number } = payload;
    /* for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
     } */
+   const autoRegistryId = 'b829ddc4-2961-4fef-97ca-6c2e9e2a629b';
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -2292,7 +2639,9 @@ createAutomationDeleteRelationByTask: {
         of_appro_id,
         name: name || 'Delete Relation Automation',
         automation_number: automation_number || null,
-        relationship: 'DELETE'
+        auto_registry_id : autoRegistryId,
+source_data: {source_task_step_id},
+target_data: {appro_is_id, relationship,of_appro_id}
       })
       .select()
       .single();
@@ -2309,19 +2658,24 @@ createAutomationSendMessageByTask: {
     requiredArgs: ['source_task_step_id', 'message_content', 'recipient_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { source_task_step_id, message_content, recipient_id, name, automation_number } = payload;
+    const { source_task_step_id, note_id, message_to_id, message_from_id, name, automation_number } = payload;
  /*   for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
     } */
+   const autoRegistryId = 'ecca4a60-b546-4e5f-9fe0-a8587461159d';//the place to find what kind of function this is
     const { data, error } = await supabase
       .from('automations')
       .insert({
         source_task_step_id,
-        message_content,
-        recipient_id,
+        note_id,
+        message_from_id,
+        message_to_id,
         name: name || 'Send Message Automation',
+        auto_registry_id : autoRegistryId,
+        source_data: {source_task_step_id},
+        target_data: {note_id,message_from_id,message_to_id},
         automation_number: automation_number || null
       })
       .select()
@@ -2339,20 +2693,39 @@ createAutomationAddTaskBySurvey: {
     requiredArgs: ['survey_answer_id', 'task_header_id', 'task_step_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { survey_answer_id, task_header_id, task_step_id, name, automation_number } = payload;
+    const { source_survey_header_id, source_survey_answer_id, target_task_header_id, target_task_step_id, name, automation_number } = payload;
   /*  for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
     } */
-    const { data, error } = await supabase
+   const autoRegistryId = '5473de51-a0d7-466f-8cea-ac342bf16d90';//the place to find what kind of function this is
+
+   const { data, error } = await supabase
       .from('automations')
       .insert({
-        survey_answer_id,
-        task_header_id,
-        task_step_id,
-        name: name || 'Assign Task by Survey Automation',
-        automation_number: automation_number || null
+        survey_header_id:source_survey_header_id,
+        survey_answer_id:source_survey_answer_id,//ok
+        task_header_id:target_task_header_id,//ok
+        task_step_id:target_task_step_id,//ok
+        name: name || 'Assign Task by Survey Automation',//ok
+        automation_number: automation_number || null,  //ok
+        auto_registry_id:autoRegistryId,
+  source_data: {
+    type:  'survey',   // 'task' | 'survey' | 'relate' | 'unrelate' | 'message' | 'future'
+    header: source_survey_header_id,      // task_header_id | survey_header_id | null  <--- is this needed YES
+    secondary: null,    // task_step_id | survey_question_id | null
+    tertiary: source_survey_answer_id
+  },
+
+  target_data: { target:{
+    type: 'task',        // same enum as above
+    header: target_task_header_id,     // task_header_id | survey_header_id | appro_is | null
+    secondary:target_task_step_id,    // task_step_id | survey_question_id | relationship | of_appro | null
+    },
+   payload:{}
+ 
+  }
       })
       .select()
       .single();
@@ -2369,19 +2742,41 @@ createAutomationAddSurveyBySurvey: {
     requiredArgs: ['survey_answer_id', 'survey_header_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { survey_answer_id, survey_header_id, name, automation_number } = payload;
-  /*  for (const arg of this.metadata.requiredArgs) {
-      if (payload[arg] === undefined || payload[arg] === null) {
-        throw new Error("Missing required argument: " + arg);
-      }
-    } */
+    const { source_survey_answer_id, source_survey_header_id,target_survey_header_id, name, automation_number } = payload;
+   const  autoRegistryId ='5cacda57-e77e-4356-a2d6-ea881ce56f0a';//the place to find what kind of function this is
+console.log('..SurveyBySurvey, source_survey_header_id',source_survey_header_id);
     const { data, error } = await supabase
       .from('automations')
       .insert({
-        survey_answer_id,
-        survey_header_id,
+        survey_answer_id:source_survey_answer_id,
+        survey_header_id:source_survey_header_id,
+        source_survey_header_id: source_survey_header_id,
         name: name || 'Assign Survey by Survey Automation',
-        automation_number: automation_number || null
+        automation_number: automation_number || null,
+         auto_registry_id : autoRegistryId,
+
+  source_data: {
+    type:  'survey',   // 'task' | 'survey' | 'relate' | 'unrelate' | 'message' | 'future'
+    header: source_survey_header_id,      // task_header_id | survey_header_id | null  <--- is this needed YES
+    secondary: null,    // task_step_id | survey_question_id | null
+    tertiary: source_survey_answer_id
+  },
+
+  target_data: {target:{
+    type: 'survey',        // same enum as above
+    header: target_survey_header_id,     // task_header_id | survey_header_id | appro_is | null
+    secondary:null    // task_step_id | survey_question_id | relationship | of_appro | null
+   },
+   payload:{}
+  
+  },
+
+
+
+
+
+
+        
       })
       .select()
       .single();
@@ -2398,21 +2793,44 @@ createAutomationRelateBySurvey: {
     requiredArgs: ['survey_answer_id', 'appro_is_id', 'relationship', 'of_appro_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
-   /* for (const arg of this.metadata.requiredArgs) {
-      if (payload[arg] === undefined || payload[arg] === null) {
-        throw new Error("Missing required argument: " + arg);
-      }
-    } */
+    const { source_survey_header_id, source_survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
+   
+   const autoRegistryId = '2869b9ae-453e-4c74-badf-22a96e9609c4';//the place to find what kind of function this is
     const { data, error } = await supabase
       .from('automations')
       .insert({
-        survey_answer_id,
-        appro_is_id,
-        relationship,
-        of_appro_id,
+        survey_answer_id:source_survey_answer_id,
+        appro_is_id: appro_is_id,
+        relationship:relationship,
+        of_appro_id:of_appro_id,
         name: name || 'Relate by Survey Automation',
-        automation_number: automation_number || null
+        auto_registry_id : autoRegistryId,
+        automation_number: automation_number || null,
+      //  source_data: { survey_answer_id},
+       // target_data: {appro_is_id, relationship,of_appro_id}, 
+  source_data: {
+    type:  'survey',   // 'task' | 'survey' | 'relate' | 'unrelate' | 'message' | 'future'
+    header: source_survey_header_id,      // task_header_id | survey_header_id | null  <--- is this needed YES
+    secondary: null,    // task_step_id | survey_question_id | null
+    tertiary: source_survey_answer_id
+  },
+
+  target_data: { target:{
+    type: 'relate',        // same enum as above
+    header: "approfile_relations",     // task_header_id | survey_header_id | appro_is | null
+    secondary:null,    // task_step_id | survey_question_id | relationship | of_appro | null
+  }, payload:{
+     //   appro_is_id: appro_is_id || null,  // the identity of this person is not yet known as it is the reader who clicks in future
+        relationship:relationship,
+        of_appro_id:of_appro_id,
+}
+
+
+  }  //There could be future functions with >3 parameters
+
+
+
+        
       })
       .select()
       .single();
@@ -2429,12 +2847,13 @@ createAutomationDeleteRelationBySurvey: {
     requiredArgs: ['survey_answer_id', 'appro_is_id', 'of_appro_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { survey_answer_id, appro_is_id, of_appro_id, name, automation_number } = payload;
+    const { survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
    /* for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
     } */
+   const autoRegistryId = 'b829ddc4-2961-4fef-97ca-6c2e9e2a629b';
    console.log()
     const { data, error } = await supabase
       .from('automations')
@@ -2444,7 +2863,9 @@ createAutomationDeleteRelationBySurvey: {
         of_appro_id,
         name: name || 'Delete Relation by Survey Automation',
         automation_number: automation_number || null,
-        relationship: 'DELETE'
+        auto_registry_id : autoRegistryId,
+        source_data: { survey_answer_id},
+       target_data: {appro_is_id, relationship,of_appro_id}
       })
       .select()
       .single();
@@ -2461,19 +2882,25 @@ createAutomationSendMessageBySurvey: {
     requiredArgs: ['survey_answer_id', 'message_content', 'recipient_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { survey_answer_id, message_content, recipient_id, name, automation_number } = payload;
+     const { survey_answer_id, note_id, message_to_id, message_from_id, name, automation_number } = payload;
+    
  /*   for (const arg of this.metadata.requiredArgs) {
       if (payload[arg] === undefined || payload[arg] === null) {
         throw new Error("Missing required argument: " + arg);
       }
     } */
+   const autoRegistryId = 'ecca4a60-b546-4e5f-9fe0-a8587461159d';//the place to find what kind of function this is
     const { data, error } = await supabase
       .from('automations')
       .insert({
         survey_answer_id,
-        message_content,
-        recipient_id,
+        note_id,
+        message_to_id, 
+        message_from_id,
         name: name || 'Send Message by Survey Automation',
+       auto_registry_id : autoRegistryId,
+       source_data: { survey_answer_id},
+       target_data: {note_id,message_from_id,message_to_id},
         automation_number: automation_number || null
       })
       .select()
@@ -2488,7 +2915,7 @@ createAutomationSendMessageBySurvey: {
 // end of newer version of the automations functions with checking of passed arguments. File 001 has previous versions
 
 
-/*
+/* all updated by 20:10 Jan 17 to use the columns target_data, source_data & auto_registry_id.
 createAutomationAddTaskByTask, 
 createAutomationAddTaskBySurvey, 
 
@@ -2503,6 +2930,9 @@ createAutomationSendMessageBySurvey,
 
 createAutomationDeleteRelationByTask, 
 createAutomationDeleteRelationBySurvey, 
+
+
+
 */
 
 
@@ -2685,6 +3115,31 @@ handler: async (supabase, userId, payload) => {
   return data;
 }
 },
+
+
+//LOGS
+readRecentLogs:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 
+  metadata: {
+  tables: ['app_event_logs'],
+  columns: ['*'],
+  type: 'SELECT',
+  requiredArgs: [] // could be either id or name?
+},
+handler: async (supabase, userId, payload) => {
+const {number} = payload;
+const { data, error } = await supabase
+  .from('app_event_log')
+  .select('*')
+  .order('created_at', { ascending: false })
+  .limit(number);
+
+  if (error) throw error;
+  return data;
+}
+},
+
+
+
 
 
 }//EOF

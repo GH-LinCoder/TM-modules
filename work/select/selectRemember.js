@@ -72,6 +72,7 @@ class DevDataSelector {
       surveyApprofiles: null, //added 9:26 Nov 1 2025
       tasks: null,
       assignments:null, //need to display more info to be able to edit assignments
+      assignmentsnew:null,
       relations:null  // new 20:29 dec 11  need to list these to be able to delete
     };
     this.selectedItem = null;
@@ -154,6 +155,12 @@ class DevDataSelector {
               <input type="radio" name="view" value="assignments"> 👨‍🔧 Existing Assignments</label>
             </div>
 
+
+            <div title="See what tasks and surveys have already been assigned.">     
+              <label class="flex items-center space-x-2 p-2 bg-green-200 border rounded hover:bg-gray-100 cursor-pointer" >
+              <input type="radio" name="view" value="assignmentsnew"> !NEW 👨‍🔧 Existing Assignments</label>
+            </div>
+
             <div title="See what relations exist.">     
               <label class="flex items-center space-x-2 p-2 bg-indigo-50 border rounded hover:bg-gray-100 cursor-pointer" >
               <input type="radio" name="view" value="relations"> 🖇️ Existing Relations</label>
@@ -165,7 +172,7 @@ class DevDataSelector {
 
         <!-- DATA LIST -->
                   <h4 class="font-medium mb-2">2. Click to choose an item from the list:</h4>
-        <div id="listContainer" class="border rounded min-h-64 max-h-80 overflow-y-auto bg-gray-50 p-3 mb-4">
+        <div id="listContainer" class="border rounded  overflow-y-auto bg-gray-50 p-3 mb-4">
           <div class="text-gray-500 text-center py-4">
             Click a checkbox above to load a list, then select an item.
           </div>
@@ -255,6 +262,8 @@ console.log('ViewChange:');
       await this.loadSurveys();
     } else if (view === 'assignments' && !this.loadedData.assignments)  {
       await this.loadAssignments();
+          } else if (view === 'assignmentsnew' && !this.loadedData.assignmentsnew)  {
+      await this.loadAssignmentsnew();
     } else if (view === 'relations' && !this.loadedData.relations)  {
       await this.loadRelations();
     }
@@ -309,6 +318,16 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
     }
   }
 
+    async loadAssignmentsnew() {
+    try {
+      this.loadedData.assignmentsnew = await executeIfPermitted(appState.query.userId, 'readAllAssignmentsNew', {});
+      console.log('AssignmentsNew:',this.loadedData.assignmentsnew);
+    } catch (error) {
+      console.error('Error loading assignementsNew:', error);
+      showToast('Failed to load', 'error');
+    }
+  }
+
     async loadRelations() {
     try {// reads array
       this.loadedData.relations = await executeIfPermitted(appState.query.userId, 'readApprofile_relations_view', {});
@@ -329,10 +348,11 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       'app-survey':'bg-yellow-50',
       'tasks': 'bg-red-50',
       'assignments':'bg-yellow-50',
+      'assignmentsnew':'bg-yellow-100',
       'relations':'bg-indigo-50'
     }[view] || 'bg-gray-50';
 
-    this.listContainer.className = `border rounded min-h-32 max-h-60 overflow-y-auto p-3 mb-4 ${bgColor}`;
+    this.listContainer.className = `border rounded min-h-60 max-h-120 overflow-y-auto p-3 mb-4 ${bgColor}`;
 
     let items = [];
     switch (view) {
@@ -357,6 +377,10 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       case 'assignments':
         items = this.loadedData.assignments || []; // PROBLEM  this view has task_name not name.
       break;
+      case 'assignmentsnew':
+        items = this.loadedData.assignmentsnew || []; //
+      break;
+
       case 'relations':
         items = this.loadedData.relations || []; //
       break;
@@ -376,6 +400,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       'tasks': '🔧 Tasks',
       'surveys' : '📜 Surveys',
       'assignments':'👨‍🔧 assignments',
+      'assignmentsnew':'👨‍🔧 assignmentsnew',
       'realtions':'🖇️ relations',
     }[view] || 'Select a type above';
 
@@ -407,6 +432,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
     let displayData = null;
     if(item.relation_id) displayData ='['+ item.approfile_is_name +'] is ['+ item.relationship +'] of ['+ item.of_approfile_name+']';
     else if (item.assignment_id) displayData = item.student_name +' ] on: [ '+item.task_name;
+    else if (item.assignment) displayData = item.student_name +' ] on: [ '+item.assignment_type+':' +item.assignment.task_header;
     return displayData;
   }
 
@@ -440,6 +466,16 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
           this.selectedAs = 'assignment';
           // Check the radio button
           const assignmentRadio = this.panel.querySelector('input[name="as"][value="assignment"]');
+         console.log('assignmentRadio:',assignmentRadio); // but not recognised here
+          if (assignmentRadio) {
+              assignmentRadio.checked = true;
+          }
+        }
+          else if (this.currentView === 'assignmentsnew') { // no log 
+          console.log('assignmentnew view recognised');
+          this.selectedAs = 'assignmentnew';
+          // Check the radio button
+          const assignmentRadio = this.panel.querySelector('input[name="as"][value="assignmentnew"]');
          console.log('assignmentRadio:',assignmentRadio); // but not recognised here
           if (assignmentRadio) {
               assignmentRadio.checked = true;

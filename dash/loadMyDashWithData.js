@@ -112,30 +112,46 @@ function  getCurrentSubjectId() {
     }
 */
   async function updateQuickStats() { // seems to be working 11:14 Oct 27  (tried two different subjectIds)
-        console.log('updateQuickStats()');
-      if(subject.type !='relations')  
+subject = await resolveSubject(); 
+if(!subject) {console.log('Error - no subject returned'); return}
+
+  const NON_PROFILE_TYPES = ['relations', 'surveys', 'tasks', 'assignments'];
+  if (NON_PROFILE_TYPES.includes(subject.type)) {return;} //we only display appros.
+
+
+
+console.log('resolveSubject', subject,
+   'auth:', subject.id,
+    'appro:',subject.approUserId,
+    'name:',subject.name,
+    'email:',subject.email,
+    'created',subject.created_at,
+    'type:',subject.type,
+    'source:',subject.source);
+
         try {
             // Get all assignments for current student
             const assignments = await executeIfPermitted(
                 subject.id, 
                 'readStudentAssignments', 
-                { student_id: subject.id }
+                { student_id: subject.approUserId }
             );
-            
+          console.log('assignments',assignments);  
             if (!assignments || assignments.length === 0) {
                 setStatsValues(0, 0, 0, 0, 0, 0);
                 return;
             }
             
             // Count different assignment types
-            const activeTasks = assignments.filter(a => a.step_order >= 3).length;
-            const completedTasks = assignments.filter(a => a.step_order === 2).length;
-            const abandonedTasks = assignments.filter(a => a.step_order === 1).length;
+            const activeTasks = assignments.taskData.filter(a => a.step_order >= 3).length;
+            const completedTasks = assignments.taskData.filter(a => a.step_order === 2).length;
+            const abandonedTasks = assignments.taskData.filter(a => a.step_order === 1).length;
             
             // Get surveys (when implemented)
             
-            const surveys = await getAssignedSurveys();
-            const availableSurveys = surveys?.length || 0;
+            const surveys = assignments.surveyData;
+            console.log('surveys', surveys);
+           const availableSurveys = surveys?.length || 0;
         
             const relationsCount = await getRelationsCount();
   // const relations = relationsObject.is.length + relationsObject.of.length;
@@ -175,7 +191,7 @@ async function getAssignedSurveys() {
         // Read from task_assignments where survey_header_id is not null
         const { data, error } = await executeIfPermitted(
             appState.query.userId,
-            'readStudentAssignments', 
+            'readAssignmentsSurveys', 
             { student_id: subject.id }
         );
         

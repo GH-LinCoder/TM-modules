@@ -23,7 +23,7 @@ function getTemplateHTML() {
                 </div>
                 
                 <div>
-                    <h1 class="text-2xl font-bold" data-dash-title="admin">My Dashboard -version 21:50 Nov 3</h1>
+                    <h1 class="text-2xl font-bold" data-dash-title="admin">My Dashboard</h1>
                     <p class="text-sm text-gray-500" data-dash-sub_title="my">Check my tasks, update my details, manage my students...</p>
                 </div>
                 <!--button class="text-sm text-blue-600 hover:underline" onclick="signOut()">Sign out</button-->

@@ -103,7 +103,7 @@ function populateFromClipboard(panel) {
   
  const item = taskSelect.value ? tasks.find(t => t.entity.id === taskSelect.value) : tasks[0];
  if (!item) return;
- console.log('Using clipboard item:', item);
+ //console.log('Using clipboard item:', item);
   state.currentTask = item.entity.item; // full row data
   state.currentTaskId = item.entity.id;
   
@@ -157,14 +157,14 @@ function populateFromClipboardAuto(panel) {
     // Populate task automation dropdown
     const taskSelect = panel.querySelector('#taskAutomationSelect');
     if (taskSelect) {
-      console.log('Populating task automation dropdown with', tasks.length, 'items');
+     // console.log('Populating task automation dropdown with', tasks.length, 'items');
       addClipboardItemsToDropdown(tasks, taskSelect, 'task');
     }
     
     // Populate survey automation dropdown 
     const surveySelect = panel.querySelector('#surveyAutomationSelect');
     if (surveySelect) {
-      console.log('Populating survey automation dropdown with', surveys.length, 'items');
+    //  console.log('Populating survey automation dropdown with', surveys.length, 'items');
       addClipboardItemsToDropdown(surveys, surveySelect, 'survey');
     }
 
@@ -172,21 +172,21 @@ function populateFromClipboardAuto(panel) {
     // Populate approfile automation dropdown
     const approfileSelect = panel.querySelector('#approfileAutomationSelect');
     if (approfileSelect) {
-      console.log('Populating approfile automation dropdown with', approfiles.length, 'items');
+    //  console.log('Populating approfile automation dropdown with', approfiles.length, 'items');
       addClipboardItemsToDropdown(approfiles, approfileSelect, 'approfile');
     }
     
     // Populate manager automation dropdown (if you want managers in automations too)
     const managerSelect = panel.querySelector('#managerAutomationSelect');
     if (managerSelect) {
-      console.log('Populating manager automation dropdown with', managers.length, 'items');
+    //  console.log('Populating manager automation dropdown with', managers.length, 'items');
       addClipboardItemsToDropdown(managers, managerSelect, 'manager');
     }
     
     // Also populate the main manager dropdown in the header section
     const headerManagerSelect = panel.querySelector('#managerSelect');
     if (headerManagerSelect) {
-      console.log('Populating header manager dropdown with', managers.length, 'items');
+     // console.log('Populating header manager dropdown with', managers.length, 'items');
       addClipboardItemsToDropdown(managers, headerManagerSelect, 'manager');
     }
   }
@@ -228,7 +228,7 @@ async function loadTaskSteps(panel, taskId) { //readTaskSteps 'id, name, descrip
       const steps = await executeIfPermitted(state.user, 'readTaskSteps', { taskId });
       state.steps = steps || [];
       
-      console.log('Loaded steps:', state.steps);
+    //  console.log('Loaded steps:', state.steps);
       
       // Enable steps section
       const stepsSection = panel.querySelector('#stepsSection');
@@ -510,11 +510,11 @@ stepSelect?.addEventListener('change', (e) => {
     
     if (!stepOrder) return;
 
-    console.log('Selected step order:', stepOrder);
+   // console.log('Selected step order:', stepOrder);
     
     // Find step with this order (In edit survey find id)
     const step = state.steps.find(s => parseInt(s.step_order) === stepOrder);// where's this from?
-    console.log('Found step:', step);
+  //  console.log('Found step:', step);
     
     if (step) {
       state.currentStepId = step.id; //where does step.id decalred line 30 as null. Never assigned
@@ -523,7 +523,7 @@ stepSelect?.addEventListener('change', (e) => {
       panel.querySelector('#stepDescription').value = step.description || '';
       panel.querySelector('#stepUrl').innerHTML = step.external_url || '';
       panel.querySelector('#stepOrder').value = stepOrder; 
-      console.log('Form filled with step data');
+  //    console.log('Form filled with step data');
 
     } else {
       // Clear form for new step
@@ -531,7 +531,7 @@ stepSelect?.addEventListener('change', (e) => {
       panel.querySelector('#stepDescription').value = '';
       panel.querySelector('#stepUrl').value = '';
       panel.querySelector('#stepOrder').value = stepOrder;
-      console.log('Form cleared for new step');
+  //    console.log('Form cleared for new step');
     }
   });
 
@@ -677,7 +677,7 @@ addInformationCard({
         const initialStep = steps.find(step => step.step_order === 3);
         if (initialStep && initialStep.id) {
             state.initialStepId = initialStep.id;
-            console.log('Found initial step_id:', state.initialStepId);  // got it 10:58 Oct 15
+   //         console.log('Found initial step_id:', state.initialStepId);  // got it 10:58 Oct 15
         } else {
             throw new Error(`No initial step (step 3) found for task ${selectedTaskId}`);
         }
@@ -696,7 +696,7 @@ addInformationCard({
 
 const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTask', { 
        source_task_step_id : state.currentStepId, //works, but in survey it is undefined  12:18 Nov 30
-       student_id: state.user, //the person being assigned to the task
+       //student_id: state.user, //the person being assigned to the task that person is not known when editing the automation.
        manager_id: managerData.managerId, // needs to be from the dropdown    
        task_header_id: selectedTaskId,
             task_step_id: state.initialStepId, // 
@@ -731,7 +731,7 @@ function addInformationCard(stepData) {
   const card = document.createElement('div');
  // card.className = 'bg-white p-2 rounded border mb-1 text-sm';
  const style = styleCardByType(stepData.type);
- console.log('style:',style);
+// console.log('style:',style);
  card.className= style;
 //       card.className = styleCardByType(stepData.type); //not calling the function
   // Create display text by iterating through all properties
@@ -743,14 +743,14 @@ function addInformationCard(stepData) {
           displayText += `, ${key}: ${value}`;
       }
   }
-  console.log('type',stepData.type);
+//  console.log('type',stepData.type);
   const icon = getIconByType(stepData.type);
   card.textContent = icon + displayText;
   infoSection.appendChild(card);
   
   // Add to steps array
   state.steps.push(stepData);
-  console.log('steps array:', state.steps);
+//  console.log('steps array:', state.steps);
 }
 
 
@@ -771,16 +771,16 @@ function getManagerName(managerSelect) {
           managerId = selectedOption.value;
       } else {
           // Got placeholder text or empty - use default
-          managerId = state.user;
-          managerName = 'The Author';
+          managerId = appState.query.defaultManagerId;
+          managerName = appState.query.defaultManagerName;
       }
   } else {
       // No selection or invalid selection - use default
-      managerId = state.user;
-      managerName = 'The Author';
+          managerId = appState.query.defaultManagerId;
+          managerName = appState.query.defaultManagerName;
   }
   
-  console.log('Selected manager:', managerId, managerName);
+//  console.log('Selected manager:', managerId, managerName);
   return { managerName: managerName, managerId: managerId };
 }
 
@@ -815,30 +815,32 @@ async function handleSurveyAutomationSubmit(e, panel) {
   const initialStep = state.steps.find(step => step.step_order === 3);
   if (initialStep && initialStep.id) {
       state.initialStepId = initialStep.id;
-      console.log('Found initial step_id:', state.initialStepId);  // got it 10:58 Oct 15
+   //   console.log('Found initial step_id:', state.initialStepId);  // got it 10:58 Oct 15
   } else {
       throw new Error(`No initial step (step 3) found for task ${selectedTaskId}`);
   }
 
   
 try{
-console.log('state.initialStepId',state.initialStepId, //need this 
+console.log('state?',state,  'state.currentTask.id',state.currentTask.id,
+  'state.initialStepId',state.initialStepId, //need this 
   'state.currentId',state.currentStepId, //undefined 16:34 nov 30
   'surveyId',selectedSurveyId, 
   'name',surveyCleanName, 
-'auto#',automationsNumber);
+'auto#',automationsNumber, 'this number should be based on reading if there are already autos.');
 
-//function needs: source_task_step_id, survey_header_id, name , automation_number
+//function needs: const { source_task_header_id, source_task_step_id, target_survey_header_id, name, automation_number } = payload;
 //table needs: source_task_step_id, survey_header_id, name, automation_number
 
 const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyByTask', { 
-            source_task_step_id : state.currentStepId, //need this 
-            survey_header_id : selectedSurveyId, 
+            source_task_header_id:state.currentTask.id,
+            source_task_step_id : state.currentStepId, //need this --Jan 23 seems correct? <-------------------------  
+            target_survey_header_id : selectedSurveyId, //<-------------becomes undefined. was missing 'target' prefix
             name: surveyCleanName, 
             automation_number: automationsNumber
      });
      
-     
+     console.log('editSurvey-surveyByTask result',result);
      addInformationCard({
       'name': `${surveyCleanName}`,
       'type': 'automation_survey',
@@ -897,7 +899,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
         // Save relationship automation to database
 //function needs: source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number
 //db needs 
-        console.log('state.currentStepId',state.currentStepId, 'selectedApproId:', selectedApproId); //undefined here 16:15 Nov 26
+        console.log('state.currentStepId',state.currentStepId, 'selectedApproId:', selectedApproId); //
         const result = await executeIfPermitted(state.user, 'createAutomationRelateByTask', { 
             source_task_step_id:  state.currentStepId,    // NULL
             of_appro_id: selectedApproId,       //of_appro_id     
@@ -959,7 +961,7 @@ async function handleTaskUpdate(e, panel) {
       // Check for duplicates only if name has changed
       if (!state.currentTask || state.currentTask.name !== name) {
         const existing = await executeIfPermitted(state.user, 'readTaskHeaders', { taskName: name });
-        console.log('checkIfExists:', existing);
+       // console.log('checkIfExists:', existing);
         
 
 
@@ -1032,8 +1034,8 @@ async function handleTaskUpdate(e, panel) {
   
     try {
       // ✅ DEBUG: Log what we're looking for
-      console.log('Looking for step with order:', order);
-      console.log('Available steps:', state.steps);
+   //   console.log('Looking for step with order:', order);
+    //  console.log('Available steps:', state.steps);
       
       // ✅ More robust step detection - ensure we're comparing numbers
       const existingStep = state.steps.find(s => parseInt(s.step_order) === order);
@@ -1112,25 +1114,25 @@ enableAutomationControls(panel);
   
 
 function loadStepIntoEditor(panel,clickedStepId){//clicked is the id uuid
-  console.log('loadStepIntoEditor() clickedStepId:', clickedStepId, 'typeof:', typeof clickedStepId);
+ // console.log('loadStepIntoEditor() clickedStepId:', clickedStepId, 'typeof:', typeof clickedStepId);
   //console.log('steps length:', Array.isArray(state.steps) ? state.steps.length : 'not array');
-  console.log('available ids of all the steps:', (state.steps || []).map(s => s.id));
+ // console.log('available ids of all the steps:', (state.steps || []).map(s => s.id));
   state.currentStepId = clickedStepId; //the card that was clicked sets the current step.
-console.log('state.currentStepId:',state.currentStepId); // should be == clickedStepId
+//console.log('state.currentStepId:',state.currentStepId); // should be == clickedStepId
 
 
 //Task just has stps, but the module for editSurvey has to find if questions or answers, but task just has steps
 
 const step = state.steps.find(s => s.id === clickedStepId); //extract this steps data from the array of al the steps data
-  console.log('Looking for clickedStepId:', clickedStepId, 'in', state.steps.map(s => s.id));
+//  console.log('Looking for clickedStepId:', clickedStepId, 'in', state.steps.map(s => s.id));
   
-  if (step) { stepOrder = step.step_order;  console.log('state,steps:',state.steps,'stepId',stepId,'step.stepOrder:', step.step_order); // undefined 23:07 24 Nov
+  if (step) { stepOrder = step.step_order; // console.log('state,steps:',state.steps,'stepId',stepId,'step.stepOrder:', step.step_order); // undefined 23:07 24 Nov
     // Fill form with step data
     panel.querySelector('#stepName').value = step.name || '';
     panel.querySelector('#stepDescription').value = step.description || '';
     panel.querySelector('#stepUrl').value = step.external_url || '';
     panel.querySelector('#stepOrder').value = stepOrder; // Ensure this is set
-    console.log('Form filled with step data');
+  //  console.log('Form filled with step data');
 } else{console.log('Was it the header that was clicked?'); }
 }
 
@@ -1158,7 +1160,7 @@ function attachStepsListeners(panel) {
       '.clickable-step, .clickable-automation, .deleteAutomationBtn, #addStepBtn'
     );
     if (!target) return;
-console.log('steps listener event:', target); // responds
+//console.log('steps listener event:', target); // responds
     const saveBtn = panel.querySelector('#saveTaskBtn');
     // Save button optional; do not hard-depend on it to load the editor
     const sectionToEditEl = panel.querySelector('#editSectionLabel'); // optional status label
@@ -1168,7 +1170,7 @@ console.log('steps listener event:', target); // responds
       const clickedStepId = target.dataset.stepId; // is this an id or a DOM element?
       state.currentStepId = clickedStepId;
       
-      console.log('target.dataset',target.dataset); //stepOrder is never set??? Dec 6
+  //    console.log('target.dataset',target.dataset); //stepOrder is never set??? Dec 6
       panel.querySelector('#stepOrder').value = stepOrder; // Ensure this is set to a number not an id
       if (saveBtn) { saveBtn.textContent = 'Edit step'; saveBtn.disabled = false; }
       if (sectionToEditEl) sectionToEditEl.textContent = 'step';
@@ -1188,7 +1190,7 @@ console.log('steps listener event:', target); // responds
 
     } else if (target.classList.contains('deleteAutomationBtn')) {
       
-      console.log('Clicked the:',target.textContent);
+ //     console.log('Clicked the:',target.textContent);
       const automationId = target.dataset.id;
      
       if(target.textContent ==   'Click to confirm Delete this automation') {handleDeleteAutomationButton(panel, automationId)}
@@ -1242,7 +1244,7 @@ function renderStepCard(summary,step){
 function markActiveStepInSummary(panel) {
     console.log('markActiveStepInSumary()');
   panel.querySelectorAll('.clickable-step').forEach(el => {
-    console.log('el.dataset.stepId',el.dataset.stepId, 'currentStepId',state.currentStepId);
+ //   console.log('el.dataset.stepId',el.dataset.stepId, 'currentStepId',state.currentStepId);
     el.classList.toggle('ring-4', el.dataset.stepId === String(state.currentStepId));
     el.classList.toggle('ring-blue-500', el.dataset.stepId === String(state.currentStepId));
     el.classList.toggle('bg-blue-100', el.dataset.stepId === String(state.currentStepId));
@@ -1292,7 +1294,7 @@ const stepCard = document.createElement('p');
 
 
 async function loadStepAutomations(container, stepId) {
-  try {console.log('loadStepAutomations for stepId',stepId);
+  try {console.log('loadStepAutomations for stepId',stepId); // after clicking stap3 the code seems to be using step5   23:53 Jan 22
     const automations = await executeIfPermitted(state.user, 'readTaskAutomations', {
       source_task_step_id: stepId
     });
@@ -1315,7 +1317,7 @@ function renderAutomationCards(container, automations) {
     p.className = 'clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
     p.dataset.stepId = auto.source_task_step_id;
     p.dataset.automationId = auto.id;
-console.log('automation',auto);
+//console.log('automation',auto);
     // choose border color per type
     const borderClass =
       auto.taskHeaderId ? 'border-yellow-500' :
@@ -1323,6 +1325,29 @@ console.log('automation',auto);
       auto.relationship ? 'border-yellow-400' : 'border-yellow-300';
     p.classList.add(borderClass);
 
+const autoType = auto.target_data.target.type;//in display it is the kind of automation that is important
+const autoName = auto.name || null;
+const autoSourceStep = auto.source_data.secondary || null;
+const autoApproIs = auto.target_data.payload.appro_is_id || null;
+const autoRelationship = auto.target_data.payload.relationship || null;
+const autoOfAppro = auto.target_data.payload.of_appro_id || null;
+
+console.log('autoType',autoType,'autoName',autoName,'autoSourceStep',autoSourceStep,'autoApproIs',autoApproIs,'autoRelationship',autoRelationship,'autoOfAppro',autoOfAppro);
+    if (autoType==='task') {
+      p.innerHTML = `automation🚂🔧 <strong>Task:</strong> Assign to "${autoName || 'Unknown Task'}" → assigned to step ${autoSourceStep || 'Initial'} "${autoSourceStep}"}`;
+    } 
+else if (autoType ==='survey') {
+      p.innerHTML = `automation🚂📜 <strong>Survey:</strong> Assign to "${auto.name || 'Unknown Survey'}" "${autoSourceStep}"`;
+    } 
+else if (autoType==='relate') {
+      p.innerHTML = `automation🚂🖇️ <strong>Relation:</strong>  <strong>Respondent ${autoApproIs}</strong>[${autoApproIs ||'id?'} ] is → ${autoRelationship} → of <strong> ${auto.name}</strong>[id:${autoOfAppro}] "${auto.sourceSourcestep}"` ;
+    } 
+else {
+      p.innerHTML = `❓ <strong>Not understood:</strong> ${JSON.stringify(auto)} "${autoSourceStep}"`;
+    }
+
+
+    /*
     if (auto.task_header_id) {
       p.innerHTML = `automation🚂🔧 <strong>Task:</strong> Assign to "${auto.name || 'Unknown Task'}" → assigned to step ${auto.task_step_id || 'Initial'} "${auto.source_task_step_id}"}`;
     } else if (auto.survey_header_id) {
@@ -1332,7 +1357,7 @@ console.log('automation',auto);
     } else {
       p.innerHTML = `❓ <strong>default:</strong> ${JSON.stringify(auto)} "${auto.source_task_step_id}"`;
     }
-
+*/
     const del = document.createElement('button');
     del.className = 'deleteAutomationBtn text-red-600 text-sm ml-4';
     del.dataset.id = auto.id;

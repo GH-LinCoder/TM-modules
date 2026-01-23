@@ -59,12 +59,15 @@ END IF;
                 (p_row_id IS NOT NULL AND (
                     (p_table_name = 'task_headers' AND pv.task_header_id = p_row_id)
                     OR (p_table_name = 'survey_headers' AND pv.survey_header_id = p_row_id)
+
                     OR (p_table_name = 'app_profiles' AND pv.scope_id = p_row_id)
+
                  --   OR (p_table_name = 'task_assignments' AND pv.id = p_row_id) //removed pv.assignments.id  13:24 Jan 4 changed 13:38
                   --  OR (p_table_name = 'notes' AND pv.note_id = p_row_id)
                 --    OR (p_table_name = 'relationships' AND pv.relation_id = p_row_id)
                 ))
                 -- OR generic scope permission (works for all cases)
+                RAISE NOTICE 'Checking generic permission for % on %', v_user_appro_id, p_table_name;
                 OR pv.scope_id = fta.generic_scope --original bug the fta coulmn was text and fails to be = to the uuid scope. view now edited to be uuid 16:00 Jan 4
             )
     ) INTO v_result;

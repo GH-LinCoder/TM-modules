@@ -198,9 +198,9 @@ async  function init(panel) { // called from render() 2nd function to run
     const subject = await resolveSubject();
     console.log('subject',subject);
     if(subject.type==='relation') 
-    loadFromRelations(panel, subject.id); 
+    loadFromRelations(panel, subject.approUserId); 
     else
-    loadAndRenderRelationships(panel, subject.id, subject.name);
+    loadAndRenderRelationships(panel, subject.approUserId, subject.name);
   
     onClipboardUpdate(() => {
 checkClipboardThenNormalRender(panel);
@@ -217,7 +217,7 @@ checkClipboardThenNormalRender(panel);
     
 async function checkClipboardThenNormalRender(panel){
 const subject = await resolveSubject();
-      loadAndRenderRelationships(panel,subject.id, subject.name);
+      loadAndRenderRelationships(panel,subject.approUserId, subject.name);
 
 }
 
@@ -270,7 +270,7 @@ else  currentSelection = select.value;
 
 async function loadAndRenderRelationships(panel, approfileId, approfileName) {  // aprofileId is an object ?
  if(!approfileId) {
-  const approfile = await resolveSubject(); approfileId=approfile.id, approfileName = approfile.name; 
+  const approfile = await resolveSubject(); approfileId=approfile.approUserId, approfileName = approfile.name; 
 console.log('subject',approfile);
 
   if(approfile.type ==='relations') loadFromRelations(panel, approfile.id); return};// should render the one relationship
@@ -327,9 +327,10 @@ function renderRelationships(panel, relationshipsData, approfileName) { // aprof
     container.innerHTML = `
       <div class="bg-yellow-50 border border-yellow-200 rounded p-4 text-center">
         <p class="text-yellow-800">No relationships found for this approfile.</p>
+        
         <p class="text-gray-500 text-center py-8">"<i>${approfileName}</i>"</p>
-  
-        <p class="text-yellow-800">No one is an island; you can use Create a Relationship to connect this lonely appro.</p>
+  <p> (This could happen if you are not logged-in or if you have recently signed-up & not confirmed email, or if you have no permissions yet)</p>
+        <p class="text-yellow-800">No one is an island; admin needs to help.</p>
       </div>
     `;
     return;
@@ -360,7 +361,7 @@ if (relType.startsWith('(]')) { relType = 'Permissions'; }// list all permission
 
     // Special sorting for Permissions
     if (relType === 'Permissions') {
-      items = [...items].sort((a, b) =>
+      items = [...items].sort((b, a) =>
         a.relationship.localeCompare(b.relationship)
       );
     }

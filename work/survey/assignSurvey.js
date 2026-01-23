@@ -5,10 +5,12 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 import { AssignmentBase } from '../../utils/assignmentBase.js'; // ✅ Import base class
+import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
 
 console.log('assignSurvey.js loaded');
 
-const userId = appState.query.userId;
+let userId = appState.query.userId;//legacy
+let subject = null;
 
 // Export function as required by the module loading system
 export function render(panel, query = {}) {
@@ -160,7 +162,18 @@ this.attachSurveyListeners(panel);
     if (!surveyHeaderId|| !respondentId) {
       throw new Error('survey and respondent are required', dropdown01, dropdown02, dropdown03);
     }
+
     
+//new 15:11 Jan 22    
+this.studentName = dropdown02.options[dropdown02.selectedIndex].text;//this includes: (clipboard)
+this.studentName = this.studentName.replace(' (clipboard)', '');
+console.log('studentName',this.studentName);
+      
+subject = resolveSubject();
+userId = subject.id;
+
+
+
     try {
 //this code reminds us that perhaps surveys will autogenerate Q1 and A1 and may need to
 //be found. But as at Oct 30 there is no need to find Q1 or A1
@@ -180,16 +193,18 @@ this.attachSurveyListeners(panel);
       } else {
         throw new Error('No initial step (step 3) found for task');
       } */
-      
+
       // Save survey assignment to database
       const result = await executeIfPermitted(userId, 'createAssignment', {
         survey_header_id: surveyHeaderId,
-       // step_id: stepId,
+        survey_question_id:null,
+       // step_id: null,
         student_id: respondentId,
+        student_name:this.studentName,
       //  manager_id: managerId || null,
-        assignedBy: userId // Current user doing the assignment
+        assigned_by: userId // Current user doing the assignment
       });
-      
+      console.log('assign survey result:',result);
       return result;
       
     } catch (error) {

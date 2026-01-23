@@ -14,7 +14,7 @@ export function menuListeners() {//unlike admiListeners navListeners have not be
     e.preventDefault();
     e.stopPropagation();
 
-    const pageName = btn.dataset.page; //pageName is set in flexload.html Nothing else set there
+    const pageName = btn.dataset.page; //pageName is set in flex load.html Nothing else set there
 markMenuButton(pageName, btn);
     if(pageName === 'howTo'){ // store the existing petition for later use to give context related howTo
 const howToContext = appState.query.petitioner;  //legacy ? to be removed? now using petitioner & history?

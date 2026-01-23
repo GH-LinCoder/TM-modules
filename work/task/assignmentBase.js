@@ -21,6 +21,7 @@ export class AssignmentBase {
     this.subjectType = null;
     this.userId = appState.query.userId;
     this.panelEl = null; // not used?
+    this.studentName = null;
   }
 
   // Resolve current subject from clipboard or appState
@@ -104,12 +105,13 @@ export class AssignmentBase {
             <!-- INFORMATION FEEDBACK -->
             <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
               <p class="text-lg font-bold">Information:</p>
-              <div id="informationSection" class="w-full">
+              <div id="id='informationFeedback'" class="w-full">
                 <!-- Information cards will be added here -->
               </div>
             </div>
           </div>
         </div>
+        
       </div>
       
       ${petitionBreadcrumbs()}
@@ -183,6 +185,9 @@ console.log('after if():', this.assignmentType);
       this.addClipboardItemsToDropdown(dropdown03Items, dropdown003, 'manager');
     }
     
+    const informationFeedback = panel.querySelector('informationFeedback');
+
+
 
     // Auto-fill single items - when there is only 1 item and it hasn't already been selected
     if (dropdown01Items.length === 1 && !dropdown001.value) {

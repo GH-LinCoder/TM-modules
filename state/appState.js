@@ -3,72 +3,103 @@ console.log('Imported appState.js');
 export const appState = {
     // the query object structure (attached to appState) passed to functions & interigated & used at databaseCnetral
 
-/**
- * @type {{ action: string, payload: Array<{approfile_is: string, relationship: string, of_approfile: string}>, 
- * 
- */
 isDevMode:true,
 
 clipboard:[],
 
     query: {
 
-// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
-//const userId : '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df',//profilia  step 3 1 task
-//const userId :'e44dfc8a-1ded-4c39-aa3b-957c15fa2cf7',//hwbdygg  step 3 1 task
-//const userId : '6004dc44-a451-417e-80d4-e9ac53265beb',//cannie step 3 1 task New Welcome
-
-//const userId:'e9b82fd0-067e-43f1-b514-c2dbbfd10cba',//Jubbul  step 3  2 tasks
-//const 
-//default DEV values
-
 userIdentified:null, // added 11:23 Dec 18 2025 changed Jan 5 2026
 
+userAuthId:'e0c6201d-66e0-4b1c-8826-027ec059d523',
 userId :'e0c6201d-66e0-4b1c-8826-027ec059d523',//Huyie T&M vidoes task, member of TestMock,
-userName:'Huyie',
+userName:'Huyie Evridge',
+userEmail:'huyie@test.com',
 userType: 'app-human',
+created_at:'2025-07-28 18:13:47.723148+00',
 
 defaultManagerId:'9066554d-1476-4655-9305-f997bff43cbb',
 defaultManagerName:'Lin Coder',
-
-
-//const userId:'a42c8756-a0ef-41e6-b073-bf20fbd8b7fb',// Tetsi Memoria step 3 2 tasks
-
-//const userId : '87a90183-88b6-450a-94d2-7838ffbbf61b',//girdenjeeko dmin dasboard step 3 - completion
-
-//const userId : '51cf02e4-a69c-41f3-bcff-52d0208df529',//Adam Adminium step 3 2 tasks one task has step 4 other next:completed No students
-
-//const userId:'1c8557ab-12a5-4199-81b2-12aa26a61ec5',// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
-
-//const userId : '6518fbf6-bf22-436b-8960-8af94edecb83',//john cartlin no assignments
-    //  userId:'1c8557ab-12a5-4199-81b2-12aa26a61ec5', // noomwild who has lots of task assignments BUT not a manager
-
       
-      //stubName: null,//obsolescent - phasing-out
-      //recordId: null, //not sure if needed
-      
-      // simple description of the request. Not sure if useful
-      READ_request: false,  //not used
-      INSERT_request: false, //not used
-      DELETE_request: false, //not used
-      UPDATE_request: false, //not used
-      
-      petitioner:{},  // Module: name, Section: name, Action: name Destination: name  as data-* attributes, 
+petitioner:{},  // Module: name, Section: name, Action: name Destination: name  as data-* attributes, 
       // destination 'a section by name' || 'new-panel' , 
       // key word: if action begins with 'data' it is treated differently as a db request instead of a module load
-      petitionHistory: [], // so howTo can offer context related instructions. The current petition will be dash-menu-howto-new-panel
+petitionHistory: [], // so howTo can offer context related instructions. The current petition will be dash-menu-howto-new-panel
       //purpose: null, //not needed? next item covers this
-      requestedAction: 'Dont-Panic',   //such as: 'UPDATE_TASK_STEP', <--- standardized actions LEGACY 
+requestedAction: 'Dont-Panic',   //such as: 'UPDATE_TASK_STEP', <--- standardized actions LEGACY 
 
-      payload: [], //varies depending on the module. approfile-is/relationship/of_approfile  or task_id/step_id/ordinal
+payload: [], //varies depending on the module. approfile-is/relationship/of_approfile  or task_id/step_id/ordinal
       
-      response: [], //contains read from DB & status of permission & other response of query DB
+response: [], //contains read from DB & status of permission & other response of query DB
 
-      remember: [],// redundant LEGACY ??
+remember: [],// redundant LEGACY ??
 
-      //cliboard:[]
+
+autoPetition: {
+  user: {
+    authId: null,
+    approId: null
+  },
+
+  existing: {
+    automationId: null,
+    assignmentId: null
+  },
+
+  source: {
+    type: null,        // 'task' | 'survey' | 'relate' | 'unrelate' | 'message' | 'future'
+    header: null,      // task_header_id | survey_header_id | null
+    secondary: null    // task_step_id | survey_question_id | null
+  },
+
+  target: {
+    type: null,        // same enum as above
+    header: null,      // task_header_id | survey_header_id | appro_is | null
+    secondary: null    // task_step_id | survey_question_id | relationship | of_appro | null
+  }
+}
+
+
+
     },
     
+/* to assign values to autoPetition:
+appState.query.auto_petition = {
+  user: {
+    authId: session.user.id,
+    approId: approId
+  },
+
+  existing: {
+    automationId: auto.id,
+    assignmentId: assignment.id
+  },
+
+  source: {
+    type: 'survey',
+    header: sourceSurveyId,
+    secondary: clickedAnswerId
+  },
+
+  target: {
+    type: 'survey',
+    header: targetSurveyId,
+    secondary: null
+  }
+};
+
+
+
+
+
+
+*/
+
+
+
+
+
+
 
     setPetitioner(petition) {
       console.log('setPetitioner(',petition,')' );
@@ -153,10 +184,6 @@ replaced 21:57 sept 10 2025 to use petitionHistory[]*/
         stubName: null,
         recordId: null,
 
-        READ_request: false,
-        INSERT_request: false,
-        DELETE_request: false,
-        UPDATE_request: false,
         
         petitioner:{},  // moduleName, sectionName, element (card or button) data-* attribute, destination 'a section' || 'new-panel'
         petitionHistory: [], // so howTo can offer context related instructions. The current petition will be dash-menu-howto-new-panel
@@ -176,3 +203,25 @@ replaced 21:57 sept 10 2025 to use petitionHistory[]*/
     appState.query.userId = userId;
   }
 
+// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
+//const userId : '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df',//profilia  step 3 1 task
+//const userId :'e44dfc8a-1ded-4c39-aa3b-957c15fa2cf7',//hwbdygg  step 3 1 task
+//const userId : '6004dc44-a451-417e-80d4-e9ac53265beb',//cannie step 3 1 task New Welcome
+
+//const userId:'e9b82fd0-067e-43f1-b514-c2dbbfd10cba',//Jubbul  step 3  2 tasks
+//const 
+//default DEV values
+//const userId:'a42c8756-a0ef-41e6-b073-bf20fbd8b7fb',// Tetsi Memoria step 3 2 tasks
+
+//const userId : '87a90183-88b6-450a-94d2-7838ffbbf61b',//girdenjeeko dmin dasboard step 3 - completion
+
+//const userId : '51cf02e4-a69c-41f3-bcff-52d0208df529',//Adam Adminium step 3 2 tasks one task has step 4 other next:completed No students
+
+//const userId:'1c8557ab-12a5-4199-81b2-12aa26a61ec5',// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
+
+//const userId : '6518fbf6-bf22-436b-8960-8af94edecb83',//john cartlin no assignments
+    //  userId:'1c8557ab-12a5-4199-81b2-12aa26a61ec5', // noomwild who has lots of task assignments BUT not a manager
+
+      
+      //stubName: null,//obsolescent - phasing-out
+      //recordId: null, //not sure if needed

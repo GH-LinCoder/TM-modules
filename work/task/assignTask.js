@@ -6,15 +6,17 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 import { AssignmentBase } from '../../utils/assignmentBase.js'; // base also used by assign survey
 //import { AssignmentBase } from './assignmentBase.js'; //
+import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
 
 console.log('assignTask.js loaded');
 
-const userId = appState.query.userId;
+const userId = appState.query.userId; //legacy
+let subject = null;
 
 // Export function as required by the module loading system
 export function render(panel, query = {}) {
   console.log('assignTask.render()', panel, query);
-  
+
   if (!panel || !panel.isConnected) {
     console.warn('Render target not found or disconnected');
     return;
@@ -88,60 +90,54 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
   populateTaskDropdown(panel) { // NO!
     console.log('populateTaskDropdown()');
     
-    const dropdown01 = panel.querySelector('#dropdown001');
-    if (!dropdown01) return;
+    const dropdown001 = panel.querySelector('#dropdown001');
+    if (!dropdown001) return;
     
-    dropdown01.innerHTML = '<option value="">Select a task</option>';
-    /*
-    this.taskHeaders.forEach(task => {
-      const option = document.createElement('option');
-      option.value = task.id;
-      option.textContent = task.name;
-      dropdown01.appendChild(option);
-    }); */
+    dropdown001.innerHTML = '<option value="">Select a task</option>';
+
   }
 
   populateUserDropdowns(panel) { //NO!
     console.log('populateUserDropdowns()');
     
-    const dropdown01 = panel.querySelector('#dropdown001');
-    const dropdown02 = panel.querySelector('#dropdown02');
-    const dropdown03 = panel.querySelector('#dropdown03');
+    const dropdown001 = panel.querySelector('#dropdown001');
+    const dropdown002 = panel.querySelector('#dropdown002');
+    const dropdown003 = panel.querySelector('#dropdown003');
     
-    if (!dropdown02 || !dropdown03) return;
-    dropdown01.innerHTML = '<option value="">Select survey</option>';
-    dropdown02.innerHTML = '<option value="">Select a student</option>';
-    dropdown03.innerHTML = '<option value="">Select a manager</option>';
+    if (!dropdown002 || !dropdown003) return;
+    dropdown001.innerHTML = '<option value="">Select survey</option>';
+    dropdown002.innerHTML = '<option value="">Select a student</option>';
+    dropdown003.innerHTML = '<option value="">Select a manager</option>';
     
     this.approfiles.forEach(file => {
       // Student option
       const studentOption = document.createElement('option');
       studentOption.value = file.id;
       studentOption.textContent = file.name;
-      dropdown02.appendChild(studentOption);
+      dropdown002.appendChild(studentOption);
 
       // Manager option
       const managerOption = document.createElement('option');
       managerOption.value = file.id;
       managerOption.textContent = file.name;
-      dropdown03.appendChild(managerOption);
+      dropdown003.appendChild(managerOption);
     });
   }
 
   updateSubmitButtonState(panel) {
-    const dropdown01 = panel.querySelector('#dropdown01');
-    const dropdown02 = panel.querySelector('#dropdown02');
-    const dropdown03 = panel.querySelector('#dropdown03');
+    const dropdown001 = panel.querySelector('#dropdown001');//01?  001?
+    const dropdown002 = panel.querySelector('#dropdown002');
+    const dropdown003 = panel.querySelector('#dropdown003');
     const assignBtn = panel.querySelector('#assignBtn');
     
-    if (!dropdown01 || !dropdown02 || !dropdown03 || !assignBtn) return;
+    if (!dropdown001 || !dropdown002 || !dropdown003 || !assignBtn) return;
     
-    const dropdown01ed = dropdown01.value !== '';
-    const dropdown02ed = dropdown02.value !== '';
-    const dropdown03ed = dropdown03.value !== '';
+    const dropdown001ed = dropdown001.value !== '';
+    const dropdown002ed = dropdown002.value !== '';
+    const dropdown003ed = dropdown003.value !== '';
 
-    assignBtn.disabled = !(dropdown01ed && dropdown02ed);
-    assignBtn.textContent = dropdown01ed && dropdown02ed
+    assignBtn.disabled = !(dropdown001ed && dropdown002ed);
+    assignBtn.textContent = dropdown001ed && dropdown002ed
     ? 'Assign Task'
     : 'Select task and student first';  
   }
@@ -149,16 +145,26 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
   async processAssignment(panel) { // ✅ Override parent method
    // console.log('processAssignment() args of subject, item, but not used?', subjectId, itemId);
     
-    const dropdown01 = panel.querySelector('#dropdown001');
-    const dropdown02 = panel.querySelector('#dropdown002');
-    const dropdown03 = panel.querySelector('#dropdown003');
+    const dropdown001 = panel.querySelector('#dropdown001');
+    const dropdown002 = panel.querySelector('#dropdown002');
+    const dropdown003 = panel.querySelector('#dropdown003');
     
-    const taskHeaderId = dropdown01?.value;
-    const studentId = dropdown02?.value;
-    const managerId = dropdown03?.value;
-    console.log('from dropdowns','task:',taskHeaderId, 'student:', studentId, 'manager:', managerId); // all undefined 23:18 Oct 30
+    const taskHeaderId = dropdown001?.value;
+    const studentId = dropdown002?.value;
+
+    if(dropdown003?.value) this.managerId=dropdown003?.value;
+else this.managerId=appState.query.defaultManagerId;
+
+ this.studentName = dropdown002.options[dropdown002.selectedIndex].text;//this includes: (clipboard)
+ this.studentName = this.studentName.replace(' (clipboard)', '');
+console.log('studentName',this.studentName);
+
+
+
+
+    console.log('from dropdowns','task:',taskHeaderId, 'student:', studentId, 'manager:', this.managerId); // all undefined 23:18 Oct 30
     if (!taskHeaderId|| !studentId) {
-      throw new Error('Task and student are required', dropdown01, dropdown02, dropdown03);
+      throw new Error('Task and student are required', dropdown001, dropdown002, dropdown003);
     }
     
     try {
@@ -177,14 +183,28 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
       } else {
         throw new Error('No initial step (step 3) found for task');
       }
-      
+  
+      subject = await resolveSubject();
+      this.userId=subject.id; //wrong because ??
+      console.log('this.userId:',this.userId);
+
+console.log('registry createAssignment:',
+    'student_id:', studentId,
+    'student_name:',this.studentName,
+    'manager_id:', this.managerId,
+    
+    'assignment:', '{task_header:', taskHeaderId, 
+    'step_id:', stepId,'}',
+    'assigned_by:',this.userId);
+
       // Save task assignment to database
       const result = await executeIfPermitted(userId, 'createAssignment', {
         task_header_id: taskHeaderId,
         step_id: stepId,
         student_id: studentId,
-        manager_id: managerId || defaultManagerId,
-        assignedBy: userId // Current user doing the assignment
+        student_name: this.studentName,
+        manager_id: this.managerId,
+        assigned_by: this.userId // Current user doing the assignment
       });
       
       return result;

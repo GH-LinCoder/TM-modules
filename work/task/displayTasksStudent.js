@@ -1,12 +1,12 @@
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
+import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
+import { executeAutomations } from '../../utils/executeAutomations.js'; // from DISPLAY_TASK
 
-import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
-import { icons } from '../../registry/iconList.js'; 
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
-import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
-
+//import { icons } from '../../registry/iconList.js'; 
+//import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 //NOTE: the automation functions herein read from the automations Table
 //BUT those functions also exist in an importable version which expect different names for variables because
 // the importable version is built to use data from survey_view or task_view which clearly distinguish
@@ -17,8 +17,19 @@ console.log('displayTasksStudent.js loaded 19:54 Oct 27');
 
 let subject = null;
 let subjectId = null;
-const authUserId = appState.query.defaultManagerId;
+const authUserId = appState.query.defaultManagerId; //??????
 let panelEl = null;
+
+let autoPetition = {
+    auth_id:'',  // from resolveSubject
+    appro_id:'',  // from resolveSubject
+    task_id:'',//from task_assignment table
+    step_id:'',//from task_assignment table
+    survey_id:null, //
+    survey_answer_id:null, //
+    assignment_id:'',  //from task_assignments
+    automation_id:'' //from  next file executeAutomations?
+}
  
 //NEEDS TO EXECUTE AUTOMATIONS if found on current tsep of the task
 
@@ -29,15 +40,15 @@ console.log('loadStepAutomations for currentStep',stepId); //console.log('curren
       source_task_step_id: stepId
     });
     //console.log('automations read from db:',automations);
- executeAutomations(stepId,automations);
+ executeAutomations(automations, subject,autoPetition);
     // renderAutomationCards(container, automations);
   } catch (error) {
     console.error('Failed to load automations:', error);
     showToast('Could not load automations', 'error');
   }
 }
-
-async function executeAutomations(stepId,automations){
+/*  this function is imported as separate file together with the functions below it
+async function executeAutomations(automations, subject,autoPetition){
   console.log('executeAutomations()');
 automations.forEach(auto => {
 //console.log('this automation:',  ' is_deleted', auto.is_deleted, 'values:', auto);
@@ -65,7 +76,8 @@ if(auto.from_step && auto.to_step) autoMoveStudent(auto.id,auto.from_step, auto.
 });
 
 } 
-
+*/
+/*
 async function autoRelateAppros(auto_id,appro_is_id, relationship, of_appro_id) {
   console.log('autoRelateAppros()');
 
@@ -86,17 +98,12 @@ console.log('Failed to relate appro: ' + error.message);
     }
 
 }
+*/
 
+/*
 async function autoAssignTask(auto_id,task_header_id, task_step_id, student_id, manager_id){//is this a student from auto or the current subject???
 console.log('autoAssignTask()','auto:',auto_id,'task:',task_header_id, 'step:',task_step_id,'student:'. student_id, 'manager:',manager_id);  
 //autoAssignTask
-/* //function needs: 
-        student_id: student_id,
-        manager_id: manager_id, // or derive from context
-        task_header_id: task_header_id,
-        step_id: step_id,
-        assigned_by_automation: assigned_by_automation 
-*/
 if(!student_id)student_id =subjectId; //the current subject is assumed to be the one to become the student, unless student was set in the automation
 try{//func needs   const { task_header_id, step_id, student_id, manager_id, assigned_by_automation } = payload;
 const assignedTask = await executeIfPermitted(authUserId, 'autoAssignTask', { // who is authUserId? Needs DEFINER
@@ -114,8 +121,8 @@ console.log('Failed to assign: ' + error.message);
     }
 
 }
-
-
+*/
+/*
 async function autoAssignSurvey(auto_id,survey_header_id){//assignements constrains duplications by a partial index, but code should check first.
 console.log('autoAssignSurvey()','auto_id:',auto_id,'survey id:',survey_header_id); //surevys don't really have a student, but the assignment requires student_id to identify to person who will receieve the survey
 
@@ -141,7 +148,7 @@ console.log('autoMoveStudent()');
 
 }
 
-
+*/
 
 
 /* the data from the automations table (12:00 Dec 24 2025) is like this:
@@ -219,9 +226,15 @@ export async function render(panel, query = {}) {
   console.log('displayTaskStudent.js render()');
  subject = await resolveSubject();
 
+ // 1: add subject to petition
+    autoPetition.auth_id = subject.id; // prepare all the params to be sent to the rpc function permissions_judge
+    autoPetition.appro_id = subject.approUserId;
+    console.log('autoPetition',autoPetition);
+
+
 //console.log('resolved subject:',subject);
 
- subjectId =subject.id;
+ subjectId =subject.approUserId;
 
   if (!panel || !panel.isConnected) {
     console.warn('Render target not found or disconnected');
@@ -235,12 +248,11 @@ panelEl=panel;
 if(subject.type==='relations'){panel.innerHTML=''; //??
             return;}
 else
-try {
-    const assignments = await executeIfPermitted(userId, 'readStudentAssignments', {//from task_assignement_view
-      student_id: subjectId, 
-      type:'task'
+try {console.log('going to readAssignmentsTasks, userId',userId,'subjectId',subjectId);
+    const assignments = await executeIfPermitted(subjectId, 'readAssignmentsTasks', {//from task_assignement_view
+      student_id: subjectId
     });//when seeing myDash for first time subjectId not assigned
-//console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
+console.log('assignments:',assignments, 'assignment.length', assignments.length);//logs ok 22:39 oct 27
     if (!assignments || assignments.length === 0) {
       panel.innerHTML = `<div class="text-gray-500 text-center py-8">No task assignments found.</div>`;
       return;
@@ -253,10 +265,11 @@ panel.innerHTML = ''; // Clear panel
 
 
 for (const assignment of assignments) { // this only displays one assignment
-      const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', { // reads (*) from task_view  Dec 23 23:07
-        task_header_id: assignment.task_header_id
+console.log('assignment',assignment, '.task_header',assignment.assignment.task_header );
+  const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', { // reads (*) from task_view  Dec 23 23:07
+        task_header_id: assignment.assignment.task_header
       });
-//console.log('assignment',assignment);
+
  const taskExternalURL = assignment.task_external_url;
  //                 console.log('assignment.task_external_url',assignment.task_external_url);
 
@@ -270,6 +283,15 @@ for (const assignment of assignments) { // this only displays one assignment
       const taskDescription = assignment.task_description;
       const taskId = assignment.task_header_id;
       const stepId = assignment.step_id;
+
+//2.autoPetition add asignment id 
+        autoPetition.assignment_id = assignment.id; //collect data to be sent to permission_judge
+//3.autoPetition add task and step id
+        autoPetition.task_id = assignment.task_header_id;
+        autoPetition.step_id = assignment.step_id;
+        console.log('autoPetition:',autoPetition);//
+
+
 
       loadStepAutomations(stepId); //new 22:13 dec 23 func needs stepId
 
