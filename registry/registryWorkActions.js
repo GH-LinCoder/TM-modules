@@ -1570,7 +1570,7 @@ console.log('readAssignmentsTasks()');
         .eq('student_id', student_id)
         .order('task_name', { ascending: true });
       if (error){ console.log('Error readAssignmentsTasks', error.message);throw error;}
-      else console.log('task data, data');
+      else console.log('task data', data);
       return data || [];
     }
   },
@@ -1597,7 +1597,7 @@ console.log('readAssignmentsSurveys()');
         .order('survey_name', { ascending:true });
 
       if (error){ console.error('Error readStudentAssignments', error.message);throw error;}
-      else console.log('survey data, data');
+      else console.log('survey data', data);
  return data || [];
   }
 },
@@ -2431,7 +2431,7 @@ readSurveyAutomations: {
   },
   handler: async (supabase, userId, payload) => {
     const { answer_id} = payload;
-console.log('registryReadSurveyAutomations-answerId:',answer_id);
+console.log('registryReadAutomations-answerId:',answer_id);
     // Validate required args
  /*
     for (const arg of ['source_task_step_id']) {
@@ -2690,11 +2690,6 @@ createAutomationAddTaskBySurvey: {
   },
   handler: async (supabase, userId, payload) => {
     const { source_survey_header_id, source_survey_answer_id, target_task_header_id, target_task_step_id, name, automation_number } = payload;
-  /*  for (const arg of this.metadata.requiredArgs) {
-      if (payload[arg] === undefined || payload[arg] === null) {
-        throw new Error("Missing required argument: " + arg);
-      }
-    } */
    const autoRegistryId = '5473de51-a0d7-466f-8cea-ac342bf16d90';//the place to find what kind of function this is
 
    const { data, error } = await supabase
@@ -2792,6 +2787,28 @@ createAutomationRelateBySurvey: {
     const { source_survey_header_id, source_survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
    
    const autoRegistryId = '2869b9ae-453e-4c74-badf-22a96e9609c4';//the place to find what kind of function this is
+
+const targetData = {
+  target: {
+    type: 'relate',
+    header: "approfile_relations", 
+    secondary: null
+  },
+  payload: {
+    relationship: relationship,
+    of_appro_id: of_appro_id
+  }
+};
+
+console.log('Payload being inserted:', {
+  survey_answer_id: source_survey_answer_id,
+  target_data: targetData
+});
+
+
+
+
+
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -2811,18 +2828,7 @@ createAutomationRelateBySurvey: {
     tertiary: source_survey_answer_id
   },
 
-  target_data: { target:{
-    type: 'relate',        // same enum as above
-    header: "approfile_relations",     // task_header_id | survey_header_id | appro_is | null
-    secondary:null,    // task_step_id | survey_question_id | relationship | of_appro | null
-  }, payload:{
-     //   appro_is_id: appro_is_id || null,  // the identity of this person is not yet known as it is the reader who clicks in future
-        relationship:relationship,
-        of_appro_id:of_appro_id,
-}
-
-
-  }  //There could be future functions with >3 parameters
+  target_data:  targetData  //There could be future functions with >3 parameters
 
 
 

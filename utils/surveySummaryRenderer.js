@@ -40,7 +40,7 @@ export function renderSurveySummaryAsReadonly(surveyRows, assignmentId) {
             ${icons.question} Question ${row.question_number}: ${escapeHtml(row.question_name)}
           </h3>
           ${row.question_description ? `
-            <p class="mt-2 text-sm text-gray-700">
+            <p class="mt-2 text-sm text-gray-700  whitespace-pre-line">
               ${escapeHtml(row.question_description)}
             </p></div>
           ` : ''}

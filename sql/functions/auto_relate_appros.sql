@@ -8,6 +8,8 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 SET search_path = public
 AS $$
+--autoParameters ={'appro_is_id':autoPetition.appro_id, 'relationship':payload.relationship, 'of_appro_id':payload.of_appro_id, 'automation_id':autoPetition.automation_id};
+
 DECLARE
     v_appro_is_id UUID := (p_auto_parameters ->> 'appro_is_id')::UUID;
     v_relationship TEXT := p_auto_parameters ->> 'relationship';
@@ -17,6 +19,9 @@ DECLARE
     v_existing_id UUID;
     v_new_id UUID;
 BEGIN
+RAISE NOTICE 'p_auto_parameters = %', p_auto_parameters;
+
+
     -- Validate required parameters
     IF v_appro_is_id IS NULL OR v_relationship IS NULL OR v_of_appro_id IS NULL THEN
         RETURN jsonb_build_object(

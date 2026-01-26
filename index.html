@@ -14,6 +14,19 @@
         body {
             font-family: 'Inter', sans-serif;
         }
+/* Added to existing styles to fade out from login */
+body.fade-to-white {
+  background-color: rgb(194, 163, 163) !important;
+  transition: background-color 1s ease-in-out;
+}
+
+#display-area.fade-out {
+  opacity: 0 !important;
+  pointer-events: none;
+  transition: opacity 1s ease-in-out;
+}
+
+
     </style>
 </head>
 
@@ -159,8 +172,8 @@ import { appState } from './state/appState.js';
     const userName = document.getElementById('user-name').value;    
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
-    const description = 'Unconfirmed sign-up to be an authenticated user:';
-    
+//    const description = '{"description": "Unconfirmed sign-up to be an authenticated user:"}';
+      const description = 'Unconfirmed sign-up to be an authenticated user:';  //description column is now text 20:30 Jan 24
     const { data, error  } = await supabase.auth.signUp({
       email,
       password });
@@ -172,7 +185,7 @@ import { appState } from './state/appState.js';
       document.getElementById('signup-error').classList.add('hidden');
       console.log(description, email, userName);//doesn't happen
    //await createAppros(userName, description, email, data.user.id); //new sign-up has no permissions so cannot run database functions
-   await writeToTempSignupTable(userName, email, description, data) //working 11:30 Jan 13. The redirect removes the console.log. For test comment out the redirect
+   await writeToTempSignupTable(userName, email, description, data) //fialed on deploy Jan 23, but working locally.     11:30 Jan 13. The redirect removes the console.log. For test comment out the redirect
 //    redirectTo: `${window.location.origin}/index.html`
   //      window.location.href = '/index.html';  //<---- can't do this here, it seems to interfere with the above function
 }
@@ -188,11 +201,21 @@ import { appState } from './state/appState.js';
       if (error) {
         document.getElementById('login-error').textContent = error.message;
         document.getElementById('login-error').classList.remove('hidden');
-      } else { grantMyDashPermissions(data.user.id);
+      } else { await grantMyDashPermissions(data.user.id);
         
-//        window.location.href = '/organise.html'; //goes to myDash
+       // Start fade animation
+    document.body.classList.add('fade-to-white');
+    document.getElementById('display-area').classList.add('fade-out');
+    
+    // Wait for animation to complete, then redirect
+    setTimeout(() => {
+      window.location.href = '/organise.html';
+    }, 1000); // Match this delay to your CSS transition duration
+  
       }
     });
+
+
 
 
 // Logout
@@ -203,7 +226,7 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
   if (error) { console.error('Logout error:', error.message); 
     alert('Failed to log out. Please try again.'); 
   } 
-    else { const app = document.getElementById('authContainer'); 
+    else { const app = document.getElementById('signupForm'); //there is no 'authContainer'  try 'signupForm'
       app.style.opacity = '0'; // trigger fade 
       setTimeout(() => { 
     window.location.href = '/index.html'; 
@@ -276,9 +299,9 @@ console.log('writeToTempSignupTable()');
       .insert([{ 
         name:userName, 
         email:email, 
-        description: description, 
+        description: description, //description is json
         user_id:signupData.user.id || null}]);
-    if (error)   console.error('write to signup table error',error, 'data:');
+    if (error)  { console.error('write to signup table error',error, 'data:'); showToast('Failed to write to the temp_signups table'); }
    else console.log('Write to signUp ok:', signupData,'signupData.user:', signupData.user, 'signupData.user.id:',signupData.user.id);
 
    // rpc(fn, args, options)
@@ -288,7 +311,7 @@ const { data, error2 } = await supabase.rpc('create_appro_from_new_auth_user_v2'
         email:email, 
         description: description, 
         p_user_id:signupData.user.id || null});
-        if (error2) console.error('write app_profile table error',error);
+        if (error2) { console.error('write app_profile table error',error); showToast('Failed to create appro'); }
  else { console.log('Write to app_profile:', data); 
  window.location.href = '/index.html';} //moved to here from signup function
  //where it was didn't seem to work.
@@ -345,7 +368,7 @@ if (taskError) {
 }
 
 
-window.location.href = '/organise.html'; //goes to myDash
+//window.location.href = '/organise.html'; //goes to myDash
 
 }
 
@@ -354,16 +377,16 @@ window.location.href = '/organise.html'; //goes to myDash
 //not called - done by rpc  database function
 async function assignWelcomeTask(newAppro, authUserId){  //works 20:30 Dec 23 2025
 console.log('assignWelcomeTask()', newAppro, 'authUserId',authUserId);//newAppro is an object
-   //infor for the 'welcome task'
+   //info for the 'welcome task'
 const task_header_id ='dc9a0e71-4adf-42e7-8649-3620089e4df8';// this is the uuid for the task 'Welcome (New authenticated user)'
 const step_id = '254fdb07-c7dd-41d1-a1af-05380ae97f71';
 //const student_id = authUserId;
 const student_id = newAppro.appro; //using the appro id to assign not the auth id
-const manager_id = appState.query.defaultManagerId; //should this be someone else???
+const manager_id = '9066554d-1476-4655-9305-f997bff43cbb'; //this was calling on appState which is probably undefined at this time
 const assigned_by_automation = null; //this would be a uuid if assigned by a task or survey
 
 try{//func needs   const { task_header_id, step_id, student_id, manager_id, assigned_by_automation } = payload;
-const assignedTask = await executeIfPermitted(authUserId, 'autoAssignTask', {
+const assignedTask = await executeIfPermitted(authUserId, 'autoAssignTask', {  // this was using old table
         task_header_id: task_header_id, 
         step_id: step_id,
         student_id: student_id,

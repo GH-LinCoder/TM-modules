@@ -662,14 +662,14 @@ addInformationCard({
         );*/ 
 
 
-//function needs:  const { survey_answer_id, task_header_id, task_step_id, name, automation_number } = payload;
+//function needs:     const { source_survey_header_id, source_survey_answer_id, target_task_header_id, target_task_step_id, name, automation_number } = payload;
         const result = await executeIfPermitted(state.user, 'createAutomationAddTaskBySurvey', { 
           source_survey_header_id  : state.currentSurveyHeaderId, 
           source_survey_answer_id : state.currentItemId, // where get annswer id?
 
        //       manager_id: managerData.managerId, // needs to be from the dropdown    
             target_task_header_id: selectedTaskId,
-            taget_task_step_id: state.initialStepId, // 
+            target_task_step_id: state.initialStepId, // 
             name: taskCleanName || 'Unknown Task', // 
             automation_number: nextAutoNumber
         });
@@ -821,7 +821,7 @@ let nextAutoNumber = findNumberInSurvey('auto_number');
 //    automationsNumber++;        
     
     try {  
-  //    console.log('state.currentItemId',state.currentItemId,'selectedApproId:', selectedApproId); //undefined here 16:15 Nov 26
+  console.log('ofAppro',selectedApproId,'selectedRelationship:', selectedRelationship); //undefined here 16:15 Nov 26
       // Save relationship automation to database
 //function needs:    const { source_survey_header_id, source_survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
         const result = await executeIfPermitted(state.user, 'createAutomationRelateBySurvey', { 

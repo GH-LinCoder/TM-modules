@@ -34,7 +34,7 @@ BEGIN
    IF (v_judgement ->> 'result') != 'success' THEN
     RETURN jsonb_build_object(
       'status', 'error',
-      'message', format('Permission denied: %s', v_judgement ->> 'reason')
+      'message', format('Permission denied: %s', v_judgement)
     );
   END IF;
 

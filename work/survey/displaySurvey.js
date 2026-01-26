@@ -75,7 +75,12 @@ console.log('assignments',assignments);
     
     // Render each assigned survey
     for (const assignment of assignments) 
-    {console.log('assignment', assignment.assignment_id, 'survey id',assignment.assignment.survey_header);
+    {console.log('assignment',assignment,'ass id:', assignment.assignment_id, 'survey id',assignment.assignment.survey_header);
+     
+     autoPetition.survey_id =assignment.assignment.survey_header;
+     //autoPetition.survey_answer_id = //where get this? 
+     console.log('autoPetition',autoPetition);
+     
       const surveyRows = await executeIfPermitted(
         appState.query.userId,
         'readSurveyView',
@@ -96,9 +101,11 @@ console.log('surveyRows',surveyRows);
           console.log('e',e.target.dataset);
 //2.autoPetition add asignment id          
         autoPetition.assignment_id = e.target.dataset.assignment; //collect data to be sent to permission_judge
-        console.log('autoPetition:',autoPetition);// undefined
 
-          handleAnswerSubmit(answerId, surveyRows);
+       autoPetition.survey_answer_id = answerId;
+        console.log('autoPetition:',autoPetition);// 
+
+          handleAnswerSubmit(answerId);
         }
       });
     }
@@ -109,6 +116,30 @@ console.log('surveyRows',surveyRows);
   }
 }
 
+
+async function handleAnswerSubmit(answerId){
+console.log('handleAnswersSubmit for answer',answerId);
+  try {
+    const automations = await executeIfPermitted(subjectId, 'readSurveyAutomations', {//reads (*) from automations for this answer
+      answer_id: answerId
+    });
+    console.log('automations read from db:',automations, 'autoPetition:',autoPetition);
+ executeAutomations(automations, subject,autoPetition);
+    // renderAutomationCards(container, automations);
+  } catch (error) {
+    console.error('Failed to load automations:', error);
+    showToast('Could not load automations', 'error');
+  }
+
+}
+
+
+  //NEEDS TO EXECUTE AUTOMATIONS if found on current step of the task, but is autoPetion assigned values yet? 
+
+
+
+
+/*
 async function handleAnswerSubmit(answerId, surveyRows) {
   // Find automations for this answer  We get the automations from the survey view.
   
@@ -116,7 +147,7 @@ async function handleAnswerSubmit(answerId, surveyRows) {
   console.log('handleAnswersSubmit()');
   console.log('subject',subject,'answerId', answerId, 'surveyRows',surveyRows);
 
-  const automations = surveyRows.filter(row => row.answer_id === answerId && row.auto_id);
+  const automations = surveyRows.filter(row => row.answer_id === answerId && row.auto_id);//how is this 'automations'? This is a row from a view. it contains auto_id which could be used to read the actual automation
 //3.autoPetition and survey and answer id  
   autoPetition.survey_id = surveyRows[0].survey_id;
   autoPetition.survey_answer_id = answerId;
@@ -134,4 +165,4 @@ console.log('automations',automations);
 
   // Optional: auto-advance or reload
  // setTimeout(() => render(panelEl, {}), 500);
-}
+}*/

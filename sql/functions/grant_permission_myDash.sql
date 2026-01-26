@@ -23,7 +23,7 @@ BEGIN
     (v_appro_id, '(]readApprofile_relations_view[)', 'd2cdbb9b-9ab5-4c21-9aca-c43574b95d74'),
     (v_appro_id, '(]readApprofile_relations_view[)', 'd2cdbb9b-9ab5-4c21-9aca-c43574b95d74'),
 
-    (v_appro_id, '(]readTasks[)', '90b915ce-d43e-4a1e-938c-494987f18b1c'), -- Tasks
+    (v_appro_id, '(]readTaskHeaders[)', '90b915ce-d43e-4a1e-938c-494987f18b1c'), -- Tasks
     (v_appro_id, '(]readTaskSteps[)', '90b915ce-d43e-4a1e-938c-494987f18b1c'), -- Tasks
     (v_appro_id, '(]readTaskWithSteps[)', '90b915ce-d43e-4a1e-938c-494987f18b1c'), -- Tasks
         (v_appro_id, '(]readStep3Id[)', '90b915ce-d43e-4a1e-938c-494987f18b1c'), -- Tasks
