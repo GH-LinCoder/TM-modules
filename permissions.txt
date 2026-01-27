@@ -1,0 +1,67 @@
+Things have moved forward. The site is now deployed on Netlify. But it has hit a problem. When it was working on localhost many of the tables did not have RLS. This was not a problem when there was no outside access.
+The website deployment initially had the same low security on a number of the tables. Yesterday I switched RLS on for the remaining tables and from that moment the permission system refused most of the modules.
+The permissions system is checking if the current user has explicit permission to run any function that touches the db.
+Clearly there are several essential modules that are touching the tables that used to not have RLS. The permissions to touch those tables were never issued because we had been able to fun those functions previously without issue.
+
+I now have the chore of finding out which functions are doing this.
+
+My other chore is created better tools and better tables to make this process less arduous.
+
+Currently it is hard to know what function is trigger the refusal. I cannot even be sure if there is an available permission.
+
+It is all obscure. 
+
+Every function that touches the database is listed as part of an object in a single file which is the registryWorksAction
+
+Each of those can console.log when it runs. If a failure happens I can see what was probably the cause.
+
+The postgres log can be examined for the is_permitted 'f' response which offers a clue to what was refused
+
+Checking all these things and finding the specific permission for this is time consuming. 
+
+This needs to be better organised.
+
+I have, a temporary spreadsheet listing all the known permissions (from permissions_molecule_rquired) and a list of the permissions granted to a new user and a list of my own permissions. But synching these is a chore.
+
+This all needs better design and tools.
+
+The permission system is very hard to understand and to navigate.
+
+Creating this spreadsheet is just a temporary attempt at seeing what permissions can exist and what a selected 2 persons have as permissions.  
+
+Something needs to be designed to make this part of the table and javascript system so that it is easier to visualise and keep track.
+
+BUT there is an inherent deficiency in permissions which may be causing problems. If a function touches a table by say select & update the current 'molecule maker' code only lists one of those. Therefore when the permission system is asked if the current person has permission to SELECT there may be no such permission even available.  
+
+If that happens it will be an obscure error, because it could look as if the person has the required UPDATE permission while what is failing is the associated SELECT.
+
+I believe that you did suggest an update to the molecule-maker code to cope with that, but I don't think it has been implemented. I think it needs to be a separate row in the permission_molecule_required table.
+
+---------
+
+There may be another error in the _required table.  There were probably some commented-out functions in the registry. These may now be in the _required table.
+
+-----------
+
+I used sql to output from the _required table all the functions+tables+generic_scopes. I did the same for all the permissions granted to a new user (called 'beach') and to me ('Lin').  I am spending some time lining them up so I can see the full list and then a column showing who has what.
+
+This could be done as a view, but I am thinking that the data needs to be better analysed (classified into sections or columns) This would include columns by actvity or role. This would show what permissions are needed for specific activities/roles.
+
+To do that requires knowing that which I do not currently know - exactly which js functions are needed to do specific things. (If a user wants to create a task, what specific js functions get called?  To be able to use the selection module to see tasks - what specific functions are called? ) Currently this is mostly guesswork + trial and error.
+
+It may be that some of the unused tables such as permission_molecule_granted or new tables are needed to help describe and track this.
+
+Unfortunately, there is another disruption planned. The permission relationships are currently inside the same table as all other relationships. (The 'relationships' Table) This means that when RLS asks 'does this person have permission to write to the approfile_relations table' the is_permitted won't know if this is an ordinary relation such as 'this appro is a member of that appro' or if it is a permission granting relation 'this appro can do this task'  Telling these apart would be easy if all permission granting relationships were in a separate table 'permission_relationships'. 
+Currently anyone who has permission to 'relate two appros' would be able to grant permissions.
+
+Therefore, I believe that this disruption is needed. It will break lots of things.
+
+Things to do:
+
+@ alter the molecule-maker code so that it outputs a row for each of the tables/actions in a single function
+
+@ check if there are obsolete (commented out) functions in the _required table.
+
+@ work out how to organise the permissions system <--- needs a lot of thought
+
+@ create new permission_relationship table and move all the (]functionNames[) to it.
