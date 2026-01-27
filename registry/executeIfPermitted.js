@@ -17,6 +17,49 @@ const supabase = createSupabaseClient();
  * @returns {Promise<any>} The result of the database operation.
  */
 
+/*
+
+//temp to read file
+//import { registryWorkActions } from './registry/registryWorkActions.js';
+
+// Extract function names from your registry structure
+const functionNames = Object.keys(registryWorkActions);
+console.log('Registry function names:', functionNames);
+
+// Generate SQL for comparison with permission_molecule_required
+const valuesClause = functionNames
+  .map(name => `('${name}')`)
+  .join(',\n    ');
+
+const sql = `
+-- Compare registry functions with permission_molecule_required
+WITH registry_functions AS (
+  VALUES 
+    ${valuesClause}
+)
+SELECT 
+  'Missing from DB' as status,
+  rf.column1 as function_name
+FROM registry_functions rf
+LEFT JOIN permission_molecule_required pmr ON rf.column1 = pmr.name
+WHERE pmr.name IS NULL
+
+UNION ALL
+
+SELECT 
+  'Orphaned in DB' as status,
+  pmr.name as function_name
+FROM permission_molecule_required pmr
+LEFT JOIN registry_functions rf ON pmr.name = rf.column1  
+WHERE rf.column1 IS NULL
+
+ORDER BY status, function_name;
+`;
+
+console.log('📋 Copy this SQL and run it in your database:');
+console.log(sql);
+
+/////  */
 
 
 async function execute(userId, action, payload) {

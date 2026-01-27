@@ -284,7 +284,7 @@ function getTemplateHTML() {
     <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
-          <h3 class="text-xl font-semibold text-gray-900">Edit Task  19:31 Nov 30</h3>
+          <h3 class="text-xl font-semibold text-gray-900">Edit Task  </h3>
             <div class="space-y-2">
               <!--label for="taskSelect" class="block text-sm font-medium text-gray-700">Use [Select] menu to choose tasks then this dropdown to load a Task</label-->
               <select id="taskSelect" data-form="taskSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">

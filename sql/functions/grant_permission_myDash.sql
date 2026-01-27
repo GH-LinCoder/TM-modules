@@ -21,7 +21,9 @@ BEGIN
     (v_appro_id, '(]readApprofileByAuthUserId[)', 'd2cdbb9b-9ab5-4c21-9aca-c43574b95d74'),
     (v_appro_id, '(]readApprofileById[)', 'd2cdbb9b-9ab5-4c21-9aca-c43574b95d74'),
     (v_appro_id, '(]readApprofile_relations_view[)', 'd2cdbb9b-9ab5-4c21-9aca-c43574b95d74'),
-    (v_appro_id, '(]readApprofile_relations_view[)', 'd2cdbb9b-9ab5-4c21-9aca-c43574b95d74'),
+    (v_appro_id, '(]readApprofileRelationships[)', 'ec8b47f2-5a56-4bad-86a4-4cc7f5810dd7'),
+    (v_appro_id, '(]readRelationshipExists[)', 'ec8b47f2-5a56-4bad-86a4-4cc7f5810dd7'),
+
 
     (v_appro_id, '(]readTaskHeaders[)', '90b915ce-d43e-4a1e-938c-494987f18b1c'), -- Tasks
     (v_appro_id, '(]readTaskSteps[)', '90b915ce-d43e-4a1e-938c-494987f18b1c'), -- Tasks
@@ -29,8 +31,9 @@ BEGIN
         (v_appro_id, '(]readStep3Id[)', '90b915ce-d43e-4a1e-938c-494987f18b1c'), -- Tasks
             (v_appro_id, '(]readAllSteps[)', '90b915ce-d43e-4a1e-938c-494987f18b1c'), -- Tasks
 
-    (v_appro_id, '(]studentAssignments[)', 'd2545d76-5cac-4f6b-af13-d6529e4c4294'), -- Tasks    
-    (v_appro_id, '(]managerAssignments[)', 'd2545d76-5cac-4f6b-af13-d6529e4c4294'), -- Tasks
+    (v_appro_id, '(]studentAssignments[)', 'd2545d76-5cac-4f6b-af13-d6529e4c4294'), -- Assignments    
+    (v_appro_id, '(]managerAssignments[)', 'd2545d76-5cac-4f6b-af13-d6529e4c4294'), -- Assignments
+    (v_appro_id, '(]readAllAssignmentsNew[)', 'd2545d76-5cac-4f6b-af13-d6529e4c4294'), -- Assignments
 
 
 --    (v_appro_id, '(]readSurveys[)', '995ff294-74c8-4a5f-9b7e-6fb6d892a4bf'), -- Surveys

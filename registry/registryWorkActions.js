@@ -12,49 +12,7 @@
 
 // Possibly better to order by table. If done could split into smaller files ? Not sure how this file is loaded. Is there a better arrangement?
 
-/*
-// Get your approfile ID  TEST    REMOVE THUIS <--------------------------------------------------
-const { data: { user } } = await supabase.auth.getUser();
-console.log('Auth user ID:', user.id);
 
-// Check what's actually in app_profiles
-const { data: allProfiles } = await supabase
-  .from('app_profiles')
-  .select('id, auth_user_id');
-
-console.log('All profiles:', allProfiles);
-
-// Find your profile
-const yourProfile = allProfiles.find(p => p.auth_user_id === user.id);
-console.log('Your profile:', yourProfile);
-
-
-
-const   {data}  = await supabase
-  .from('app_profiles')
-  .select('id')
-  .eq('auth_user_id', (await supabase.auth.getUser()).data.user.id);
-
-const approId = data[0].id;
-
-// Check if you have generic Appros scope
-const {  data: permissions } = await supabase
-  .from('approfile_relations')
-  .select('relationship', 'of_approfile')
-  .eq('approfile_is', "9066554d-1476-4655-9305-f997bff43cbb")
-  .eq('relationship', '(]readApprofiles[)');
-
-console.log('Your readApprofiles permissions:', permissions);
-
-// Look for the generic scope UUID
-const hasGenericScope = permissions.some(p => 
-  p.of_approfile === 'd2cdbb9b-9ab5-4c21-9aca-c43574b95d74'
-);
-
-console.log('Has generic Appros scope?', hasGenericScope);
-
-//  end of test ----------------------------------------------------------------------------------
-*/
 
 
 
@@ -62,41 +20,6 @@ console.log('Has generic Appros scope?', hasGenericScope);
 export const registryWorkActions = {
 
 
-
-// DEV  ------------------------------ probably delete later
-readGenericTable: {
-  metadata: {
-    tables: ['app_profiles'], // mock 
-    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
-    type: 'SELECT',
-    requiredArgs: []
-  },
-  handler: async (supabase, userId, payload) => {
-    const { tableName } = payload;
-    if (!tableName) throw new Error('tableName required');
-    
-    const { data, error } = await supabase
-      .from(tableName)
-      .select('*');
-    
-    if (error) throw error;
-    return data;
-  }
-},
-
-// AUTH
-/*
-getUser: {
-  metadata: {
-    tables: ['auth'],
-    columns: ['id'],
-    type: 'SELECT',
-    requiredArgs: []
-  },
-  handler: async (supabase, userId, payload) => {
-   const {user} = supabase.auth.getUser();
-return user || []
-}, */
 
 getAuthenticatedUser: {
   metadata: { type: 'AUTH', requiredArgs: [] },
@@ -124,7 +47,7 @@ getAuthenticatedUser: {
 
 
 // APPRO 
-createOrUpdateApprofile: { 
+XcreateOrUpdateApprofile: {//this should be separate functions I don't think it is used
   metadata: { 
     tables: ['app_profiles'], 
     columns: ['id', 'name', 'email', 'auth_user_id', 'created_at'], 
@@ -160,10 +83,10 @@ let existing=null;
 
 if (task_header_id) {
   existing = await supabase
-    .from('task_assignments')
+    .from('assignments')
     .select('id')
     .eq('student_id', student_id)
-    .eq('task_header_id', task_header_id)
+    .eq('assignment->>task_header', task_header_id)
     .limit (1);
 } 
 
@@ -205,10 +128,10 @@ let existing=null;
 
 if (survey_header_id) {
   existing = await supabase
-    .from('task_assignments')
+    .from('assignments')
     .select('id')
     .eq('student_id', student_id)
-    .eq('survey_header_id', survey_header_id)
+    .eq('assignment->>survey_header_id', survey_header_id)
     .limit (1);
 }
 
@@ -368,7 +291,7 @@ assignmentsCount:{
 handler: async  (supabase, userId) =>{
   console.log('assignmentsCount()');
   const { count, error } = await supabase
-  .from('task_assignments')
+  .from('assignments')
   .select('*', { count: 'exact', head: true }); // ← head: true = don't return rows, just count 
 
   if (error) {
@@ -539,15 +462,6 @@ signupCount:{ //new 13:46 Jan 13 2026
   },
   handler: async  (supabase, userId) =>{
     console.log('signupCount()');
-/*    
-const { count, error } = await supabase
-  .from('temp_signups')
-  .select('completed_at', {
-    count: 'exact',
-    head: true,
-    filter: 'completed_at.not.is.null'
-  });
-*/
 
 const { data, count, error } = await supabase //this was showing bizarre behaviour that when no orws, count became an empty array. Added 'data' in hope to prevent this
 .from('temp_signups') 
@@ -766,75 +680,6 @@ console.log('assignTask createAssignment:',
 },
 
 
-/* //ASSIGNMENT  replacing with refactor above 11:26 Jan 22
-createAssignment:{
-  metadata: {
-  tables: ['task_assignments'],
-  columns: ['id', 'step_id','sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'survey_header_id', 'survey_question_id'],
-  type: 'INSERT',
-  requiredArgs: [ 'student_id'], 
-  optionalArgs: ['task_header_id','step_id','manager_id', 'survey_header_id', 'survey_question_id'] // depends on task or survey
-}, // Should this check for duplicate assignment???
-handler: async (supabase, userId, payload) => {
-  const { task_header_id, step_id, student_id, manager_id, survey_header_id, survey_question_id } = payload;
-console.log('registry -createAssignment() survey_header_id',survey_header_id);//failed to write this Jan 18
-//this says duolicate even when no such thing 
-
-let existing=null;
-
-if (task_header_id) {
-  existing = await supabase
-    .from('task_assignments')
-    .select('id')
-    .eq('student_id', student_id)
-    .eq('task_header_id', task_header_id)
-    .limit (1);
-} else if (survey_header_id) {
-  existing = await supabase
-    .from('task_assignments')
-    .select('id')
-    .eq('student_id', student_id)
-    .eq('survey_header_id', survey_header_id)
-    .limit (1);
-}
-
-if (existing && existing.data.length > 0) { //console.log (existing);
-  throw new Error('Assignment already exists for this student');
-}
-
-
-if(task_header_id) { //console.log('task_header_id:', task_header_id);
-  const { data, error } = await supabase
-  .from('task_assignments')
-  .insert({
-    student_id: student_id,
-    manager_id: manager_id || null,
-    task_header_id: task_header_id,
-    step_id: step_id
-  })
-  .select() //Return the inserted row
-  .single(); //Return single object
-  if (error) throw error;
-    return data.id; //
-  } 
-  else 
-  if (survey_header_id) { console.log('writing survey_header_id:', survey_header_id);
-    const { data, error } = await supabase
-  .from('task_assignments')
-  .insert({
-    student_id: student_id,
-    survey_header_id: survey_header_id,
-    survey_question_id: survey_question_id
-  })
-  .select() //Return the inserted row
-  .single(); //Return single object
-  if (error) throw error;
-  return data.id; //
-
-  } 
-}  
-}, */
-
 
 //TASK
 createTask: {
@@ -1004,7 +849,7 @@ handler: async  (supabase, userId, payload) =>{
   const { step_id, assignment_id } = payload;
   console.log('assignmentUpdateStep() stepId:',step_id,'assignment_id:',assignment_id);
   const { data, error } = await supabase
-  .from('task_assignments')
+  .from('assignments')
   .update({step_id:step_id}) // ←  
 .eq('id',assignment_id);
   if (error) {
@@ -1047,33 +892,7 @@ updateApprofile: {
     return data;
   }
 },
-/*
-updateTaskHeader: {// not used ? 
-  metadata: {
-    tables: ['task_headers'],
-    columns: ['name', 'description', 'external_url', 'author_id'],
-    type: 'INSERT',
-    requiredArgs: ['taskName', 'taskDescription'] // ← payload fields
-  },
-  handler: async (supabase, userId, payload) => {
-    const { taskName, taskDescription, taskUrl } = payload;
 
-    const { data, error } = await supabase
-      .from('task_headers')
-      .update({
-        name: taskName,
-        description: taskDescription,
-        external_url: taskUrl || null,
-        author_id: userId // ← use passed userId
-      })
-      .select()
-      .single();
-
-    if (error) throw error;
-    return data; // ← returns { id, name, description, ... }
-  }
-},
-*/
 //TASKS
 updateTask: {
   metadata: {
@@ -1156,28 +975,7 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
 }, 
 
 
-/*
-//APPRO
-readProfilesByIds:{// possibly not used
-  metadata: {
-    tables: ['app_profiles'],
-    columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
-    type: 'SELECT',
-    requiredArgs: ['ids']
-  },
-handler: async (supabase, userId, payload) => {
-    console.log('readProfilesByIds');
-  
-    if (ids.length === 0) { return []; }
-  
-  const { data, error } = await supabase
-    .from('profiles')
-    .select('id, name, email, notes, phone, sort_int, avatar_url, created_at, updated_at, description, auth_user_id, external_url, task_header_id');
 
-    if (error) throw error;
-  return data;
- }
-}, */
 
 //APPRO
 readApprofileByName:{
@@ -1222,28 +1020,7 @@ readApprofileById:{
     return data;
   }
 },
-/*
-readApprofileByAuthUserId: { //By authUserId because approId may != authId. This function looks at the auth_user_id column
-  metadata: { 
-    tables: ['app_profiles'], 
-    columns: ['id', 'name', 'email', 'created_at'], 
-    type: 'SELECT', 
-    requiredArgs: ['authUserId'] }, 
-    handler: async (supabase, userId, payload) => { 
-      const { authUserId } = payload; 
-//      const db= supabase.with({global: {headers: {'function_name': 'readApprofileByAuthUserId'}}});
-console.log('calling supabase approfiles');
-      const { data, error } = await supabase  //new 19:38 Jan 2
-      .from('app_profiles')
-       .select('id, name, email, created_at') 
-       .eq('auth_user_id', authUserId) //but what is passed is the appro id which can be != auth id
-       .single()
-//       .headers({ 'function_name': 'readApprofileByAuthUserId' }); // added 19:55 Jan 2
-       if (error) throw error; 
-  return data; } 
-},
-
-*/  //reverted to version from github 20:50
+//APPRO
 
 readApprofileByAuthUserId: { //By authUserId because approId may != authId. This function looks at the auth_user_id column
   metadata: { 
@@ -1329,38 +1106,8 @@ readApprofileRelationships: {
 },
 
 
-/*
-//APPRO
-readApprofileRelationships: {
-  metadata: {
-    tables: ['approfile_relationships_view'],
-    columns: ['*'],
-    type: 'SELECT',
-    requiredArgs: ['approfileId']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { approfileId } = payload;
-    
-    // Get relationships where approfile IS something
-    const isRels = await supabase
-      .from('approfile_relations_view')
-      .select('*')
-      .eq('approfile_is', approfileId);
-    
-    // Get relationships where approfile IS the OF target  
-    const ofRels = await supabase
-      .from('approfile_relations_view')
-      .select('*')
-      .eq('of_approfile', approfileId);
-    
-    return {
-      is: isRels.data || [],
-      of: ofRels.data || []
-    };
-  }
-},
-*/
-// GENERIC
+
+// GENERIC  NOT USED because breaks permission basis
 readThisColumnIdFromThatTable:{
 metadata:{
   tables:['any_table'], //
@@ -1391,7 +1138,7 @@ handler: async (supabase, userId, payload) =>{
 //TASK_ASSIGMENT
 readThisAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
   metadata: {
-  tables: ['task_assignment_view'],  //VIEW not a table
+  tables: ['assignment_task_view'],  //VIEW not a table
   columns: ['step_id', 'step_name','step_description', 'task_name', 'manager_id', 'step_order','student_id', 'assigned_at', 'abandoned_at', 'completed_at','manager_name','student_name','assignment_id', 'task_header_id', 'task_description'],
   type: 'SELECT',
   requiredArgs: ['assignment_id'] // ← id of a row in assignment which is also task_assignments.id
@@ -1400,7 +1147,7 @@ handler: async (supabase, userId, payload) => {
   const { assignment_id} = payload;
 console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   const { data, error } = await supabase
-  .from('task_assignment_view')
+  .from('assignment_task_view')
   .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
   .eq('assignment_id', encodeURIComponent(assignment_id))
   //.eq('task_header_id', encodeURIComponent(task_header_id))
@@ -1440,7 +1187,7 @@ console.log('readAllAssignmentNEW{}');
 //TASK_ASSIGMENT
 readAllAssignments:{// VIEW  not a table returns all rows )
   metadata: {
-  tables: ['task_assignment_view2'],  //VIEW not a table
+  tables: [],  //VIEW not a table
   columns: ['step_id', 'step_name','step_description', 'task_name', 'manager_id', 'step_order','student_id', 'assigned_at', 'abandoned_at', 'completed_at','manager_name','student_name','assignment_id', 'task_header_id', 'task_description'],
   type: 'SELECT',
   requiredArgs: []
@@ -1449,12 +1196,11 @@ handler: async (supabase, userId, payload) => {
   const { assignment_id} = payload;
 console.log('readAllAssignment{}','id:',assignment_id,'payload:', payload);
   const { data, error } = await supabase
-  .from('task_assignment_view')
+  .from('assignment_task_view')
   .select('assignment_id, task_header_id, task_name, task_description, student_id, student_name, manager_id, manager_name, step_id, step_order, step_name, step_description, assigned_at,abandoned_at,completed_at')
-  //.eq('assignment_id', encodeURIComponent(assignment_id))
-  //.eq('task_header_id', encodeURIComponent(task_header_id))
+  
   .select() //Return the inserted row
-  //.single(); //Return single object
+  
 
   if (error) throw error;
   //console.log('readThisAssignment{} data:',data);
@@ -1475,12 +1221,12 @@ handler: async (supabase, userId, payload) => {
   const { task_header_id, student_id} = payload;
 console.log('readAssignment2Exists()');
   const { data, error } = await supabase
-  .from('task_assignment_view')
+  .from('assignment_task_view')
   .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
   .eq('student_id', encodeURIComponent(student_id))
   .eq('task_header_id', encodeURIComponent(task_header_id))
   .select() //Return the inserted row
-  //.single(); //Return single object
+  
 
   if (error) throw error;
   //console.log('readAssignmentExists() data:',data);
@@ -1605,63 +1351,6 @@ console.log('readAssignmentsSurveys()');
 
 
 
-/* version Jan 20 2026
-readStudentAssignments: {
-  metadata: {
-    tables: ['task_assignment_view', 'survey_assignment_view'],
-    columns: [
-      'assignment_id', 'student_id', 'task_header_id', 'task_name', 'task_description','task_external_url',
-      'step_order', 'step_name', 'step_description', 'manager_id', 'manager_name', 'assigned_at',
-      'survey_id', 'survey_name', 'survey_description'
-    ],
-    type: 'SELECT',
-    requiredArgs: ['student_id'],
-    optionalArgs: ['type'] // Add 'type' as an optional argument
-  },
-  handler: async (supabase, userId, payload) => {
-    const { student_id, type } = payload;
-console.log('Registry -student_id',student_id, 'type', type);//why is type undefined when being sent 'survey'???
-
-//console.log('Registry-student_id', student_id);
-    let taskData = [];
-    let surveyData = [];
-
-    if (!type || type === 'task') {
-      const { data, error } = await supabase
-        .from('task_assignment_view')
-        .select(`
-          assignment_id, student_id, student_name, task_header_id, task_name, task_description, step_id,
-          step_order, step_name, step_description, manager_id, manager_name, assigned_at, task_external_url
-        `)
-        .eq('student_id', student_id)
-        .order('assigned_at', { ascending: false });
-
-      if (error) throw error;
-      taskData = data;
-    }
-//console.log('registry-reponse', taskData);
-    if (!type || type === 'survey') {
-      const { data, error } = await supabase
-        .from('survey_assignment_view')
-        .select(`
-          assignment_id, student_id, survey_header_id, survey_name, survey_description,
-          assigned_at
-        `)
-        .eq('student_id', student_id)
-        .order('assigned_at', { ascending: false });
-
-      if (error){ console.log('Error readStudentAssignments', error.message);throw error;}
-      surveyData = data;
-    }
-
-    const combinedData = [...taskData, ...surveyData].sort((a, b) =>
-      new Date(b.assigned_at) - new Date(a.assigned_at)
-    );
-
-    return combinedData;
-  }
-},
-*/
 readManagerAssignments: {
   metadata: {
     tables: ['assignment_task_view'],
@@ -1687,6 +1376,28 @@ readManagerAssignments: {
   }
 }
 ,
+
+readPermissionRelationships: {
+  metadata: {
+    tables: [],
+    columns: [],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('readPermissionRelationships()');
+    const { data, error } = await supabase
+      .from('permission_relationships')
+      .select('*')
+      .order('category') // category is in permission_relationships
+      .order('name');
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+
 
 
 
@@ -2034,19 +1745,19 @@ handler: async (supabase, userId, payload) => {
 
 
 
-// the below don't call the db  they call other functions.
-//  I don't think this can work from the registry
+// the below don't call the db
+//  
 //TASK_ASSIGNMENTS
 readAllStudent:{
   metadata:{
-    tables:['task_assignments'], //
+    tables:[], //
     columns:['student_id'],
     type: 'SELECT',
     requiredArgs:[],
     },
 handler: async(supabase, userId) => {
- //   console.log('readAllStudent');
-    return await readThisColumnIdFromThatTable('task_assignments', 'student_id');
+ //   console.log('readAllStudent - need to code');
+    return ;
  }
 },
 //TASK_ASSIGNMENTS
@@ -2058,8 +1769,8 @@ readAllManager:{
     requiredArgs:[],
     },
 handler: async(supabase, userId) => {
-  console.log('readAllManagers');
-  return await readAllRelatedIds('task_assignments', 'manager_id');
+  console.log('readAllManagers - need to code');
+  return ;
  }
 },
 //TASK_ASSIGNMENTS
@@ -2071,8 +1782,8 @@ readAllAuthor:{
     requiredArgs:[],
     },
 handler: async(supabase, userId) => {
-    console.log('readAllAuthors');
-    return await readThisColumnIdFromThatTable('task_assignments', 'author_id');
+    console.log('readAllAuthors - need to code');
+    return ;
  }
 },
 

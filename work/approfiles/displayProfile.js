@@ -196,9 +196,9 @@ function getTemplateHTML() {
                                 <span >source: <span data-user="source"> ???? ?? ??</span></span>
 
 
-                 <button id="updateBtn" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"  data-action='edit-approfile-dialogue' data-destination='profile-section'>
+                 <!--button id="updateBtn" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"  data-action='edit-approfile-dialogue' data-destination='profile-section'>
                 Click for the edit form
-              </button>
+              </button-->
         
 
 

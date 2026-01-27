@@ -1,4 +1,4 @@
-drop materialized view public.function_table_access;
+drop materialized view public.function_table_access;--no longer used. replaced by simple view Jan 2026
 
 
 create materialized view public.function_table_access as
