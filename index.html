@@ -61,13 +61,13 @@ body.fade-to-white {
 
 
 
-    <!-- Login Form Modal (Initially Hidden) -->
+    <!-- Login Form Modal (Initially visible) -->
     <div id="display-area" class="w-full max-w-sm transition-opacity duration-2000 ease-in-out opacity-0 pointer-events-none">
 
 
 
         <!-- Login Form -->
-        <div id="loginForm" class="auth-form bg-black p-6 rounded-lg shadow hidden border border-slate-200">
+        <div id="loginForm" class="auth-form bg-black p-6 rounded-lg shadow  border border-slate-200">
           <h2 class="text-xl font-bold text-center mb-4">Log In</h2>
           <div id="login-error" class="text-red-500 text-sm hidden"></div>
           <form class="space-y-3 text-white">
@@ -84,27 +84,27 @@ body.fade-to-white {
             <button id="showReset" class="text-sm text-green-600 hover:underline">Forgot password?</button>
           </p>
           <p class="text-center mt-2">
-            <button id="showSignup" class="text-sm text-green-600 hover:underline">Create account</button>
+            <button id="showSignup" class="text-sm text-green-600 hover:underline">Signup to create account</button>
           </p>
         </div>
     
     
       <div class="w-full max-w-md space-y-6">
-        <!-- Signup Form -->
-        <div id="signupForm" class="auth-form bg-black p-6 rounded-lg shadow border border-slate-200">
+        <!-- Signup Form initially hidden -->
+        <div id="signupForm" class="auth-form bg-black p-6 rounded-lg shadow border border-slate-200 hidden">
           <h2 class="text-xl font-bold text-center mb-4 text-white">Create free Account</h2>
           <div id="signup-error" class="text-red-500 text-sm hidden"></div>
           <div id="signup-success" class="text-green-500 text-sm hidden">Check your email to confirm!</div>
           
           <form class="space-y-3 text-white">
             <label for="user-name">User name:</label>
-            <input type="text" name="user-name" id="user-name" placeholder="Choose a unique name" class="w-full p-2 border rounded text-green-500" required title="The user name will be visible to others. It will be checked to make sure it is unique">
+            <input type="text" required name="user-name" id="user-name" placeholder="Choose a unique name" class="w-full p-2 border rounded text-green-500"  title="The user name will be visible to others. It will be checked to make sure it is unique">
             
             <label for="new-email">Email:</label>
-            <input type="email" name="new-email" id="signup-email" placeholder="For confirmation link" class="w-full p-2 border rounded text-green-500" required title="You will be sent an email to confirm the sign-up."/>
+            <input type="email" required name="new-email" id="signup-email" placeholder="For confirmation link" class="w-full p-2 border rounded text-green-500"  title="You will be sent an email to confirm the sign-up."/>
 
             <label for="new-password">Create a password:</label>
-            <input type="password" name="new-password" id="signup-password" placeholder="Password (min 6 chars)" class="w-full p-2 border rounded text-green-500" minlength="6" required title="You can change the password later by clicking 'forgotten' on the login form"/>
+            <input type="password" required name="new-password" id="signup-password" placeholder="Password (min 6 chars)" class="w-full p-2 border rounded text-green-500" minlength="6"  title="You can change the password later by clicking 'forgotten' on the login form"/>
             <!--button id="toggle-password" type="button" aria-label="Show password as plain text. Warning: this will display your password on the screen.">👁️ Show password </button-->
 
             <button type="submit" id="signupBtn" class="w-full bg-blue-600 text-white py-2 rounded">Sign Up</button>
@@ -173,7 +173,12 @@ import { appState } from './state/appState.js';
     const userName = document.getElementById('user-name').value;    
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
-//    const description = '{"description": "Unconfirmed sign-up to be an authenticated user:"}';
+if(!userName || !email || !password){
+  document.getElementById('signup-error').textContent = 'Please fill in all fields.';
+      document.getElementById('signup-error').classList.remove('hidden');
+      return;
+}
+
       const description = 'Unconfirmed sign-up to be an authenticated user:';  //description column is now text 20:30 Jan 24
     const { data, error  } = await supabase.auth.signUp({
       email,
@@ -185,8 +190,8 @@ import { appState } from './state/appState.js';
       document.getElementById('signup-success').classList.remove('hidden');
       document.getElementById('signup-error').classList.add('hidden');
       console.log(description, email, userName);//doesn't happen
-   //await createAppros(userName, description, email, data.user.id); //new sign-up has no permissions so cannot run database functions
-   await writeToTempSignupTable(userName, email, description, data) //fialed on deploy Jan 23, but working locally.     11:30 Jan 13. The redirect removes the console.log. For test comment out the redirect
+
+   await writeToTempSignupTable(userName, email, description, data) //failed on deploy Jan 23, but working locally.     11:30 Jan 13. The redirect removes the console.log. For test comment out the redirect
 //    redirectTo: `${window.location.origin}/index.html`
   //      window.location.href = '/index.html';  //<---- can't do this here, it seems to interfere with the above function
 }
@@ -202,7 +207,7 @@ import { appState } from './state/appState.js';
       if (error) {
         document.getElementById('login-error').textContent = error.message;
         document.getElementById('login-error').classList.remove('hidden');
-      } else { await grantMyDashPermissions(data.user.id);
+      } else { await setupUserInitialNeeds(data.user.id);
         
        // Start fade animation
     document.body.classList.add('fade-to-white');
@@ -210,7 +215,7 @@ import { appState } from './state/appState.js';
     
     // Wait for animation to complete, then redirect
     setTimeout(() => {
-      window.location.href = '/organise.html';
+      window.location.href = '/organise.html'; //for tests comment out this line & the signup redirect (lines 218 & 322) so can see error messages on console
     }, 1000); // Match this delay to your CSS transition duration
   
       }
@@ -314,7 +319,8 @@ const { data, error2 } = await supabase.rpc('create_appro_from_new_auth_user_v2'
         p_user_id:signupData.user.id || null});
         if (error2) { console.error('write app_profile table error',error); showToast('Failed to create appro'); }
  else { console.log('Write to app_profile:', data); 
- window.location.href = '/index.html';} //moved to here from signup function
+ window.location.href = '/index.html' //for tests comment out this line & the other redirect (lines 218 & 322) so can see error messages on console
+ ;} //moved to here from signup function
  //where it was didn't seem to work.
   } 
 
@@ -337,7 +343,7 @@ const {data,error} = await supabase.rpc('get_appro_from_auth', {p_user_id:authId
 
 
 
-async function grantMyDashPermissions(authId){//the parameter is auth id, it isn't the id of the approfile representing that person
+async function setupUserInitialNeeds(authId){//the parameter is auth id, it isn't the id of the approfile representing that person
 //need to find the appro
 //const approId = await getApproId(authId); //not needed as the rpc function does this conversion itself
 //console.log(approId);
@@ -345,12 +351,12 @@ async function grantMyDashPermissions(authId){//the parameter is auth id, it isn
 
 
  const { data, error } = await supabase.rpc('grant_mydash_permissions', {p_user_id:authId});
- if (error)   console.error('write to approfile_relations error',error);
+ if (error)   console.error('approfile_relations rpc myDashPermission error',error);
    else {
        console.log('Granted myDash permissions.');
 
        const { data, error2 } = await supabase.rpc('grant_notes_permissions', {p_user_id:authId});
-        if (error2) console.error('write relations table error',error);
+        if (error2) console.error('write relations table rpc notesPermission error',error);
         else 
              console.log('Granted notes permissions.');
             //window.location.href = '/organise.html'; //goes to myDash
@@ -363,13 +369,10 @@ const { error: taskError } = await supabase.rpc('assign_welcome_task', {
 });
 
 if (taskError) {
-  console.error('Failed to assign welcome task:', taskError);
+  console.error('Failed to assign welcome task by rpc:', taskError);
 } else {
   console.log('Welcome task assigned');
 }
-
-
-//window.location.href = '/organise.html'; //goes to myDash
 
 }
 

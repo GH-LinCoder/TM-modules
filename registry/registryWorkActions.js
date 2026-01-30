@@ -1601,7 +1601,7 @@ handler: async(supabase, userId, payload) => {
 const {rows} = payload; 
 const { error } = await supabase
 .from('notes_categorised')
-.upsert(rows, {
+.upsert(rows, { //permission system doesn't know 'upsert' 
   onConflict: ['note_id', 'note_category_id'],
   ignoreDuplicates: true
 });
@@ -1702,7 +1702,7 @@ handler: async (supabase, userId, payload) => {
   //TASKS
   readTaskWithSteps: {
     metadata: {
-      tables: ['task_with_steps_view'], // VIEW not a table
+      tables: [], // VIEW not a table
       columns: ['task_id', 'task_name','step_id', 'step_order', 'step_description'],//lots more columns now  dec 23
       type: 'SELECT',
       requiredArgs:['supabase', 'userId', 'taskId']
@@ -2765,7 +2765,7 @@ readSurveyHeaders:{
 },
 
 //SURVEYS
-readSurveyQuestion:{
+readSurveyQuestions:{
   metadata: {
     tables: ['survey_questions'],
     columns: ['name', 'description',  'created_at', 'last_updated_at'], //?

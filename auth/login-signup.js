@@ -26,7 +26,7 @@ function getTemplateHTML() {
     </div>
 
       <!-- Login Form -->
-        <div id="loginForm" class="auth-form bg-white p-6 rounded-lg shadow hidden">
+        <div id="loginForm" class="auth-form bg-white p-6 rounded-lg shadow">
           <h2 class="text-xl font-bold text-center mb-4">Log In</h2>
           <div id="login-error" class="text-red-500 text-sm hidden"></div>
           <form class="space-y-3">
@@ -39,17 +39,21 @@ function getTemplateHTML() {
      
             <button type="submit" id="loginBtn" class="w-full bg-green-600 text-white py-2 rounded">Log In</button>
           </form>
+           <p class="text-center mt-2">
+          <button id="logoutBtn" class="text-sm text-green-600 hover:underline">Log out</button>
+          </p>
+         
           <p class="text-center mt-2">
             <button id="showReset" class="text-sm text-blue-600 hover:underline">Forgot password?</button>
           </p>
-          <p class="text-center mt-2">
-            <button id="showSignup" class="text-sm text-gray-600 hover:underline">Create account</button>
-          </p>
+          <!--p class="text-center mt-2">
+            <!--button id="showSignup" class="text-sm text-gray-600 hover:underline">Create account</button -->
+          </p -->
         </div>
 
 
-      <!-- Signup Form -->
-    <div id="signupForm" class="auth-form bg-white p-6 rounded-lg shadow">
+      <!-- Signup Form --> <!-- Not displaying a signup within the module because this module doesn't have code to create appro or write to temp_signups -->
+    <!--div id="signupForm" class="auth-form bg-white p-6 rounded-lg shadow hidden">
           <h2 class="text-xl font-bold text-center mb-4">Create free Account</h2>
           
           <form class="space-y-3">
@@ -64,20 +68,18 @@ function getTemplateHTML() {
             <!--button id="toggle-password" type="button" aria-label="Show password as plain text. Warning: this will display your password on the screen.">👁️ Show password </button-->
 
             
-            <button type="submit" id="signupBtn" class="w-full bg-blue-600 text-white py-2 rounded" title='There is no cost, no credit card.'>Sign Up</button>
+            <!-- button type="submit" id="signupBtn" class="w-full bg-blue-600 text-white py-2 rounded" title='There is no cost, no credit card.'>Sign Up</button>
           </form>
           <p class="text-center mt-4">
             <button id="showLogin" class="text-blue-600 hover:underline">Already have an account? Log in</button>
           </p>
-          <p class="text-center mt-2">
-          <button id="logoutBtn" class="text-sm text-green-600 hover:underline">Log out</button>
-          </p>
+        
 
         <div id="signup-error" class="text-red-500 text-sm hidden">
         </div>
           <div id="signup-success" class="text-green-500 text-sm hidden">Check your email to confirm!
           </div>
-    </div>
+    </div-->
 
 
 
@@ -113,7 +115,8 @@ export async function render(panel, query = {}) {
 const supabase = createSupabaseClient();
   
 
-  // Signup
+  // Signup 
+  /* This is inappropriate to display within the app because this module does not have code to process appros or the temp_signups table
   document.getElementById('signupBtn').onclick = async (e) => {
     e.preventDefault();
     const userName = document.getElementById('user-name').value;    
@@ -132,7 +135,7 @@ const supabase = createSupabaseClient();
       document.getElementById('signup-error').classList.add('hidden');
    await createAppros(userName, description, email, data.user.id);//can this work? If not auth user will this fail? Can a user get here without being auth user?
     }
-  };
+  };  */
 
   // Login
   document.getElementById('loginBtn').onclick = async (e) => {
@@ -191,7 +194,7 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
 
 // nav buttons
   document.getElementById('showLogin').onclick = () => showForm('loginForm');
-  document.getElementById('showSignup').onclick = () => showForm('signupForm');
+ // document.getElementById('showSignup').onclick = () => showForm('signupForm');
   document.getElementById('showReset').onclick = () => showForm('resetForm');
   document.getElementById('backToLogin').onclick = () => showForm('loginForm');
 //document.getElementById('newPasswordForm').onclick = () => showForm('newPasswordForm');

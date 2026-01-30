@@ -215,7 +215,7 @@ if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 
                     <div class="flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
                         <button data-button="message-student" 
                                 data-assignment="${assignment.assignment_id}"
-                                class="flex-1 py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                                class="flex-1 py-3 px-6 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition" data-action="bug-report">
                             Message Student
                         </button>
                         
@@ -230,7 +230,7 @@ if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 
 
                         <button data-button="message-admin" 
                                 data-assignment="${assignment.assignment_id}"
-                                class="flex-1 py-3 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition">
+                                class="flex-1 py-3 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition" data-action="bug-report">
                             Message Admin
                         </button>
                     </div>

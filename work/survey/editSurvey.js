@@ -30,6 +30,16 @@ currentSurveyView:null, // readSurveyView() places the surveyView into currentSu
   //initialStepId: null
 };
 
+function escapeHtml(text) {  // 22:04 edited to escape all names and descriptions to prevent html 
+  if (typeof text !== 'string') return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+   ;
+}
+
+
 export function render(panel, query = {}) {
   console.log('render:');
   panel.innerHTML = getTemplateHTML();
@@ -83,6 +93,11 @@ function renderSurveyHeaderCard(summary, row) {
   console.log('renderSurveyHeaderCard');
   if (!row) return;
 
+// Extract and escape untrusted content
+const safeSurveyName = escapeHtml(row.survey_name);
+const safeSurveyDescription = escapeHtml(row.survey_description || '');
+
+
   //const summary = panel.querySelector('#surveySummary');
   //if (!summary) return;
   //console.log('renderSurveyHeaderCard:');
@@ -94,8 +109,8 @@ let icon = getIconByType('survey');
  // card.className = styleCardByType('survey');
     card.className = 'clickable-item hover:scale-105 transition-transform bg-orange-50 border-l-4 border-orange-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
     card.innerHTML = `
-    <strong>${icon} Survey: ${row.survey_name}</strong>
-    ${row.survey_description ? `<div class="text-sm text-gray-700">${row.survey_description.substring(0,200) }...</div>` : ''}
+    <strong>${icon} Survey: ${safeSurveyName}</strong>
+    ${safeSurveyDescription ? `<div class="text-sm text-gray-700">${safeSurveyDescription.substring(0,200) }...</div>` : ''}
     ${row.survey_external_url ? `<div class="text-xs text-blue-600">${row.survey.external_url}</div>` : ''}
     ${row.survey_id}
   `;
@@ -107,6 +122,10 @@ let icon = getIconByType('survey');
 function renderQuestionCard(summary,row, type){
 console.log('renderQuestionCard');
 if(type!=='question') return;
+
+const safeQuestionName = escapeHtml(row.question_name);
+const safeQuestionDescription = escapeHtml(row.question_description || '');
+
 let icon = getIconByType('question');
     const stepCard = document.createElement('p');
     stepCard.dataset.type = type; 
@@ -114,8 +133,8 @@ let icon = getIconByType('question');
     stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md ml-2`;
 stepCard.dataset.id = row.question_id; 
    stepCard.innerHTML = `
-      <strong>${icon} ${type}: ${row.question_number}:</strong> ${row.question_name}
-      <span class="block text-sm text-gray-600 whitespace-pre-line">${row.question_description || ''}</span>
+      <strong>${icon} ${type}: ${row.question_number}:</strong> ${safeQuestionName}
+      <span class="block text-sm text-gray-600 whitespace-pre-line">${safeQuestionDescription || ''}</span>
       ${row.question_id}
     `;
 //console.log('stepCard',stepCard);
@@ -126,14 +145,17 @@ stepCard.dataset.id = row.question_id;
 function renderAnswerCard(summary,row, type){
 console.log('renderAnswerCard');
  if(type!=='answer') return;
+const safeAnswerName = escapeHtml(row.answer_name);
+const safeAnswerDescription = escapeHtml(row.answer_description || ''); 
+
  let icon = getIconByType('answer');
 const stepCard = document.createElement('p');
     stepCard.dataset.type = type; 
     stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-indigo-50 border-l-4 border-green-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md ml-8`;  
  stepCard.dataset.id = row.answer_id;
     stepCard.innerHTML = `
-      <strong>${icon} ${type}: ${row.answer_number}:</strong> ${row.answer_name}
-      <span class="block text-sm text-gray-600 whitespace-pre-line">${row.answer_description || ''}</span>
+      <strong>${icon} ${type}: ${row.answer_number}:</strong> ${safeAnswerName}
+      <span class="block text-sm text-gray-600 whitespace-pre-line">${safeAnswerDescription || ''}</span>
     ${row.answer_id}
       `;
 //console.log('stepCard',stepCard);
@@ -144,6 +166,11 @@ function renderAutoCard(summary, row, type){
  console.log('renderAutoCard');
  // console.log('row:',row, 'summary:',summary,'type:',type);
 if(type!=='auto') return;
+
+const safeAutoName = escapeHtml(row.auto_name);
+const safeAutoDescription = escapeHtml(row.auto_description || ''); 
+
+
 let icon = getIconByType('automation');
 const stepCard = document.createElement('p');
     stepCard.dataset.type = type; 
@@ -151,13 +178,13 @@ const stepCard = document.createElement('p');
 stepCard.dataset.id = row.auto_id; 
    
 if(row.auto_deleted_at) {stepCard.innerHTML+= `<span class=" text-sm text-gray-400"><i>
-  ${icon} ${type}: ${row.auto_number}: ${row.auto_name} ${row.auto_description} ${row.auto_id} soft deleted</i></span>`} 
+  ${icon} ${type}: ${row.auto_number}: ${safeAutoName} ${safeAutoDescription} ${row.auto_id} soft deleted</i></span>`} 
     else 
     { 
       stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-indigo-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`; 
       stepCard.innerHTML = `
-      <strong>${icon} ${type}: ${row.auto_number}:</strong> ${row.auto_name}
-      <span class="block text-sm text-gray-600 whitespace-pre-line">${row.auto_description || ''}</span>
+      <strong>${icon} ${type}: ${row.auto_number}:</strong> ${safeAutoName}
+      <span class="block text-sm text-gray-600 whitespace-pre-line">${safeAutoDescription  || ''}</span>
     ${row.auto_id} 
     <span class= 'deleteAutomationBtn text-red-600 text-sm ml-4' data-id=${row.auto_id}>Delete</span>
       `};
@@ -300,10 +327,12 @@ populateFromClipboardAuto(panel); //moved here from init  19:31 dec 9
 
 function ifOnlyOneItemInDropdownloadAndRenderSurvey(panel, surveys, surveySelect){
 console.log('ifonlyOneItem...');
+const safeSurveyName = escapeHtml(surveys[0].entity.name);
+
   if (surveys.length === 1 && !surveySelect.value) { 
     surveySelect.value = surveys[0].entity.id;
     const infoSection = document.querySelector('#informationSection');
-    if(infoSection) infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled Survey: ${surveys[0].entity.name}</div>`;
+    if(infoSection) infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled Survey: ${safeSurveyName}</div>`;
   //  console.log('surveySelect.value',surveySelect.value);//uuid
     state.currentSurveyHeaderId = surveySelect.value;
     renderSurveyStructure(panel);// this displays summary if/when there is a single item in the dropdown

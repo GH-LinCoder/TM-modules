@@ -38,9 +38,8 @@ IF p_row_id IS NOT NULL
 END IF;
 
 
---test to check params
-  RAISE LOG 'is_permitted called: table=%, row_id=%, op=%, auth_uid=%', 
-    p_table_name, p_row_id, p_operation, auth.uid();
+--test to check params This clutters the log and seems irrelevant most of the time
+ -- RAISE LOG 'is_permitted infocheck: table=%, row_id=%, op=%, auth_uid=%', p_table_name, p_row_id, p_operation, auth.uid();
 
 
 
@@ -67,7 +66,7 @@ END IF;
                 --    OR (p_table_name = 'relationships' AND pv.relation_id = p_row_id)
                 ))
                 -- OR generic scope permission (works for all cases)
-                RAISE NOTICE 'Checking generic permission for % on %', v_user_appro_id, p_table_name;
+                -- RAISE NOTICE 'Checking generic permission for % on %', v_user_appro_id, p_table_name;
                 OR pv.scope_id = fta.generic_scope --original bug the fta coulmn was text and fails to be = to the uuid scope. view now edited to be uuid 16:00 Jan 4
             )
     ) INTO v_result;
