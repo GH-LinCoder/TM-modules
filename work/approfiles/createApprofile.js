@@ -88,8 +88,8 @@ function getTemplateHTML() {
          <label for="approfileDescription" class="block text-sm font-medium text-gray-700 mb-1">
                 Description *
          </label>
-            <textarea id="approfileDescription" placeholder="Description" rows="3" maxlength="500" required class="w-full p-2 min-h-80 border rounded"></textarea>
-            <p id="approfileDescriptionCounter" class="text-xs text-gray-500">0/500 characters</p>
+            <textarea id="approfileDescription" placeholder="Description" rows="3" maxlength="2000" required class="w-full p-2 min-h-80 border rounded"></textarea>
+            <p id="approfileDescriptionCounter" class="text-xs text-gray-500">0/2000 characters</p>
 
             <button id="saveApprofileBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Save Approfile</button>
           </div>

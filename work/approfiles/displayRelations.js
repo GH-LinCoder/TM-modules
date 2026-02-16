@@ -5,12 +5,47 @@ import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
-
 import {getClipboardAppros} from './getClipboardAppros.js';
 
 console.log('displayRelations.js loaded 12:45 Oct 26');
 
-const userId = appState.query.userId;
+/**
+ * bugs feb 14 2026
+ * Clicking on an appro in the display is supposed to make that appro the new subject of the display 
+ * This sometimes works, but after a 2nd attempt to change the subject there is no response. I don't know why
+ * This used to work properly. Probably broken by the changes on resolving subject or calling for permissions separately.
+ * Also there should be a check that the appro is an authUser and only then check for permissions.
+ * No point in calling for permissions for any other kind of appro
+ * 
+ * The code is confusing because it uses 'subject' and 'object' where it should use approIs and ofAppro.
+ * subject should mean the chosen appro that is the basis of the current display. There is no object.
+ * subject can be approIs or ofAppro depnding on what has been clicked.
+ */
+
+
+const displayMode = 'noun'; // defualt setting showing appro relations  see idea below for enum
+/**
+ * const displayModes = Object.freeze({
+    noun: 'approRelations',
+    verb: 'actionConnections',
+    read: 'readDetailsOfTasksSurveysOrItems',
+    assign: 'assignmentsOfPersonsOrActions',
+    permissions: 'permissionsHeldOrRequired'
+});
+ * 
+ * 
+ * 
+ * noun: appros and their relations. Appros are name tags so displaying them is the 'noun' mode
+ * verb: displaying what effect something has on other things. Showing tasks and survey automations or other 'doing' connections. Doing means verbs
+ * read: Examining the details of a task or survey, not what they affect but what they contain
+ * assign: Seeing what tasks or surveys have been assigned to whom. Can click from student to see assignments or from the assigned thing to see who has been assigned to it
+ * permissions: click a permission to find who has it. Click a person to see what permissions. Click a task to see what permissions required 
+ * 
+ */
+
+
+
+const userId = appState.query.userId; //probably legacy 
 
 const defaultId=appState.query.userId;
 //const defaultName='default';
@@ -18,7 +53,7 @@ let currentSelection=defaultId;
 
 
 function attachDropdownListener(panel) {
-    const select = panel.querySelector('[data-role="subject-dropdown"]'); //change 16:17 Oct 27
+    const select = panel.querySelector('[data-role="subject-dropdown"]'); //change 16:17 Oct 27 // correct use of 'subject'
 
   if (!select) return;
 
@@ -32,11 +67,12 @@ function attachDropdownListener(panel) {
   select.addEventListener('change', async (e) => {
    // console.log('DropdownChange,NameFound calling loadAndRender');
     const approfileId = e.target.value;
+    console.log('click produced this value:',approfileId);
     const selectedName = e.target.options[e.target.selectedIndex].textContent;
     if (approfileId) { console.log('approfileId:',approfileId); 
-      await loadAndRenderRelationships(panel, approfileId, selectedName); 
+      await loadAndrenderRelations(panel, approfileId, selectedName); 
     } else {
-      renderRelationships(panel, null, null); 
+      renderRelations(panel, null, null); 
     }
   });
 
@@ -46,20 +82,38 @@ function attachDropdownListener(panel) {
 }
 
 function attachClickItemListener(panel) {
-  // ATTACH CLICK LISTENER TO PANEL (persists through re-renders)
+  // Remove any existing click listener first
+  if (panel._clickListener) {
+    panel.removeEventListener('click', panel._clickListener);
+  }
+  
+// ATTACH CLICK LISTENER TO PANEL (persists through re-renders)
   panel.addEventListener('click', async (e) => {
-    const flowBox = e.target.closest('.flow-box-subject, .flow-box-other');
-    if (flowBox && flowBox.dataset.subjectId) {
-      const subjectId = flowBox.dataset.subjectId;
-      const subjectName = flowBox.textContent.replace(' is', '').replace('of ', '').trim();
-     // console.log('Exploring subject:', subjectId, subjectName);
-    //  console.log('FlowBox Clicked - calling laodAndRender');
+  
+//    const flowBox = e.target.closest('.flow-box'); // If a box conatins the subject of the display that box is displayed differentlly
+ const flowBox = e.target.closest('[data-content-id]');//changed 21:33 Feb 14. No difference noted
+  console.log('box clicked:', flowBox, 'dataset',flowBox?.dataset);// flowBox is null
 
-      await loadAndRenderRelationships(panel, subjectId, subjectName);
+if(!flowBox) return;
+
+const clickType = e.target.dataset.clicked; // 'icon' or 'name'
+if (!clickType) return; // Not a click on an icon or name, ignore
+
+  if (clickType === 'name'){ // the main part of the box has been clicked, not the icon. This means setting the name as the subject of the display & redrawing it. (Could exclude if unchanged)
+
+    const subjectId = flowBox.dataset.contentId;  //this is getting the name not the id
+//    const subjectName = flowBox.textContent;// this includes the icon BAD code
+const subjectName = flowBox.dataset.contentName;// that seems to work. But could be better to compare id rather than name
+      console.log('Box clicked to give:', subjectId, subjectName);
+      await loadAndrenderRelations(panel, subjectId, subjectName);
     }
-  });
+else if (clickType === 'icon'){ // will have to call a different function after determining if the con is for a task or survey or other thing that can be explored
+  console.log('Icon clicked. No implementation yet');
+
+}
 
 
+});
 }
 
 export function render(panel, query = {}) { //Called from loader (standard interface) 
@@ -94,16 +148,28 @@ function getTemplateHTML() {
             </p>
             <ul class="text-blue-700 text-sm mt-2 space-y-1">
               <li>• You can view how any one appro is related to others</li>
-              <li>• You will probably need to click to open the [Select] module</li>
+              <li>. The initial display may be about you</li>
+              <li>• Or you can click to open the [Select] module</li>
               <li>• Then the dropdown will fill with whatever you select in that module</li>
-              <li>If the slection has already been made then the dropdown Auto-fills from the clipboard.</li>
+              <li>If the selection has already been made then the dropdown Auto-fills from the clipboard.</li>
               <li> Click the [Select] menu button or click here to open the Selector</li>
             </ul>
+
+            <ul class="text-blue-700 text-sm mt-2 space-y-1">
+              <li>To click an item watch to see when the cursor changes to indicate the item can be clicked</li>
+              <li>Clicking a [name] is a request to redraw the display with that name as the subject of the display</li>
+              <li>Clicking an ico changes the mode of the display</li>
+              <li></li>
+              <li></li>
+              <li> Click the [Select] menu button or click here to open the Selector</li>
+            </ul>
+
+
           </div>
 
       <div class="space-y-4">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-2">loadAndRenderRelationships
+          <label class="block text-sm font-medium text-gray-700 mb-2">loadAndrenderRelations
             Select Approfile:
           </label>
 <select data-role="subject-dropdown" class="w-full p-2 border rounded border-gray-300 focus:ring-2 focus:ring-blue-500">
@@ -135,7 +201,7 @@ function getTemplateHTML() {
 
 
 function showInformation(panel, approName) {
-const  informationFeedback = panel.querySelector('informationFeedback');
+const  informationFeedback = panel.querySelector('#informationFeedback');
 if(!informationFeedback) return;
   informationFeedback.innerHTML += `<div class="my-2 p-3 bg-white border rounded shadow-sm flex items-center justify-between">
         <div>
@@ -153,18 +219,20 @@ async  function init(panel) { // called from render() 2nd function to run
     const isMyDash = detectContext(panel);
     applyPresentationRules(panel, isMyDash);
   
-    const subject = await resolveSubject();
-    console.log('subject',subject);
-    if(subject.type==='relation') 
-    loadFromRelations(panel, subject.approUserId); 
+    const resolvedSubject = await resolveSubject(); //this is a potentially different use of the word
+    console.log('resolvedSubject',resolvedSubject, 'name' , resolvedSubject.name); // name no icon
+    if(resolvedSubject.type==='relation') 
+    loadFromRelations(panel, resolvedSubject.approUserId); 
     else
-    loadAndRenderRelationships(panel, subject.approUserId, subject.name);
+    loadAndrenderRelations(panel, resolvedSubject.approUserId, resolvedSubject.name);
   
     onClipboardUpdate(() => {
-checkClipboardThenNormalRender(panel);
-//      loadAndRenderRelationships(panel,subject.id, subject.name);
+    checkClipboardThenNormalRender(panel);
+//      loadAndrenderRelations(panel,resolvedSubject.id, subject.name);
      // if (!isMyDash) populateApprofileSelect(panel); // optional
     });
+  console.log('isMyDash?',isMyDash);
+
   
     if (!isMyDash) {
       populateApprofileSelect(panel);
@@ -174,8 +242,8 @@ checkClipboardThenNormalRender(panel);
   }
     
 async function checkClipboardThenNormalRender(panel){
-const subject = await resolveSubject();
-      loadAndRenderRelationships(panel,subject.approUserId, subject.name);
+const resolvedSubject = await resolveSubject();
+      loadAndrenderRelations(panel,resolvedSubject.approUserId, resolvedSubject.name);
 
 }
 
@@ -218,7 +286,7 @@ else  currentSelection = select.value;
   } else if (approfiles.length === 1) { //change to approLength=approfiles.length; if approLength >0 select.value = approfiles[approLength-1] //select newest entry
     // Auto-select if only one option
     select.value = approfiles[0].entity.id;
-    await loadAndRenderRelationships(panel, approfiles[0].entity.id, approfiles[0].entity.name);
+    await loadAndrenderRelations(panel, approfiles[0].entity.id, approfiles[0].entity.name);
   }
   attachDropdownListener(panel);
 
@@ -226,29 +294,37 @@ else  currentSelection = select.value;
 
 }
 
-async function loadAndRenderRelationships(panel, approfileId, approfileName) {  // aprofileId is an object ?
+
+async function loadAndrenderRelations(panel, approfileId, approfileName) { 
+  console.log("loadAndrenderRelations CALLED WITH:", { approfileId, approfileName });//aprofile name no icon when called from init
+// but contains the icon when called from a click on the display
  if(!approfileId) {
-  const approfile = await resolveSubject(); approfileId=approfile.approUserId, approfileName = approfile.name; 
-console.log('subject',approfile);
+  const resolvedSubject = await resolveSubject(); 
+  approfileId=resolvedSubject.approUserId, 
+  approfileName = resolvedSubject.name; 
+console.log('resolvedSubject',resolvedSubject, 'approfileNme:',approfileName);
 
-  if(approfile.type ==='relations') loadFromRelations(panel, approfile.id); return};// should render the one relationship
+  if(resolvedSubject.type ==='relations') {loadFromRelations(panel, resolvedSubject.id); return} // should render the one relationship but not implemented
+   };
 
 
-  console.log('loadAndRenderRelationships approfileId()');
+  console.log('loadAndrenderRelations approfileId()');
 
   try {
-    const relationships = await loadRelationships(approfileId);
-    renderRelationships(panel, relationships, approfileName);
+    const relationsOrdinary = await loadOrdinaryRelations(approfileId);
+    const relationsPermissions = await loadPermissionRelations(approfileId);//should check if appro is a auth user. Don't check for permissions for abstract appros
+
+    renderRelations(panel, relationsOrdinary, relationsPermissions, approfileName);
   } catch (error) {
     console.error('Error loading relationships:', error);
     showToast('Failed to load relationships: ' + error.message, 'error');
-    renderRelationships(panel, { is: [], of: [] }, approfileName);
+    renderRelations(panel, { is: [], of: [] }, approfileName);
   }
   
 }
 
-async function loadRelationships(approfileId) {
-  console.log('loadRelationships for approfileId:', approfileId);
+async function loadOrdinaryRelations(approfileId) {
+  console.log('loadOrdinaryRelations for approfileId:', approfileId);
   
   if (!approfileId) {
     throw new Error('approfileId is required');
@@ -262,206 +338,268 @@ async function loadRelationships(approfileId) {
   return result || { is: [], of: [], iconMap:{} };
 }
 
-function renderRelationships(panel, relationshipsData, approfileName) { // aprofileName is used at head of the display.
+async function loadPermissionRelations(approfileId) {
+  console.log('loadPermissionRelations for approfileId:', approfileId);
+  
+  if (!approfileId) {
+    throw new Error('approfileId is required');
+  }
+  
+  const result = await executeIfPermitted(userId, 'readPermissionRelationsById', { 
+    approfileId: approfileId 
+  });
+  
+//console.log('Raw result:', result);// object { is:[] , of:[] , iconMap:{} }
+  return result || { is: [], of: [], iconMap:{} };
+}
+
+
+
+
+
+function renderRelations(panel, ordinaryRelationsData, permissionsRelationsData, approfileName) {
+  console.log('ordinary',ordinaryRelationsData, 'permissions',permissionsRelationsData, 'approfileNme', approfileName);
   const container = panel.querySelector('#relationshipsContainer');
   if (!container) return;
 
-  // Handle case where no approfile is selected
-  if (relationshipsData === null || approfileName === null) {
+  // Handle no approfile selected
+  if (ordinaryRelationsData === null || approfileName === null) {
     container.innerHTML = `
       <div class="text-gray-500 text-center py-8">
         No approfile selected. Please select an approfile.
       </div>
     `;
+    //attachClickItemListener(panel); // Still attach listener for empty state
     return;
   }
-  
-  const isRelationships = relationshipsData.is || [];
-  const ofRelationships = relationshipsData.of || [];
-  const iconMap = relationshipsData.iconMap || {};
-  //console.log('isRel:',isRelationships, 'array[0].approfile_is:', isRelationships[0]?.approfile_is);
 
-  if (isRelationships.length === 0 && ofRelationships.length === 0) {
+  // Extract data with fallbacks
+  const ordinaryIs = ordinaryRelationsData.is || [];
+  const ordinaryOf = ordinaryRelationsData.of || [];
+  const permissionsIs = permissionsRelationsData?.is || [];
+  const permissionsOf = permissionsRelationsData?.of || [];
+  const iconMap = ordinaryRelationsData.iconMap || {};
+
+  // Check if we have any data at all
+  const hasAnyData = [...ordinaryIs, ...ordinaryOf, ...permissionsIs, ...permissionsOf].length > 0;
+
+  if (!hasAnyData) {
     container.innerHTML = `
       <div class="bg-yellow-50 border border-yellow-200 rounded p-4 text-center">
         <p class="text-yellow-800">No relationships found for this approfile.</p>
-        
-        <p class="text-gray-500 text-center py-8">"<i>${approfileName}</i>"</p>
-  <p> (This could happen if you are not logged-in or if you have recently signed-up & not confirmed email, or if you have no permissions yet)</p>
+        <p class="text-gray-500 italic py-2">"${approfileName}"</p>
+        <p class="text-gray-600 text-sm">(This could happen if you are not logged-in or if you have recently signed-up & not confirmed email, or if you have no permissions yet)</p>
         <p class="text-yellow-800">No one is an island; admin needs to help.</p>
       </div>
     `;
+    //attachClickItemListener(panel);
     return;
   }
+
+  // Build the complete HTML
+  let html = '';
+
+  // ORDINARY RELATIONSHIPS SECTION
+  html += '<div class="mb-8 p-4 border border-gray-200 rounded-lg">';
+  html += '<h3 class="text-xl font-bold mb-4 text-gray-900">Relations</h3> <i>Admin permissions are needed to change subject of map</i>';
   
-  // Group and sort relationships by type (alphabetically)
-  const groupRelationships = (rels) => { // this is a function called from below twice
-    const groups = {};
-    rels.forEach(rel => {//console.log('rel',rel);
-       if (rel.is_deleted) { //console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
-        return; }//don't display deleted items
+  const ordinaryIsGroups = groupAndFilterRelations(ordinaryIs); // does what?
+  const ordinaryOfGroups = groupAndFilterRelations(ordinaryOf);
+  
+  if (ordinaryIsGroups.length > 0) {
+    html += `<h4 class="text-lg font-semibold mb-3 text-center text-gray-800">${approfileName} is:</h4>`;
+    html += renderRelationshipGroups(ordinaryIsGroups, 'is', approfileName, iconMap);  //aprofileName = subject of display
+  } else {
+    html += renderEmptySection(`${approfileName} is`, 'is');
+  }
+  
+  if (ordinaryOfGroups.length > 0) {
+    html += `<h4 class="text-lg font-semibold mb-3 text-center text-gray-800">of ${approfileName}:</h4>`;
+    html += renderRelationshipGroups(ordinaryOfGroups, 'of', approfileName, iconMap); //aprofileName = subject of display
+  } else {
+    html += renderEmptySection(`of ${approfileName}`, 'of');
+  }
+  html += '</div>';
+
+// PERMISSIONS SECTION - SIMPLE FLAT LIST
+  if (permissionsRelationsData && permissionsRelationsData.length > 0) {
+     html += '<div class="mb-8 p-4 border border-blue-200 rounded-lg bg-blue-50">';
+    html += '<h3 class="text-xl font-bold mb-4 text-blue-900">Permissions</h3>';
+    
+    // Treat all permissions as "is" relationships for display purposes
+    const permissionGroups = groupAndFilterRelations(permissionsRelationsData);
+    
+    if (permissionGroups.length > 0) {
+      html += `<h4 class="text-lg font-semibold mb-3 text-center text-blue-800">${approfileName} has permissions:</h4>`;
+      html += renderRelationshipGroups(permissionGroups, 'is', approfileName, iconMap);
+    } else {
+      html += renderEmptySection(`${approfileName} has permissions`, 'is');
+    }
+    html += '</div>';
+  }
+
+  showInformation(panel, approfileName);
+  container.innerHTML = html;
+
+  // ATTACH CLICK LISTENERS AFTER RENDERING
+  //attachClickItemListener(panel);
+}
 
 
+
+// Helper functions (same as before)
+function groupAndFilterRelations(relations, isPermission = false) { //I don't understand this function
+  if (!relations || relations.length === 0) return [];
+
+  const groups = {};
+  
+  relations
+    .filter(rel => !rel.is_deleted)
+    .forEach(rel => {
       let relType = rel.relationship;
-if (relType.startsWith('(]')) { relType = 'Permissions'; }// list all permission in one section
-
-
-
+      
+      if (isPermission && relType.startsWith('(]') && relType.endsWith('[)')) { //what is this?
+        relType = relType.substring(2, relType.length - 2);
+      }
+      
       if (!groups[relType]) groups[relType] = [];
       groups[relType].push(rel);
     });
-    
-    // Sort relationship types alphabetically
-   return Object.keys(groups)
-  .sort()
-  .map(relType => {
-    let items = groups[relType];
 
-    // Special sorting for Permissions
-    if (relType === 'Permissions') {
-      items = [...items].sort((b, a) =>
-        a.relationship.localeCompare(b.relationship)
-      );
-    }
-
-    return {
+  return Object.keys(groups)
+    .sort()
+    .map(relType => ({
       relationship: relType,
-      items
-    };
-  });
-
-  };
-  
-  const groupedIs = groupRelationships(isRelationships); // this calls the above definition
-  const groupedOf = groupRelationships(ofRelationships);
-  
-  let html = '';
-  
-  // IS SECTION
-  // Always show IS section (even if empty)
-  if (groupedIs.length  === 0){
-html += `
-<div class="section" style="margin-bottom: 24px; border: 1px solid #2a0985; border-radius: 24px; padding: 16px;"  data-action="relate-approfiles-dialogue">
-  <div class="section-title" style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #374151; text-align: center;">
-    ${approfileName} is EMPTY no example of what this appro "is" 🏝️
-  </div><p style ="text-align: center;">No one is an island;you can use click to relate this lonely appro.</p>
-  </div>
-`};
-  
-  if (groupedIs.length > 0) {
-    html += `
-      <div class="section" style="margin-bottom: 24px; border: 1px solid #2a0985; border-radius: 24px; padding: 16px;">
-      
-      <div class="section-title" style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #374151; text-align: center;">
-          ${approfileName}  is
-        </div>
-    `;
-    
-    groupedIs.forEach(group => {
-      html += `
-        <div class="relationship-type" style="font-size: 16px; font-weight: bold; margin-bottom: 4px; color: #4f46e5; padding-bottom: 4px;">
-          ${group.relationship}
-        </div>
-      `;
-      
-      group.items.forEach(rel => { //console.log('rel:',rel);
-     //  console.log('forEach rel.is_deleted:',rel.relationship, rel.is_deleted); 
-       if (rel.is_deleted) { console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
-        return; }//don't display deleted items
-       const subject = rel.approfile_is_name || rel.approfile_is;
-       const subjectIcon = iconMap[rel.approfile_is] || '🫗';
-
-        const object = rel.of_approfile_name || rel.of_approfile;
-        const objectIcon = iconMap[rel.of_approfile] || '🫗';
-        html += `
-          <div class="relationship-flow" style="display: flex; justify-content: center; align-items: center; margin: 2rem auto; gap: 1rem;">
-            <div class="flow-box-subject" 
-                 style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-green-400;"
-                 data-subject-id="${rel.approfile_is}"
-                 title="Click to explore ${subject}">
-            ${subjectIcon}  ${subject}  
-            </div>is
-            <div class="flow-box-relation" style="padding: 0.75rem 1.25rem; background-color: #d7e4e2; border: 2px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; font-size: 16px; font-style: italic; color: #4f46e5;">
-              ${rel.relationship}
-            </div>of
-            <div class="flow-box-other" 
-                 style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
-                 data-subject-id="${rel.of_approfile}"
-                 title="Click to explore ${object}">
-               ${object} ${objectIcon}
-            </div>
-
-          </div>
-        `;
-      });
-    }); 
-    html += ` </div>`;
-  }
-  
-  // OF SECTION
-
-  if (groupedOf.length  === 0){
-    html += `
-    <div class="section" style="margin-bottom: 24px; border: 1px solid #2a0985; border-radius: 24px; padding: 16px;" data-action="relate-approfiles-dialogue">
-      <div class="section-title" style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #374151; text-align: center;">
-        ${approfileName} is EMPTY no example of anything being "of" this appro
-      </div><p style ="text-align: center;">No one is an island; 🏝️ you can use Click to relate this lonely appro.</p>
-      </div>
-    `};
-
-
-  if (groupedOf.length > 0) {
-    html += `
-      <div class="section" style="margin-bottom: 24px; border: 1px solid #2a0985; border-radius: 24px; padding: 16px;">
-        <div class="section-title" style="font-size: 18px; font-weight: bold; margin-bottom: 8px; color: #374151; text-align: center;">
-          of ${approfileName}
-        </div>
-    `;
-    
-    groupedOf.forEach(group => {
-      html += `
-        <div class="relationship-type" style="font-size: 16px; font-weight: bold; margin-bottom: 4px; color: #4f46e5; padding-bottom: 4px;">
-          ${group.relationship}
-        </div>
-      `;
-      
-      group.items.forEach(rel => { //if deleted the section name is displayed still 19:23 dec 13
-         if (rel.is_deleted) { console.log('This:',rel.relationship,'is deleted', rel.is_deleted); 
-          return; }//don't display deleted items
-        const subject = rel.approfile_is_name || rel.approfile_is;
-        const subjectIcon = iconMap[rel.approfile_is] || '🫗';
-        const object = rel.of_approfile_name || rel.of_approfile;
-        const objectIcon = iconMap[rel.of_approfile] || '🫗';
-
-        html += `
-          <div class="relationship-flow" style="display: flex; justify-content: center; align-items: center; margin: 2rem auto; gap: 1rem;">
-            <div class="flow-box-other" 
-                 style="padding: 0.75rem 1.25rem; background-color: #b8b2db; border: 2px solid #8fa1b3; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-purple-400;"
-                 data-subject-id="${rel.approfile_is}"
-                 title="Click to explore ${subject}">
-                 ${subjectIcon} ${subject} 
-            </div>is
-            <div class="flow-box-relation" style="padding: 0.75rem 1.25rem; background-color: #d7e4e2; border: 2px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; font-size: 16px; font-style: italic; color: #4f46e5;">
-              ${rel.relationship}
-            </div>of
-            <div class="flow-box-subject" 
-                 style="padding: 0.75rem 1.25rem; background-color: #60b494; border: 4px solid #004080; border-radius: 6px; font-weight: bold; text-align: center; color: #004080; cursor: pointer; hover:bg-green-400;"
-                 data-subject-id="${rel.of_approfile}"
-                 title="Click to explore ${object}">
-               ${object} ${objectIcon}
-            </div>
-
-            </div>
-        `;
-      });
-    });
-    html += `</div>`;
-  }
-  showInformation(panel, approfileName);
-
-  container.innerHTML = html;
-
-  
-
+      items: groups[relType]
+    }));
 }
 
+function renderRelationshipGroups(groups, isOrOf, approName, iconMap) {//approName is subject of the display
+  let html = '';
+  
+  groups.forEach(group => {
+    html += `<div class="mb-4">`;
+    html += `<div class="text-base font-bold mb-2 text-indigo-700">${group.relationship}</div>`;
+    
+    group.items.forEach(rel => {
+/*
+ // DEBUG: Log the actual relationship data
+      console.log('Relationship item:', {
+        isOrOf,
+        subject: rel.approfile_is_name || rel.approfile_is,
+        subject_id: rel.approfile_is,
+        object: rel.of_approfile_name || rel.of_approfile,
+        object_id: rel.of_approfile,
+        relationship: rel.relationship
+      });
+
+*/
+//Moved the partial deconstruction from here
+
+        html += renderRelationshipFlow(group.relationship, rel, iconMap, isOrOf, approName); //approName is the subject of display
+
+/*
+      if (isOrOf === 'is') {
+        html += renderRelationshipFlow(group.relationship, rel, iconMap, 'subject'); //is this subject or approIs ?
+      } else {
+//        html += renderRelationshipFlow(ofAppro, ofApproIcon, group.relationship, subject, subjectIcon, rel, 'other'); //this is wrong. Subject and ofAppro should not change order.
+ html += renderRelationshipFlow(group.relationship,  rel, iconMap, 'other'); //approIs is always on the left & ofAppro on right.     
+} */
+    });
+    
+    html += '</div>';
+  });
+  
+  return html;
+}
+//why is rel sent which we need to use to extract the idswhile sending all the other stuff individually?
+function renderRelationshipFlow(groupRelationship, rel, iconMap, isOrOf, approName) {// but what is passed is approIs NOT approIs. 
+  //  const boxClass = boxType === 'subject' ? 'flow-box-subject' : 'flow-box-other'; // the subject of the display gets special styling. Other boxes do not.
+//console.log('groupRelationship', groupRelationship, 'isOrOf', isOrOf, 'approName:',approName,'rel:', rel);//boxclass seems to be a meanignless name with no actual styling
+//the deconstruction of items from rel have been moved here instead of above
+console.log( 'isOrOf', isOrOf, 'approName:',approName,'rel:', rel); // approname has the icon in it !
+      const approIsName = rel.approfile_is_name || rel.approfile_is;
+      const ofApproName = rel.of_approfile_name || rel.of_approfile;
+      const approIsIcon = iconMap[rel.approfile_is] || '❔';
+      const ofApproIcon = iconMap[rel.of_approfile] || '❔';
+      
+const approIsBgColor = (approName === approIsName) ? 'bg-green-100' : 'bg-blue-200'; // it would be better to compare ids, but we have the name, not the id
+const ofApproBgColor = (approName === ofApproName) ? 'bg-green-100' : 'bg-blue-200';
+// problem approName may include the icon before the approis or after the ofAppro.
+// 👥 Lin Coder   or    Counts 🎭  changed the code that finds the name - now it only selects the actual name line 77?
+
+    return `
+<div class="flex justify-center items-center my-4 gap-1">
+  <div class="flow-box px-5 py-3 ${approIsBgColor} border-4 border-blue-900 rounded-md font-bold text-blue-900 " //   cursor-pointer  hover:${approIsBgColor === 'bg-green-200' ? 'bg-green-300' : 'bg-blue-300'}
+ 
+      <!-- ICON: separate element, not clickable yet --> 
+    <span class="appro-icon cursor-pointer px-3 py-3 bg-yellow-100 hover:bg-yellow-300 rounded-full"
+      data-clicked="icon" 
+      data-content-id="${rel.approfile_is}" 
+      data-content-name="${approIsName}" 
+      title="Click to open task or survey ${approIsName}">
+      ${approIsIcon} 
+    </span>
+ 
+      <!-- NAME: click to centre this appro & redraw display --> 
+    <span class="appro-name cursor-pointer bg-gray-100 hover:bg-green-300" 
+      data-clicked="name" 
+      data-content-id="${rel.approfile_is}" 
+      data-content-name="${approIsName}" 
+      title="Click to centre on ${approIsName}"> ${approIsName} </span>
+  </div>
+~<=
+  <div class="px-5 py-3 bg-gray-100 border-1 border-blue-900 rounded-3xl font-bold text-center italic text-indigo-700">
+        ${groupRelationship}
+  </div>
+=>~
+  <div class="flow-box px-5 py-3 ${ofApproBgColor} border-2 border-purple-700 rounded-md font-bold text-blue-900  "//cursor-pointer hover:${ofApproBgColor === 'bg-green-200' ? 'bg-green-300' : 'bg-blue-300'} 
+
+     <!-- NAME: click to centre this appro & redraw display --> 
+    <span class="appro-name cursor-pointer  bg-gray-100  hover:bg-green-300" 
+      data-clicked="name" 
+      data-content-id="${rel.of_approfile}" 
+      data-content-name="${ofApproName}" 
+      title="Click to centre on ${ofApproName}"> ${ofApproName} 
+    </span>
+  
+
+     <!-- ICON: separate element, not clickable yet --> 
+    <span class="appro-icon cursor-pointer px-3 py-3 bg-yellow-100 hover:bg-yellow-300 rounded-full"
+      data-clicked="icon" 
+      data-content-id="${rel.of_approfile}" 
+      data-content-name="${ofApproName}" 
+      title="Click to open task or survey ${ofApproName}" 
+      data-clicked="icon"> 
+      ${ofApproIcon} 
+    </span>
+  </div>
+
+</div>
+  `; 
+   
+} 
+//Click the name part of the box - the selected item becomes the subject of the display. Display redrawn featuring the selected item. (Could exclude if selected is already the subject)
+//Click an icon causes a change of display type.
+// If a task icon is clicked - want to open the actual task in summary mode to check its details
+// If a survey icon is clicked want to open the survey in summary mode to check its details.
+// ALSO - the mode has now changed and the display is to show the things that the task or survey affects (what its automations do) Mode to display the automations and what things are spawned or changed.
+//That is to change the display into showing action connections instead of relations between named things.
+//
+// Need to consider how to cope with different needs- 
+//
+// 1) Click icon to convert to displaying 'verb' (actions and effects) instead of the normal 'noun' of relations between appros
+// 2) Clicking to read the details of a task or survey
+// 3) Default mode of relations between appros
+// when do we get mode 1 and when mode 2?
+//Start in mode 3. Click icon to change to mode 2. 
+//In mode 2 the icon click converts to mode 1
+
+function renderEmptySection(title) {
+  return `
+    <div class="text-center py-4 border border-purple-900 rounded-xl mb-4 cursor-pointer" data-action="relate-approfiles-dialogue">
+      <div class="text-lg font-bold text-gray-800 mb-2">${title} 🏝️</div>
+      <p class="text-gray-600">No one is an island; you can use click to relate this lonely appro.</p>
+    </div>
+  `;
+}

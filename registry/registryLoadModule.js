@@ -5,7 +5,7 @@ console.log('Imported: registry.js');
 // This is where you will add new entries as you convert more forms.
 //15:00 sept 22  the .html are now legacy, probably never used. Change made in menuListeners.js
 
-export const registry = { // this registry is for loading a new page to the right of the dashboard. 
+export const registry = { // this registry is for loading a new page to the right of the dashboard or within the dash. 
 // data-action values for admin dashboard
 
 
@@ -15,6 +15,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'howTo': () => import('../work/how/howTo.js'),
 'bug-report' :()=> import('../notes/notes.js'),
 'selector-dialogue' :()=> import('../work/select/selectRemember.js'),
+'aims' :() => import('../aims.js'),
 'plans' :() => import('../plans.js'),
 'login-signup':()=>import('../auth/login-signup.js'),
 'login':()=>import('../auth/login.js'),
@@ -37,6 +38,10 @@ export const registry = { // this registry is for loading a new page to the righ
 'steps-stats' :() => import('../work/task/steps-stats.js'),
 
 'surveys-stats' :() => import('../work/survey/survey-stats.js'),
+
+///////////          USER MANAGEMENT                  ////////////
+'user-signup-section': ()=> import('../dash/userManagementSection.js'),
+'display-temp-signups': ()=> import('../work/user/displayTempSignups.js'),
 
 
 

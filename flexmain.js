@@ -273,7 +273,7 @@ const stubName = appState.query.petitioner.Action; //legacy html to be phased-ou
 
 let registryEntry = await registry[stubName]; //send string to lookup object, get a pointer to a function (don't need await)
 
-if(!registryEntry) { console.log('Registry unknown', stubName, ' not here');}
+if(!registryEntry) { console.log('Registry unknown [', stubName, '] not here');}
 if(registryEntry) { console.log('Registry recognises', stubName, 'push details in array')
   
  // console.log('registryEntry is:', registryEntry);

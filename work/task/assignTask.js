@@ -198,7 +198,7 @@ console.log('registry createAssignment:',
     'assigned_by:',this.userId);
 
       // Save task assignment to database
-      const result = await executeIfPermitted(userId, 'createAssignment', {
+      const result = await executeIfPermitted(userId, 'createAssignment', { //what about current_step int?
         task_header_id: taskHeaderId,
         step_id: stepId,
         student_id: studentId,

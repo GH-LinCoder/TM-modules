@@ -477,7 +477,27 @@ const { data, count, error } = await supabase //this was showing bizarre behavio
   }
 },
 
+readTempSignup:{ //new 13:46 Jan 13 2026
+  metadata: {
+    tables: ['temp_signups'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async  (supabase, userId) =>{
+    console.log('readTempSignup()');
+    const { data, error } = await supabase
+    .from('temp_signups')
+    .select('*'); 
 
+    if (error) {
+      console.error('Error reading temp signups:', error.message);
+     // throw new Error('Failed to count.');
+    }
+//    console.log('count',count);
+    return data// if use {count} it would be in form  {count: 23}
+  }
+},
 
 
 surveysCount:{
@@ -794,6 +814,30 @@ createApprofileRelation: {
   }
 },
 
+//APPRO PERMISSIONS
+createPermissionRelation:{
+  metadata: {
+    tables: ['permission_relations'],
+    columns: ['id' ,'sort_int', 'approfile_is', 'relationship', 'of_approfile', 'created_at'],
+    type: 'INSERT',
+    requiredArgs: ['supabase', 'userId', 'approfile_is', 'relationship', 'of_approfile']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfile_is, relationship, of_approfile } = payload;
+    console.log('writePermissionRelation()', payload);
+
+    const { data, error } = await supabase
+      .from('permission_relations')
+      .insert([{ 
+        approfile_is:approfile_is, 
+        relationship:relationship, 
+        of_approfile: of_approfile }]);
+
+    if (error) throw error;
+    return data;
+
+  }
+},
 
 
 
@@ -835,6 +879,7 @@ console.log('updtaeTaskStep:', stepDescription);
 },
 
 //TASKS
+/*
 assignmentUpdateStep:{
   // Metadata for the permissions system
   metadata: {
@@ -860,6 +905,55 @@ handler: async  (supabase, userId, payload) =>{
   return data// returns an empty array. Length=0  ?
 }
 },
+*/
+assignmentUpdateStep: {
+  // Metadata for the permissions system
+  metadata: {
+    tables: ['task_assignments'],
+    columns: [],
+    type: 'UPDATE',
+    requiredArgs: ['supabase', 'userId', 'assignment_id', 'step_id']
+    // This could also hold other data like required user roles or permissions
+  }, // ← MISSING COMMA WAS HERE!
+  
+  // The actual function that interacts with the database
+  handler: async (supabase, userId, payload) => {
+    const { step_id, assignment_id } = payload;
+    console.log('assignmentUpdateStep() stepId:', step_id, 'assignment_id:', assignment_id);
+    
+    // First, get the current assignment record
+    const { data: currentData, error: fetchError } = await supabase
+      .from('assignments')
+      .select('assignment')
+      .eq('id', assignment_id)
+      .single();
+    
+    if (fetchError) {
+      console.error('Error fetching assignment:', fetchError.message);
+      throw new Error('Failed to fetch assignment.');
+    }
+    
+    // Update the JSONB assignment field with preserved existing data + new step_id
+    const updatedAssignment = {
+      ...currentData.assignment,
+      step_id: step_id
+    };
+    
+    const { data, error } = await supabase
+      .from('assignments')
+      .update({ assignment: updatedAssignment })
+      .eq('id', assignment_id);
+      
+    if (error) {
+      console.error('Error updating assignment:', error.message);
+      throw new Error('Failed to update assignment.');
+    }
+    
+    return data; // returns the updated record
+  }
+},
+
+
 
 //APPRO
 updateApprofile: {
@@ -1097,6 +1191,67 @@ readApprofileRelationships: {
       profileMap[ap.id] = icon;
     }
 //console.log('profileMap',profileMap);
+    return {
+      is: isRels.data || [],
+      of: ofRels.data || [],
+      iconMap:profileMap    
+    };
+  }
+},
+
+//APPRO PERMISSIONS
+XreadPermissionRelationById: {
+  metadata: {
+    tables: ['permissions_relations_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfileId } = payload;
+
+    const isRels = await supabase
+      .from('permissions_relations_view')
+      .select('*')
+      .eq('approfile_is', approfileId);
+
+    const ofRels = await supabase
+      .from('permissions_relations_view')
+      .select('*')
+      .eq('of_approfile', approfileId);
+
+      const ids = [
+        approfileId,                                   // subject itself
+        ...isRels.data.map(r => r.of_approfile),       // of-appros
+        ...ofRels.data.map(r => r.approfile_is)        // is-appros
+      ];
+       
+//console.log('ids:',ids);
+    const profiles = await supabase
+      .from('app_profiles')
+      .select('id, auth_user_id, survey_header_id, task_header_id')
+      .in('id', ids);
+//console.log('profiles:',profiles);
+    // build a lookup map of appro id → icon
+    const profileMap = {};
+    for (const ap of profiles.data || []) {
+      let icon = '🎭'; // default abstract
+      if (ap.auth_user_id) {
+        icon = '👥'; // human
+      } else if (ap.survey_header_id) {
+        icon = '📜'; // survey
+      } else if (ap.task_header_id) {
+        icon = '🔧'; // task
+      }
+      profileMap[ap.id] = icon;
+    }
+//console.log('profileMap',profileMap);
+console.log('DEBUG: Returning permissions data:', {
+  is: isRels.data || [],
+  of: ofRels.data || [],
+  iconMap: profileMap
+});
+
     return {
       is: isRels.data || [],
       of: ofRels.data || [],
@@ -1374,10 +1529,10 @@ readManagerAssignments: {
     if (error) throw error;
     return data;
   }
-}
-,
+},
 
-readPermissionRelationships: {
+//RELATIONSHIPS PERMISSIONS
+readPermissionRelationships: {//HIGH SECURITY ISSUE
   metadata: {
     tables: [],
     columns: [],
@@ -1385,11 +1540,34 @@ readPermissionRelationships: {
     requiredArgs: []
   },
   handler: async (supabase, userId, payload) => {
-    console.log('readPermissionRelationships()');
+    console.log('readPermissionRelations()');
     const { data, error } = await supabase
       .from('permission_relationships')
-      .select('*')
-      .order('category') // category is in permission_relationships
+      .select('*') //readPermissionRelations
+      //.order('category') // category is in permission_relations
+      .order('name');
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+readPermissionRelationsById: {//HIGH SECURITY ISSUE
+  metadata: {
+    tables: [],
+    columns: [],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+   const { approfileId } = payload;
+   
+    console.log('readPermissionRelations()');
+    const { data, error } = await supabase
+      .from('permission_relations_view')
+      .select('*') //readPermissionRelations
+      .eq('approfile_is', approfileId)
+      .order('category') // category is in permission_relations
       .order('name');
 
     if (error) throw error;
@@ -1601,15 +1779,34 @@ handler: async(supabase, userId, payload) => {
 const {rows} = payload; 
 const { error } = await supabase
 .from('notes_categorised')
-.upsert(rows, { //permission system doesn't know 'upsert' 
-  onConflict: ['note_id', 'note_category_id'],
-  ignoreDuplicates: true
+.insert(rows, { //changed from 'upsert' because permission system doesn't know 'upsert' 
+  //onConflict: ['note_id', 'note_category_id'],
+  //ignoreDuplicates: true
 });
 
 if (error) {
 console.error('❌ Error linking note to categories:', error);
 return error;}
 return null; // success
+}
+},
+
+readNoteCategorised:{
+metadata: {
+  tables:['notes_categorised'],
+  columns:['note_id', 'note_category_id'],
+  requiredArgs:['rows']
+},
+handler: async(supabase, userId, payload) => {
+
+const { data, error } = await supabase
+.from('notes_categorised')
+.select('*');
+
+if (error) {
+console.error('❌ Error reading notes_categorised:', error);
+return error;}
+return data; // success
 }
 },
 

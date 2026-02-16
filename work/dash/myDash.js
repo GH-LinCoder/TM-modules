@@ -234,7 +234,7 @@ function getTemplateHTML() {
                        <ul class="list-disc list-inside mt-2 text-sm text-blue-500">
                        <li>If you have been related to another person or a group or a task or some abstract concept here is where you can explore</li>
                        <li>You can see who you have been related to. This may be a person or an interest group or a branch or an unlimited number of things</li>
-                       <li>Clicking on whatever you are related to shows who else is connected to that</li>
+                       <li>If you view this on adminDash & your have permissions then clicking on whatever you are related to shows who else is connected to that item</li>
                         <li>If you find that you aren't connected to much or you seem to be oddly connected to something here is what to do...</li>
                         <li> If you want to be more connected try seeking out surveys to have your say, or assigning yourself to tasks to do your bit. These surveys and tasks are likely to automatically connect you to others</li>
                         <li> If you see connections that you don't think are appropriate, please message an admin.</li>

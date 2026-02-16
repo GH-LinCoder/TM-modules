@@ -8,6 +8,44 @@ import { createSupabaseClient } from '../db/supabase.js';
 // The Supabase client is created once and passed to the functions.
 const supabase = createSupabaseClient();
 
+
+async function execute(userId, action, payload) {
+  const funcEntry = registryWorkActions[action];
+ console.log(`Execute( '${action}'...`);
+  let result;
+
+  try {
+    result = await funcEntry.handler(supabase, userId, payload);
+  } catch (error) {
+    console.error(`funcEntry.handler:`, error);
+    throw error; // optional: rethrow to bubble up
+  }
+if (Array.isArray(result) && result.length === 0) {
+  console.warn("⚠️ Possible RLS denial: query returned 0 rows. Check the console log for what was the proximate function call, the permissions tables & Postgress logs for clues?");
+}
+  //console.log('result:', result);
+  return result || [];
+}
+
+
+export async function executeIfPermitted(userId, action, payload={}) {
+ console.log('executIfPermitted()userId,action,-payload:',userId ,action, payload);
+
+  const funcEntry = registryWorkActions[action];//does this execute?
+
+  if (!funcEntry) {
+    throw new Error(`Function '${action}' not found in the registry.`);
+  }
+  return await execute(userId, action, payload);
+}
+
+
+
+
+
+
+
+
 /**   version 13:05 Sept 13 2025
  * A private, centralized function that executes a registered database operation.
  * It is only ever called from the permission-checked public function below.
@@ -62,24 +100,7 @@ console.log(sql);
 /////  */
 
 
-async function execute(userId, action, payload) {
-  const funcEntry = registryWorkActions[action];
- console.log(`Execute( '${action}'...`);
-  let result;
 
-  try {
-    result = await funcEntry.handler(supabase, userId, payload);
-  } catch (error) {
-    console.error(`funcEntry.handler:`, error);
-    throw error; // optional: rethrow to bubble up
-  }
-if (Array.isArray(result) && result.length === 0) {
-  console.warn("⚠️ Possible RLS denial: query returned 0 rows. Check the permissions matrix for clues?");
-}
-
-  //console.log('result:', result);
-  return result || [];
-}
 
 
 
@@ -101,38 +122,7 @@ const TEST_permission_db_function = false; //was set 'true' to connect to an old
 //but the new RLS based is_permitted won't know the auth user and will always say denied.
 
 
-export async function executeIfPermitted(userId, action, payload={}) {
- console.log('executIfPermitted()userId,action,-payload:',userId ,action, payload);
-//userId is null 19:54 Jan 6  payload is approfile:null
-  const funcEntry = registryWorkActions[action];//does this execute?
 
-  if (!funcEntry) {
-    throw new Error(`Function '${action}' not found in the registry.`);
-  }
-
-if (TEST_permission_db_function && action!="getAuthenticatedUser")
-  
-{userId = payload.authUserId;console.log('executeIfPermitted - DATABASE userId:',userId);
-
-  // public.is_permitted(p_operation, p_row_id, p_table_name)
-  const{data,error}=await supabase.rpc('is_permitted',{p_operation:action,p_row_id:null, p_table_name:null}); //the old functions don't pass rowId. Therefore only generic permission can be granted
-  if (error || !data) {
-    console.log(`Permission denied: User '${userId}' does not have access to function '${action}'.`, error);
-   // throw new Error(`Permission denied: User '${userId}' does not have access to function '${action}'.`);
-  }
-  if(!data)  console.log(`Permission denied: User '${userId}' does not have access to function '${action}'`);
-}
-else {console.log('executeIfPermitted OLD');
-  // Perform the critical security check.  //the placeholder 'permissions' function is to be rplaced by the above call to a RPC database "is_permitted". Later registry function all migrate to rpc
-  const hasPermission = permissions(userId, action, payload);
-  if (!hasPermission) {// one of many possible problems
-    throw new Error(`Permission denied: User '${userId}' does not have access to function '${action}'.`);
-  }
-}
-  // If the check passes, call the private execute function with all arguments.
-  // We return the result of this call directly.
-  return await execute(userId, action, payload);
-}
 
 
 
@@ -147,4 +137,3 @@ else {console.log('executeIfPermitted OLD');
  * @param {...any} args The arguments to pass to the handler function.
  * @returns {Promise<any>} The result of the database operation.
  */
-

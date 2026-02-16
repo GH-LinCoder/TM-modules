@@ -33,14 +33,14 @@ export async function executeAutomations(automations, subject, autoPetition){//a
   };
 
 //autoPetition.automation_id = auto.id;
-
+/*
 console.log('@@@@@@ automation',auto,
   'auto_id', auto.id,
   'SOURCE_data',auto.source_data, 
   'TARGET_data', auto.target_data);// auto.target undefined jan 25 20:00
 
 console.log('type:',auto.target_data.target.type ,'auto.target_data.target.header:',auto.target_data.target.header);//id of the survey
-
+*/
 const type = auto.target_data.target.type;
 const autoId = auto.id;
 
@@ -48,7 +48,7 @@ const header = auto.target_data.target.header;
 const secondary = auto.target_data.target.secondary;
 
 const payload = auto.target_data.payload;
-console.log('type',type,'autoId',autoId,'header',header,'secondary',secondary,'payload',payload);
+//console.log('type',type,'autoId',autoId,'header',header,'secondary',secondary,'payload',payload);
 if (type === 'survey') { console.log('→ Calling autoAssignSurvey'); autoAssignSurvey(autoId,header, autoPetitionForThisAuto);}
 else
   if (type === 'task') { console.log('→ Calling autoAssignTask');  autoAssignTask(autoId,header,secondary, autoPetitionForThisAuto);} // needs student_id and manager_id
@@ -67,14 +67,14 @@ console.log('autoAssignSurvey()','auto_id:',autoId,'surveyid:',header, 'autoPeti
 
 const autoParameters ={'survey_header_id':header, 'student_id':autoPetition.appro_id, 'automation_id':autoPetition.automation_id}; // assigning a survey always goes to the head of the survey not a part
 // survey_header_id is the survey being read.  We need the target survey
-console.log('autoParameters',autoParameters);
-console.log('autoPetition',autoPetition);
+//console.log('autoParameters',autoParameters);
+//console.log('autoPetition',autoPetition);
 // Call RPC
 const autoResponse =await supabase.rpc('execute_automation', {
   p_auto_petition: autoPetition,
   p_auto_parameters: autoParameters
 });
-console.log('autoResponse:',autoResponse);
+//console.log('autoResponse:',autoResponse);
 return;
 
 
@@ -101,32 +101,32 @@ const studentId = autoPetition.appro_id; // the current subject is assumed to be
 const managerId = appState.query.defaultManagerId; // the default manager is assigned as the assigner unless set in the automation
 // func needs const { task_header_id, task_step_id, student_id, manager_id, assigned_by_automation } = payload;
 const autoParameters ={'task_header_id':header, 'task_step_id':secondary, 'student_id':studentId, 'manager_id':managerId, 'automation_id':autoPetition.automation_id};
-console.log('autoParameters',autoParameters);
-console.log('autoPetition',autoPetition);
+//console.log('autoParameters',autoParameters);
+//console.log('autoPetition',autoPetition);
 // Call RPC
 const autoResponse =await supabase.rpc('execute_automation', {
   p_auto_petition: autoPetition,
   p_auto_parameters: autoParameters
 });
-console.log('autoResponse:',autoResponse);
+//console.log('autoResponse:',autoResponse);
 return;
 
 }
 
 
 async function autoRelateAppros(autoId,payload, autoPetition) {//Jan 26. When a task was also added to the answer, the error message in this 'relate' function says missing task, student or step. Why is the relate being treated as an assign task? 
-  console.log('autoRelateAppros(): autoId',autoId, 'payload:',payload);//16:40 appro_is WRONG id here, but was right in line 17
-  console.log('autoPetition', autoPetition);
+  //console.log('autoRelateAppros(): autoId',autoId, 'payload:',payload);//16:40 appro_is WRONG id here, but was right in line 17
+  //console.log('autoPetition', autoPetition);
 
   const autoParameters ={'appro_is_id':autoPetition.appro_id, 'relationship':payload.relationship, 'of_appro_id':payload.of_appro_id, 'automation_id':autoPetition.automation_id};
-  console.log('autoParameters',autoParameters);
-  console.log('autoPetition',autoPetition);
+  //console.log('autoParameters',autoParameters);
+  //console.log('autoPetition',autoPetition);
 // Call RPC
  const autoResponse = await supabase.rpc('execute_automation', {
     p_auto_petition: autoPetition,
     p_auto_parameters: autoParameters
   });
-console.log('autoResponse:',autoResponse);
+//console.log('autoResponse:',autoResponse);
 return;
 /*
   try{//func needs  const { approfile_is, relationship, of_approfile, assigned_by_automation } = payload; assigned by is a uuid

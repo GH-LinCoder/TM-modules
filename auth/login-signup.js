@@ -19,35 +19,35 @@ function getTemplateHTML() {
         <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Update Password</button>
       </form>
     
-      <div id="update-password-error" class="text-red-500 text-sm hidden">
+      <div id="update-password-error" class="text-red-500 text-lg hidden">
       </div>
-      <div id="update-password-success" class="text-green-500 text-sm hidden">Password updated successfully!
+      <div id="update-password-success" class="text-green-500 text-lg hidden">Password updated successfully!
       </div>
     </div>
 
       <!-- Login Form -->
         <div id="loginForm" class="auth-form bg-white p-6 rounded-lg shadow">
           <h2 class="text-xl font-bold text-center mb-4">Log In</h2>
-          <div id="login-error" class="text-red-500 text-sm hidden"></div>
+          <div id="login-error" class="text-red-500 text-lg hidden"></div>
           <form class="space-y-3">
 
             <label for="email">Email:</label>
             <input type="email" name='email' id="login-email" placeholder="Click to autoload" class="w-full p-2 border rounded" required autocomplete='email'/>
 
-            <label for="current-password">Password:</label>
+            <label for="current-password">Password:</label><button id="toggle-login-password" type="button" aria-label="Show password as plain text. Warning: this will display your password on the screen."> [ 👁️ Show ] </button>
             <input type="password" name='current-password' id="login-password" placeholder="Click to autoload" class="w-full p-2 border rounded" autocomplete='current-password' aria-describedby="password-constraints"   required />
      
             <button type="submit" id="loginBtn" class="w-full bg-green-600 text-white py-2 rounded">Log In</button>
           </form>
            <p class="text-center mt-2">
-          <button id="logoutBtn" class="text-sm text-green-600 hover:underline">Log out</button>
+          <button id="logoutBtn" class="text-lg text-green-600 hover:underline">Log out</button>
           </p>
          
-          <p class="text-center mt-2">
-            <button id="showReset" class="text-sm text-blue-600 hover:underline">Forgot password?</button>
-          </p>
           <!--p class="text-center mt-2">
-            <!--button id="showSignup" class="text-sm text-gray-600 hover:underline">Create account</button -->
+            <button id="showReset" class="text-lg text-blue-600 hover:underline">Forgot password?</button>
+          </p-->
+          <!--p class="text-center mt-2">
+            <!--button id="showSignup" class="text-lg text-gray-600 hover:underline">Create account</button -->
           </p -->
         </div>
 
@@ -75,9 +75,9 @@ function getTemplateHTML() {
           </p>
         
 
-        <div id="signup-error" class="text-red-500 text-sm hidden">
+        <div id="signup-error" class="text-red-500 text-lg hidden">
         </div>
-          <div id="signup-success" class="text-green-500 text-sm hidden">Check your email to confirm!
+          <div id="signup-success" class="text-green-500 text-lg hidden">Check your email to confirm!
           </div>
     </div-->
 
@@ -86,8 +86,8 @@ function getTemplateHTML() {
       <!-- Reset Form -->
         <div id="resetForm" class="auth-form bg-white p-6 rounded-lg shadow hidden">
           <h2 class="text-xl font-bold text-center mb-4">Reset Password</h2>
-          <div id="reset-error" class="text-red-500 text-sm hidden"></div>
-          <div id="reset-success" class="text-green-500 text-sm hidden">Check your email for reset link!</div>
+          <div id="reset-error" class="text-red-500 text-lg hidden"></div>
+          <div id="reset-success" class="text-green-500 text-lg hidden">Check your email for reset link!</div>
           <form class="space-y-3">
             <label for="email">Email:</label>
             <input type="email" name='email' id="reset-email" placeholder="Enter the email you registered with" class="w-full p-2 border rounded" autocomplete='email' title='You will be sent a link' required />
@@ -152,6 +152,15 @@ const supabase = createSupabaseClient();
     }
   };
 
+document.getElementById('toggle-login-password').addEventListener('click', function() {
+  const passwordInput = document.getElementById('login-password');
+  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  passwordInput.setAttribute('type', type);
+  this.textContent = type === 'password' ? ' [ show 👁️ ] ' : ' [ hide ❎  ] ';
+});
+
+
+
 // Logout
 
 document.getElementById('logoutBtn').addEventListener('click', async (e) => { 
@@ -193,9 +202,9 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
   };
 
 // nav buttons
-  document.getElementById('showLogin').onclick = () => showForm('loginForm');
+//  document.getElementById('showLogin').onclick = () => showForm('loginForm');
  // document.getElementById('showSignup').onclick = () => showForm('signupForm');
-  document.getElementById('showReset').onclick = () => showForm('resetForm');
+//  document.getElementById('showReset').onclick = () => showForm('resetForm');
   document.getElementById('backToLogin').onclick = () => showForm('loginForm');
 //document.getElementById('newPasswordForm').onclick = () => showForm('newPasswordForm');
 

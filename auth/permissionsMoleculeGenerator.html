@@ -1,57 +1,119 @@
-<!DOCTYPE html>
+<!DOCTYPE html> <!-- jan 27 2026 -->
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>12:55 Nov 4</title>
-
+  <title>Generator</title>
+<h5>Generate molecules and relationship permissions from a javascript function</h5>
   <body>
-<textarea id="code"></textarea>
+<lu>
+<li>Copy the function from the works registry.</li> 
+<li>Put in text area</li>
+<li>click [generate]</li>
+<li>Take sql to supabase and run there</li>
+<li>The molecule_required and the permission_relationships tables will have the needed data</li> 
+<li>The function_table_access view auto reflects the changes</li>
+<li>In permission_molecule_required  add a generic scope appo id</li>
+</lu>
+
+<textarea id="code" rows="15" cols="100"></textarea>
 <button onclick="run()">Generate</button>
 <pre id="output"></pre>
-
-<div>
-
-
-</div>
-
+    
 </body>
 
-
 <script>
-function run() {
-    const code = document.getElementById("code").value;
-    const atoms = extractAtoms(code);
-    document.getElementById("output").textContent = atoms.join("\n");
+console.log('generator loaded');
+
+function run() { 
+  const code = document.getElementById("code").value; 
+  const baseName = extractTitle(code); 
+  const { operationsMap, table } = extractOperationsAndAtoms(code);
+  
+  const sql = generateSQL(baseName, operationsMap, table);
+  document.getElementById("output").textContent = JSON.stringify({ baseName, operationsMap, table }, null, 2) + "\n\n" + sql;
 }
 
-export function extractAtoms(handlerCode) {
-    const atoms = new Set();
+function extractTitle(handlerCode) {
+  // Matches: createApprofile: { 
+  const match = handlerCode.match(/^\s*([\w_]+)\s*:/m); 
+  return match ? match[1] : null; 
+}
 
-    // 1. Extract table name from .from('table')
-    const fromMatch = handlerCode.match(/\.from\(['"`]([\w_]+)['"`]\)/);
-    const table = fromMatch ? fromMatch[1] : null;
+function generateSQL(baseName, operationsMap, table) { 
+  if (!baseName) return "-- ERROR: Could not extract name";
+  if (!table) return `-- ERROR: No table found for ${baseName}`;
+  if (Object.keys(operationsMap).length === 0) return `-- WARNING: No operations found for ${baseName}`;
+  
+  let sqlOutput = '';
+  
+  // Generate one INSERT per operation type
+  Object.entries(operationsMap).forEach(([operation, atoms]) => {
+    const permissionName = `${baseName}_${operation}`;
+    const escapedAtoms = atoms.map(a => `'${a.replace(/'/g, "''")}'`);
+    const arrayLiteral = `ARRAY[${escapedAtoms.join(", ")}]`;
+    
+    sqlOutput += `
+INSERT INTO public.permission_molecule_required (name, molecule, table_name, operation)
+VALUES ('${permissionName}', ${arrayLiteral}, '${table}', '${operation}');
 
-    if (!table) return [];
+INSERT INTO public.permission_relationships(name) 
+VALUES ('(]${permissionName}[)');
+`;
+  });
+  
+  return sqlOutput.trim();
+}
 
-    // 2. Detect CRUD action
-    let action = null;
-    if (/\.select\(/.test(handlerCode)) action = "SELECT";
-    if (/\.insert\(/.test(handlerCode)) action = "INSERT";
-    if (/\.update\(/.test(handlerCode)) action = "UPDATE";
-    if (/\.delete\(/.test(handlerCode)) action = "DELETE";
+function extractOperationsAndAtoms(handlerCode) {
+  const operationsMap = {};
+  const columns = new Set();
+  
+  // 1. Extract table name from .from('table')   
+  const fromMatch = handlerCode.match(/\.from\(['"`]([\w_]+)['"`]\)/);
+  const table = fromMatch ? fromMatch[1] : null;
+  console.log('table', table);
+  if (!table) return { operationsMap: {}, table: null };
 
-    // 3. Extract columns from const destructuring
-    const constMatch = handlerCode.match(/const\s*{\s*([^}]+)\s*}\s*=\s*payload/);
-    if (constMatch) {
-        const cols = constMatch[1].split(",").map(c => c.trim());
-        cols.forEach(col => atoms.add(`${action}@${table}#${col}`));
-    }
+  // 2. Detect ALL CRUD operations
+  const detectedOps = [];
+  if (/\.select\(/.test(handlerCode)) detectedOps.push("SELECT");
+  if (/\.insert\(/.test(handlerCode)) detectedOps.push("INSERT");
+  if (/\.update\(/.test(handlerCode)) detectedOps.push("UPDATE");
+  if (/\.delete\(/.test(handlerCode) || /\.remove\(/.test(handlerCode)) detectedOps.push("DELETE");
+  
+  console.log('detected operations', detectedOps);
+  
+  // 3. Extract columns from const destructuring
+  const constMatch = handlerCode.match(/const\s*{\s*([^}]+)\s*}\s*=\s*payload/);
+  console.log('constMatch', constMatch);
 
-    // 4. Extract columns from .eq('column', ...)
-    const eqMatches = [...handlerCode.matchAll(/\.eq\(['"`]([\w_]+)['"`]/g)];
-    eqMatches.forEach(m => atoms.add(`${action}@${table}#${m[1]}`));
+  if (constMatch) {
+    const cols = constMatch[1].split(",").map(c => c.trim().replace(/\s*:.+/, ''));
+    cols.forEach(col => columns.add(col));
+    console.log('cols from destructuring', cols);
+  }
 
-    return [...atoms];
+  // 4. Extract columns from .eq('column', ...)
+  const eqMatches = [...handlerCode.matchAll(/\.eq\(['"`]([\w_]+)['"`]/g)];
+  eqMatches.forEach(m => columns.add(m[1]));
+  console.log('cols from .eq()', [...columns]);
+  
+  // 5. Create atoms for each operation
+  detectedOps.forEach(operation => {
+    const atoms = [];
+    
+    // Add column-specific atoms
+    columns.forEach(col => {
+      atoms.push(`${operation}@${table}#${col}`);
+    });
+    
+    // Add table-level wildcard atom
+    atoms.push(`${operation}@${table}#*`);
+    
+    operationsMap[operation] = atoms;
+  });
+
+  return { operationsMap, table };
 }
 </script>

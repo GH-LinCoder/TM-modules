@@ -243,7 +243,43 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 </div>
 
 
-<!-- Task Management -->
+
+<!-- User Management -->
+ <div class="bg-orange-100 rounded-lg shadow p-6" data-section='user-management' data-destination='user-management'>
+   <h2 class="text-lg font-semibold mb-2">User Management </h2>
+   <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
+   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+        <!-- Signup-confirmed -->
+    <div class="bg-orange-50 border border-blue-200 rounded-lg p-4" data-action="signup-stats">
+      <h3 class="text-sm font-medium text-blue-700 mb-1">Confirmed signups</h3>
+      <p class="text-2xl font-bold text-blue-900" data-value="signup-count">?</p>
+      <p class="text-xs text-blue-600">Signed-up, and confirmed</p>
+      <p class="text-xs text-blue-400 mt-1" data-delta="confirmed-month">+? new this month</p>
+    </div>
+
+<!-- New signups -->    
+    <div class="bg-yellow-100 border border-orange-200 rounded-lg p-4" data-action='user-signup-section'>
+      <p class="text-3xl font-bold text-yellow-900" data-value="temp_signup_table">?</p>
+      <h3 class="text-sm font-medium text-yellow-700">temp signup table </h3>
+      <p class="text-xs text-gray-600">See who is in the signup table and what stage they are at</p>
+    </div>
+
+<!-- Grant permissions -->
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4"  data-action='open-permissions-dialogue'>
+      <h3 class="text-sm font-medium text-gray-800">Grant User Permissions</h3>
+      <p class="text-xs text-gray-500">Manage user permissions by relating appros</p>
+    </div>
+
+
+
+
+  </div>
+</div>
+
+
+
+    <!-- Task Management -->
 <div class="bg-green-100 rounded-lg shadow p-6" data-section='task-management' data-destination='task-management'>
   <h2 class="text-lg font-semibold mb-2">Task Management 🔧</h2>
   <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
@@ -491,10 +527,10 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <p class="text-sm text-gray-500 mb-4">System configuration and administrative settings</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('User Roles not yet implemented')" data-action='open-permissions-dialogue'>
-      <h3 class="text-sm font-medium text-gray-800">User Roles</h3>
+    <!--div class="bg-gray-50 border border-gray-200 rounded-lg p-4" data-action='open-permissions-dialogue'>
+      <h3 class="text-sm font-medium text-gray-800">Grant permission</h3>
       <p class="text-xs text-gray-500">Manage user permissions and role assignments</p>
-    </div>
+    </div-->
 
     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('Rewards not yet implemented')">
       <h3 class="text-sm font-medium text-gray-800">Rewards</h3>

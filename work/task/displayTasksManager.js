@@ -107,7 +107,7 @@ let manager = await resolveSubject();
 if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 text-center py-8">You are not managing any tasks.</div>`;
             return;} 
             else 
-    try {console.log('try readManagerAss..',managerId);
+    try {//console.log('try readManagerAss..',managerId);
         const assignments = await executeIfPermitted(userId, 'readManagerAssignments', {
             manager_id: managerId
         });
@@ -120,16 +120,16 @@ if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 
         const cardContainer = panel.querySelector('#managerTaskCards');
         
         for (const assignment of assignments) {
-            console.log('task header:',assignment.task_header);
+            //console.log('task header:',assignment.task_header);
             const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', {
                 task_header_id: assignment.assignment.task_header
             });
 
  const taskExternalURL = assignment.task_external_url;
-                  console.log('assignment.',assignment,'   ',assignment.assignment);
+                // console.log('assignment.',assignment,'   ',assignment.assignment);
 
-
-            const currentStep_order = assignment.current_step;//student uses this as currentStep
+// current_step = null 22:32 Feb 13  The table has not had the current_step written to it
+            const currentStep_order = assignment.step_order;//student uses this as currentStep
            //   const currentStep = assignment.step_order; // in student this works. Odd
             const currentStep = taskSteps.find(s => s.step_order === currentStep_order);//different
             const numberOfSteps = taskSteps.length;
@@ -153,8 +153,8 @@ if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 
 
 
         // Decide how to render the external URL
-    let externalContent = ''; console.log('taskExternalURL:',taskExternalURL);
-    if (taskExternalURL) { console.log('taskExternalURL: true');
+    let externalContent = ''; //console.log('taskExternalURL:',taskExternalURL);
+    if (taskExternalURL) {// console.log('taskExternalURL: true');
       if (taskExternalURL.startsWith('<iframe')) { console.log('startsWith(<iframe');//okay to here
         // Treat as raw iframe markup
         externalContent = `
@@ -185,7 +185,7 @@ if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 
                     <div class="text-sm text-gray-500">Student: ${assignment.student_name}</div>
                 </div>
 
-    <div class="rounded-lg p-6 shadow-md border relative"> ${assignment.task_description}</div> 
+    <div class="rounded-lg p-6 shadow-md border relative whitespace-pre-line" > ${assignment.task_description}</div> 
     ${externalContent}
                 <div class="flex flex-row items-center justify-center gap-6">
                     ${renderStepCard(previousStep, 'gray', 'Previous Step')}
@@ -303,10 +303,10 @@ function attachEventListeners(panel, userId) {
                 button.textContent = 'Moving...';
                 
                 try {
-                    await executeIfPermitted(userId, 'assignmentUpdateStep', {
+                    await executeIfPermitted(userId, 'assignmentUpdateStep', { //fails 22:00 Feb 13
                         assignment_id: assignmentId,
                         step_id: stepId
-                    });
+                    }); //even if it worked what about the step number? That isn't being changed.
                     
                     showToast('Student moved to next step!', 'success');
                     

@@ -11,10 +11,39 @@ const userId = appState.query.userId;
 
 console.log('🔥 relateApprofiles.js: START');
 
-export function render(panel, query = {}) {
+export function renderPermissions(panel,query={},relationType){
+    panel.innerHTML = getTemplateHTML();
+   const dialog = panel.querySelector('[data-form="relateDialog"]');
+  const form = panel.querySelector('[data-form="relateForm"]');
+  const approfile1Select = panel.querySelector('[data-form="approfile1Select"]');
+  const approfile2Select = panel.querySelector('[data-form="approfile2Select"]');
+  const relationshipSelect = panel.querySelector('[data-form="relationshipSelect"]');
+  const relateBtn = panel.querySelector('[data-form="relateBtn"]');
+  const informationFeedback = panel.querySelector('[data-task="information-feedback"]');
+
+  init(panel, {
+    dialog,
+    form,
+    approfile1Select,
+    approfile2Select,
+    relationshipSelect,
+    relateBtn,
+    informationFeedback,
+    relationType
+  });  
+}
+
+
+
+export function render(panel, query = {}, relationType) {
   console.log('relateApprofiles.js render() called');
   panel.innerHTML = getTemplateHTML();
-  
+/*  
+let sourceTable=null;
+if(relationType === 'permissionRelation') sourceTable = 'permission_relationships';
+else if (relationType === 'ordinaryRelation') sourceTable ='relationships'; 
+else {console.log('relationType unknown', relationType) }
+*/
   // DOM elements
   const dialog = panel.querySelector('[data-form="relateDialog"]');
   const form = panel.querySelector('[data-form="relateForm"]');
@@ -31,7 +60,8 @@ export function render(panel, query = {}) {
     approfile2Select,
     relationshipSelect,
     relateBtn,
-    informationFeedback
+    informationFeedback,
+    relationType
   });
      //     panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
@@ -106,7 +136,7 @@ function getTemplateHTML() {
 }
 
 function init(panel, elements) {
-  const { dialog, form, approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback } = elements;
+  const { dialog, form, approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback, relationType } = elements;
   
   console.log('relateApprofiles.js init()');
   
@@ -125,7 +155,8 @@ function init(panel, elements) {
     approfile2Select,
     relationshipSelect,
     relateBtn,
-    informationFeedback
+    informationFeedback,
+    relationType
   }));
 
   // Update button state on change
@@ -149,7 +180,7 @@ function init(panel, elements) {
   }));
 
   // Load relationships
-  populateRelationshipsDropdown(relationshipSelect);
+  populateRelationshipsDropdown(relationshipSelect, relationType);
   
   // Clipboard integration
   populateFromClipboard({
@@ -167,10 +198,17 @@ function init(panel, elements) {
   });
 }
 
-async function populateRelationshipsDropdown(relationshipSelect) {
-  try {
-    const relationships = await executeIfPermitted(userId, 'readRelationships');
+async function populateRelationshipsDropdown(relationshipSelect, relationType='ordinaryRelation') {
+      console.log('populateRelationshipsDropdown relationType:', relationType);
+
+    try { let relationships = []
     
+    if(relationType === 'ordinaryRelation') relationships = await executeIfPermitted(userId, 'readRelationships');
+    else if(relationType === 'permissionRelation') relationships = await executeIfPermitted(userId, 'readPermissionRelationships');
+    else {
+      console.log('relationType unknown', relationType);
+      throw new Error('Unknown relation type: ' + relationType);
+    }
     if (!relationships || relationships.length === 0) {
       throw new Error('No relationships found');
     }
@@ -254,7 +292,7 @@ function updateSubmitButtonState({ approfile1Select, approfile2Select, relations
   const approfile1Selected = approfile1Select?.value !== '';
   const approfile2Selected = approfile2Select?.value !== '';
   const relationshipSelected = relationshipSelect?.value !== '';
-
+//could contain check if the selected values are the same as the passed values. If so disable button & text displayed to 'waiting for change'
   if (relateBtn) {
     relateBtn.disabled = !(approfile1Selected && approfile2Selected && relationshipSelected);
     if (approfile1Selected && approfile2Selected && relationshipSelected) {
@@ -263,7 +301,7 @@ function updateSubmitButtonState({ approfile1Select, approfile2Select, relations
   }
 }
 
-async function handleRelate(e, { approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback }) {
+async function handleRelate(e, { approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback, relationType }) {
   e.preventDefault();
   console.log('handleRelate()');
   relateBtn.disabled = true;
@@ -281,19 +319,31 @@ async function handleRelate(e, { approfile1Select, approfile2Select, relationshi
   try {
     relateBtn.textContent = 'Creating relationship...';
     
+if(relationType ==='ordinaryRelation'){
+
     const newRelation = await executeIfPermitted(userId, 'createApprofileRelation', {
       approfile_is,
       of_approfile,
       relationship
     });
+}
+ else if(relationType ==='permissionRelation'){
+      const newRelation = await executeIfPermitted(userId, 'createPermissionRelation', {
+      approfile_is,
+      of_approfile,
+      relationship
+    });
+ }
+
+
 
     relateBtn.textContent = 'Relationship created! - create another or close';
     showToast('Relationship created successfully!', 'success');
     
-    // Clear selections for next relationship
-    approfile1Select.value = '';
-    approfile2Select.value = '';
-    relationshipSelect.value = '';
+    // Clear selections for next relationship// this makes it harder to do another similar relation
+ //   approfile1Select.value = '';
+  //  approfile2Select.value = '';
+  //  relationshipSelect.value = '';
     
     updateSubmitButtonState({
       approfile1Select,
@@ -303,7 +353,7 @@ async function handleRelate(e, { approfile1Select, approfile2Select, relationshi
     });
     
   } catch (error) {
-    console.error('Failed to create relationship:', error);
+    console.error('Failed :', error);
     showToast('Failed to create relationship: ' + error.message, 'error');
     relateBtn.disabled = false;
     relateBtn.textContent = 'Create Relationship';

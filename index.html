@@ -53,8 +53,8 @@ body.fade-to-white {
     <input type="password" id="new-password" placeholder="New password" class="w-full p-2 border rounded" minlength="6" required />
     <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded">Update Password</button>
   </form>
-  <div id="update-password-error" class="text-red-500 text-sm hidden"></div>
-  <div id="update-password-success" class="text-green-500 text-sm hidden">Password updated successfully!</div>
+  <div id="update-password-error" class="text-red-500 text-xl hidden"></div>
+  <div id="update-password-success" class="text-green-500 text-xl hidden">Password updated successfully!</div>
 </div>
 
 
@@ -69,22 +69,22 @@ body.fade-to-white {
         <!-- Login Form -->
         <div id="loginForm" class="auth-form bg-black p-6 rounded-lg shadow  border border-slate-200">
           <h2 class="text-xl font-bold text-center mb-4">Log In</h2>
-          <div id="login-error" class="text-red-500 text-sm hidden"></div>
+          <div id="login-error" class="text-red-500 text-xl hidden"></div>
           <form class="space-y-3 text-white">
 
             <label for ="email">Email:</label>
-            <input type="email" name="email" id="login-email" placeholder="Click to autoload" class="w-full p-2 border rounded text-green-500" required autocomplete='email'/>
+            <input type="email" name="email" id="login-email" placeholder="Click to autoload" class="w-full p-2 border rounded text-black text-xl" required autocomplete='email'/>
             
-            <label for ="current-password">Password:</label>
-            <input type="password" name='current-password' id="login-password" placeholder="Click to autoload" class="w-full p-2 border rounded text-green-500" autocomplete='current-password' aria-describedby="password-constraints"   required />
+            <label for ="current-password">Password:</label><button id="toggle-login-password" type="button" aria-label="Show password as plain text. Warning: this will display your password on the screen."> [ 👁️ Show ] </button>
+            <input type="password" name='current-password' id="login-password" placeholder="Click to autoload" class="w-full p-2 border rounded text-black text-xl" autocomplete='current-password' aria-describedby="password-constraints"   required />
 
-            <button type="submit" id="loginBtn" class="w-full bg-green-600 text-white py-2 rounded">Log In</button>
+            <button type="submit" id="loginBtn" class="w-full bg-green-600 text-white py-2 rounded">Clcik here to log In</button>
           </form>
           <p class="text-center mt-2">
-            <button id="showReset" class="text-sm text-green-600 hover:underline">Forgot password?</button>
+            <button id="showReset" class="text-lg text-green-600 hover:underline">Forgot password?</button>
           </p>
           <p class="text-center mt-2">
-            <button id="showSignup" class="text-sm text-green-600 hover:underline">Signup to create account</button>
+            <button id="showSignup" class="text-lg text-green-600 hover:underline">Signup to create account</button>
           </p>
         </div>
     
@@ -93,31 +93,31 @@ body.fade-to-white {
         <!-- Signup Form initially hidden -->
         <div id="signupForm" class="auth-form bg-black p-6 rounded-lg shadow border border-slate-200 hidden">
           <h2 class="text-xl font-bold text-center mb-4 text-white">Create free Account</h2>
-          <div id="signup-error" class="text-red-500 text-sm hidden"></div>
-          <div id="signup-success" class="text-green-500 text-sm hidden">Check your email to confirm!</div>
+          <div id="signup-error" class="text-red-500 text-xl hidden"></div>
+          <div id="signup-success" class="text-green-500 text-xl hidden">Check your email to confirm!</div>
           
           <form class="space-y-3 text-white">
             <label for="user-name">User name:</label>
-            <input type="text" required name="user-name" id="user-name" placeholder="Choose a unique name" class="w-full p-2 border rounded text-green-500"  title="The user name will be visible to others. It will be checked to make sure it is unique">
+            <input type="text" required name="user-name" id="user-name" placeholder="Choose a unique name" class="w-full p-2 border rounded text-black text-xl"  title="The user name will be visible to others. It will be checked to make sure it is unique">
             
             <label for="new-email">Email:</label>
-            <input type="email" required name="new-email" id="signup-email" placeholder="For confirmation link" class="w-full p-2 border rounded text-green-500"  title="You will be sent an email to confirm the sign-up."/>
+            <input type="email" required name="new-email" id="signup-email" placeholder="For confirmation link" class="w-full p-2 border rounded text-black text-xl "  title="You will be sent an email to confirm the sign-up."/>
 
-            <label for="new-password">Create a password:</label>
-            <input type="password" required name="new-password" id="signup-password" placeholder="Password (min 6 chars)" class="w-full p-2 border rounded text-green-500" minlength="6"  title="You can change the password later by clicking 'forgotten' on the login form"/>
-            <!--button id="toggle-password" type="button" aria-label="Show password as plain text. Warning: this will display your password on the screen.">👁️ Show password </button-->
+            <label for="new-password">Create a password:</label><button id="toggle-signup-password" type="button" aria-label="Show password as plain text. Warning: this will display your password on the screen."> [ 👁️ Show ] </button>
+            <input type="password" required name="new-password" id="signup-password" placeholder="Password (min 6 chars)" class="w-full p-3 border text-xl  rounded text-black" minlength="6"  title="You can change the password later by clicking 'forgotten' on the login form"/>
+            
 
-            <button type="submit" id="signupBtn" class="w-full bg-blue-600 text-white py-2 rounded">Sign Up</button>
+            <button type="submit" id="signupBtn" class="w-full bg-blue-600 text-white py-2 rounded">Click here to Sign Up</button>
           </form>
           <p class="text-center mt-4">
-            <button id="showLogin" class="text-blue-600 hover:underline">Already have an account? Log in</button>
+            <button id="showLogin" class="text-blue-600 text-lg hover:underline">Already have an account? Log in</button>
           </p>
 
             <p class="text-center mt-2">
-          <button id="logoutBtn" class="text-sm text-green-600 hover:underline">Log out</button>
+          <button id="logoutBtn" class="text-lg text-green-600 hover:underline">Log out</button>
           </p>
 
-        <div id="signup-error" class="text-red-500 text-sm hidden">
+        <div id="signup-error" class="text-red-500 text-xl hidden">
         </div>
          
 
@@ -132,15 +132,15 @@ body.fade-to-white {
         <!-- Reset Form -->
         <div id="resetForm" class="auth-form bg-black p-6 rounded-lg shadow hidden border border-slate-200">
           <h2 class="text-xl font-bold text-center mb-4">Reset Password</h2>
-          <div id="reset-error" class="text-red-500 text-sm hidden"></div>
-          <div id="reset-success" class="text-green-500 text-sm hidden">Check your email for reset link!</div>
+          <div id="reset-error" class="text-red-500 text-xl hidden"></div>
+          <div id="reset-success" class="text-green-500 text-xl hidden">Check your email for reset link!</div>
           <form class="space-y-3 text-white">
           <label for="email">Email:</label>
            <input type="email" name='email' id="reset-email" placeholder="Enter the email you registered with" class="w-full p-2 border rounded text-green-500" autocomplete='email' title='You will be sent a link' required />
-             <button type="submit" id="resetBtn" class="w-full bg-purple-600 text-white py-2 rounded">Send Reset Link</button>
+             <button type="submit" id="resetBtn"  class="w-full bg-purple-600 text-white py-2 rounded">Send Reset Link</button>
           </form>
           <p class="text-center mt-4">
-            <button id="backToLogin" class="text-purple-600 hover:underline">Back to login</button>
+            <button id="backToLogin" class="text-purple-600 text-lg hover:underline">Back to login</button>
           </p>
         </div>
       </div>
@@ -158,6 +158,18 @@ import { executeIfPermitted } from './registry/executeIfPermitted.js';
 import { showToast } from './ui/showToast.js';
 import { appState } from './state/appState.js';
 
+function escapeHtml(text) {
+if (!text || typeof text !== 'string') return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+   ;
+}
+
+
+
+
   function showForm(formType) {
     document.querySelectorAll('.auth-form').forEach(f => f.classList.add('hidden'));
     const form = document.getElementById(formType);
@@ -167,10 +179,25 @@ import { appState } from './state/appState.js';
 
   async function render() {
 
+document.getElementById('toggle-signup-password').addEventListener('click', function() {
+  const passwordInput = document.getElementById('signup-password');
+  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  passwordInput.setAttribute('type', type);
+  this.textContent = type === 'password' ? ' [ show 👁️  ] ' : ' [ hide ❎  ] ';
+});
+
+document.getElementById('toggle-login-password').addEventListener('click', function() {
+  const passwordInput = document.getElementById('login-password');
+  const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+  passwordInput.setAttribute('type', type);
+  this.textContent = type === 'password' ? ' [ show 👁️ ] ' : ' [ hide ❎  ] ';
+});
+
+
     // Signup
   document.getElementById('signupBtn').onclick = async (e) => {
     e.preventDefault();
-    const userName = document.getElementById('user-name').value;    
+    const userName = escapeHtml(document.getElementById('user-name').value);    //added escape 22:08 Jan 30 2026
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
 if(!userName || !email || !password){

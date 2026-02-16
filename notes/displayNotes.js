@@ -10,6 +10,16 @@ import { collectUserChoices, messageAddress, clickLogic } from './collectUserCho
 const userId = appState.query.userId;
 
 
+function escapeHtml(text) {
+  if (!text || typeof text !== 'string') return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+   ;
+}
+
+
 function filterNotesAccordingToUserChoices(notes){
 console.log('filterNotesAccordingToUserChoices(notes)');
 let filteredNotes=notes;
@@ -236,7 +246,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
             }
             previousInt = note.sort_int;
         
-            const content = note.content || '';
+            const content = escapeHtml(note.content || '');
         
             const shortContent = content.length > 2000
               ? `${content.slice(0, 2000)}<span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [more]</span><span class="hidden extra-content">${content.slice(2000)} <span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [less]</span></span>`

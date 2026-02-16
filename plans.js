@@ -1,5 +1,35 @@
 //  ./plans.js
+
+import { executeIfPermitted } from "./registry/executeIfPermitted";
+
+
 console.log('plans.js loaded');
+
+
+// plans appro id fab5776c-d7e9-4d2a-b52e-85b19ba9ae53
+//aims appro id ada3685a-7f9d-4cfd-b96f-8272e12e468e
+export function render(panel, petition = {}) {
+    console.log('plans Render(', panel, petition, ')');
+    readAppro(panel)
+
+
+     //? query.petitioner : 'unknown';
+    console.log('Petition:', petition);
+    panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
+}
+
+async function readAppro(panel)
+{ const aimsApproId = 'fab5776c-d7e9-4d2a-b52e-85b19ba9ae53';
+const plansAppro = await executeIfPermitted(null, 'readApprofileById',{approfileId: aimsApproId});
+console.log('plansAppro',plansAppro);
+
+
+panel.innerHTML =        `<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"> ${plansAppro.description}</div>
+<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"><i>If you were using the app to create and manage your own organisation. You would edit this plan by editing the appro that stores this description: "Plans of the Organisation" with id: fab5776c-d7e9-4d2a-b52e-85b19ba9ae53</i></div>`
+
+    panel.innerHTML += getTemplateHTML();
+
+}
 
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
@@ -236,14 +266,7 @@ padding: 0.75rem 1.25rem;
 <p>The approfile relationship system is a powerful tool in building the organisation and in organising.</p>
 `}
 
-export function render(panel, petition = {}) {
-    console.log('plans Render(', panel, petition, ')');
-    panel.innerHTML = getTemplateHTML();
 
-     //? query.petitioner : 'unknown';
-    console.log('Petition:', petition);
-    panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
-}
 //petitioner
 
 // is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
