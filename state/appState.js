@@ -103,7 +103,7 @@ appState.query.auto_petition = {
 
     setPetitioner(petition) {
       console.log('setPetitioner(',petition,')' );
-     // console.log('this.query.petitioner:',this.query.petitioner );//the log shows all the values even at appOnLoad - browser doesn't take the values at this moment, but may fill them in later
+     console.log('setting this.query.petitioner:',this.query.petitioner );//the log shows all the values even at appOnLoad - browser doesn't take the values at this moment, but may fill them in later
     //  console.log('this.query.petitioner.Action',this.query.petitioner.Action)// the log says undefined at appOnLoad - this is weird browser behaviour as it does take this value at the moment
       // 👇 SAVE TO HISTORY if action is meaningfully different
       const currentAction = this.query.petitioner.Action;

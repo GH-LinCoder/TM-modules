@@ -1,13 +1,12 @@
 //  ./utils/assignmentBase.js  (to be used by assignTask & assignSurvey)
 //18:40 Nov 21 this file has been copied into tasks to keep all task related together
 
-
 import { appState } from '../../state/appState.js';
 //import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
-import { resolveSubject, detectContext, applyPresentationRules } from '../../utils/contextSubjectHideModules.js';
+import { resolveSubject, detectContext, myDashOrAdminDashDisplay } from '../../utils/contextSubjectHideModules.js';
 
 console.log('assignmentBase.js loaded');
 // need to accept a parameter for type:  'task' || 'survey'
@@ -39,8 +38,8 @@ export class AssignmentBase {
   }
 
   // Apply presentation rules based on context
-  applyPresentationRules(panel) {
-    return applyPresentationRules(panel);
+  myDashOrAdminDashDisplay(panel) {
+    return myDashOrAdminDashDisplay(panel);
   }
 
   // Get template HTML with consistent structure
@@ -105,7 +104,7 @@ export class AssignmentBase {
             <!-- INFORMATION FEEDBACK -->
             <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
               <p class="text-lg font-bold">Information:</p>
-              <div id="id='informationFeedback'" class="w-full">
+              <div id="informationFeedback'" class="w-full">
                 <!-- Information cards will be added here -->
               </div>
             </div>
@@ -185,7 +184,7 @@ console.log('after if():', this.assignmentType);
       this.addClipboardItemsToDropdown(dropdown03Items, dropdown003, 'manager');
     }
     
-    const informationFeedback = panel.querySelector('informationFeedback');
+//    const informationFeedback = panel.querySelector('informationFeedback');
 
 
 

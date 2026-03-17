@@ -10,6 +10,27 @@ import { appState } from '../state/appState.js';
 //import {tagNoteByNames} from './tags.js';
 import { displayNotes } from './displayNotes.js';
 import {cleanupNoteInput} from './cleanupNoteInput.js';
+import { collectUserChoices, messageAddress, clickLogic, userChoices } from './collectUserChoices.js';
+
+
+/**
+userChoices = { //amended 12:22 March 16 2026
+    userId: null,
+    dropdown: null, 
+    // Address filtering
+    address: 'self',
+    addressFilterActive: true,  // ✅ NEW - toggle state
+    
+    // Category filtering
+    categories: [],
+    categoryFilterActive: true,  // ✅ NEW - toggle state
+    
+    importance: null,
+    mode: 'more-clicks-more-notes',
+    
+    // Future
+    threadsActive: false
+ */ //this doesn't have the essential data of a note
 
 const userId = appState.query.userId;
 const petitionHistory = appState.query.petitionHistory;
@@ -18,8 +39,15 @@ export async function getUserInputWriteToDb(){
 console.log("getUserInputWriteToDb()");  
 }
 
-//new 21:07 13 Aug 2025
+//out of date as based on html value=text  and tags array that used text names.
+
+
+//called from reactToSaveButton It shouldn't be here - breaks rule of executeIfPermitted
 export async function saveNoteWithTags(supabase, params = {}) {
+  
+//out of date
+  
+  
   const {  
     author_id = userId,
     audience_id = null,
@@ -67,8 +95,11 @@ console.log('📥 [save] tags:', tags);
     console.log(`Note inserted with ID: ${noteId}`);
 
     if (tags.length > 0) {
-      await tagNoteByNames(noteId, tags);
-    }
+//await tagNoteByNames(noteId, tags); // change 17:20 March 16 because the html no longer has value='bug' but instead ="34"
+//we now have the int id & don't need to look that up, but we no longer have the name
+await linkNoteToCategories(noteId, tags);
+  
+}
     displayNotes(1);//page 1 does it need another param??
     cleanupNoteInput('Saved');
     return noteId;
@@ -78,7 +109,7 @@ console.log('📥 [save] tags:', tags);
   }
 }
 
-export async function tagNoteByNames(noteId, tagNames = []) {
+export async function tagNoteByNames(noteId, tagNames = []) { //NO LONGER COLLECTING BY NAM now using int 
   console.log('tagNoteByNames() called with:', tagNames);
   console.log('Type of tagNames:', typeof tagNames);
   console.log('Is array?', Array.isArray(tagNames));

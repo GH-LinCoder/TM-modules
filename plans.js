@@ -5,6 +5,10 @@ import { executeIfPermitted } from "./registry/executeIfPermitted";
 
 console.log('plans.js loaded');
 
+function getTitleHTML() { console.log('getTemplateHTML()');
+  return `<h2 class="text-xl font-bold text-gray-800 mb-4">Plans for our organisation</h2>`
+}
+
 
 // plans appro id fab5776c-d7e9-4d2a-b52e-85b19ba9ae53
 //aims appro id ada3685a-7f9d-4cfd-b96f-8272e12e468e
@@ -15,7 +19,7 @@ export function render(panel, petition = {}) {
 
      //? query.petitioner : 'unknown';
     console.log('Petition:', petition);
-    panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
+    panel.innerHTML+=  `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
 }
 
 async function readAppro(panel)
@@ -24,7 +28,7 @@ const plansAppro = await executeIfPermitted(null, 'readApprofileById',{approfile
 console.log('plansAppro',plansAppro);
 
 
-panel.innerHTML =        `<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"> ${plansAppro.description}</div>
+panel.innerHTML = getTitleHTML() +       `<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"> ${plansAppro.description}</div>
 <div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"><i>If you were using the app to create and manage your own organisation. You would edit this plan by editing the appro that stores this description: "Plans of the Organisation" with id: fab5776c-d7e9-4d2a-b52e-85b19ba9ae53</i></div>`
 
     panel.innerHTML += getTemplateHTML();

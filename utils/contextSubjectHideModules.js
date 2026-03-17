@@ -4,10 +4,13 @@ import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 
 // new functions to find data - External file to be imported by each module
 
-export function detectContext(panel) {
-    let context = panel.closest('[data-module]')?.dataset.module === 'myDash'
-    console.log('context', context);
-    return context;
+export function detectMyDash(panel = null) {
+ if (panel) {
+        return panel.closest('[data-module]')?.dataset.module === 'myDash';
+    }
+    
+    // ✅ If no panel, query the document directly
+    return document.querySelector('[data-module="myDash"]') !== null;
 
   }
 
@@ -140,12 +143,12 @@ created_at:'2025-07-28 18:13:47.723148+00',
 }
 */
 
-export function applyPresentationRules(panel, isMyDash) {
-    const dropdownContainer = panel.querySelector('[data-role="subject-dropdown"]')?.closest('div');
-    const instructions = panel.querySelector('[data-action="selector-dialogue"]');
+export function myDashOrAdminDashDisplay(panel, isMyDash) { // is this doing anything? 14:13 Feb 18
+    const dropdownContainer = panel.querySelector('[data-role="subject-dropdown"]')?.closest('div');//this is the dropdown for selecting the subject of the display
+    const instructions = panel.querySelector('[data-action="selector-dialogue"]');//this is an active area which, if clicked, opens the [Select] module
     if (isMyDash) {
-      if (dropdownContainer) dropdownContainer.style.display = 'none';
-      if (instructions) instructions.style.display = 'none';
+      if (dropdownContainer) dropdownContainer.style.display = 'none'; //don't display the dropdown in myDash
+      if (instructions) instructions.style.display = 'none'; //don't open the [Select] module if clicked in myDash, only in adminDash
     } //else {
      // if (dropdownContainer) dropdownContainer.style.display = '';
     //  if (instructions) instructions.style.display = '';

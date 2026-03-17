@@ -195,6 +195,7 @@ userId = subject.id;
       } */
 
       // Save survey assignment to database
+      console.log('assigning survey with surveyHeaderId:', surveyHeaderId);
       const result = await executeIfPermitted(userId, 'createAssignment', {
         survey_header_id: surveyHeaderId,
         survey_question_id:null,

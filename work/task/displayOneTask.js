@@ -1,15 +1,14 @@
-// ./work/tasks/displayTasksStudent.js
+// ./work/tasks/displayOneTask.js
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 import { resolveSubject } from '../../utils/contextSubjectHideModules.js';
-import { executeAutomations } from '../../utils/executeAutomations.js';
-import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
-
-console.log('displayTasksStudent.js loaded');
+import { executeAutomations } from '../../utils/executeAutomations.js'
 
 let subject = null;
+let assignment = null;
 let panelEl = null;
+
 
 const autoPetition = {
     auth_id: '',
@@ -22,60 +21,57 @@ const autoPetition = {
     automation_id: ''
 };
 
-// Global assignments array - source of truth
-let assignments = [];
 
-onClipboardUpdate(() => {
-    render(panelEl);
-});
 
 export async function render(panel, query = {}) {
-    console.log('displayTasksStudent.js render()');
-    subject = await resolveSubject();
-    
+    console.log('displayOneTask.js render() panel',panel);
+    panelEl = panel;
+
+subject = await resolveSubject();
+   const assignmentId = query.assignmentId || appState.query.petitioner?.assignmentId;
+
     // Set up autoPetition
     autoPetition.auth_id = subject.id;
     autoPetition.appro_id = subject.approUserId;
-    
-    if (!panel || !panel.isConnected) {
-        console.warn('Render target not found or disconnected');
-        return;
-    }
-    
-    const userId = appState.query.userId;
-    panelEl = panel;
-    
-    if (subject.type === 'relations') {
-        panel.innerHTML = '';
-        return;
-    }
-    
-    try {
-        const assignmentsData = await executeIfPermitted(subject.approUserId, 'readAssignmentsTasks', {
-            student_id: subject.approUserId
+
+
+
+try { //the registry function needs: const { assignment_id} = payload; 
+// reads: assignments_task_view
+//delivers: 'task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at
+        const assignmentData = await executeIfPermitted(subject.approUserId, 'readThisAssignment', {
+            assignment_id: assignmentId
         });
         
-        if (!assignmentsData || assignmentsData.length === 0) {
-            panel.innerHTML = `<div class="text-gray-500 text-center py-8">No task assignments found for: ${subject.name}.</div>`;
+        if (!assignmentData || assignmentData.length === 0) {
+            panel.innerHTML = `<div class="text-gray-500 text-center py-8">No task assignment found for: ${subject.name} - ${assignmentId}.</div>`;
             return;
         }
-        
+        assignment = assignmentData[0]; //how does taking [0] work? what's in [n]?
         // Store as global source of truth
-        assignments = assignmentsData;
+//        assignment = assignmentData;
         
-        renderLargeCards(userId, assignments, panel);
+        renderLargeCards(panel);
         
     } catch (error) {
-        console.error('Error loading task assignments:', error);
-        panel.innerHTML = `<div class="text-red-500 text-center py-8">Failed to load task assignments for: ${subject.name}.</div>`;
+        console.error('Error loading task assignment:', error);
+        panel.innerHTML = `<div class="text-red-500 text-center py-8">Failed to load task assignment for: ${subject.name} - ${assignmentId}.</div>`;
         showToast(`No task assignments found for: ${subject.name}`, 'error');
     }
+
 }
 
-async function renderLargeCards(userId, assignments, panel) {
+
+
+
+
+async function renderLargeCards(panel) { //should not be plural
+
+    const userId = subject.approUserId
+
     panel.innerHTML = '';
-    
-    for (const assignment of assignments) {
+    console.log('assignmentData', assignment);
+//    for (const assignment of assignments) { //this is for an array. We don't have an array
         // Initialize displayedStep if not already set
         if (assignment.displayedStep === undefined) {
             assignment.displayedStep = assignment.step_order;
@@ -95,12 +91,12 @@ async function renderLargeCards(userId, assignments, panel) {
         const currentStepName = assignment.step_name || 'Unnamed Step';
         const currentStepDescription = assignment.step_description || 'No description available';
         
-        // Set up autoPetition
+        // Set up autoPetition - I have forgotten what this is March 8
         autoPetition.assignment_id = assignment.assignment_id;
         autoPetition.task_id = assignment.assignment.task_header;
         autoPetition.step_id = assignment.step_id;
         
-        loadStepAutomations(assignment.step_id);
+        loadStepAutomations(assignment.step_id);  //temp removed while debugging display
         
         // Calculate previous and next steps
         const previousStep = assignment.displayedStep === 3
@@ -182,9 +178,14 @@ async function renderLargeCards(userId, assignments, panel) {
                 <p class="text-sm text-blue-600">Move by ${assignment.move_by}</p> 
             </div>
         `;
-        
-        panel.appendChild(card);
-    }
+      const displayArea = document.querySelector(`[data-section="display-area"]`); 
+ //const section = document.querySelector('[data-section="display-area"]');
+//const displayArea = section?.querySelector('[data-panel="inject-here"]'); // null
+
+ 
+ console.log('displayArea', displayArea),
+        displayArea.appendChild(card); //need to append it to the destination which is 'display-area'
+   // }  this was forEach - but not using ana array
     
     addEventListenerToButtons(panel);
 }
@@ -289,7 +290,7 @@ function handleAbandonTask(button, assignmentId) {
     } else if (button.textContent === 'Confirm abandoning this task') {
         updateDbTaskStep(assignmentId, 1);
         // Update displayed state
-        const assignment = assignments.find(a => a.assignment_id === assignmentId);
+     //   const assignment = assignments.find(a => a.assignment_id === assignmentId); //we already know the assignment
         if (assignment) {
             assignment.displayedStep = 1;
             reRenderAssignmentCard(assignmentId);
@@ -299,7 +300,7 @@ function handleAbandonTask(button, assignmentId) {
 
 function handlePreviousStep(assignmentId) {
     console.log('handlePreviousStep()');
-    const assignment = assignments.find(a => a.assignment_id === assignmentId);
+//    const assignment = assignments.find(a => a.assignment_id === assignmentId); //we are not handling an array
     
     if (!assignment || assignment.displayedStep <= 3) return;
     
@@ -309,13 +310,14 @@ function handlePreviousStep(assignmentId) {
 
 function handleNextStep(assignmentId) {
     console.log('handleNextStep()');
-    const assignment = assignments.find(a => a.assignment_id === assignmentId);
+  //  const assignment = assignments.find(a => a.assignment_id === assignmentId); //we are not handling an array
     
     if (!assignment || assignment.displayedStep <= 2) return;
     
     let newStep;
-    if (assignment.displayedStep === assignment._taskSteps.length) {
-        newStep = 2; // completion
+    if (assignment.displayedStep === assignment._taskSteps.length) { // only make this happen if user clicks "step completed"
+        showToast("The next step is completion. If you want to mark it completed click the completed button");
+        //newStep = 2; // completion
     } else {
         newStep = assignment.displayedStep + 1;
     }
@@ -326,7 +328,7 @@ function handleNextStep(assignmentId) {
 
 function handleCompleteStep(assignmentId) {
     console.log('handleCompleteStep()');
-    const assignment = assignments.find(a => a.assignment_id === assignmentId);
+//    const assignment = assignment.find(a => a.assignment_id === assignmentId);
     
     if (!assignment || assignment.displayedStep <= 2) return;
     
@@ -359,7 +361,7 @@ async function updateDbTaskStep(assignmentId, destinationStep) {
 }
 
 function reRenderAssignmentCard(assignmentId) {
-    const assignment = assignments.find(a => a.assignment_id === assignmentId);
+  //  const assignment = assignment.find(a => a.assignment_id === assignmentId);
     const card = document.querySelector(`[data-assignment-id="${assignmentId}"]`);
     
     if (card && assignment) {
@@ -368,6 +370,7 @@ function reRenderAssignmentCard(assignmentId) {
         if (buttonContainer) {
             buttonContainer.innerHTML = buttonHTML;
         }
+       renderLargeCards(panelEl); 
     }
 }
 
@@ -444,7 +447,7 @@ console.log('renderStepCard() title:',title, 'length',title.length);
 }
 
 async function loadStepAutomations(stepId) {
-    console.log('loadStepAutomations()');
+    console.log('loadStepAutomations()', 'subject',subject);
     try {
         const automations = await executeIfPermitted(subject.approUserId, 'readTaskAutomations', {
             source_task_step_id: stepId

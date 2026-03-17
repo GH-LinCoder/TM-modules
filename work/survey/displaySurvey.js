@@ -46,7 +46,7 @@ export async function render(panel, query = {}) {
 checkClipboardForSurveys(panel);
     });
 
-console.log('displaySurvey().render())');
+console.log('displaySurvey().render()) panel', panel);
  // panelEl = panel;
   if (!panel || !panel.isConnected) return;
 
@@ -86,7 +86,7 @@ console.log('assignments',assignments);
         'readSurveyView',
         { survey_id: assignment.assignment.survey_header }
       );
-console.log('surveyRows',surveyRows);
+console.log('surveyRows',surveyRows, 'assignment', assignment);
       if (!surveyRows?.length) continue;
 
       const surveyContainer = document.createElement('div');
@@ -100,7 +100,7 @@ console.log('surveyRows',surveyRows);
           const answerId = e.target.value;
           console.log('e',e.target.dataset);
 //2.autoPetition add asignment id          
-        autoPetition.assignment_id = e.target.dataset.assignment; //collect data to be sent to permission_judge
+        autoPetition.assignment_id = e.target.dataset.assignmentId; //collect data to be sent to permission_judge
 
        autoPetition.survey_answer_id = answerId;
         console.log('autoPetition:',autoPetition);// 

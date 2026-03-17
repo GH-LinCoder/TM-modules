@@ -65,6 +65,9 @@ export function adminListeners(container) {
   // Listen for clicks on the container
   // console.log('adminListeners add Listeners or respond');//this is the entire html div being passed !
  
+if (!window.__adminListenersLoaded) { window.__adminListenersLoaded = true; //introduced this guard March 8 2026.
+    
+
    container.addEventListener('click', (e) => {
 
    const petition  = readPetition(e); // Finds the module, section & action to be loaded in query{} 
@@ -108,7 +111,7 @@ export function adminListeners(container) {
 //        console.warn('Unknown action:', action);
     }
   });
-
+}//eof guard
 }
 
 

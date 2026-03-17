@@ -5,9 +5,33 @@ console.log('displayNotes.js');
 //import { renderNotes } from "./labNotesToInclude.js";  
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { appState } from '../state/appState.js';
-import { collectUserChoices, messageAddress, clickLogic } from './collectUserChoices.js';
+import { collectUserChoices, messageAddress, clickLogic, userChoices } from './collectUserChoices.js';
+import { resolveSubject} from '../utils/contextSubjectHideModules.js'
+/**
+userChoices = { //amended 12:22 March 16 2026
+    userId: null,
+    dropdown: null, 
+    // Address filtering
+    address: 'self',
+    addressFilterActive: true,  // ✅ NEW - toggle state
+    
+    // Category filtering
+    categories: [],
+    categoryFilterActive: true,  // ✅ NEW - toggle state
+    
+    importance: null,
+    mode: 'more-clicks-more-notes',
+    
+    // Future
+    threadsActive: false
+ */ 
 
-const userId = appState.query.userId;
+const userId = userChoices.userId;
+let pageOfNotes = [];
+
+let totalCount = 0;
+let currentPage = 1;
+let pageSize = 10;
 
 
 function escapeHtml(text) {
@@ -20,20 +44,263 @@ function escapeHtml(text) {
 }
 
 
-function filterNotesAccordingToUserChoices(notes){
+export function filter() {
+    const { address, categories, importance, mode } = userChoices;
+
+    return pageOfNotes.filter(note => {
+
+        // CATEGORY FILTER
+        if (categories.length > 0) {
+            if (mode === 'more-clicks-more-notes') {
+                // OR mode
+                if (!note.categories.some(c => categories.includes(c))) return false;
+            } else {
+                // AND mode
+                if (!categories.every(c => note.categories.includes(c))) return false;
+            }
+        }
+
+        // IMPORTANCE FILTER (future)
+        // if (importance && note.importance !== importance) return false;
+
+        return true;
+    });
+}
+
+
+// In displayNotes.js
+
+/**
+ * Filter notes according to global userChoices state
+ * @param {Array} notes - Raw notes array from DB
+ * @returns {Array} Filtered notes
+ */
+ function filterNotesAccordingToUserChoices(xnotes) {
+    //const notes = pageOfNotes;
+    collectUserChoices();
+    console.log('🔍 Filtering pageOfNotes with userChoices:', userChoices, 'length',pageOfNotes.notes.length, 'userChoices',userChoices);
+    //why is id null?   It cease to be null later, so why is it null now?  length undefined
+
+    if (!pageOfNotes.notes?.length) return [];
+    
+    let filtered = [...pageOfNotes.notes]; // Work on a copy
+    
+    // ✅ 1. Address filter (uses global userChoices.address + userChoices.dropdown)
+    filtered = filterByAddress(filtered);
+    
+    // ✅ 2. Category filter (only if categories selected)
+    if (userChoices.categories?.length === 0 && userChoices?.mode === 'more-clicks-more-notes') {
+        return [];} // OR logic with zero tags → no matches
+
+    if (userChoices.categories?.length > 0) {filtered = filterByCategories(filtered);}
+    
+    // ✅ Skip importance (visual indicator only per design decision)
+    
+    console.log(`✅ Filtered: ${pageOfNotes.notes.length} → ${filtered.length} pageOfNotes`);
+    return filtered;
+}
+
+//new filterByAddress 20:03 March 16
+
+function filterByAddress(notes) {
+  console.log('filterByAddress:' );
+
+const userId = userChoices.userId;
+const address = userChoices.address;
+const respondent = userChoices.dropdown || null;
+
+console.log('notes',notes,'userId',userId, 'address',address, 'respondent',respondent);
+
+  const uid = String(userId);
+  const rid = respondent ? String(respondent) : null;
+
+  // Helper: dedupe by note.id
+  const dedupe = (a, b) => {
+    const seen = new Set(a.map(n => n.id));
+    return [
+      ...a,
+      ...b.filter(n => {
+        if (seen.has(n.id)) return false;
+        seen.add(n.id);
+        return true;
+      })
+    ];
+  };
+
+  // -------------------------
+  // MODE: TO
+  // -------------------------
+  if (address === 'to') {
+    if (rid) {
+      return notes.filter(n =>
+        String(n.audience_id) === rid &&
+        String(n.author_id) === uid
+      );
+    }
+    return notes.filter(n =>
+      String(n.audience_id) !== uid &&
+      String(n.author_id) === uid
+    );
+  }
+
+  // -------------------------
+  // MODE: FROM
+  // -------------------------
+  if (address === 'from') {
+    if (rid) {
+      return notes.filter(n =>
+        String(n.author_id) === rid &&
+        String(n.audience_id) === uid
+      );
+    }
+    return notes.filter(n =>
+      String(n.author_id) !== uid &&
+      String(n.audience_id) === uid
+    );
+  }
+
+  // -------------------------
+  // MODE: SELF
+  // -------------------------
+  if (address === 'self') {
+    let store1 = notes.filter(n => String(n.author_id) === uid);
+    let store2 = notes.filter(n => String(n.audience_id) === uid);
+
+    if (rid) {
+      store1 = store1.filter(n => String(n.audience_id) === rid);
+      store2 = store2.filter(n => String(n.author_id) === rid);
+    }
+
+    return dedupe(store1, store2);
+  }
+
+  // -------------------------
+  // MODE: REPLY
+  // -------------------------
+  if (address === 'reply') {
+    let store1 = notes.filter(n =>
+      n.reply_to_id &&
+      String(n.author_id) === uid
+    );
+
+    let store2 = notes.filter(n =>
+      n.reply_to_id &&
+      String(n.audience_id) === uid
+    );
+
+    if (rid) {
+      store1 = store1.filter(n => String(n.audience_id) === rid);
+      store2 = store2.filter(n => String(n.author_id) === rid);
+    }
+
+    return dedupe(store1, store2);
+  }
+
+  // -------------------------
+  // DEFAULT: no address filter
+  // -------------------------
+  return notes;
+}
+
+
+
+/*
+// ✅ Sub-filter: Address logic (reads from global userChoices)
+function filterByAddress(notes) {
+
+    const { address, dropdown, userId } = userChoices;
+    console.log('filterByAddress() userChoices decon',address,dropdown,userId);    // null null undefined, slef empty string undefined
+    // Default or 'self': show notes by current user
+    if (!address || address === 'self') {
+        return notes.filter(n => String(n.author_id) === String(userId));
+    }
+    
+    // 'to' or 'from' with dropdown selection
+    if ((address === 'to' || address === 'from') && dropdown) {
+        const field = address === 'to' ? 'audience_id' : 'author_id';
+        return notes.filter(n => String(n[field]) === String(dropdown));
+    }
+    
+    // 'reply': show notes that are replies (have reply_to_id)
+    if (address === 'reply') {
+        return notes.filter(n => n.reply_to_id);
+    }
+    
+    // Unknown address mode: return all (fail open)
+    return notes;
+}
+*/
+// Sub-filter: Category logic (reads from global userChoices)
+function filterByCategories(notes) {
+    const { categories, mode } = userChoices;
+    //console.log('filterByCategories()',categories, 'mode',mode); //look like strings
+
+        console.log('🏷️ filterByCategories()', {
+        selected: categories,
+        selectedTypes: categories.map(c => typeof c),
+        mode,
+        noteCount: notes.length
+    });
+/*
+  // ✅ Log first note's category_ids
+    if (notes[0]) {
+        console.log('📊 First note category_ids:', {
+            value: notes[0].category_ids,
+            types: notes[0].category_ids?.map(c => typeof c),
+            length: notes[0].category_ids?.length
+        });
+    }
+*/
+
+    // Determine match function based on mode
+    // 'more-clicks-fewer-notes' = AND (all selected categories must match)
+    // 'more-clicks-more-notes' = OR (any selected category matches)
+    const matchFn = mode === 'more-clicks-fewer-notes' ? 'every' : 'some';
+  
+return notes.filter(note => {
+        if (!note.category_ids?.length) return false;
+        
+        const result = matchFn === 'every' 
+            ? categories.every(id => note.category_ids.includes(id))
+            : note.category_ids.some(id => categories.includes(id));
+        
+        // ✅ Log each note's match result
+        console.log('  Note', note.id, 'category_ids:', note.category_ids, 
+            '→', result ? '✅ KEEP' : '❌ EXCLUDE');
+        
+        return result;
+    });    
+
+/*
+    return notes.filter(note => { //create a new array, go through notes and add to new array of items returned 
+        // Exclude notes with no categories when filtering by category (strict mode)
+        if (!note.category_ids?.length) return false;
+        
+        // Check if note's category_ids match selected categories
+        //note.category_ids  Array of integers: [34, 9]
+        //[matchFn] Dynamically calls either .every() or .some()
+        //id => categories.includes(id) For each id in the note, check if it's in the user's selected categories
+        return note.category_ids[matchFn](id => categories.includes(id));
+    });
+*/
+    }
+
+
+
+function ZfilterNotesAccordingToUserChoices(notes){
 console.log('filterNotesAccordingToUserChoices(notes)');
 let filteredNotes=notes;
-const userChoices = collectUserChoices()
-//also have direct access to messageAddress and clickLogic
+collectUserChoices();
+const { address, categories, importance, mode } = userChoices;
 
 //but the inputs are passive - changing them will not trigger the code to do anything.
 //could have listener on all the inputs OR a single listener refresh button
 // a listener for change would be enough
 
-console.log('messageAddress:',messageAddress,'clickLogic:', clickLogic);
+console.log('messageAddress:',address,'mode:', mode);
 
-/*
-userChoices 
+/* in the old flat array
+
 Array(6) [ "bug", "t&m", "diary", "importance-3", "self", "more-clicks-more-notes" ]
 0: "bug"
 1: "t&m"
@@ -42,10 +309,20 @@ Array(6) [ "bug", "t&m", "diary", "importance-3", "self", "more-clicks-more-note
 4: "self"
 5: "more-clicks-more-notes"
 length: 6
-*/
+
+
+but we also have an object
+
+/**
+ * userChoices 
+ *  address:  null,
+    categories: [],
+    importance: null,
+    mode: 'more-clicks-more-notes' //this + that + other to be shown
+ */ 
+
+
 console.log('userChoices', userChoices);
-
-
 
 /*
 
@@ -68,7 +345,9 @@ default: console.log('messageAddress unknown:', messageAddress)}
 other tags
 radio - importance   will be matching the level= ? (Not this level + nor this level-)
 
-Whether the tags are || or && is determined by the state of the two buttons mentioned above. The highlight function can be adapted to highlight the two buttons that change the logic of the checkboxes (see below) Listeners are already attached (Either set a state variable or let the listener choose one of two functions.
+Whether the tags are || or && is determined by the state of the two 'mode' radio buttons. 
+The highlight function can be adapted to highlight the two buttons that change the logic of the checkboxes (see below)
+Listeners are already attached (Either set a state variable or let the listener choose one of two functions.
 
 The filtering is done prior to passing the results to the renderNotes() function. 
 'pageOfNotes'   holds the data
@@ -80,20 +359,6 @@ Branch to an OR selection or an AND selection
 
 Loop through the pageOfNotes  forEach mapping into what is to be sent to renderNotes.
 
-
- <button data-action="moreClicksMoreNotes" id="more-clicks-more-notes" class="px-4 py-2 bg-green-50 text-black rounded hover:bg-green-100 transition-colors"
-          title="The more boxes I click I expect MORE pageOfNotess  (Show me notes that fit this box PLUS notes that fit the other box)">
-            More clicks - more notes
-          </button>
-       
-          <button data-action="save-note" id="save-notes" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
-            Save/Send
-          </button>
-       
-          <button data-action="moreClicksFewerNotes" id="more-clicks-fewer-notes" class="px-4 py-2 bg-red-50 text-black rounded hover:bg-red-100 transition-colors"
-          title="The more boxes I click I expect FEWER pageOfNotess (Only show me a note if it fits ALL the boxes I click)">
-            More clicks - fewer notes
-          </button>
 
 ========================================= highlight function
 
@@ -126,12 +391,28 @@ return filteredNotes;
 
 
 
-export async function displayNotes(page = 1, totalCount = null) {
+function getHTMLofUserChoices(){ // turn the object into text to show the user what filters are to be applied
+    const { address, categories, importance, mode } = userChoices;
+    return`
+        <div><strong> Filters:</strong> ${address} : ${categories.length ? categories.join(', ') : 'none'}  : ${importance || 'none'} : ${mode}
+        </div>
+    `;
+}
+
+
+export async function displayNotes(page = 1, totalCount = null) { //this reads the database. 
   console.log('displayNotes()', { page, totalCount });
-  const pageSize = 5;
+  //pageSize = 5; //why isn't it using the global ??
   
+const subject = await resolveSubject();
+console.log('subject',subject, 'id',subject.id);
+    userChoices.userId = subject.id;
+console.log('userChoices.userId',userChoices.userId);
+
+
+
   try {
-    const pageOfNotes = await executeIfPermitted(userId, 'fetchNotes', { page, pageSize});  
+    pageOfNotes = await executeIfPermitted(userId, 'fetchNotes', { page, pageSize});  
     //returns { notes: data, totalCount: count };
     console.log('Raw pageOfNotes from fetchNotes:', pageOfNotes);
 
@@ -139,13 +420,13 @@ export async function displayNotes(page = 1, totalCount = null) {
     const notes = data || [];
     const actualTotalCount = totalCount || pageOfNotes.totalCount;// why using the label rather than the var & how is it 414 when ther are far fewer?
     
-    console.log('displayNotes fetch pageOfNotes:', { notes: notes.length, totalCount: actualTotalCount, page });
+    console.log('displayNotes fetch pageOfNotes:', { noteslength: notes.length, totalCount: actualTotalCount, page });
  
     
-  const filteredNotes = filterNotesAccordingToUserChoices(notes);
+//  const filteredNotes = filterNotesAccordingToUserChoices(notes);  //wrong place to do the filter. Later calls to render bypass displayNotes
 
     // Render the notes
-    renderNotes(filteredNotes, actualTotalCount, page, pageSize);
+    renderNotes(notes, actualTotalCount, page, pageSize);
     console.log('displayNotes() completed');
     
   } catch (error) {
@@ -225,18 +506,26 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
   return container;  // but the calling function can't handle a container.
 }
 
+// In displayNotes.js - replace the broken reRenderNotes:
 
+export function reRenderNotes() {
+    console.log('🔀 reRenderNotes() called');
+    
+    // ✅ Extract notes from the cached pageOfNotes object
+    const notes = pageOfNotes.notes || [];
+    
+    // ✅ Call renderNotes - it will filter internally using global userChoices
+    renderNotes(notes, pageOfNotes.totalCount, currentPage, pageSize);
+}
 
-     export async function renderNotes(notes, totalCount, page, pageSize) {
-        console.log('renderNotes 12 Nov()');
-
-//add the name of the audience to the stored notes - why don't we store that in the notes view?
-
-        const output = document.getElementById('output');
-        
+export async function renderNotes(notes, totalCount, page, pageSize) {
+        console.log('renderNotes()');
+        const filteredNotes = filterNotesAccordingToUserChoices(notes);
+//could do something if no notes - could explain and allow removal of filters or just explain and return-
+        const output = document.getElementById('output');        
         let previousInt = null;
 
-        const notesHtml = notes
+        const notesHtml = filteredNotes
           .map(note  =>  {
             // Skip if sort_int is the same as the previous one.  The view had >1 entry for each note because one row for each tag.
             // although asking for a page of 10, how many notes depends on how may tags each note has. Probably get 3 to 6
@@ -274,7 +563,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
   note,
         id: note.id,
         int:note.sort_int,
-        author:note.name,
+        author:note.author_name, //why was note.name undefined?
         authorId:note.author_id,
         audienceId:note.audience_id, //14:47 Jan 10
         audienceName :note.audience_name,
@@ -284,7 +573,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
       });
       
          
-          return `
+          return  getHTMLofUserChoices() + `
               <div class="mb-3"  ">
           <div   class="bg-white p-4 rounded-lg border  hover:shadow-sm transition-all cursor-pointer group"
                >
@@ -306,7 +595,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
                 <div data-note-id="${note.id}-body" 
                 
                 data-note-content= "${content}" 
-                data-note-name="${note.name}" 
+                data-note-name="${note.author_name}" 
                 data-note-int="${note.sort_int}"  
                 data-note-author-id="${note.author_id}"
                 data-note-audience-id=${note.audience_id}" 
@@ -318,7 +607,7 @@ function splitContentFromMetadata(note) {  //idea not called because render can'
                   </p>
                   <p class="flex items-center">
                     <span class="font-medium w-20">Author:</span>
-                    <span class="text-gray-600">${note.name} -> Audience: ${note.audience_name}</span>
+                    <span class="text-gray-600">${note.author_name} -> Audience: ${note.audience_name}</span>
                   </p>
                   <p class="flex items-center">
                     <span class="font-medium w-20">Created:</span>

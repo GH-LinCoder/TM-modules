@@ -4,7 +4,7 @@ console.log('ui/reactToNoteClick.js');
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { appState } from '../state/appState.js';
 import { showToast } from '../ui/showToast.js';
-import { resolveSubject, detectContext, applyPresentationRules } from '../utils/contextSubjectHideModules.js';
+import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
 import { collectUserChoices, messageAddress} from './collectUserChoices.js';
 
 

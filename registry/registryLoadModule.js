@@ -66,9 +66,14 @@ export const registry = { // this registry is for loading a new page to the righ
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),
 'moveStudent': () => import('../work/student/moveStudent.js'),//legacy?
 
+'display-one-task': () => import('../work/task/displayOneTask.js'),
 
 //'display-tasks' :()=> import('../work/task/displayTasks.js'), // changed 20:29 Oct 21
-'display-tasks' :()=> import('../work/task/displayTasksStudent.js'),//display the tasks for this student
+
+//change March 7 replacing the studentTask mass of tasks with the small card list version
+//'display-tasks' :()=> import('../work/task/displayTasksStudent.js'),//display the tasks for this student
+'display-tasks' :()=> import('../work/task/displayTaskCards.js'),
+
 'display-task-summary':()=> import('../work/task/displayTaskSummary.js'),
 
 
@@ -96,7 +101,11 @@ export const registry = { // this registry is for loading a new page to the righ
 'create-survey-dialogue': () => import('../work/survey/createSurvey.js'),  // copied to work/ folder Nov 22 2025
 //'display-survey-dialogue' : () => import('../work/survey/XdisplayStudentSurveys.js'), // lost the module. Dec 26 2025
 //'display-this-survey' :()=> import('../surveys/displaySurveyQwen.js'), // copied to work/ folder
+
+//changing to display survey as small card
 'display-this-survey' :()=> import('../work/survey/displaySurvey.js'), //changed fro,m above 23:22 dec 14
+//'display-this-survey' :()=> import('../work/survey/displaySurveyCards.js'),
+
 
 //'display-surveys':()=> import('../surveys/displayStudentSurveys.js'),  
 //'display-surveys':()=> import('../surveys/displaySurveyQwen.js'),  //test 21:00 oct 27 - do direct and make dual use
@@ -106,6 +115,8 @@ export const registry = { // this registry is for loading a new page to the righ
 
 //////////          SETTINGS            AdminDash      /////////                 
 'money-management-section': () => import('../dash/moneyManagementSection.js'),
+'recruitment-management-section': () => import('../dash/recruitmentManagementSection.js'),
+
 'open-permissions-dialogue': () => import('../db/permissionsModule.js'),   
 
 
@@ -120,7 +131,14 @@ export const registry = { // this registry is for loading a new page to the righ
 
 //////////          myDash    - uses same functions a adminDash?               /////////
 "display-profile"  : () => import('../work/approfiles/displayProfile.js'),
- "display-surveys"  : () => import('../work/survey/displaySurvey.js'), //changed to remove Qwen 22:29 dec 24
+
+//change to display cards of surveys
+//"display-surveys"  : () => import('../work/survey/displaySurvey.js'), //changed to remove Qwen 22:29 dec 24
+"display-survey"  : () => import('../work/survey/displaySurvey.js'),
+ "display-surveys"  : () => import('../work/survey/displaySurveyCards.js'),
+
+"my-role" : () => import('../work/approfiles/myRole.js'),
+
 // "display-tasks"  : () => import('../work/tasks/displayTaskStudent.js'),
 // "display-relations"  : () => import('../work/approfiles/displayRelations.js'),
 //"display-students"  : () => import('../work/task/displayTasksManager.js'),

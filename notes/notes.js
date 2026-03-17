@@ -7,15 +7,12 @@ import { setupNotesListeners } from './noteListeners.js';
 import { displayNotes } from './displayNotes.js';
 import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
 import { showToast } from '../ui/showToast.js';
-/*
-need to add the js from the lab notes.js
-need adjust paths of all imports
-adapt db write
-*/
 
 
 console.log('notes.js loaded');
 
+// editing value= to change from text to the int that is listed in the categories table. Keeing the old value =text by changing it to a a data-value = text (in case it is a useful bit of data)
+//change 12:26 March 16 2026
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `  <div id="notes-panel" data-module="notes-panel" >         
   
@@ -28,19 +25,19 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
               <div class="flex flex-wrap gap-2 mb-3">
 
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center " id="TagSection047">
-                  <input type="radio" id="message-self" name="message-mode" value="self" class="mr-2 text-blue-600" checked>
+                  <input type="radio" id="message-self" name="message-mode" data-value="47" value="self" class="mr-2 text-blue-600" checked>
                   <label for="message-self">self (default)</label>
                 </div>
                 <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection037" title="Click the note you want to reply to.">
-                  <input type="radio" id="message-reply" name="message-mode" value="reply" class="mr-2 text-blue-600">
+                  <input type="radio" id="message-reply" name="message-mode" data-value="37" value="reply" class="mr-2 text-blue-600">
                   <label for="message-reply">reply: (needs click note)</label>
                 </div>
                 <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection044"  title="Use the [Select] menu button to choose who you want to send to. That name will be loaded into the dropdown.">
-                  <input type="radio" id="message-to" name="message-mode" value="to" class="mr-2 text-blue-600">
+                  <input type="radio" id="message-to" name="message-mode" data-value="44" value="to" class="mr-2 text-blue-600">
                   <label for="message-to">to: (needs dropdown)</label>
                 </div>
                 <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection046" title="Select whose notes you want to see displayed. Use the [Select] menu button to choose the person or group">
-                  <input type="radio" id="message-from" name="message-mode" value="from" class="mr-2 text-blue-600">
+                  <input type="radio" id="message-from" name="message-mode" data-value="46" value="from" class="mr-2 text-blue-600">
                   <label for="message-from">from: (needs dropdown)</label>
                 </div>
                 
@@ -74,29 +71,29 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
               <h4 class="text-md font-semibold mb-3 text-gray-700">📶 Important?</h4>
               <div class="flex flex-wrap gap-2 mb-3">
                 <div class="text-sm flex items-center" id="TagSection018">
-                  <input type="radio" id="importance-1" name="importance" value="importance-1" class="mr-2 text-blue-600">
+                  <input type="radio" id="importance-1" name="importance" data-value="importance-1" value="18" class="mr-2 text-blue-600">
                   <label for="importance-1">1</label>
                 </div>
                 <div class="text-sm flex items-center" id="TagSection020">
-                  <input type="radio" id="importance-2" name="importance" value="importance-2" class="mr-2 text-blue-600">
+                  <input type="radio" id="importance-2" name="importance" data-value="importance-2" value="20" class="mr-2 text-blue-600">
                   <label for="importance-2">2</label>
                 </div>
                 <div class="text-sm flex items-center" id="TagSection021">
-                  <input type="radio" id="importance-3" name="importance" value="importance-3" checked class="mr-2 text-blue-600">
+                  <input type="radio" id="importance-3" name="importance" data-value="importance-3" value="21" checked class="mr-2 text-blue-600">
                   <label for="importance-3">3</label>
                 </div>
                 <div class="text-sm flex items-center" id="TagSection022">
-                  <input type="radio" id="importance-4" name="importance" value="importance-4" class="mr-2 text-blue-600">
+                  <input type="radio" id="importance-4" name="importance" data-value="importance-4" value="22" class="mr-2 text-blue-600">
                   <label for="importance-4">4</label>
                 </div>
                 <div class="text-sm flex items-center" id="TagSection023">
-                  <input type="radio" id="importance-5" name="importance" value="importance-5" class="mr-2 text-blue-600">
+                  <input type="radio" id="importance-5" name="importance" data-value="importance-5" value="23" class="mr-2 text-blue-600">
                   <label for="importance-5">5</label>
                 </div>
 
                 <!-- special HELP! tag -->
                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection043">
-                  <input type="checkbox" id="tag-main-help" name="main" value="help" class="mr-2 text-blue-600">
+                  <input type="checkbox" id="tag-main-help" name="main" data-value="help" value="43" class="mr-2 text-blue-600">
                   <label for="tag-main-help">Help!</label>
                 </div>
                 </div>  
@@ -109,28 +106,28 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection034">
-                  <input type="checkbox" id="tag-main-bug" name="main" value="bug" checked class="mr-2 text-blue-600">
+                  <input type="checkbox" id="tag-main-bug" name="main" data-value="bug" value="34" checked class="mr-2 text-blue-600">
                   <label for="tag-main-bug">bug</label>
                 </div>
                 <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection039">
-                  <input type="checkbox" id="tag-main-t&m" checked name="main" value="t&m" class="mr-2 text-blue-600">
+                  <input type="checkbox" id="tag-main-t&m" checked name="main" data-value="t&m" value="39" class="mr-2 text-blue-600">
                   <label for="tag-main-t&m">t&m</label>
                 </div>
 
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection009">📝
-                <input type="checkbox" id="tag-events-diary" name="events" value="diary" checked class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-events-diary" name="events" data-value="diary" value="9" checked class="mr-2 text-blue-600">
                 <label for="tag-events-diary">diary</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection015">
-                <input type="checkbox" id="tag-events-disaster" name="events" value="disaster" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-events-disaster" name="events" data-value="disaster" value="15" class="mr-2 text-blue-600">
                 <label for="tag-events-disaster">disaster</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection016">
-                <input type="checkbox" id="tag-events-triumph" name="events" value="triumph" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-events-triumph" name="events" data-value="triumph" value="16" class="mr-2 text-blue-600">
                 <label for="tag-events-triumph">triumph</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection017">
-                <input type="checkbox" id="tag-events-rant" name="events" value="rant" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-events-rant" name="events" data-value="rant" value="17" class="mr-2 text-blue-600">
                 <label for="tag-events-rant">rant</label>
               </div>
             </div>
@@ -139,27 +136,27 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
           <div class="mb-6" id="TagSection011">
             <div class="flex flex-wrap gap-2 mb-3">
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection002">🔄
-                <input type="checkbox" id="tag-process-todo" name="process" value="to-do" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-process-todo" name="process" data-value="to-do" value="2" class="mr-2 text-blue-600">
                 <label for="tag-process-todo">to do</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection003">
-                <input type="checkbox" id="tag-process-idea" name="process" value="idea" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-process-idea" name="process" data-value="idea" value="3" class="mr-2 text-blue-600">
                 <label for="tag-process-idea">idea</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection004">
-                <input type="checkbox" id="tag-process-test" name="process" value="test" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-process-test" name="process" data-value="test" value="4" class="mr-2 text-blue-600">
                 <label for="tag-process-test">test</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection005">
-                <input type="checkbox" id="tag-process-blocker" name="process" value="blocker" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-process-blocker" name="process" data-value="blocker" value="5" class="mr-2 text-blue-600">
                 <label for="tag-process-blocker">block</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection007">
-                <input type="checkbox" id="tag-process-refactor" name="process" value="refactor" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-process-refactor" name="process" data-value="refactor" value="7" class="mr-2 text-blue-600">
                 <label for="tag-process-refactor">refactor</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection012">
-                <input type="checkbox" id="tag-process-hack" name="process" value="hack" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-process-hack" name="process" data-value="hack" value="12" class="mr-2 text-blue-600">
                 <label for="tag-process-hack">hack</label>
               </div>
             </div>
@@ -168,11 +165,11 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
           <div class="mb-6" id="TagSection018">
             <div class="flex flex-wrap gap-2 mb-3">
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection008">💼
-                <input type="checkbox" id="tag-business-meeting" name="business" value="meeting" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-business-meeting" name="business" data-value="meeting" value="8" class="mr-2 text-blue-600">
                 <label for="tag-business-meeting">meeting</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection038">
-                <input type="checkbox" id="tag-business-review" name="business" value="review" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-business-review" name="business" data-value="review" value="38" class="mr-2 text-blue-600">
                 <label for="tag-business-review">review</label>
               </div>
             </div>
@@ -181,15 +178,15 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
           <div class="mb-6" id="TagSection021">
             <div class="flex flex-wrap gap-2 mb-3">
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection010">📚
-                <input type="checkbox" id="tag-resource-insight" name="resource" value="insight" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-resource-insight" name="resource" data-value="insight" value="10" class="mr-2 text-blue-600">
                 <label for="tag-resource-insight">insight</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection011">
-                <input type="checkbox" id="tag-resource-resource" name="resource" value="resource" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-resource-resource" name="resource" data-value="resource" value="11" class="mr-2 text-blue-600">
                 <label for="tag-resource-resource">resource</label>
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection013">
-                <input type="checkbox" id="tag-resource-howto" name="resource" value="how-to" class="mr-2 text-blue-600">
+                <input type="checkbox" id="tag-resource-howto" name="resource" data-value="how-to" value="13" class="mr-2 text-blue-600">
                 <label for="tag-resource-howto">how to</label>
               </div>
             </div>
@@ -207,13 +204,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
         <div class="bg-green-50" 
         title="The more boxes I click I expect MORE results  (Show me notes that fit this box PLUS notes that fit the other box)">
         <input type="radio" id="more-clicks-more-notes" name="clickLogic" value='more-clicks-more-notes' class=" text-blue-600" checked>
-        <label for="more-clicks-more-notes"> more-clicks-more-notes</label>
+        <label for="more-clicks-more-notes"> more-clicks-MORE NOTES</label>
        </div>
 
 
         <!--button type="radio" id="more-clicks-more-notes" name="clickLogic" value='more-clicks-more-notes'    class="px-4 py-2 bg-green-50 text-black rounded hover:bg-green-100 transition-colors"
           title="The more boxes I click I expect MORE results  (Show me notes that fit this box PLUS notes that fit the other box)">
-            More clicks - more notes
+            More clicks - MORE NOTES
           </button-->
        
           <button data-action="save-note" id="save-notes" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">

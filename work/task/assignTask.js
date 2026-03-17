@@ -10,8 +10,10 @@ import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
 
 console.log('assignTask.js loaded');
 
-const userId = appState.query.userId; //legacy
+let userId = appState.query.userId; //legacy
 let subject = null;
+let totalSteps=null;
+//base has   this.AssignmentDefaultMoveBy   which is changed if the radio buttons are clicked. Can be student | manager | auto
 
 // Export function as required by the module loading system
 export function render(panel, query = {}) {
@@ -53,6 +55,10 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     
     // Initialize with task-specific data
     this.init(panel, query);
+
+//    const informationFeedback = panel.querySelector('informationFeedback');
+//this is decalred in assignmentBase, but maybe before the html is created
+
   }
 
   init(panel, query = {}) {
@@ -141,7 +147,42 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     ? 'Assign Task'
     : 'Select task and student first';  
   }
-// the below isn't called but runs. Why is it passed args when it collects them from dropdowns?
+
+//need to know the default 'moveBY' from task_header for this task (student | manager | auto )
+//Need to dislay radio choices for moveBy, with the read default checked
+//need display this default as 'checked'
+
+
+decideNavButtonsToDisplay(){
+console.log('decideNavButtonsToDisplay()');
+//let defaultMoveBy = this.readTaskDefaultMoveBy();
+
+if (currentStep <3) return; // where get currentStep ??
+
+
+}
+
+decideDefaultMoveBy(taskHeaderDefault){
+  if(!taskHeaderDefault)
+if (this.AssignmentDefaultMoveBy) return this.AssignmentDefaultMoveBy;
+  else if (taskHeaderDefault) return taskHeaderDefault;
+  else return 'manager';
+
+  //The chosen value inside assignment is first choice. The value placed in task_headers is 2nd choice. If neither exists use 'manager'
+
+}
+
+
+async  readTaskDefaultMoveBy(){
+  let defaultMoveBy = 'manager'; // is this needed or can we just use the value from the base ?
+console.log('readTaskDefaultMoveBy()');
+if(this.taskDefaultMoveBy) defaultMoveBy = this.taskDefaultMoveBy; //if the user has clicked on the assign radio buttons use that
+//the value of who is in control of movement is taken from the task-header as a default value
+// if the is no such set value (true for older tasks) let the local default take preferenc
+return defaultMoveBy;
+}
+
+
   async processAssignment(panel) { // ✅ Override parent method
    // console.log('processAssignment() args of subject, item, but not used?', subjectId, itemId);
     
@@ -170,13 +211,18 @@ console.log('studentName',this.studentName);
     try {
       // Look up step 3 for this task (initial step)
       console.log('Looking up steps for task:', taskHeaderId);
-      const steps = await executeIfPermitted(userId, 'readTaskSteps', {
+      const taskSteps = await executeIfPermitted(userId, 'readTaskSteps', {
         taskId: taskHeaderId
       });
-      
-      // Find step 3 (initial step)
+//to keep track of navigation buttons we need the total number of steps and the default moveBy from the task header
+      totalSteps=taskSteps.length; //new 16:00 feb 23
+     
+this.defaultMoveBy = this.decideDefaultMoveBy(taskSteps.move_by);  //has the user clicked the radio buttons or do we use the task_header or just 'manager' ?
+
+
+       // Find step 3 (initial step)
       let stepId = null;
-      const initialStep = steps.find(step => step.step_order === 3);
+      const initialStep = taskSteps.find(step => step.step_order === 3);
       if (initialStep) {
         stepId = initialStep.id;
         console.log('Found initial step_id:', stepId);
@@ -185,26 +231,32 @@ console.log('studentName',this.studentName);
       }
   
       subject = await resolveSubject();
-      this.userId=subject.id; //wrong because ??
+      this.userId=subject.id; 
       console.log('this.userId:',this.userId);
 
 console.log('registry createAssignment:',
     'student_id:', studentId,
     'student_name:',this.studentName,
     'manager_id:', this.managerId,
+
+    'defaultMoveBy:',this.defaultMoveBy,
     
     'assignment:', '{task_header:', taskHeaderId, 
     'step_id:', stepId,'}',
+    'current_step:',3,
+    'totalSteps:',totalSteps,
     'assigned_by:',this.userId);
 
       // Save task assignment to database
       const result = await executeIfPermitted(userId, 'createAssignment', { //what about current_step int?
         task_header_id: taskHeaderId,
         step_id: stepId,
+        current_step:3,
         student_id: studentId,
         student_name: this.studentName,
         manager_id: this.managerId,
-        assigned_by: this.userId // Current user doing the assignment
+        assigned_by: this.userId, // Current user doing the assignment
+        move_by: this.defaultMoveBy
       });
       
       return result;

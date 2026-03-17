@@ -44,10 +44,10 @@ import { loadMyDashWithData } from './dash/loadMyDashWithData.js';
 
 // === UTILITY: Get main display area ===
 function getDisplayArea() {
-//console.log('GetDisplayArea()');
+console.log('GetDisplayArea()');
 
 const destination=appState.query.petitioner.Destination;
-//console.log('destination:',destination);
+console.log('destination:',destination);
 if(destination==='new-panel') return document.querySelector('[data-panel="inject-here"]');
 else {const displayArea = document.querySelector(`[data-section="${destination}"]`);
 //  console.log('displayArea:',displayArea );
@@ -324,7 +324,7 @@ function updatePanelLayout() {
 
 // === OPEN/CLOSE PANELS BY RULE ===
 export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
- // console.log('openClosePanelsByRule(', stubName, 'fromButtonClick:', fromButtonClick,')');
+// console.log('openClosePanelsByRule(', stubName, 'fromButtonClick:', fromButtonClick,')');
   
   if(fromButtonClick){document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));}
   

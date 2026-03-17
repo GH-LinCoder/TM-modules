@@ -67,7 +67,7 @@ XcreateOrUpdateApprofile: {//this should be separate functions I don't think it 
 
 
 // For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
-autoAssignTask: {
+autoAssignTask: { //how does this get passed the permission system? (It is called on first login by a new user) - after being granted myDash permissions
   metadata: {
     tables: ['task_assignments'],
     columns: ['id', 'step_id', 'sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'assigned_by_automation'],
@@ -609,15 +609,15 @@ console.log ('Received:', appro_name, appro_description, appro_email, auth_id);
 //ASSIGNMENT
 createAssignment:{
   metadata: {
-  tables: ['task_assignments'],
+  tables: ['assignments'],
   columns: ['id', 'step_id','sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'survey_header_id', 'survey_question_id'],
   type: 'INSERT',
   requiredArgs: [ 'student_id'], 
   optionalArgs: ['task_header_id','step_id','manager_id', 'survey_header_id', 'survey_question_id'] // depends on task or survey
 }, // Should this check for duplicate assignment???
 handler: async (supabase, userId, payload) => {
-  const { task_header_id, step_id, student_id, student_name, manager_id, survey_header_id, survey_question_id,assigned_by } = payload;
-console.log('registry -createAssignment() survey_header_id',survey_header_id);//failed to write this Jan 18
+  const { task_header_id, step_id, current_step, move_by, student_id, student_name, manager_id, survey_header_id, survey_question_id,assigned_by } = payload;
+//console.log('registry -createAssignment() survey_header_id',survey_header_id);//failed to write this Jan 18
 //this says duolicate even when no such thing 
 
 let existing=null;
@@ -645,22 +645,22 @@ if (task_header_id) {
 if (existing && existing.data.length > 0) { //console.log (existing);
   throw new Error('Assignment already exists for this student');
 }
-
+/*
 console.log('assignTask createAssignment:',
     'student_id:', student_id,
     'student_name:',student_name,
     'manager_id:', manager_id,
     
-    'task_header:', task_header_id, 
+    'task_header_id:', task_header_id, 
     'step_id:', step_id,
-
+    'current_step:', current_step, 
     'survey_header:survey_header_id',
     'question_id', survey_question_id,
     'assigned_by:',assigned_by);
+*/
 
 
-
-    if(task_header_id) { //console.log('task_header_id:', task_header_id);
+    if(task_header_id) { console.log('task_header_id:', task_header_id);
   const { data, error } = await supabase
   .from('assignments')
   .insert({
@@ -670,7 +670,9 @@ console.log('assignTask createAssignment:',
     assignment_type:'task',
     assignment: {"task_header": task_header_id, 
     "step_id": step_id},
-    assigned_by:assigned_by
+    current_step:current_step,
+    assigned_by:assigned_by,
+    move_by:move_by
   })
   .select() //Return the inserted row
   .single(); //Return single object
@@ -878,34 +880,7 @@ console.log('updtaeTaskStep:', stepDescription);
   }
 },
 
-//TASKS
-/*
-assignmentUpdateStep:{
-  // Metadata for the permissions system
-  metadata: {
-    tables: ['task_assignments'],
-    columns: [],
-    type: 'UPDATE',
-    requiredArgs:['supabase', 'userId', 'assignment_id', 'step_id' ]
-    // This could also hold other data like required user roles or permissions
-  },
-  // The actual function that interacts with the database
-handler: async  (supabase, userId, payload) =>{
-  const { step_id, assignment_id } = payload;
-  console.log('assignmentUpdateStep() stepId:',step_id,'assignment_id:',assignment_id);
-  const { data, error } = await supabase
-  .from('assignments')
-  .update({step_id:step_id}) // ←  
-.eq('id',assignment_id);
-  if (error) {
-    console.error('Error update assignment:', error.message);
-    throw new Error('Failed to update assignment.');
-  }
-  
-  return data// returns an empty array. Length=0  ?
-}
-},
-*/
+
 assignmentUpdateStep: {
   // Metadata for the permissions system
   metadata: {
@@ -913,11 +888,11 @@ assignmentUpdateStep: {
     columns: [],
     type: 'UPDATE',
     requiredArgs: ['supabase', 'userId', 'assignment_id', 'step_id']
-    // This could also hold other data like required user roles or permissions
-  }, // ← MISSING COMMA WAS HERE!
+    
+  }, 
   
   // The actual function that interacts with the database
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase, userId, payload) => { //also needs to update step_order
     const { step_id, assignment_id } = payload;
     console.log('assignmentUpdateStep() stepId:', step_id, 'assignment_id:', assignment_id);
     
@@ -948,8 +923,104 @@ assignmentUpdateStep: {
       console.error('Error updating assignment:', error.message);
       throw new Error('Failed to update assignment.');
     }
+    //find the step_order for this step_id
+    const { data: stepData, error: stepError } = await supabase
+      .from('task_steps')
+      .select('step_order')
+      .eq('id', step_id)
+      .single();
     
-    return data; // returns the updated record
+    if (stepError) {
+      console.error('Error fetching step order:', stepError.message);
+      throw new Error('Failed to fetch step order.');
+    }
+    
+    // Now update the current_step field with the fetched step_order
+    const { data: finalData, error: finalError } = await supabase
+      .from('assignments')
+      .update({ current_step: stepData.step_order })
+      .eq('id', assignment_id);
+    
+    if (finalError) {
+      console.error('Error updating current_step:', finalError.message);
+      throw new Error('Failed to update current_step.');
+    }
+
+
+
+    return finalData; // returns the updated record
+  }
+},
+
+
+assignmentUpdateStep: {
+  // Metadata for the permissions system
+  metadata: {
+    tables: ['task_assignments'],
+    columns: [],
+    type: 'UPDATE',
+    requiredArgs: ['supabase', 'userId', 'assignment_id', 'step_id']
+    
+  }, 
+  
+  // The actual function that interacts with the database
+  handler: async (supabase, userId, payload) => { //also needs to update step_order
+    const { step_id, assignment_id } = payload;
+    console.log('assignmentUpdateStep() stepId:', step_id, 'assignment_id:', assignment_id);
+    
+    // First, get the current assignment record
+    const { data: currentData, error: fetchError } = await supabase
+      .from('assignments')
+      .select('assignment')
+      .eq('id', assignment_id)
+      .single();
+    
+    if (fetchError) {
+      console.error('Error fetching assignment:', fetchError.message);
+      throw new Error('Failed to fetch assignment.');
+    }
+    
+    // Update the JSONB assignment field with preserved existing data + new step_id
+    const updatedAssignment = {
+      ...currentData.assignment,
+      step_id: step_id
+    };
+    
+    const { data, error } = await supabase
+      .from('assignments')
+      .update({ assignment: updatedAssignment })
+      .eq('id', assignment_id);
+      
+    if (error) {
+      console.error('Error updating assignment:', error.message);
+      throw new Error('Failed to update assignment.');
+    }
+    //find the step_order for this step_id
+    const { data: stepData, error: stepError } = await supabase
+      .from('task_steps')
+      .select('step_order')
+      .eq('id', step_id)
+      .single();
+    
+    if (stepError) {
+      console.error('Error fetching step order:', stepError.message);
+      throw new Error('Failed to fetch step order.');
+    }
+    
+    // Now update the current_step field with the fetched step_order
+    const { data: finalData, error: finalError } = await supabase
+      .from('assignments')
+      .update({ current_step: stepData.step_order })
+      .eq('id', assignment_id);
+    
+    if (finalError) {
+      console.error('Error updating current_step:', finalError.message);
+      throw new Error('Failed to update current_step.');
+    }
+
+
+
+    return finalData; // returns the updated record
   }
 },
 
@@ -1106,7 +1177,7 @@ readApprofileById:{
     const { approfileId } = payload;
     const { data, error } = await supabase
       .from('app_profiles')
-      .select('id, name, email, created_at')
+      .select('id, name, description, email, created_at')
       .eq('id', approfileId)
       .single();
     
@@ -1159,12 +1230,12 @@ readApprofileRelationships: {
       .from('approfile_relations_view')
       .select('*')
       .eq('approfile_is', approfileId);
-
+//console.log('isRels',isRels);
     const ofRels = await supabase
       .from('approfile_relations_view')
       .select('*')
       .eq('of_approfile', approfileId);
-
+//console.log('ofRels',ofRels);
       const ids = [
         approfileId,                                   // subject itself
         ...isRels.data.map(r => r.of_approfile),       // of-appros
@@ -1200,7 +1271,7 @@ readApprofileRelationships: {
 },
 
 //APPRO PERMISSIONS
-XreadPermissionRelationById: {
+readPermissionRelationsById: {
   metadata: {
     tables: ['permissions_relations_view'],
     columns: ['*'],
@@ -1209,29 +1280,29 @@ XreadPermissionRelationById: {
   },
   handler: async (supabase, userId, payload) => {
     const { approfileId } = payload;
-
+console.log('readPermissionRelationsById');
     const isRels = await supabase
-      .from('permissions_relations_view')
+      .from('permission_relations_view')
       .select('*')
       .eq('approfile_is', approfileId);
-
+console.log('isRels',isRels);
     const ofRels = await supabase
-      .from('permissions_relations_view')
+      .from('permission_relations_view')
       .select('*')
       .eq('of_approfile', approfileId);
-
+console.log('ofRels',ofRels);
       const ids = [
         approfileId,                                   // subject itself
         ...isRels.data.map(r => r.of_approfile),       // of-appros
         ...ofRels.data.map(r => r.approfile_is)        // is-appros
       ];
        
-//console.log('ids:',ids);
+console.log('ids:',ids);
     const profiles = await supabase
       .from('app_profiles')
       .select('id, auth_user_id, survey_header_id, task_header_id')
       .in('id', ids);
-//console.log('profiles:',profiles);
+console.log('profiles:',profiles);
     // build a lookup map of appro id → icon
     const profileMap = {};
     for (const ap of profiles.data || []) {
@@ -1245,7 +1316,7 @@ XreadPermissionRelationById: {
       }
       profileMap[ap.id] = icon;
     }
-//console.log('profileMap',profileMap);
+    console.log('profileMap',profileMap);
 console.log('DEBUG: Returning permissions data:', {
   is: isRels.data || [],
   of: ofRels.data || [],
@@ -1259,6 +1330,642 @@ console.log('DEBUG: Returning permissions data:', {
     };
   }
 },
+
+//complete refactor 22:35 Feb 22 which failed
+//and again changed 23:11 feb 22
+
+readWorkRelationsById: {
+  metadata: {
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
+
+  handler: async (supabase, userId, payload) => {
+    const subjectUuid = payload.approfileId;
+
+    //
+    // ───────────────────────────────────────────────
+    // 1. RESOLVE SUBJECT UUID → APPROFILE
+    // ───────────────────────────────────────────────
+    //
+
+    async function resolveAppro(uuid) {
+      // Try approfile.id
+      let { data } = await supabase
+        .from('app_profiles')
+        .select('*')
+        .eq('id', uuid)
+        .limit(1);
+      if (data?.[0]) return data[0];
+
+      // Try task_header_id
+      ({ data } = await supabase
+        .from('app_profiles')
+        .select('*')
+        .eq('task_header_id', uuid)
+        .limit(1));
+      if (data?.[0]) return data[0];
+
+      // Try survey_header_id
+      ({ data } = await supabase
+        .from('app_profiles')
+        .select('*')
+        .eq('survey_header_id', uuid)
+        .limit(1));
+      if (data?.[0]) return data[0];
+
+      return null;
+    }
+
+    const subject = await resolveAppro(subjectUuid);
+    if (!subject) {
+      return { subject: null, assignments: [], iconMap: {} };
+    }
+
+    const subjectApproId = subject.id;
+console.log('subject',subject);
+
+    const subjectHeaderId = //subject.header_id || null;
+     subject.task_header_id || subject.survey_header_id || null;
+console.log('subject after',subject);
+
+    const subjectType =
+      subject.auth_user_id ? 'app-human'
+      : subject.task_header_id ? 'app-task'
+      : subject.survey_header_id ? 'app-survey'
+      : 'app-abstract';
+
+///test
+console.log('Resolved subject:', {
+  approfileId: subjectApproId,
+  headerId: subjectHeaderId,
+  type: subjectType,
+  name: subject.name
+});
+// Test if assignments exist for this header
+const testQuery = await supabase
+  .from('assignments')
+  .select('assignment')
+  .eq('assignment->>task_header', subjectHeaderId);
+console.log('Test query result:', testQuery.data);
+////test
+
+    //
+    // ───────────────────────────────────────────────
+    // 2. LOAD ASSIGNMENTS WHERE SUBJECT IS STUDENT
+    // ───────────────────────────────────────────────
+    //
+
+    const { data: taskAsStudent = [] } = await supabase
+      .from('assignments_task_view')
+      .select('*')
+      .eq('student_id', subjectApproId);
+
+    const { data: surveyAsStudent = [] } = await supabase
+      .from('assignments_survey_view')
+      .select('*')
+      .eq('student_id', subjectApproId);
+
+    //
+    // ───────────────────────────────────────────────
+    // 3. LOAD ASSIGNMENTS WHERE SUBJECT IS ACTIVITY
+    // ───────────────────────────────────────────────
+    //
+
+    let taskAsActivity = [];
+    let surveyAsActivity = [];
+
+if (subjectType === 'app-task' && subjectHeaderId) {
+  const { data = [] } = await supabase
+    .from('assignments_task_view')
+    .select('*')
+    .eq('assignment->>task_header', subjectHeaderId);
+  taskAsActivity = data;
+}
+
+if (subjectType === 'app-survey' && subjectHeaderId) {
+  const { data = [] } = await supabase
+    .from('assignments_survey_view')
+    .select('*')
+    .eq('assignment->>survey_header', subjectHeaderId);
+  surveyAsActivity = data;
+}
+
+    //
+    // ───────────────────────────────────────────────
+    // 4. COLLECT ALL HEADER IDS TO RESOLVE ACTIVITIES
+    // ───────────────────────────────────────────────
+    //
+
+    const taskHeaders = new Set();
+    const surveyHeaders = new Set();
+
+    [...taskAsStudent, ...taskAsActivity].forEach(r => {
+      if (r.assignment?.task_header) taskHeaders.add(r.assignment.task_header);
+    });
+
+    [...surveyAsStudent, ...surveyAsActivity].forEach(r => {
+      if (r.assignment?.survey_header) surveyHeaders.add(r.assignment.survey_header);
+    });
+
+    //
+    // ───────────────────────────────────────────────
+    // 5. RESOLVE ACTIVITY APPROFILES FROM HEADERS
+    // ───────────────────────────────────────────────
+    //
+
+    const { data: taskProfiles = [] } = await supabase
+      .from('app_profiles')
+      .select('*')
+      .in('task_header_id', [...taskHeaders]);
+
+    const { data: surveyProfiles = [] } = await supabase
+      .from('app_profiles')
+      .select('*')
+      .in('survey_header_id', [...surveyHeaders]);
+
+    //
+    // ───────────────────────────────────────────────
+    // 6. BUILD APPROFILE MAP + ICON MAP
+    // ───────────────────────────────────────────────
+    //
+
+    const allApproIds = new Set();
+    allApproIds.add(subjectApproId);
+
+    // Students
+    [...taskAsStudent, ...surveyAsStudent].forEach(r => {
+      allApproIds.add(r.student_id);
+    });
+[...taskAsActivity].forEach(r => {
+  allApproIds.add(r.student_id);
+});
+
+    // Activity approfiles
+    taskProfiles.forEach(ap => allApproIds.add(ap.id));
+    surveyProfiles.forEach(ap => allApproIds.add(ap.id));
+
+    const { data: approProfiles = [] } = await supabase
+      .from('app_profiles')
+      .select('*')
+      .in('id', [...allApproIds]);
+
+    const approById = {};
+    const iconMap = {};
+
+    approProfiles.forEach(ap => {
+      approById[ap.id] = ap;
+
+      if (ap.auth_user_id) iconMap[ap.id] = '👤';
+      else if (ap.task_header_id) iconMap[ap.id] = '🔧';
+      else if (ap.survey_header_id) iconMap[ap.id] = '📜';
+      else iconMap[ap.id] = '🎭';
+    });
+
+    //
+    // ───────────────────────────────────────────────
+    // 7. BUILD DUPLETS (student, activity)
+    // ───────────────────────────────────────────────
+    //
+
+    function resolveActivityProfile(row) {
+      if (row.assignment?.task_header) {
+        return taskProfiles.find(ap => ap.task_header_id === row.assignment.task_header);
+      }
+      if (row.assignment?.survey_header) {
+        return surveyProfiles.find(ap => ap.survey_header_id === row.assignment.survey_header);
+      }
+      return null;
+    }
+
+    function makeDuplet(row) {
+      const student = approById[row.student_id];
+      const activity = resolveActivityProfile(row);
+console.log('student:',student, 'activity',activity);
+      if (!student || !activity) return null;
+
+      return {
+        student: {
+          appro_id: student.id,
+          name: student.name,
+          type: student.auth_user_id
+            ? 'app-human'
+            : student.task_header_id
+            ? 'app-task'
+            : student.survey_header_id
+            ? 'app-survey'
+            : 'app-abstract',
+          icon: iconMap[student.id]
+        },
+
+        activity: {
+          appro_id: activity.id,
+          header_id: activity.task_header_id || activity.survey_header_id,
+          name: activity.name,
+          type: activity.task_header_id
+            ? 'app-task'
+            : activity.survey_header_id
+            ? 'app-survey'
+            : 'app-abstract',
+          icon: iconMap[activity.id]
+        }
+      };
+    }
+
+    const assignments = [
+      ...taskAsStudent.map(makeDuplet),
+      ...surveyAsStudent.map(makeDuplet),
+      ...taskAsActivity.map(makeDuplet),
+      ...surveyAsActivity.map(makeDuplet)
+    ].filter(Boolean);
+
+    //
+    // ───────────────────────────────────────────────
+    // 8. RETURN CLEAN WORK-MODE STRUCTURE
+    // ───────────────────────────────────────────────
+    //
+
+    return {
+      subject: {
+        appro_id: subjectApproId,
+        header_id: subjectHeaderId,
+        type: subjectType,
+        name: subject.name,
+        icon: iconMap[subjectApproId]
+      },
+      assignments,
+      iconMap
+    };
+  }
+},
+
+
+/*
+readWorkRelationsById: {
+  // ... metadata ...
+  handler: async (supabase, userId, payload) => {
+    const { approfileId, subjectType } = payload;
+    
+    // 1. Get assignments where subject is STUDENT
+    const [taskAsStudent, surveyAsStudent] = await Promise.all([
+      supabase.from('assignments_task_view').select('*').eq('student_id', approfileId),
+      supabase.from('assignments_survey_view').select('*').eq('student_id', approfileId)
+    ]);
+
+    // 2. Get assignments where subject is TARGET (task/survey)
+    let taskAsTarget = [];
+    let surveyAsTarget = [];
+    
+    if (subjectType === 'app-task' || subjectType === 'app-survey') {
+      // Get the header ID from app_profiles
+      const { data: profile } = await supabase
+        .from('app_profiles')
+        .select('task_header_id, survey_header_id')
+        .eq('id', approfileId)
+        .single();
+
+      if (subjectType === 'app-task' && profile.task_header_id) {
+        const { data } = await supabase
+          .from('assignments_task_view')
+          .select('*')
+          .eq('task_header_id', profile.task_header_id);
+        taskAsTarget = data || [];
+      }
+      
+      if (subjectType === 'app-survey' && profile.survey_header_id) {
+        const { data } = await supabase
+          .from('assignments_survey_view')
+          .select('*')
+          .eq('survey_header_id', profile.survey_header_id);
+        surveyAsTarget = data || [];
+      }
+    }
+
+    // 3. TRANSFORM into relationship format
+    const isRels = [
+      // Subject is student, assigned to tasks
+      ...taskAsStudent.data?.map(row => ({
+        approfile_is: approfileId,           // ← Subject ID
+        approfile_is_name: 'SUBJECT_NAME',   // ← You'll need subject name
+        of_approfile: row.task_header_id,    // ← Task ID  
+        of_approfile_name: row.task_name,
+        relationship: 'assigned'
+      })) || [],
+      // Subject is student, assigned to surveys  
+      ...surveyAsStudent.data?.map(row => ({
+        approfile_is: approfileId,           // ← Subject ID
+        approfile_is_name: 'SUBJECT_NAME',
+        of_approfile: row.survey_header_id,  // ← Survey ID
+        of_approfile_name: row.survey_name,
+        relationship: 'assigned'
+      })) || []
+    ];
+
+    const ofRels = [
+      // Tasks assigned to subject (when subject is task)
+      ...taskAsTarget.map(row => ({
+        approfile_is: row.student_id,        // ← Student ID
+        approfile_is_name: row.student_name,
+        of_approfile: approfileId,           // ← Subject ID (the task)
+        of_approfile_name: 'SUBJECT_NAME',
+        relationship: 'assigned'
+      })),
+      // Surveys assigned to subject (when subject is survey)
+      ...surveyAsTarget.map(row => ({
+        approfile_is: row.student_id,        // ← Student ID  
+        approfile_is_name: row.student_name,
+        of_approfile: approfileId,           // ← Subject ID (the survey)
+        of_approfile_name: 'SUBJECT_NAME',
+        relationship: 'assigned'
+      }))
+    ];
+
+    // 4. Build icon map (same as permissions)
+    const ids = [
+      approfileId,
+      ...isRels.map(r => r.of_approfile),
+      ...ofRels.map(r => r.approfile_is)
+    ].filter(id => id); // Remove null/undefined
+
+    const { data: profiles } = await supabase
+      .from('app_profiles')
+      .select('id, auth_user_id, survey_header_id, task_header_id')
+      .in('id', ids);
+
+    const iconMap = {};
+    for (const ap of profiles || []) {
+      let icon = '🎭';
+      if (ap.auth_user_id) icon = '👥';
+      else if (ap.survey_header_id) icon = '📜';
+      else if (ap.task_header_id) icon = '🔧';
+      iconMap[ap.id] = icon;
+    }
+
+    return { is: isRels, of: ofRels, iconMap };
+  }
+},
+*/
+
+
+/*
+
+readWorkRelationsById: {//new 17:26 Feb 20
+  metadata: {
+    tables: ['assignments_task_view', 'assignment_survey_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId', 'subjectType'] // subjectType from resolveSubject.type
+  },
+
+  handler: async (supabase, userId, payload) => {
+    const { approfileId, subjectType } = payload;
+// executeIfPermitted(state.userId, 'readWorkRelationsById', { approfileId: id,state.subjectType} );
+    const safe = (result) => Array.isArray(result?.data) ? result.data : [];
+//assignement_type is task or survey when reading from assignments_task_view or assignmentnts_survey_view
+    //
+    // 1. Always: assignments where this appro is the STUDENT  BUT THIS MAY NOT BE AN APPRO !!!!
+    //
+    const taskStudentRes = await supabase
+      .from('assignments_task_view')
+      .select('*')
+      .eq('student_id', approfileId);
+
+      console.log('approfileId:',approfileId,'subjectType:',subjectType,'taskStudentRes:',taskStudentRes);//okay 20:55 Feb 20
+
+    const surveyStudentRes = await supabase
+      .from('assignments_survey_view')
+      .select('*')
+      .eq('student_id', approfileId);
+
+      console.log('surveyStudentRes:',surveyStudentRes);//
+    
+    const taskStudentRows = safe(taskStudentRes);
+    const surveyStudentRows = safe(surveyStudentRes);
+      console.log('safe: taskStudentRows:',taskStudentRows,'surveyStudentRows:',surveyStudentRows);//okay 20:55 Feb 20
+      //here there is a assignment.header_id
+    //
+    // 2. Sometimes: assignments where this appro is the TASK or SURVEY
+    //    (only for app-task / app-survey, using header IDs from app_profiles)
+    //
+    let taskAssignedRows = [];
+    let surveyAssignedRows = [];
+//fails here because the parameter 'subjectType' is never changed. But the above code knew the subject types on the first iteration.
+//
+
+//13:06 Feb 21 the type has not changed inside the js so it is now here with type = app-human. So skips the following...
+    if (subjectType === 'app-task' || subjectType === 'app-survey') { // does the js update subjectType when box clicked???
+      const { data: profileRows, error: profileErr } = await supabase
+        .from('app_profiles')
+        .select('id, task_header_id, survey_header_id')
+        .eq('id', approfileId)
+        .limit(1);
+console.log('registry task_header:',profileRows );
+      if (profileErr) throw profileErr;
+      const profile = profileRows?.[0] || {};
+
+      if (subjectType === 'app-task' && profile.task_header_id) {
+        const taskAssignedRes = await supabase
+          .from('assignments_task_view')
+          .select('*')
+          .eq('assignment->>task_header', profile.task_header_id);
+        taskAssignedRows = safe(taskAssignedRes);
+      }
+
+      if (subjectType === 'app-survey' && profile.survey_header_id) {
+        const surveyAssignedRes = await supabase
+          .from('assignments_survey_view')
+          .select('*')
+          .eq('assignment->>survey_header', profile.survey_header_id);
+        surveyAssignedRows = safe(surveyAssignedRes);
+      }
+    }
+
+    //
+    // 3. Build is / of relations (noun-style)
+    // earlier we had the header_id in taskStudentRows.assignment.header_id
+    const isRels = [
+      ...taskStudentRows.map(row => ({
+        approfile_is: row.student_id,
+        approfile_is_name: row.student_name,
+        approfile_is_type: row.assignment_type, 
+        relationship: 'assigned to',
+        of_approfile: row.of_approfile, //<---the previous idea was to put the task_header_id here I can'r understand that
+        of_approfile_name: row.task_name,
+        of_approfile_type: row.assignment_type,
+header:row.assignment.task_header
+        
+      })),
+      ...surveyStudentRows.map(row => ({
+        approfile_is: row.student_id,
+        approfile_is_name: row.student_name,
+        approfile_is_type: row.assignment_type,
+        relationship: 'assigned to',
+        of_approfile: row.of_assprofile,// I can't understand the previous idea of putting the survey id here
+        of_approfile_name: row.survey_name,
+        of_approfile_type: row.assignment_type,
+header:row.assignment.survey_header
+        
+      }))
+    ];
+
+    const ofRels = [
+      ...taskAssignedRows.map(row => ({
+        approfile_is: row.student_id,
+        approfile_is_name: row.student_name,
+        approfile_is_type: row.assignment_type, 
+        relationship: 'assigned to',
+        of_approfile: row.task_header_id, //<---this isn't an of_approfile
+        of_approfile_name: row.task_name,
+        of_approfile_type: row.assignment_type,
+header:row.assignment.task_header        
+
+      })),
+      ...surveyAssignedRows.map(row => ({
+        approfile_is: row.student_id,
+        approfile_is_name: row.student_name,
+        approfile_is_type: row.assignment_type, 
+        relationship: 'assigned to',
+        of_approfile: row.survey_header_id, //<---this isn't an of_approfile
+        of_approfile_name: row.survey_name,
+        of_approfile_type: row.assignment_type,
+header:row.assignment.survey_header
+        
+      }))
+    ];
+
+    //
+    // 4. Build iconMap for all involved appros
+    //
+    let ids = [
+      approfileId,
+      ...isRels.map(r => r.approfile_is),
+      ...isRels.map(r => r.of_approfile),
+      ...ofRels.map(r => r.approfile_is),
+      ...ofRels.map(r => r.of_approfile)
+    ];
+console.log('isRels', isRels, 'ofRels',ofRels,'ids:',ids);//this is sending undefined in ids [3] & [4]
+
+ // Remove null, undefined, empty strings, duplicates 
+    ids = [...new Set(ids.filter(id => !!id))]; console.log("Clean IDs:", ids);
+
+
+    const { data: profiles, error: profilesErr } = await supabase
+      .from('app_profiles')
+      .select('id, auth_user_id, survey_header_id, task_header_id')
+      .in('id', ids);
+
+    if (profilesErr) throw profilesErr;
+
+    const iconMap = {};
+    for (const ap of profiles || []) {
+      let icon = '🎭'; // app-abstract default
+      if (ap.auth_user_id) icon = '👥';      // app-human
+      else if (ap.survey_header_id) icon = '📜'; // app-survey
+      else if (ap.task_header_id) icon = '🔧';   // app-task
+      iconMap[ap.id] = icon;
+    }
+
+    return { // here the header_id has become undefined
+      is: isRels,
+      of: ofRels,
+      iconMap
+    };
+  }
+},
+*/
+
+/*
+readWorkRelationsById: {
+  metadata: {
+    tables: ['assignments_task_view', 'assignments_survey_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfileId } = payload;
+
+    // 1. Load assignments where subject is the worker
+    const isTask = await supabase
+      .from('assignments_task_view')
+      .select('*')
+      .eq('student_id', approfileId);
+
+    const isSurvey = await supabase
+      .from('assignments_survey_view')
+      .select('*')
+      .eq('student_id', approfileId);
+
+    // 2. Load assignments where subject is the task/survey
+    const ofTask = await supabase
+      .from('assignments_task_view')
+      .select('*')
+      .eq('task_header_id', approfileId);
+
+    const ofSurvey = await supabase
+      .from('assignments_survey_view')
+      .select('*')
+      .eq('survey_header_id', approfileId);
+
+    // 3. Build unified is/of arrays
+    const isRels = [
+      ...isTask.data.map(row => ({
+        approfile_is: row.student_id,
+        approfile_is_name: row.student_name,
+        of_approfile: row.task_header_id,
+        of_approfile_name: row.task_name,
+        relationship: 'assignedTo'
+      })),
+      ...isSurvey.data.map(row => ({
+        approfile_is: row.student_id,
+        approfile_is_name: row.student_name,
+        of_approfile: row.survey_header_id,
+        of_approfile_name: row.survey_name,
+        relationship: 'assignedTo'
+      }))
+    ];
+
+    const ofRels = [
+      ...ofTask.data.map(row => ({
+        approfile_is: row.student_id,
+        approfile_is_name: row.student_name,
+        of_approfile: row.task_header_id,
+        of_approfile_name: row.task_name,
+        relationship: 'assignedTo'
+      })),
+      ...ofSurvey.data.map(row => ({
+        approfile_is: row.student_id,
+        approfile_is_name: row.student_name,
+        of_approfile: row.survey_header_id,
+        of_approfile_name: row.survey_name,
+        relationship: 'assignedTo'
+      }))
+    ];
+
+    // 4. Build icon map
+    const ids = [
+      approfileId,
+      ...isRels.map(r => r.of_approfile),
+      ...ofRels.map(r => r.approfile_is)
+    ];
+
+    const profiles = await supabase
+      .from('app_profiles')
+      .select('id, auth_user_id, survey_header_id, task_header_id')
+      .in('id', ids);
+
+    const iconMap = {};
+    for (const ap of profiles.data || []) {
+      let icon = '🎭';
+      if (ap.auth_user_id) icon = '👥';
+      else if (ap.survey_header_id) icon = '📜';
+      else if (ap.task_header_id) icon = '🔧';
+      iconMap[ap.id] = icon;
+    }
+
+    return { is: isRels, of: ofRels, iconMap };
+  }
+},  */
 
 
 
@@ -1290,7 +1997,7 @@ handler: async (supabase, userId, payload) =>{
 
 
 
-//TASK_ASSIGMENT
+//TASK_ASSIGMENT  readAssignmentById
 readThisAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
   metadata: {
   tables: ['assignment_task_view'],  //VIEW not a table
@@ -1302,7 +2009,7 @@ handler: async (supabase, userId, payload) => {
   const { assignment_id} = payload;
 console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   const { data, error } = await supabase
-  .from('assignment_task_view')
+  .from('assignments_task_view')
   .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
   .eq('assignment_id', encodeURIComponent(assignment_id))
   //.eq('task_header_id', encodeURIComponent(task_header_id))
@@ -1402,7 +2109,8 @@ console.log('readAssignment2Exists()');
   deleted_at time with time zone null,
   deleted_by uuid null,
   is_deleted boolean null,  */
-readStudentAssignments: {
+
+  readStudentAssignments: {
   metadata: {
     tables: ['assignments_task_view, assignments_survey_view'],
     columns: ['*'],
@@ -1412,13 +2120,14 @@ readStudentAssignments: {
   },
   handler: async (supabase, userId, payload) => {
     const { student_id, type } = payload;
-console.log('Registry -student_id',student_id, 'type', type);//why is type undefined when being sent 'survey'???
+console.log('Registry -student_id',student_id, 'type', type); //looks ok 22:28 March 13 - but fails to find the entry BUT type = 'app-human' not 'task' or 'survey'
+//why is type undefined when being sent 'survey'???
 
 //console.log('Registry-student_id', student_id);
     let taskData = [];
     let surveyData = [];
 
-    if (!type || type === 'task') {
+    if (type || type === 'task') {  // why was this expecting !type ???  I have changed to type.  Probably breaks something 
       const { data, error } = await supabase
         .from('assignments_task_view')
         .select(`
@@ -1431,9 +2140,10 @@ console.log('Registry -student_id',student_id, 'type', type);//why is type undef
 
       if (error) throw error;
       taskData = data;
+console.log('registry-reponse from assignments_task_view with',student_id, 'is:', taskData); // 22:40 March 13 correctly found task - but not being displayed
     }
-//console.log('registry-reponse', taskData);
-    if (!type || type === 'survey') {
+
+    if (type || type === 'survey') {
       const { data, error } = await supabase
         .from('assignments_survey_view')
         .select(`
@@ -1491,9 +2201,7 @@ console.log('readAssignmentsSurveys()');
       
        const { data, error } = await supabase
         .from('assignments_survey_view')
-        .select(`
-          assignment_id, survey_name, survey_description, student_id, student_name, assignment_type, assignment, created_at, completed_at, abandoned_at, 
-          deleted_at, deleted_by,is_deleted       `)
+        .select('*')
         .eq('student_id', student_id)
         .order('survey_name', { ascending:true });
 
@@ -1532,7 +2240,7 @@ readManagerAssignments: {
 },
 
 //RELATIONSHIPS PERMISSIONS
-readPermissionRelationships: {//HIGH SECURITY ISSUE
+readPermissionRelationships: {//HIGH SECURITY ISSUE -- doesn't supply an iconMap the way Xread did
   metadata: {
     tables: [],
     columns: [],
@@ -1552,7 +2260,7 @@ readPermissionRelationships: {//HIGH SECURITY ISSUE
   }
 },
 
-readPermissionRelationsById: {//HIGH SECURITY ISSUE
+NOTreadPermissionRelationsById: {//HIGH SECURITY ISSUE
   metadata: {
     tables: [],
     columns: [],
@@ -1562,7 +2270,7 @@ readPermissionRelationsById: {//HIGH SECURITY ISSUE
   handler: async (supabase, userId, payload) => {
    const { approfileId } = payload;
    
-    console.log('readPermissionRelations()');
+    console.log('readPermissionRelationsById()');
     const { data, error } = await supabase
       .from('permission_relations_view')
       .select('*') //readPermissionRelations
@@ -1571,6 +2279,8 @@ readPermissionRelationsById: {//HIGH SECURITY ISSUE
       .order('name');
 
     if (error) throw error;
+
+    console.log('permission by id data',data);
     return data;
   }
 },
@@ -1719,9 +2429,9 @@ handler: async (supabase,userId, payload) => {
  * Fetches a page of notes.
  */  
 // In fetchNotes.js - return with consistent naming
-fetchNotes: {
+fetchNotes: {  // changing to read view3 (was view2)  11:43 March 15
 metadata: {
-      tables: ['notes_view'],  
+      tables: [''],  
       columns: ['id', 'sort_int', 'author_id', 'audience_id', 'reply_to_id', 'title', 'content', 'status'],
       type: 'SELECT',
       requiredArgs: ['page', 'pageSize'] // are they required? 
@@ -1734,7 +2444,7 @@ metadata: {
       const end = start + pageSize - 1;
     
       const { data, count, error } = await supabase
-        .from('notes_with_categories_array2')  //changed from notes to notes_view 22:17 Nov 5  problem of repetitions also id is now called notes_id
+        .from('notes_with_categories_array3')  // changing to read view3 (was view2)  11:43 March 15 //changed from notes to notes_view 22:17 Nov 5  problem of repetitions also id is now called notes_id
         //change again Jan 7 2026 to notes_with_categories_array Has the tags in an array
         .select('*', { count: 'exact' }) // the ten could all be the same note with 10 tags
         .order('sort_int', { ascending: false })
@@ -1990,6 +2700,34 @@ handler: async(supabase, userId) => {
 
 
 /////////////////////////////////////   SURVEYS   //////////////////////
+
+//SURVEYS
+
+readAssignmentSurveyById:{//requires the assignment_id (not the task_header_id. Returns a single row )
+  metadata: {
+  tables: ['assignment_survey_view'],  //VIEW not a table
+  columns: [],
+  type: 'SELECT',
+  requiredArgs: ['assignment_id'] // ← id of a row in assignment which is also task_assignments.id
+},
+handler: async (supabase, userId, payload) => {
+  const { assignment_id} = payload;
+console.log('readAssignmentSurveyById{}','id:',assignment_id,'payload:', payload);
+  const { data, error } = await supabase
+  .from('assignments_survey_view')
+  .select('*')
+  .eq('assignment_id', assignment_id)
+   .select() //Return the inserted row
+  //.single(); //Return single object
+
+  if (error) throw error;
+  //console.log('readThisAssignment{} data:',data);
+    return data; //
+  } 
+},
+
+
+
 
 //SURVEYS new 20:23 Oct 6
 createSurvey: {
@@ -3014,13 +3752,18 @@ readSurveyView:{    // VIEW   Read only   // surveys show-up in this view if the
   requiredArgs: ['survey_id'] // could be either id or name?
 },
 handler: async (supabase, userId, payload) => {
-  console.log('readSurveyView()');
+  
   const { survey_id } = payload;
+  console.log('readSurveyView() survey_id',survey_id);
+  
   const { data, error } = await supabase
     .from('survey_view')
     .select('*')
-    .eq('survey_id',survey_id);
-
+    .eq('survey_id',survey_id)
+     .order('question_number', { ascending: true })  // added March 14
+    .order('question_id', { ascending: true });     // added March 14
+    ;
+console.log('registry data:',data);
   if (error) throw error;
   return data;
 }
@@ -3047,6 +3790,35 @@ const { data, error } = await supabase
   return data;
 }
 },
+
+
+//SYSTEM FUNCTIONS - not automations and not user actions.  These call rpc functions and will need to go through high security, but March 14 2026 may be low security
+
+updateAssignmentSystem:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 
+  metadata: {
+  tables: ['assignments'],
+  columns: [],
+  type: 'UPDATE',
+  requiredArgs: [] // could be either completed::boolean or step::int
+  // rpc needs: p_assignment_id uuid,p_step int default null, p_completed boolean default null
+},  
+
+handler: async (supabase, userId, payload) => {
+const {assignmentId, completed, step} = payload;
+console.log('updateAssignment id:',assignmentId,'as completed: ',completed,' step:', step);
+const { data, error } = await supabase.rpc('update_assignment_lowsec', {
+    p_assignment_id: assignmentId,
+    p_completed: completed,
+    p_step: step
+  });
+  console.log('data',data);
+
+  if (error) throw error;
+  return data;
+}
+},
+
+
 
 
 

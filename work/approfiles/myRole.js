@@ -1,32 +1,44 @@
-import { executeIfPermitted } from "./registry/executeIfPermitted";
+import { executeIfPermitted } from "../../registry/executeIfPermitted";
 
 //  ./plans.js
 console.log('plans.js loaded');
 
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
-  return `<h2 class="text-xl font-bold text-gray-800 mb-4">The aims of our organisation</h2>`
+  return `<h2 class="text-xl font-bold text-gray-800 mb-4">Every one in the organisation has a role</h2>`
 }
 
 // plans appro id fab5776c-d7e9-4d2a-b52e-85b19ba9ae53
 //aims appro id ada3685a-7f9d-4cfd-b96f-8272e12e468e
 
 
-async function readAppro(panel)
+async function determineRole(panel)
 { const aimsApproId = 'ada3685a-7f9d-4cfd-b96f-8272e12e468e';
 const aimsAppro = await executeIfPermitted(null, 'readApprofileById',{approfileId: aimsApproId});
-console.log('aimsAppro',aimsAppro);
+console.log('determineRole() placeholder');
 
 
-panel.innerHTML = getTemplateHTML() + `<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"> ${aimsAppro.description}</div>
-<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"><i>If you were using the app to create and manage your own organisation. You would edit this aim by editing the appro that stores this description: "Aims of the Organisation" with id: ada3685a-7f9d-4cfd-b96f-8272e12e468e</i></div>`
+panel.innerHTML =  getTemplateHTML() +`<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line">
+<p>The inital role of a new user is to determine what you want to do.
+</p>
+<p>
+Deciding what you want to do is by working through your initial assigned tasks and answering questions in surveys. 
+</p>
+<p>
+The answers chosen in surveys change what groups you join or what tasks are assigned to you.  
+</p>
+The contents of this 'My role' module will change as you move through tasks and surveys.
+</p>
+<p class="text-sm text-gray-400"> (The detailed coding for changing the role is not yet implemented - March 10 2026)</div>
+
+<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"><i>If you were using the app to create and manage your own organisation you would help determine roles. " </i></div>`
 
 //panel.innerHTML = aimsAppro.description;
 
 }
 export function render(panel, petition = {}) {
     console.log('plans Render(', panel, petition, ')');
-   readAppro(panel);
+   determineRole(panel);
 
 }
 

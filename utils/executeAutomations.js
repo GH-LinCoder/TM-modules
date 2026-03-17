@@ -11,7 +11,7 @@ const supabase = createSupabaseClient();
 //BUT those functions were copied here and adapted to instead expect different names for variables because
 // the export version is built to use data from survey_view or task_view which clearly distinguish
 //between source-columns and target-columns (Is the stepId from the source task or from the task you want to assign?)
-//At some time the DISPLAY TASK module should refactor to use the task_view instead of direct table access Dec 25 20252
+//At some time the DISPLAY TASK module should refactor to use the task_view instead of direct table access Dec 25 2025
 
 //let subject = null;
 //let subjectId = null;
@@ -22,9 +22,12 @@ export async function executeAutomations(automations, subject, autoPetition){//a
   console.log('executeAutomations() automations:',automations, ', subject: ',subject,', autoPetition:', autoPetition);//subject correct here but is getting changed wrongly 16:40 dec 26
   if(!automations || automations.length ===0) {console.log('No automations to execute'); return;}
 
-  automations.forEach(auto => {
+let autoResponses = [];
+console.log('executeAutomations() automations',automations);
 
-    if(auto.auto_deleted_at) {console.log('fails on test of auto.is_deleted auto_id:',auto.auto_id,'dated:', auto.auto_deleted_at);return;} //this is very confuing in that if any auto is deleted it logs it
+  for (const auto of automations) { //changed from automations.forEach(auto => {  so that await can be used  17:23 March 12
+
+    if(auto.auto_deleted_at) {console.log('fails on test of auto.is_deleted auto_id:',auto.auto_id,'dated:', auto.auto_deleted_at); continue;} //this is very confuing in that if any auto is deleted it logs it
 
   // Due to a weird bug we have decided to create a copy of autoPetition with only the automation_id changed. When we had >1 automations the relate was being treated as an assign task in some strnage way
   const autoPetitionForThisAuto = {
@@ -41,20 +44,33 @@ console.log('@@@@@@ automation',auto,
 
 console.log('type:',auto.target_data.target.type ,'auto.target_data.target.header:',auto.target_data.target.header);//id of the survey
 */
-const type = auto.target_data.target.type;
+const type = auto.target_data.target.type; // 
+console.log('type:',type);
 const autoId = auto.id;
 
 const header = auto.target_data.target.header;
 const secondary = auto.target_data.target.secondary;
 
 const payload = auto.target_data.payload;
-//console.log('type',type,'autoId',autoId,'header',header,'secondary',secondary,'payload',payload);
-if (type === 'survey') { console.log('→ Calling autoAssignSurvey'); autoAssignSurvey(autoId,header, autoPetitionForThisAuto);}
+let autoResponse = null;
+
+//console.log('type',type,'autoId',autoId,'header',header,'secondary',secondary,'payload',payload); Add autoResponse = await 17:23 March 12
+if (type === 'survey') { console.log('→ Calling autoAssignSurvey'); autoResponse = await autoAssignSurvey(autoId,header, autoPetitionForThisAuto);}
 else
-  if (type === 'task') { console.log('→ Calling autoAssignTask');  autoAssignTask(autoId,header,secondary, autoPetitionForThisAuto);} // needs student_id and manager_id
+  if (type === 'task') { console.log('→ Calling autoAssignTask');  autoResponse = await autoAssignTask(autoId,header,secondary, autoPetitionForThisAuto);} // needs student_id and manager_id
 else 
-  if (type === 'relate') {console.log('→ Calling autoRelateAppros'); autoRelateAppros(autoId,payload, autoPetitionForThisAuto);};
- }); 
+  if (type === 'relate') {console.log('→ Calling autoRelateAppros'); autoResponse = await autoRelateAppros(autoId,payload, autoPetitionForThisAuto);};
+// need to collect the autoResponses
+if (autoResponse) {
+            autoResponses.push(autoResponse);
+            console.log('✅ Automation result collected:', autoResponse);
+
+
+}; 
+
+}
+console.log('executeAutomations() autoResponses',autoResponses); 
+ return autoResponses;  // returns the collection of json messages not just a single response
 }
 
 
@@ -74,8 +90,8 @@ const autoResponse =await supabase.rpc('execute_automation', {
   p_auto_petition: autoPetition,
   p_auto_parameters: autoParameters
 });
-//console.log('autoResponse:',autoResponse);
-return;
+console.log('autoResponse:',autoResponse);
+return autoResponse;
 
 
 // the registry checks if assignment already exists & ignores it.
@@ -108,8 +124,8 @@ const autoResponse =await supabase.rpc('execute_automation', {
   p_auto_petition: autoPetition,
   p_auto_parameters: autoParameters
 });
-//console.log('autoResponse:',autoResponse);
-return;
+console.log('autoResponse:',autoResponse);
+return autoResponse;
 
 }
 
@@ -126,8 +142,8 @@ async function autoRelateAppros(autoId,payload, autoPetition) {//Jan 26. When a 
     p_auto_petition: autoPetition,
     p_auto_parameters: autoParameters
   });
-//console.log('autoResponse:',autoResponse);
-return;
+console.log('autoResponse:',autoResponse); //correctly logs 17:35 March 12 but 
+return autoResponse;
 /*
   try{//func needs  const { approfile_is, relationship, of_approfile, assigned_by_automation } = payload; assigned by is a uuid
 const newRelation = await executeIfPermitted(authUserId, 'autoRelateAppro', {

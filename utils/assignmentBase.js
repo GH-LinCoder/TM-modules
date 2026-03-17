@@ -6,7 +6,7 @@ import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../ui/showToast.js';
 import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from './clipboardUtils.js';
-import { resolveSubject, detectContext, applyPresentationRules } from './contextSubjectHideModules.js';
+import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
 
 console.log('assignmentBase.js loaded');
 // need to accept a parameter for type:  'task' || 'survey'
@@ -37,8 +37,8 @@ export class AssignmentBase {
   }
 
   // Apply presentation rules based on context
-  applyPresentationRules(panel) {
-    return applyPresentationRules(panel);
+  myDashOrAdminDashDisplay(panel) {
+    return myDashOrAdminDashDisplay(panel);
   }
 
   // Get template HTML with consistent structure

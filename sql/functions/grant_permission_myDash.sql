@@ -14,7 +14,7 @@ BEGIN
   END IF;
 
   -- Grant core permissions (idempotent)
-  INSERT INTO approfile_relations (approfile_is, relationship, of_approfile)
+  INSERT INTO permission_relations (approfile_is, relationship, of_approfile)
   VALUES
     (v_appro_id, '(]getAuthenticatedUser[)','bfd6c2e8-ec41-4edd-a0e3-54fb513851ac' ), --uses the appro Id (not auth id)  added 2; (14:00 jan 14)  (]readApprofile_relations_view[) (]readApprofileRelationships[)
     

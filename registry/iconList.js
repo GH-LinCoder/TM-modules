@@ -39,6 +39,7 @@ empty:'🫗',
 euro:'💶',
 
 fast: '🌀',
+forward:'▶️',
 
 gear:'⚙️',
 

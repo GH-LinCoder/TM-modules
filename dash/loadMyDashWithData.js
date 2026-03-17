@@ -3,8 +3,7 @@ import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../ui/showToast.js';
 //import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
-import { resolveSubject, detectContext, applyPresentationRules } from '../utils/contextSubjectHideModules.js';
-
+import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
 console.log('Imported: loadMyDashWithData.js');
 
 let subject=null;
@@ -21,10 +20,10 @@ subject = await resolveSubject();
 
   // Load each section via petition system Only do this once !
   loadSection('profile');
-       loadSection('surveys'); //return;
+  loadSection('surveys'); //return;
         loadSection('tasks'); //the tasks that the student is on
-        loadSection('relations');
-        loadSection('students'); //the tasks that the student manages (these are 'my students')
+     //   loadSection('relations');
+     //   loadSection('students'); //the tasks that the student manages (these are 'my students')
         
         respondToClipboardChange()
   }
@@ -33,8 +32,12 @@ subject = await resolveSubject();
 function respondToClipboardChange(){
 
         onClipboardUpdate(() => {
-     
+            console.log('detectMyDash-returns',detectMyDash());
+     if (!detectMyDash()) return; //normaly sent'panel'
           updateProfileAndStats(); 
+        loadSection('surveys'); //ADDED 23:13 March 13  Because changing the subject through the clipboard was not changing this data
+        loadSection('tasks'); //ADDED 23:13 March 13  Still not working properly as not displaying any cards at all - but could be RLS
+
         }); 
 }
 
@@ -46,71 +49,7 @@ async function updateProfileAndStats(){
     updateQuickStats();
 }
 
-/* removed 18:38 Oct 27
 
-function  getCurrentSubjectId() {
-        const clipboardStudents = getClipboardItems({ as: 'student', type: 'app-human' });
-        const clipboardOther = getClipboardItems({ as: 'other', type: 'app-human' });
-        console.log('getCurrentStudentId() Clipboard contents:', appState.clipboard);
-        if (clipboardStudents.length > 0) {
-            console.log ('getCurrentSubjectId() AS student',clipboardStudents[0].entity.id);
-            return clipboardStudents[0].entity.id;
-        }
-        if (clipboardOther.length > 0) {
-            console.log ('getCurrentSubjectId() AS other',clipboardOther[0].entity.id);
-            return clipboardOther[0].entity.id;
-        }
-        
-        // Fallback to DEV student ID
-        
-        console.log ('getCurrentSubjectId() appstate.userId',appState.query.userId);
-        return  appState.query.userId;
-    }
-*/
-/*
-    async function loadStudentProfile() {  //works 11:00 Oct 27 - will read id from clipboard if exists when myDash renders
-       if(subject.type!='relations')
-        try {
-            const studentProfile = await executeIfPermitted(
-                subject.id,
-                'readApprofileById',
-                { approfileId: subject.id }
-            );
-            console.log('studentProfile',studentProfile);
-            if (!studentProfile) return;
-            
-
-
-
-
-            // Update profile card
-            const nameEl = document.querySelector('[data-user="name"]');
-            const emailEl = document.querySelector('[data-user="email"]');
-            const initialsEl = document.querySelector('[data-user="initials"]');
-            const userIdEl = document.querySelector('[data-user="user-id"]');
-            const studentJoinedEl = document.querySelector('[data-user="join-date"]');
-
-            //Needs joined
-            //needs last login - not got sessions yet oct 23
-            
-            if (nameEl) nameEl.textContent = studentProfile.name || 'Choose a user name';
-            if (emailEl) emailEl.textContent = studentProfile.email || 'No email?';
-            if (userIdEl) userIdEl.textContent = subject.id;
-            if (studentJoinedEl) studentJoinedEl.textContent = studentProfile.created_at.substring(0, 10) || 'error';
-            // Set initials
-            if (initialsEl && studentProfile.name) {
-                const initials = studentProfile.name.substring(0, 3)
-                initialsEl.textContent = initials;
-            }
-            
-        } catch (error) {
-            console.error('Error loading student profile:', error);
-        }
-
-          // Update stats after profile loads
-    //await this.updateQuickStats();
-    }
-*/
   async function updateQuickStats() { // seems to be working 11:14 Oct 27  (tried two different subjectIds)
 subject = await resolveSubject(); 
 if(!subject) {console.log('Error - no subject returned'); return}
@@ -129,16 +68,17 @@ console.log('resolveSubject', subject,
     'type:',subject.type,
     'source:',subject.source);
 
-        try {
+        try {console.log('sending to readStudentAssignments subject.id',subject.id, 'student id:',subject.approUserId);
             // Get all assignments for current student
+            //function needs const { student_id, type } = payload;
             const assignments = await executeIfPermitted(
                 subject.id, 
                 'readStudentAssignments', 
-                { student_id: subject.approUserId }
+                { student_id: subject.approUserId, type: subject.type } //if send type 'app-human' the registry will not look for assignments !! 22:36 March 13  WHY?
             );
-          console.log('assignments',assignments);  
+          console.log('assignments',assignments);  //correctly recieved assignments 22:40 March 13 but not displaying
             if (!assignments || assignments.length === 0) {
-                setStatsValues(0, 0, 0, 0, 0, 0);
+                setStatsValues('?', '?', '?','?' , '?', '?'); // what is this?
                 return;
             }
             
@@ -150,13 +90,11 @@ console.log('resolveSubject', subject,
             // Get surveys (when implemented)
             
             const surveys = assignments.surveyData;
-            console.log('surveys', surveys);
-           const availableSurveys = surveys?.length || 0;
+            console.log('surveys', surveys); //why log just surveys?
+           const availableSurveys = surveys?.length || 0; //why this?
         
             const relationsCount = await getRelationsCount();
   // const relations = relationsObject.is.length + relationsObject.of.length;
-
-
             
             // Update stats display
             setStatsValues(activeTasks, completedTasks, abandonedTasks, availableSurveys, relationsCount);
@@ -227,7 +165,7 @@ async function getRelationsCount() {
 }
     
 function  loadSection(sectionName) {
-    //    console.log('loadSection()', sectionName);
+        console.log('loadSection()', sectionName);
         
         // Create petition for this section
         const petition = {

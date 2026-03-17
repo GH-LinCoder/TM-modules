@@ -7,32 +7,73 @@ import { reactToClearAllButton } from './reactToClearAllButton.js';
 import { reactToSaveButton } from './reactToSaveButton.js';
 import { reactToPageButton } from './reactToPageButton.js';
 import { reactToStatusClick, reactToNoteClick } from './reactToNoteClick.js';
+//import { collectUserChoices, messageAddress, clickLogic } from './collectUserChoices.js';
+import { reRenderNotes} from './displayNotes.js';
+import { collectUserChoices, messageAddress, clickLogic, userChoices } from './collectUserChoices.js';
+/**
+userChoices = { //amended 12:22 March 16 2026
+    userId: null,
+    dropdown: null, 
+    // Address filtering
+    address: 'self',
+    addressFilterActive: true,  // ✅ NEW - toggle state
+    
+    // Category filtering
+    categories: [],
+    categoryFilterActive: true,  // ✅ NEW - toggle state
+    
+    importance: null,
+    mode: 'more-clicks-more-notes',
+    
+    // Future
+    threadsActive: false
+ */  
+function highlight(cardClicked){
+  console.log('highlight()', cardClicked, 'dataset',cardClicked.dataset);
+  document.querySelectorAll(`[data-note-id]`).forEach(el => {
+   // console.log('el:',el, 'cardClicked', cardClicked);
+    el.classList.toggle('ring-4', el === cardClicked);
+    el.classList.toggle('ring-blue-500', el === cardClicked);
+    el.classList.toggle('bg-blue-100', el === cardClicked);
+  });
+} 
 
 export function setupNotesListeners() {
   console.log("setupNotesListeners()");
   const notesPanel = document.getElementById('notes-panel');
   if (!notesPanel) return;
 
-/*
-  console.log("Listner panel:",notesPanel)
-  notesPanel.addEventListener('click', async (event) => {
-    console.log("🖱️ Click detected in notes-panel");
-    const target = event.target;
 
-  });  //overall test if listner attached
-*/
+// NEW: Filtering listener for checkboxes and radios 14:20 March 15
+document.querySelector('#notes-panel').addEventListener('change', (event) => {
+    const el = event.target;
+
+    // Only react to checkboxes and radios for now
+    if (el.type !== 'checkbox' && el.type !== 'radio') return;
+console.log('input box changed');
+    // Update global state
+//    userChoices = collectUserChoices();  NOT ALLOWED
+
+collectUserChoices(); //this also updates the global userChoices
+
+
+console.log('userChoices (raw array):', userChoices);
+
+    // Re-render based on new state
+   reRenderNotes();  // needs to send: notes, totalCount, page, pageSize but doesn't have these.
+});
 
 
   notesPanel.addEventListener('click', async (event) => {
     const target = event.target;
     let button;
 
-    // ✅ Clear All button
+    // 
     button = target.closest('[data-action="moreClicksMoreNotes"]');
     if (button) {
       event.preventDefault();
       console.log('moreNotes -need code function');
-    //  await reactToMoreButton();
+    //highlight(button);
       return;
     }
 

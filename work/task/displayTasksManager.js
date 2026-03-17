@@ -5,7 +5,7 @@ import { appState } from '../../state/appState.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import { icons } from '../../registry/iconList.js'; 
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
-import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
+import {  detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../../utils/contextSubjectHideModules.js'
 
 
 console.log('displayTasksManager.js loaded 12:45 Oct 26');

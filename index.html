@@ -35,6 +35,11 @@ body.fade-to-white {
 //NOTE: THERE IS A VERSION OF THIS at login-signups.js 
 // that version is a module that is loaded by flexmain.js into a panel to the right of the adminDash
 //That may be the version you want to edit.
+
+signup calls an rpc function to write into the temp_signup table
+
+login uses rpc to award myDash permissions, notes permissions & assign initial task  calls setupUserInitialNeeds()
+
 -->
 
 <body class="bg-black min-h-screen flex items-center justify-center p-4">
@@ -78,7 +83,7 @@ body.fade-to-white {
             <label for ="current-password">Password:</label><button id="toggle-login-password" type="button" aria-label="Show password as plain text. Warning: this will display your password on the screen."> [ 👁️ Show ] </button>
             <input type="password" name='current-password' id="login-password" placeholder="Click to autoload" class="w-full p-2 border rounded text-black text-xl" autocomplete='current-password' aria-describedby="password-constraints"   required />
 
-            <button type="submit" id="loginBtn" class="w-full bg-green-600 text-white py-2 rounded">Clcik here to log In</button>
+            <button type="submit" id="loginBtn" class="w-full bg-green-600 text-white py-2 rounded">Click here to log In</button>
           </form>
           <p class="text-center mt-2">
             <button id="showReset" class="text-lg text-green-600 hover:underline">Forgot password?</button>
@@ -323,8 +328,19 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
   });
 
 
-async function writeToTempSignupTable(userName, email, description, signupData){
+async function writeToTempSignupTable(userName, email, description, signupData){ //add a column for signup referral id
 console.log('writeToTempSignupTable()');
+
+// Capture referral UUID from URL - added 18:17 March 10 2026 
+const urlParams = new URLSearchParams(window.location.search);
+const recruiterApproId = urlParams.get('ref'); //this is an approId
+
+// Validate UUID format (basic check)
+const isValidUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const recruiterIdToStore = (recruiterApproId && isValidUuid.test(recruiterApproId)) 
+    ? recruiterApproId 
+    : null;
+
 
 
     const { error } = await supabase
@@ -333,13 +349,16 @@ console.log('writeToTempSignupTable()');
         name:userName, 
         email:email, 
         description: description, //description is json
-        user_id:signupData.user.id || null}]);
+        user_id:signupData.user.id || null,
+      recruiter_appro_id: recruiterIdToStore  //NEW: Store recruiter reference 18:18 March 10 2026
+      
+      }]);
     if (error)  { console.error('write to signup table error',error, 'data:'); showToast('Failed to write to the temp_signups table'); }
    else console.log('Write to signUp ok:', signupData,'signupData.user:', signupData.user, 'signupData.user.id:',signupData.user.id);
 
    // rpc(fn, args, options)
 
-const { data, error2 } = await supabase.rpc('create_appro_from_new_auth_user_v2', {
+const { data, error2 } = await supabase.rpc('create_appro_from_new_auth_user_v2', { //that function returns the NEWid of the user appro
         name:userName, 
         email:email, 
         description: description, 
@@ -390,6 +409,9 @@ async function setupUserInitialNeeds(authId){//the parameter is auth id, it isn'
    }
 
 
+
+
+
 // Assign welcome task
 const { error: taskError } = await supabase.rpc('assign_welcome_task', {
   p_auth_user_id: authId
@@ -401,6 +423,21 @@ if (taskError) {
   console.log('Welcome task assigned');
 }
 
+    // NEW: Create recruitment relation if recruiter was specified 19:35 March 10 2026
+    try {
+        const {data: relationId, error: recruitError } = await supabase.rpc('create_recruitment_relation', {
+            p_auth_user_id: authId
+        });
+ if (recruitError) {
+            console.warn('Recruitment relation not created (may be expected):', recruitError);
+        } else if (relationId) {
+            console.log('✅ Recruitment relation created:', relationId);
+        } else {
+            console.log('ℹ️ No recruiter specified or already processed');
+        }
+    } catch (err) {
+        console.error('Error calling create_recruitment_relation:', err);
+    }
 }
 
 
