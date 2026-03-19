@@ -10,7 +10,8 @@ export let userChoices = { //amended 12:22 March 16 2026
     // Category filtering
     categories: [],
     categoryFilterActive: true,  // ✅ NEW - toggle state
-    
+    categoryNames: [],
+
     importance: null,
     mode: 'more-clicks-more-notes',
     
@@ -53,7 +54,17 @@ console.log('respondent', respondent);
     userChoices.dropdown = respondent;
   };
 
+const selected = [...document.querySelectorAll('#notes-panel input[type=checkbox]:checked')];
 
+userChoices.categories = selected
+    .map(el => parseInt(el.value, 10))
+    .filter(id => !isNaN(id));
+
+userChoices.categoryNames = selected
+    .map(el => el.dataset.value);
+
+
+/*
     userChoices.categories = [...document.querySelectorAll('#notes-panel input[type=checkbox]:checked')]
            .map(el => {
         const rawValue = el.value;  // Checkboxes deliver a string, e.g., "34" 
@@ -71,6 +82,7 @@ console.log('respondent', respondent);
         return parsed;
     })
     .filter(id => !isNaN(id));  // Remove any NaN values
+  */  
 
 // ✅ Add this diagnostic log right after:
 //console.log('✅ Parsed categories:', userChoices.categories, 'types:', userChoices.categories.map(c => typeof c));
@@ -88,13 +100,15 @@ console.log('respondent', respondent);
 export function collectUserChoices() {
   console.log('collectUserChoices()');
   const tagsArray = [];
-
+  const tagsNameArray = [];
   // Handle checkboxes
   for (const group of checkboxGroups) { // is this duplicated in storeChoices ???
     const checkboxes = document.querySelectorAll(`input[name="${group}"][type="checkbox"]`);
     for (const checkbox of checkboxes) {
       if (checkbox.checked) { console.log('checkedTag:',checkbox.value);
+        
         tagsArray.push(checkbox.value);
+        tagsNameArray.push(checkbox.dataset.value);
       }
     }
   }
@@ -122,12 +136,12 @@ if(audience=='') audience=null; //sending empty string to the database will be s
 
     // ✅ Audience dropdown (for "to" / "from" modes)
     const audienceSelect = document.getElementById('respondentSelect');
-console.log('audienceSelect', audienceSelect);
+//console.log('audienceSelect', audienceSelect);
     const audienceId = audienceSelect?.value ? parseInt(audienceSelect.value, 10) : null;
-console.log('audienceId', audienceId);
+//console.log('audienceId', audienceId);
     // ✅ Importance (optional)
     const importance = document.querySelector('input[name="importance"]:checked')?.value;
-console.log('importance', importance);    
+//console.log('importance', importance);    
 
 storeChoices();
 

@@ -14,13 +14,23 @@ export async function reactToPageButton(direction) {
 
   // Calculate new page
   let newPage;
-  if (direction === 'older') {
+  /*if (direction === 'older') {
     newPage = currentPage + 1; // Safe: button exists → currentPage < totalPages
   } else if (direction === 'newer') {
     newPage = currentPage - 1; // Safe: button exists → currentPage > 1
   } else {
     return;
-  }
+  } */
+
+switch (direction) {
+  case 'newer': newPage = currentPage - 1; break;
+  case 'newer10': newPage = currentPage - 10; break;
+  case 'older': newPage = currentPage + 1; break;
+  case 'older10':newPage = currentPage + 10; break;
+  default: return;
+  } // 14:40 March 19 This causea problem when > totalPages - the display tries page 35 of 0 and doesn't disbale the buttons
+
+
 
 console.log('newPage:', newPage, ' currentPge:', currentPage);
   
@@ -28,37 +38,3 @@ console.log('newPage:', newPage, ' currentPge:', currentPage);
   await displayNotes(newPage);
   // renderNotes() will update buttons based on new state
 }
-
-
-
-
-/*
-// Updated changePage.js
-// changePage.js
-console.log('changePage.js');
-
-import { displayNotes } from './displayNotes.js';
-
-export function changePage(currentPage, totalCount, direction) {
-  console.log('changePage called:', { currentPage, totalCount, direction });
-  
-  const pageSize = 10;
-  const totalPages = Math.ceil(totalCount / pageSize);
-  let newPage = currentPage;
-  
-  if (direction === 'older') {
-    newPage = currentPage - 1;
-    if (newPage < 1) newPage = 1;
-  } else if (direction === 'newer') {
-    newPage = currentPage + 1;
-    if (newPage > totalPages) newPage = totalPages;
-  }
-  
-  if (newPage !== currentPage) {
-    console.log('Loading page:', newPage);
-    displayNotes(newPage, totalCount);
-  }
-}
-*/
-// Make the function available globally for onclick handlers
-//window.changePage = changePage;
