@@ -103,7 +103,7 @@ console.log('currentStep',currentStep); //correct 22:23 March 14
 // ✅ Helper: Find question_id by step number (question_number)
 function findQuestionIdByStep(surveyRows, stepPosition) {
     if (!stepPosition || stepPosition < 1) return null;
-    
+    console.log('findQuestionIdByStep() stepPosition:', stepPosition);
     // Build sorted list of unique questions (same logic as getSurveyProgress)
     const questionsById = new Map();
     for (const row of surveyRows) {
@@ -126,8 +126,8 @@ function findQuestionIdByStep(surveyRows, stepPosition) {
         console.warn(`⚠️ Step position ${stepPosition} out of range (0-${questions.length})`);
         return null;
     }
-    
-    return questions[index].id;
+    if (!questions[index]) return questions[0].id; // console error questions[index] is undefined
+    return questions[index].id;  //may be undefined
 }
 
 function renderLargeCards(panel, questionId = null, currentStep = 1) {

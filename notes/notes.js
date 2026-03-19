@@ -21,24 +21,24 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
      
             <!-- Message Buttons -->
             <div class="mb-6" id="TagSection001">
-              <h4 class="text-md font-semibold mb-3 text-gray-700">🌐 Main click the word</h4>
+              <h4 class="text-md font-semibold mb-3 text-gray-700">🌐 Main click the word</h4> <i>The address buttons affect both the sending and the displaying of notes.</i>
               <div class="flex flex-wrap gap-2 mb-3">
 
-              <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center " id="TagSection047">
+              <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center " id="TagSection047" title="SEND to yourself. DISPLAY notes that are to you or from you (can make it explicit to a respondent with the dropdown)">
                   <input type="radio" id="message-self" name="message-mode" data-value="47" value="self" class="mr-2 text-blue-600" checked>
                   <label for="message-self">self (default)</label>
                 </div>
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection037" title="Click the note you want to reply to.">
+                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection037" title="SEND to an existing note. Click-on the note to reply to it. DISPLAY notes that are replies (can make it explicit to a respondent with the [Select] button)">
                   <input type="radio" id="message-reply" name="message-mode" data-value="37" value="reply" class="mr-2 text-blue-600">
-                  <label for="message-reply">reply: (needs click note)</label>
+                  <label for="message-reply">reply: (can click note)</label>
                 </div>
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection044"  title="Use the [Select] menu button to choose who you want to send to. That name will be loaded into the dropdown.">
+                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection044"  title="SEND to the respondent you choose from [Select] menu button. DISPLAY notes you sent to anyone other than yourself OR use [Select] menu button to specify.">
                   <input type="radio" id="message-to" name="message-mode" data-value="44" value="to" class="mr-2 text-blue-600">
-                  <label for="message-to">to: (needs dropdown)</label>
+                  <label for="message-to">to: (can use dropdown)</label>
                 </div>
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection046" title="Select whose notes you want to see displayed. Use the [Select] menu button to choose the person or group">
+                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection046" title="DISPLAY notes sent to you by anyone other than yourself. OR use [Select] menu button to specify the person or group">
                   <input type="radio" id="message-from" name="message-mode" data-value="46" value="from" class="mr-2 text-blue-600">
-                  <label for="message-from">from: (needs dropdown)</label>
+                  <label for="message-from">from: (can use dropdown)</label>
                 </div>
                 
               </div>
@@ -204,14 +204,10 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
         <div class="bg-green-50" 
         title="The more boxes I click I expect MORE results  (Show me notes that fit this box PLUS notes that fit the other box)">
         <input type="radio" id="more-clicks-more-notes" name="clickLogic" value='more-clicks-more-notes' class=" text-blue-600" checked>
-        <label for="more-clicks-more-notes"> more-clicks-MORE NOTES</label>
+        <label for="more-clicks-more-notes"> MORE NOTES -click more tags</label>
        </div>
 
 
-        <!--button type="radio" id="more-clicks-more-notes" name="clickLogic" value='more-clicks-more-notes'    class="px-4 py-2 bg-green-50 text-black rounded hover:bg-green-100 transition-colors"
-          title="The more boxes I click I expect MORE results  (Show me notes that fit this box PLUS notes that fit the other box)">
-            More clicks - MORE NOTES
-          </button-->
        
           <button data-action="save-note" id="save-notes" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors">
             Save/Send
@@ -220,7 +216,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
         <div class="bg-red-50" 
         title="The more boxes I click I expect FEWER results  (Only show me a note if it fits ALL the boxes I click)">
         <input type="radio" id="more-clicks-fewer-notes" name="clickLogic" value='more-clicks-fewer-notes' class=" text-blue-600">
-        <label for="more-clicks-fewer-notes"> more-clicks-fewer-notes</label>
+        <label for="more-clicks-fewer-notes">Fewer notes if I select more tags</label>
        </div>
 
 

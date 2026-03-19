@@ -7,6 +7,10 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { render as renderOneSurvey } from './displayOneSurvey.js';
 //need to create the above new file
 
+//need resolve if use the function from loadMyDashWithData
+import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../../utils/contextSubjectHideModules.js'
+
+
 console.log('displaySurveyCards.js loaded');
 
 export async function render(panel, petition = {}) {
@@ -24,17 +28,36 @@ export async function render(panel, petition = {}) {
     // created_at, completed_at, abandoned_at, deleted_at, deleted_by,is_deleted
     let assignments = [];
     try {
+// changing to use the same function that loadMyDashWithData uses. That seems to work when substituted in the displayTaskCards 
+
+const subject = await resolveSubject();       
+
+const tasksAndSurveys = await executeIfPermitted(
+                subject.id, 
+                'readStudentAssignments', 
+                { student_id: subject.approUserId, type: subject.type } //if send type 'app-human' the registry will not look for assignments !! 22:36 March 13  WHY?
+            );    
+
+/*
         assignments = await executeIfPermitted(
             userId,
             'readAssignmentsSurveys',
             { student_id: userId }
         );
+*/
+console.log('tasksAndSurveys',tasksAndSurveys);
+        assignments = tasksAndSurveys.surveyData; //because readStudentAssignments returns both tasks and surveys, we need to specify which one we want. 22:36 March 13    
+
+
     } catch (err) {
         console.error('Error reading survey assignments:', err);
         panel.innerHTML = `<div class="text-red-600 p-4">Error loading surveys.</div>`;
         return;
     }
-console.log('assignments', assignments); // 
+
+
+
+    console.log('assignments', assignments); // 
     if (!assignments || assignments.length === 0) {
         panel.innerHTML = `
             <div class="text-gray-500 text-center py-8">

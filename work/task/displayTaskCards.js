@@ -6,6 +6,9 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 // Add this import
 import { render as renderOneTask } from './displayOneTask.js';
 
+//need resolve if use the function from loadMyDashWithData
+import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../../utils/contextSubjectHideModules.js'
+
 console.log('displayTasksCards.js loaded');
 
 function clearContainer(container){//trying to empty the display area when subject changes. Failed
@@ -25,17 +28,36 @@ export async function render(panel, petition = {}) {
     // Read assignments   In loadMyDashWithData readStudentAssignments finds all the assignments and delivers them in two arrays
     let assignments = [];
     try {console.log('render() readAssignmentTasks with student_id:',userId);
+     
+    //changing the function called. The old one fails on a new user. I don't know why. It works for old Lin Coder
+//the new one works within the other file loadMyDashWithData even with the new user
+//so trying it here to see if it works. But return is different.
+//needs subject
+const subject = await resolveSubject();       
+
+const tasksAndSurveys = await executeIfPermitted(
+                subject.id, 
+                'readStudentAssignments', 
+                { student_id: subject.approUserId, type: subject.type } //if send type 'app-human' the registry will not look for assignments !! 22:36 March 13  WHY?
+            );    
+    
+        /* 
         assignments = await executeIfPermitted(
             userId,
             'readAssignmentsTasks',
             { student_id: userId }
         );
+    */
+
+console.log('tasksAndSurveys',tasksAndSurveys);
+        assignments = tasksAndSurveys.taskData; //because readStudentAssignments returns both tasks and surveys, we need to specify which one we want. 22:36 March 13    
+    
     } catch (err) {
         console.error('Error reading assignments:', err);
         panel.innerHTML = `<div class="text-red-600 p-4">Error loading tasks.</div>`;
         return;
     }
-console.log('assignments', assignments); // okay - we have assignment_id at this line
+console.log('assignments', assignments, 'assignments.length',assignments.length); // okay - we have assignment_id at this line
     if (!assignments || assignments.length === 0) {
         panel.innerHTML = `
             <div class="text-gray-500 text-center py-8">

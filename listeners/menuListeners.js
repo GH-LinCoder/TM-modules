@@ -46,7 +46,7 @@ console.log('howToContext:',howToContext);
 export function markMenuButton(pageName, btn){
   console.log('markMenuButton()', pageName, btn);
   document.querySelectorAll('.nav-btn').forEach(el => {
-    console.log('el.dataset.page',el.dataset.page, 'currentpage',pageName);
+   // console.log('el.dataset.page',el.dataset.page, 'currentpage',pageName);
     el.classList.toggle('ring-4', el.dataset.page === pageName);
     el.classList.toggle('ring-blue-500', el.dataset.page === pageName);
     el.classList.toggle('bg-blue-100', el.dataset.page === pageName);

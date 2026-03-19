@@ -156,7 +156,7 @@ export async function linkNoteToCategories(noteId, categoryIds) {
     note_id: noteId,
     note_category_id: catId
   }));
-
+// the registry uses notes_categorised table
 const { error } = await executeIfPermitted(userId, 'linkNoteToCategories',{rows});
 if (error) {
   console.error('❌ Error linking note to categories:', error);

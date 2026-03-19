@@ -44,13 +44,13 @@ function escapeHtml(text) {
 }
 
 
-export function filter() {
+export function xfilter() {//not called
     const { address, categories, importance, mode } = userChoices;
 
-    return pageOfNotes.filter(note => {
+    return pageOfNotes.filter(note => { // for each note include or dsicard
 
         // CATEGORY FILTER
-        if (categories.length > 0) {
+        if (categories.length > 0) { // I don't understand this
             if (mode === 'more-clicks-more-notes') {
                 // OR mode
                 if (!note.categories.some(c => categories.includes(c))) return false;
@@ -102,17 +102,17 @@ export function filter() {
 
 //new filterByAddress 20:03 March 16
 
-function filterByAddress(notes) {
+function filterByAddress(notes) { //anomolies in test March 18 FROM gives zero notes when it should give all
   console.log('filterByAddress:' );
 
 const userId = userChoices.userId;
 const address = userChoices.address;
 const respondent = userChoices.dropdown || null;
 
-console.log('notes',notes,'userId',userId, 'address',address, 'respondent',respondent);
+console.log('filter by address: notes',notes,'userId',userId, 'address',address, 'respondent',respondent);
 
-  const uid = String(userId);
-  const rid = respondent ? String(respondent) : null;
+  const uid = String(userId); // isn't it already a string?
+  const respondentId = respondent ? String(respondent) : null;
 
   // Helper: dedupe by note.id
   const dedupe = (a, b) => {
@@ -131,10 +131,10 @@ console.log('notes',notes,'userId',userId, 'address',address, 'respondent',respo
   // MODE: TO
   // -------------------------
   if (address === 'to') {
-    if (rid) {
+    if (respondentId) {
       return notes.filter(n =>
-        String(n.audience_id) === rid &&
-        String(n.author_id) === uid
+        String(n.audience_id) ===respondentId && //r id is respondent id (from the drop-down) audeince Id is from the note -who it is addressed to
+        String(n.author_id) === uid //uid is user id
       );
     }
     return notes.filter(n =>
@@ -147,9 +147,9 @@ console.log('notes',notes,'userId',userId, 'address',address, 'respondent',respo
   // MODE: FROM
   // -------------------------
   if (address === 'from') {
-    if (rid) {
+    if (respondentId) {
       return notes.filter(n =>
-        String(n.author_id) === rid &&
+        String(n.author_id) ===respondentId &&
         String(n.audience_id) === uid
       );
     }
@@ -166,9 +166,9 @@ console.log('notes',notes,'userId',userId, 'address',address, 'respondent',respo
     let store1 = notes.filter(n => String(n.author_id) === uid);
     let store2 = notes.filter(n => String(n.audience_id) === uid);
 
-    if (rid) {
-      store1 = store1.filter(n => String(n.audience_id) === rid);
-      store2 = store2.filter(n => String(n.author_id) === rid);
+    if (respondentId) {
+      store1 = store1.filter(n => String(n.audience_id) ===respondentId);
+      store2 = store2.filter(n => String(n.author_id) ===respondentId);
     }
 
     return dedupe(store1, store2);
@@ -188,9 +188,9 @@ console.log('notes',notes,'userId',userId, 'address',address, 'respondent',respo
       String(n.audience_id) === uid
     );
 
-    if (rid) {
-      store1 = store1.filter(n => String(n.audience_id) === rid);
-      store2 = store2.filter(n => String(n.author_id) === rid);
+    if (respondentId) {
+      store1 = store1.filter(n => String(n.audience_id) === respondentId);
+      store2 = store2.filter(n => String(n.author_id) === respondentId);
     }
 
     return dedupe(store1, store2);
@@ -641,15 +641,23 @@ export async function renderNotes(notes, totalCount, page, pageSize) {
             </button>
           </div>
         `;
-      
-        output.innerHTML = `
-          <div class="mt-6">
-            <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
-              <span class="mr-2">📝</span>
-              Recent Notes
-            </h3>
-            ${notesHtml}
-            ${controls}
-          </div>
-        `;
+let advice = '';      
+if(filteredNotes.length === 0 && userChoices?.mode === 'more-clicks-more-notes') advice = `<p class="text-gray-600">In this mode you need to click tags to find notes OR change mode by clicking the Fewer notes button.</p>`
+else if(filteredNotes.length === 0 && userChoices?.mode != 'more-clicks-more-notes') advice = `<p class="text-gray-600">In this mode you need to remove some tags to find notes OR change mode by clicking the More notes button.</p>`
+output.innerHTML = `
+  <div class="mt-6">
+    <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+      <span class="mr-2">📝</span>
+      Notes displaying ${filteredNotes.length} of ${totalCount} total
+    </h3>
+    ${
+      filteredNotes.length === 0 
+        ? advice
+        : `
+          ${notesHtml}
+          ${controls}
+        `
+    }
+  </div>
+`;
       }
