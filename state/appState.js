@@ -28,11 +28,11 @@ petitionHistory: [], // so howTo can offer context related instructions. The cur
       //purpose: null, //not needed? next item covers this
 requestedAction: 'Dont-Panic',   //such as: 'UPDATE_TASK_STEP', <--- standardized actions LEGACY 
 
-payload: [], //varies depending on the module. approfile-is/relationship/of_approfile  or task_id/step_id/ordinal
+payload: [], //varies depending on the module. approfile-is/relationship/of_approfile  or task_id/step_id/ordinal  should {}
       
 response: [], //contains read from DB & status of permission & other response of query DB
 
-remember: [],// redundant LEGACY ??
+remember: {},// redundant LEGACY ??
 
 
 autoPetition: {
@@ -59,10 +59,37 @@ autoPetition: {
   }
 }
 
+ },
+ /** 
+  * idea to appState. 
+  * id of the clipboard chosen subject
+  * id of auth user
+  * let modules select which they want. (Reduce the mistakes of using clipboard when want auth - happens in Notes & other places.)
+  * 
+  * appState.authUser {
+userAuthId:'e0c6201d-66e0-4b1c-8826-027ec059d523',
+userId :'e0c6201d-66e0-4b1c-8826-027ec059d523',//Huyie T&M vidoes task, member of TestMock,
+userName:'Huyie Evridge',
+userEmail:'huyie@test.com',
+userType: 'app-human',
+created_at:'2026-03-23 18:13:40.755748+00',}
+
+appState.ChosenSubject{
+userChosenAuthId:'e0c6201d-66e0-4b1c-8826-027ec059d523',
+userChosenId :'e0c6201d-66e0-4b1c-8826-027ec059d523',
+userName:'Huyie Evridge',
+userEmail:'huyie@test.com',
+userType: 'app-human',
+created_at:'2026-03-24 22:13:47.723148+00',}
+
+resolveSubject checks the timestamp of the appState.  and only queries the database if regarded as stale. (Updates the userChosen (it is read from clipboard)
+ 
+  * */ 
+   
+ 
 
 
-    },
-    
+
 /* to assign values to autoPetition:
 appState.query.auto_petition = {
   user: {
@@ -102,8 +129,9 @@ appState.query.auto_petition = {
 
 
     setPetitioner(petition) {
-      console.log('setPetitioner(',petition,')' );
-     console.log('setting this.query.petitioner:',this.query.petitioner );//the log shows all the values even at appOnLoad - browser doesn't take the values at this moment, but may fill them in later
+      console.log('setPetitioner()');
+console.log('setPetitioner with (',petition,')' );
+//     console.log('setting this.query.petitioner:',this.query.petitioner );//the log shows all the values even at appOnLoad - browser doesn't take the values at this moment, but may fill them in later
     //  console.log('this.query.petitioner.Action',this.query.petitioner.Action)// the log says undefined at appOnLoad - this is weird browser behaviour as it does take this value at the moment
       // 👇 SAVE TO HISTORY if action is meaningfully different
       const currentAction = this.query.petitioner.Action;
@@ -199,7 +227,7 @@ replaced 21:57 sept 10 2025 to use petitionHistory[]*/
   
   // Export a function to initialize with user ID
   export function initializeState(userId) {
-// console.log('initializeState with userId:', userId);
+console.log('initializeState with userId:', userId);
     appState.query.userId = userId;
   }
 

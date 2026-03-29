@@ -3,7 +3,7 @@ console.log('Imported: ui/adminListeners.js');
 
 import { appState } from '../state/appState.js';
 
-
+console.log('adminListeners.js   loaded');
 function handleCardClick(action, moduleName) {
   // Just update state - don't call renderPanel directly
   console.log('handleCardClick action:(',action,', name:', moduleName, ')');
@@ -29,7 +29,7 @@ function handleCardClick(action, moduleName) {
 // so that we know which module (page), which section of that module and the specific action that has been clicked
 //All of this is called the 'petition' and it will be stored in appState.query.petitioner{}
 function readPetition(e){
-//  console.log('readPetition (', e, ')');  //
+console.log('readPetition (', e, ')');  //
 
   const actionEl = e.target.closest('[data-action]');
     if (!actionEl) {    console.log('fails !target (', actionEl, ')');  return;}

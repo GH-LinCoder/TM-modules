@@ -13,6 +13,9 @@ import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../../util
 
 console.log('displaySurveyCards.js loaded');
 
+let itemOnDisplay = null; // to be able to close the item when the button has a 2nd click
+
+
 export async function render(panel, petition = {}) {
     console.log('displaySurveyCards.render(', panel, petition, ')');
 
@@ -75,7 +78,7 @@ console.log('tasksAndSurveys',tasksAndSurveys);
 
     assignments.forEach(survey => {
 //need to exclude those with completed_at, abandoned_at, deleted_at,  is_deleted = true
-                console.log('survey', survey, 'survey.assignment',survey.assignment, 'survey.assignment.survey_header',survey.assignment.survey_header);
+            //    console.log('survey', survey, 'survey.assignment',survey.assignment, 'survey.assignment.survey_header',survey.assignment.survey_header);
 
                 if(!survey.completed_at && !survey.is_deleted) { //new 19:13 March 13 + closing } below
 
@@ -132,6 +135,15 @@ const currentStep = e.currentTarget.dataset.currentStep;
         return;
     }
     
+// new 17:30 March 29 toggle to mimic the behaviour of the pertition system. 2nd click closes the item.
+        if (itemOnDisplay === assignmentId){detailPanel.innerHTML =''; itemOnDisplay = null; return;} // toggle close if same card clicked again. Mimics the normal petition flexmain method
+    itemOnDisplay = assignmentId; // set the currently displayed item
+//the close should remove listeners in the module that is being closed, but that can't be done here.
+
+// Toggle logic: if open, close; if closed, open (Mimics the normal petition flexmain method)
+
+
+
     // ✅ Call the render function directly with a custom query object
     renderOneSurvey(detailPanel, {
 

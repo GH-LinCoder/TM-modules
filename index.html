@@ -235,6 +235,8 @@ if(!userName || !email || !password){
       const email = document.getElementById('login-email').value;
       const password = document.getElementById('login-password').value;
 
+console.log('email',email,' password ', password);
+
       const { data, error } = await supabase.auth.signInWithPassword({ email, password });
       if (error) {
         document.getElementById('login-error').textContent = error.message;
@@ -247,7 +249,7 @@ if(!userName || !email || !password){
     
     // Wait for animation to complete, then redirect
     setTimeout(() => {
-      window.location.href = '/organise.html'; //for tests comment out this line & the signup redirect (lines 218 & 322) so can see error messages on console
+     window.location.href = '/organise.html'; //for tests comment out this line & the signup redirect (lines 218 & 322) so can see error messages on console
     }, 1000); // Match this delay to your CSS transition duration
   
       }

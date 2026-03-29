@@ -24,7 +24,7 @@
  */
 
 
-console.log('Imported: flexmain.js');
+console.log('flexmain.js  loaded');
 
 // === LISTENERS 
 import { adminListeners } from './listeners/adminListeners.js';
@@ -47,7 +47,7 @@ function getDisplayArea() {
 console.log('GetDisplayArea()');
 
 const destination=appState.query.petitioner.Destination;
-console.log('destination:',destination);
+//console.log('destination:',destination);
 if(destination==='new-panel') return document.querySelector('[data-panel="inject-here"]');
 else {const displayArea = document.querySelector(`[data-section="${destination}"]`);
 //  console.log('displayArea:',displayArea );
@@ -89,8 +89,8 @@ export const panelsOnDisplay = [];
 
       //     userId: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // MOCK but in db - not used as at 14:36 7 Sept 2025
 */
-
-
+console.log('flexmain sets arbitrary values into petitioner then calls windowEventListener(). Also adds listener to document load');
+console.log('panelsOnDisplay() sets arbitray values in petitioner and then calls setPetitioner and then calls windowEventListener() ');
 try {
   if (appState) {
   //  console.log('appState has been successfully loaded:', appState);
@@ -186,7 +186,7 @@ menuListeners();//add listener to menu buttons, and respond to their being click
 
 // === LOAD PAGE WITH DATA ===
 async function loadPageWithData(pageName) { // pageName without .html
- // console.log('LoadPageWithData(', pageName,')');
+ console.log('LoadPageWithData(', pageName,')');
   switch(pageName) {
       case 'adminDash':
           await loadAdminDashWithData();
@@ -205,7 +205,7 @@ async function loadPageWithData(pageName) { // pageName without .html
 // === PANEL RENDERING ===
 
 async function renderNewPanel(stubName, query, registryEntry,selectedModule, displayArea){// new 10:35 sept 10 2025 Moved from renderPanels- which needs a name change
- // console.log('renderNewPanel(',displayArea,')');
+ console.log('renderNewPanel()');
   if(registryEntry) { 
 ///below conditional on 'new-panel
 
@@ -235,7 +235,7 @@ selectedModule.render(panel,query); // use the function that was obtained from t
 async function backgroundProcess() {
     
     const action = appState.query.petitioner.Action;
- //   console.log('background process', action);
+ console.log('background process');
     let registryEntry = await registry[action];
     if (!registryEntry) { 
  //       console.log('Registry unknown', action, ' not here');
@@ -257,7 +257,7 @@ async function backgroundProcess() {
 
 
 export async function renderPanel(query) {// need change name from renderPanel to renderSomewhere ?
-  console.log('RenderPanel(', query, ')');
+  console.log('RenderPanel()');
 const stubName = appState.query.petitioner.Action; //legacy html to be phased-out FAILS - no effect of nav buttons
 
     const displayArea = getDisplayArea();
@@ -323,8 +323,8 @@ function updatePanelLayout() {
 
 
 // === OPEN/CLOSE PANELS BY RULE ===
-export async function openClosePanelsByRule(stubName, fromButtonClick = false) {
-// console.log('openClosePanelsByRule(', stubName, 'fromButtonClick:', fromButtonClick,')');
+export async function openClosePanelsByRule(stubName, fromButtonClick = false) {//but only called from eventListener  openClosePanelsByRule(payload.petitioner.Action)
+console.log('openClosePanelsByRule(stubname)',stubName, 'fromButtonClick', fromButtonClick);
   
   if(fromButtonClick){document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));}
   

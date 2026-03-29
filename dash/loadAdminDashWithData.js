@@ -27,34 +27,37 @@ updateAll('[data-value="tempSignup-count"]', count);
 
     count = await executeIfPermitted(null, 'membersCount', null); 
     updateAll('[data-value="members-count"]', count);
-    
-    count = await executeIfPermitted(null, 'assignmentsCount', null); 
-    updateAll('[data-value="assignments-count"]', count);
-  
-   count = await executeIfPermitted(null, 'tasksCount', null); 
-    updateAll('[data-value="tasks-count"]', count);
-
-    count = await executeIfPermitted(null, 'surveysCount', null); 
-    updateAll('[data-value="surveys-count"]', count);
-  
-    count = await executeIfPermitted(null, 'authorsCount', null);
-    updateAll('[data-value="authors-count-unique"]', count);//doesn't find this one but does find next 2  if the html has authors-count the js says '23' but if authors-count-unique it gets it right
-  
-  
-    count = await executeIfPermitted(null, 'studentsCount', null);
-    updateAll('[data-value="students-count-unique"]', count); //need change html students-count-unique
-   
-    count = await executeIfPermitted(null, 'managersCount', null); 
-    updateAll('[data-value="managers-count-unique"]', count); //need change html managers-count-unique
 
     count = await executeIfPermitted(null, 'approfilesCount', null); 
     updateAll('[data-value="approfiles-count"]', count);
 
-    count = await executeIfPermitted(null, 'respondentsCount', null);
-    updateAll('[data-value="respondents-count-unique"]', count); //need change html students-count-unique
-  
     count = await executeIfPermitted(null, 'relationsCount', null);
     updateAll('[data-value="relations-count"]', count); 
+    
+    count = await executeIfPermitted(null, 'assignmentsCount', null); 
+    updateAll('[data-value="assignments-count"]', count);
+  
+    count = await executeIfPermitted(null, 'tasksCount', null); 
+    updateAll('[data-value="tasks-count"]', count);
+console.log('task count',count);  
+    count = await executeIfPermitted(null, 'authorsCount', null);
+    updateAll('[data-value="authors-count-unique"]', count);//doesn't find this one but does find next 2  if the html has authors-count the js says '23' but if authors-count-unique it gets it right
+console.log('authors count',count);  
+      count = await executeIfPermitted(null, 'studentsCount', null);
+    updateAll('[data-value="students-count-unique"]', count); //need change html students-count-unique
+   console.log('student count',count);
+
+    count = await executeIfPermitted(null, 'managersCount', null); 
+    updateAll('[data-value="managers-count-unique"]', count); //need change html managers-count-unique
+console.log('manager count',count);
+ 
+    count = await executeIfPermitted(null, 'surveysCount', null); 
+    updateAll('[data-value="surveys-count"]', count);
+
+    count = await executeIfPermitted(null, 'respondentsCount', null);
+    updateAll('[data-value="respondents-count-unique"]', count); //need change html students-count-unique
+  console.log('respondent count',count);
+    
 
 readRecentLogs();
 

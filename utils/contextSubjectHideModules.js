@@ -4,6 +4,8 @@ import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 
 // new functions to find data - External file to be imported by each module
 
+//should use cache to prevent repeated db calls
+
 export function detectMyDash(panel = null) {
  if (panel) {
         return panel.closest('[data-module]')?.dataset.module === 'myDash';
@@ -31,8 +33,9 @@ check result.source
 */
 
   export async function resolveSubject() {
+    console.log('resolveSubject()');
     const clipboardItems = getClipboardItems(); // no type filter
-    console.log('clipboardItems', clipboardItems);
+    //console.log('clipboardItems', clipboardItems);
   
     /*  21:20 Jan 14  weird... 
     when logged-in as wed1156 
@@ -51,12 +54,12 @@ but see tasks, surveys, relations & managed
     'source:',entity.items.source);
   */
 
-
+//Need to send back all three values and let the calling module determine which to use. Or put them in the appState together with a timestamp. If time is within 10? seconds don't update
 
 
     if (clipboardItems.length > 0) { //treat the first item on the clipboard as the subject? (first is most recent?)
       const entity = clipboardItems[0].entity;
-      console.log('entity',entity);
+    //  console.log('entity',entity);
       return {
         id: entity.item.auth_user_id,
         approUserId:entity.id,
@@ -74,7 +77,7 @@ but see tasks, surveys, relations & managed
 //only continues if nothing on clipbaord
 
 const authUser = await executeIfPermitted( null,'getAuthenticatedUser', {approfileId: null });
-console.log('context  authUser',authUser);
+//console.log('context  authUser',authUser);
 //func needs { authUserId } = payload;  // if auth doesn't know a name, get the name from the appro for that auth user
 //remember that appro id != authId. The app mostly does not use authId. auth_user_id is a column in the appro & may be != to the appro id
 //sorry for the complication. It is based on the idea that not exposing authId is safer.
@@ -88,11 +91,12 @@ if(authUser && !authUser.name) //Does this happen???
   { //avoid throwing error if not found
   const userTempData  = await executeIfPermitted( null,'readApprofileByAuthUserId', {authUserId: authUser.id });  
   if(userTempData.data){ //added 12:00 Jan 13
-    console.log('userTempData',userTempData);
+   // console.log('userTempData',userTempData);
     authUser.name = userTempData.data.name || 'Needs to choose a name';   
-    approUserId = userTempData.data.id, 
-    console.log('userTempData',userTempData,'approUserId', approUserId) } 
-    console.log('authUser',authUser, 'approId',approUserId);
+    approUserId = userTempData.data.id; 
+//    console.log('userTempData',userTempData,'approUserId', approUserId) 
+   } 
+   // console.log('authUser',authUser, 'approId',approUserId);
   }//added 12:00 Jan 13
 
 if (authUser ) return {
@@ -106,7 +110,7 @@ if (authUser ) return {
               source:'authUser'}
               ; 
   
-              else return {//this is a defualt mock test user
+              else return {//this is a default mock test user - but myDash ignores it and just displays 'unknown' when no one is logged in March 19
       id:appState.query.userAuthId,  
       approUserId: appState.query.userId,
       name: appState.query.userName,

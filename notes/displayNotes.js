@@ -10,7 +10,7 @@ import { resolveSubject} from '../utils/contextSubjectHideModules.js'
 /**
 userChoices = { //amended 12:22 March 16 2026
     userId: null,
-    dropdown: null, 
+    respondent: null, 
     // Address filtering
     address: 'self',
     addressFilterActive: true,  // ✅ NEW - toggle state
@@ -78,7 +78,7 @@ export function xfilter() {//not called
  */
  function filterNotesAccordingToUserChoices(xnotes) {
     //const notes = pageOfNotes;
-    collectUserChoices();
+    collectUserChoices();//places the values in a global userCoices
     console.log('🔍 Filtering pageOfNotes with userChoices:', userChoices, 'length',pageOfNotes.notes.length, 'userChoices',userChoices);
     //why is id null?   It cease to be null later, so why is it null now?  length undefined
 
@@ -86,31 +86,33 @@ export function xfilter() {//not called
     
     let filtered = [...pageOfNotes.notes]; // Work on a copy
     
-    // ✅ 1. Address filter (uses global userChoices.address + userChoices.dropdown)
+    // ✅ 1. Address filter (uses global userChoices.address + userChoices.respondent)
     filtered = filterByAddress(filtered);
-    
+    console.log('filteredByAddress result:',filtered);
     // ✅ 2. Category filter (only if categories selected)
     if (userChoices.categories?.length === 0 && userChoices?.mode === 'more-clicks-more-notes') {
-        return [];} // OR logic with zero tags → no matches
+console.log('No tags + need tags to display');
+      return [];} // OR logic with zero tags → no matches
 
     if (userChoices.categories?.length > 0) {filtered = filterByCategories(filtered);}
-    
+  console.log('filteredByCategories result:',filtered);
+     
     // ✅ Skip importance (visual indicator only per design decision)
     
-    console.log(`✅ Filtered: ${pageOfNotes.notes.length} → ${filtered.length} pageOfNotes`);
+    console.log(`✅ End result Filtered: ${pageOfNotes.notes.length} → ${filtered.length} pageOfNotes`);
     return filtered;
 }
 
 //new filterByAddress 20:03 March 16
 
 function filterByAddress(notes) { //anomolies in test March 18 FROM gives zero notes when it should give all
-  console.log('filterByAddress:' );
+  console.log('filterByAddress()' );  // to + respondent is giving everyone. Should just be respondent
 
 const userId = userChoices.userId;
 const address = userChoices.address;
-const respondent = userChoices.dropdown || null;
+const respondent = userChoices.respondent || null; //showing up as null 19:20 March 25  userChoices missing respondent FIXED 19:35
 
-console.log('filter by address: notes',notes,'userId',userId, 'address',address, 'respondent',respondent);
+console.log('filter by address: these notes',notes,'with userId',userId, 'address',address, 'respondent',respondent);
 
   const uid = String(userId); // isn't it already a string?
   const respondentId = respondent ? String(respondent) : null;
@@ -166,8 +168,9 @@ console.log('filter by address: notes',notes,'userId',userId, 'address',address,
   if (address === 'self') {
     let store1 = notes.filter(n => String(n.author_id) === uid);
     let store2 = notes.filter(n => String(n.audience_id) === uid);
-
-    if (respondentId) {
+console.log('store1', store1,'used author_id===',uid, 'store2', store2, 'used audience_id===',uid);    
+console.log('sometimes the output is 0. Is it a problem with respondentId when changed?',respondentId);
+    if (respondentId && respondentId.length > 0) { //respondent id was made into a string and so always exists?
       store1 = store1.filter(n => String(n.audience_id) ===respondentId);
       store2 = store2.filter(n => String(n.author_id) ===respondentId);
     }
@@ -203,34 +206,6 @@ console.log('filter by address: notes',notes,'userId',userId, 'address',address,
   return notes;
 }
 
-
-
-/*
-// ✅ Sub-filter: Address logic (reads from global userChoices)
-function filterByAddress(notes) {
-
-    const { address, dropdown, userId } = userChoices;
-    console.log('filterByAddress() userChoices decon',address,dropdown,userId);    // null null undefined, slef empty string undefined
-    // Default or 'self': show notes by current user
-    if (!address || address === 'self') {
-        return notes.filter(n => String(n.author_id) === String(userId));
-    }
-    
-    // 'to' or 'from' with dropdown selection
-    if ((address === 'to' || address === 'from') && dropdown) {
-        const field = address === 'to' ? 'audience_id' : 'author_id';
-        return notes.filter(n => String(n[field]) === String(dropdown));
-    }
-    
-    // 'reply': show notes that are replies (have reply_to_id)
-    if (address === 'reply') {
-        return notes.filter(n => n.reply_to_id);
-    }
-    
-    // Unknown address mode: return all (fail open)
-    return notes;
-}
-*/
 // Sub-filter: Category logic (reads from global userChoices)
 function filterByCategories(notes) {
     const { categories, mode } = userChoices;
@@ -266,8 +241,7 @@ return notes.filter(note => {
             : note.category_ids.some(id => categories.includes(id));
         
         // ✅ Log each note's match result
-        console.log('  Note', note, note.note_id, 'category_ids:', note.category_ids, 
-            '→', result ? '✅ KEEP' : '❌ EXCLUDE');
+//        console.log('  Note', note, note.note_id, 'category_ids:', note.category_ids, '→', result ? '✅ KEEP' : '❌ EXCLUDE');
         
         return result;
     });    
@@ -285,111 +259,6 @@ return notes.filter(note => {
     });
 */
     }
-
-
-
-function ZfilterNotesAccordingToUserChoices(notes){
-console.log('filterNotesAccordingToUserChoices(notes)');
-let filteredNotes=notes;
-collectUserChoices();
-const { address, categories, importance, mode } = userChoices;
-
-//but the inputs are passive - changing them will not trigger the code to do anything.
-//could have listener on all the inputs OR a single listener refresh button
-// a listener for change would be enough
-
-console.log('messageAddress:',address,'mode:', mode);
-
-/* in the old flat array
-
-Array(6) [ "bug", "t&m", "diary", "importance-3", "self", "more-clicks-more-notes" ]
-0: "bug"
-1: "t&m"
-2: "diary"
-3: "importance-3"
-4: "self"
-5: "more-clicks-more-notes"
-length: 6
-
-
-but we also have an object
-
-/**
- * userChoices 
- *  address:  null,
-    categories: [],
-    importance: null,
-    mode: 'more-clicks-more-notes' //this + that + other to be shown
- */ 
-
-
-console.log('userChoices', userChoices);
-
-/*
-
-NEED THE FILTERING HERE prior to calling the render function
-
-'pageOfNotes'   holds the data
-
-
-The filtering is by reading the checkboxes and radio tags and dropdown (or being passed their value)
-
-collectUserChoices();// read all the checkboxes & radio
-
-switch (messageAddress){// the message radio buttons are important in filtering
-case 'to': //find the person in the dropdown break; // see messages to that person. Use this also for to self  
-case 'self': //No filtering effect (it could mean my messages only, but is then a poor default; break;
-case 'from': //read the dropdown to find notes from that person; break;
-case 'reply':// find your replies to anyone or any replies to you?; break;
-default: console.log('messageAddress unknown:', messageAddress)}
-
-other tags
-radio - importance   will be matching the level= ? (Not this level + nor this level-)
-
-Whether the tags are || or && is determined by the state of the two 'mode' radio buttons. 
-The highlight function can be adapted to highlight the two buttons that change the logic of the checkboxes (see below)
-Listeners are already attached (Either set a state variable or let the listener choose one of two functions.
-
-The filtering is done prior to passing the results to the renderNotes() function. 
-'pageOfNotes'   holds the data
-
-
-Read which state has been set from the two buttons
-
-Branch to an OR selection or an AND selection
-
-Loop through the pageOfNotes  forEach mapping into what is to be sent to renderNotes.
-
-
-========================================= highlight function
-
-function highlight(cardClicked){
-  console.log('highlight()', cardClicked, 'dataset',cardClicked.dataset);
-  document.querySelectorAll(`[data-note-id]`).forEach(el => {
-   // console.log('el:',el, 'cardClicked', cardClicked);
-    el.classList.toggle('ring-4', el === cardClicked);
-    el.classList.toggle('ring-blue-500', el === cardClicked);
-    el.classList.toggle('bg-blue-100', el === cardClicked);
-  });
-} 
-
-//audience is to whom the message is sent. Reply & to are valid for sending
-// only use the value in the dropdown if 'to' has been selected
-
-console.log('messageAddress:',messageAddress);
-
-// Prevent empty audience when in "to" mode  mode?
-if (mode === 'to' && !audience_id) {
-  showToast('Please select a recipient', 'error');
-  return;
-}
-
-
-*/
-
-return filteredNotes;
-}
-
 
 
 function getHTMLofUserChoices(){ // turn the object into text to show the user what filters are to be applied
@@ -426,7 +295,7 @@ export async function displayNotes(page = 1) { //first call is without being pas
   //
 
 
-const subject = await resolveSubject();
+const subject = await resolveSubject(); //This has been returning the value in the clipboard from the select module.
 console.log('subject',subject, 'id',subject.id);
     userChoices.userId = subject.id;
 console.log('userChoices.userId',userChoices.userId);
@@ -588,7 +457,7 @@ else if(page < 1) page = 1;
 
 
 
-
+/*
       console.log('Rendering note:', {
   note,
         id: note.note_id,
@@ -602,7 +471,7 @@ else if(page < 1) page = 1;
         statusAttr: statusAttr,
         statusText: statusText
       });
-      
+  */    
          
           return  getHTMLofUserChoices() + `
               <div class="mb-3"  ">
@@ -651,7 +520,7 @@ else if(page < 1) page = 1;
 
                   <p class="flex items-center">
                     <span class="font-medium w-20">Author:</span>
-                    <span class="text-gray-600">${note.author_name} -> Audience: ${note.audience_name}</span>
+                    <span class="text-gray-600">${note.author_name} => Audience: ${note.audience_name}</span>
                   </p>
                   <p class="flex items-center">
                     <span class="font-medium w-20">Created:</span>

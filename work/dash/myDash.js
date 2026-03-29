@@ -25,9 +25,25 @@ function getTemplateHTML() {
             <div class="container mx-auto px-4 py-8 flex flex-col gap-8">
                 
 <!-- 1. PROFILE SECTION (empty container - displayProfile.js injects content) -->
-    <div class="bg-white rounded-lg shadow p-6 flex flex-col md:flex-row items-center md:items-start gap-8" data-section="profile-section">
+    
+<div class="bg-white rounded-lg shadow p-6 flex-col ">
+
+        <div class="mb-3 bg-blue-50 p-3 rounded border border-blue-200 text-sm text-blue-700">    
+         <p>Navigation: click menu button at top of screen - new stuff opens to right of dashboard (scroll down if needed)</p>
+         <p> click a card within the page [rectangles with words in them]. - new stuff opens in the dashboard (scroll right if needed)</p>
+         <p>If you get lost click top menu button [My Dash] - that will close all the extra bits and return you to the dashboard ready for another adventure.</p>
+         <p>The dashboard is on 1 page. The browser back button will return you to the login page.</p>
+         <p>What the page displays depends on what you click. </p>
+         <p>When you click a card the new information opens below and you have to scroll down to see it.</p> 
+         <p>When you click a menu button it opens to the right and you may have to scroll to the right to see it.</p>
+         <p>The design is easier on a large screen.</p>
+         <p> If it gets messy click [My Dash]</p>
+                 </div>
+   <div  data-section="profile-section">
         <!-- displayProfile.render() will inject the profile template here -->
-    </div>
+   </div>
+
+</div>
 
 <!-- data-value is used in some numbers and data-count is used in others. Don't know why. Don't know if it matters  March 7 2026  -->
 
@@ -58,7 +74,9 @@ function getTemplateHTML() {
     </div>
 
                         <div class="mb-3 bg-blue-50 p-3 rounded border border-blue-200 text-sm text-blue-700">
-                        You have <span data-value="active-tasks" >?</span> active tasks. Click on any single task you wish to view. The details will appear in the section below. Tasks are where you can do your bit.
+                        You have <span data-value="active-tasks" >?</span> active tasks. Click on any card (rectangle with words inside).
+                        The details will appear in the section below (scroll down to read). 
+                        Tasks are where you can do your bit.
             
                         </div>
                         <!-- Preserved data-list for existing task loader -->
@@ -110,9 +128,9 @@ function getTemplateHTML() {
                         <h3 class="text-lg font-semibold text-green-700 mb-2">Messages 💬</h3>
                         <div class="bg-gray-50 p-4 rounded border text-sm text-gray-600">
                         
-                            <p class="mt-1">Use the Notes system to contact others.</p>
+                            <p class="mb-3 bg-indigo-50 p-3 rounded border border-indigo-200 text-sm text-indigo-700"> Use the Notes module to contact others. The notes module opens to the right of the dashboard. Scroll to the right or on a phone 'swipe left' <i> Click the card again or click the menu button to close the messaging system</i></p>
                             <button class="nav-btn mt-2" data-page="bug-report" data-action="bug-report" data-destination="new-panel">
-                                Send a message / Bug Report
+                                Send a message / Bug Report (Opens to the right - you may have to scroll to see it)
                             </button>
                         </div>
                     </div>
@@ -127,8 +145,8 @@ function getTemplateHTML() {
                     </div>
                     <div id="detail-placeholder" class="text-center py-8 text-gray-500">
 <!-- not sure if this suggest button should exist. The code should suggest something if nothing is assigned. and find new is already in the task and survey section. -->
-                        <button class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" data-action="suggest-item">Suggest something for me</button>
-                    </div>
+                        <!--button class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" data-action="suggest-item">Suggest something for me</button>
+                    </div-->
 
                     <!-- flexmain.getDisplayArea() find this element for new-panel injections -->
                     <div data-section="display-area">
@@ -136,24 +154,27 @@ function getTemplateHTML() {
 </div>
 
 
-                <!-- 3. ROLE / AIMS / PLANS CARD ROW (clickable cards, existing nav-btn pattern) -->
-                <div class="flex flex-col md:flex-row gap-4">
-                    <div class="flex-1 bg-white rounded-lg shadow p-4 border-l-4 border-purple-400">
+                <!-- 3. ROLE / AIMS / PLANS CARD ROW (clickable cards using normal petitioner method) -->
+
+ <div class="mb-3 bg-indigo-50 p-3 rounded border border-indigo-200 text-sm text-indigo-700">
+ Click a card once to open the module. <i>Click the card again to close the module</i></div>
+                <div class="flex flex-col md:flex-row gap-4" data-section="role-aims-plans" data-destination="display-area">
+
+                    <div class="flex-1 bg-white rounded-lg shadow p-4 border-l-4 border-purple-400" data-action="my-role">
                         <h3 class="text-lg font-semibold text-purple-700 mb-2">My Role 👤</h3>
-                        <p class="text-sm text-gray-600 mb-3">View your permissions, groups, and capabilities. There are <span data-value="available-relations" >?</span> items related to your role</p>
-                        
-                        <button class="nav-btn w-full" data-page="my-role" data-action="view-role" data-destination="new-panel">View My Role</button>
+                        <p class="text-sm text-gray-600 mb-3">View permissions, groups, and capabilities. There are <span data-value="available-relations" >?</span> items related to your role</p>
                     </div>
-                    <div class="flex-1 bg-white rounded-lg shadow p-4 border-l-4 border-green-400">
+    
+                    <div class="flex-1 bg-white rounded-lg shadow p-4 border-l-4 border-green-400" data-action="aims">
                         <h3 class="text-lg font-semibold text-green-700 mb-2">Our Aims 🎯</h3>
-                        <p class="text-sm text-gray-600 mb-3">Read our mission and long-term goals.</p>
-                        <button class="nav-btn w-full" data-page="aims" data-action="aims" data-destination="new-panel">View Aims</button>
+                        <p class="text-sm text-gray-600 mb-3">Read our mission and long-term goals.</p>                   
                     </div>
-                    <div class="flex-1 bg-white rounded-lg shadow p-4 border-l-4 border-orange-400">
+
+                    <div class="flex-1 bg-white rounded-lg shadow p-4 border-l-4 border-orange-400" data-action="plans">
                         <h3 class="text-lg font-semibold text-orange-700 mb-2">Our Plans 🗓️</h3>
                         <p class="text-sm text-gray-600 mb-3">See current priorities and short-term objectives.</p>
-                        <button class="nav-btn w-full" data-page="plans" data-action="plans" data-destination="new-panel">View Plans</button>
                     </div>
+
                 </div>
 
 
@@ -200,6 +221,7 @@ function getTemplateHTML() {
 }
 
 export function render(panel, petition = {}) {
-    console.log('adminDash Render(', panel, petition, ')');
+    console.log('adminDash Render()');
+    //    console.log('adminDash Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
 }

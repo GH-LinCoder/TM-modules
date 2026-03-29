@@ -29,6 +29,10 @@ console.log('plansAppro',plansAppro);
 
 
 panel.innerHTML = getTitleHTML() +       `<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"> ${plansAppro.description}</div>
+
+<p class="text-sm text-gray-600"><i>Click the 'Our Plans' card a second time to close this module.  A 'card' is usually a rectangle with a coloured border and text inside. A 'module' is an extra bit of page that lets you do something.</i></p>
+
+
 <div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"><i>If you were using the app to create and manage your own organisation. You would edit this plan by editing the appro that stores this description: "Plans of the Organisation" with id: fab5776c-d7e9-4d2a-b52e-85b19ba9ae53</i></div>`
 
     panel.innerHTML += getTemplateHTML();

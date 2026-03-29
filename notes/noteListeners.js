@@ -42,14 +42,14 @@ export function setupNotesListeners() {
   console.log("setupNotesListeners()");
   const notesPanel = document.getElementById('notes-panel');
   if (!notesPanel) return;
-
+// const respondentSelect = document.querySelector('#respondentSelect');
 
 // NEW: Filtering listener for checkboxes and radios 14:20 March 15
 document.querySelector('#notes-panel').addEventListener('change', (event) => {
     const el = event.target;
-
+console.log('el input type:',el.type);
     // Only react to checkboxes and radios for now
-    if (el.type !== 'checkbox' && el.type !== 'radio') return;
+    if (el.type !== 'checkbox' && el.type !== 'radio' && el.type !== 'select-one') return;
 console.log('input box changed');
     // Update global state
 //    userChoices = collectUserChoices();  NOT ALLOWED

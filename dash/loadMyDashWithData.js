@@ -4,7 +4,7 @@ import { showToast } from '../ui/showToast.js';
 //import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
 import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
-console.log('Imported: loadMyDashWithData.js');
+console.log('loadMyDashWithData.js   loaded');
 
 let subject=null;
 //const userId=appState.query.userId;
@@ -32,7 +32,7 @@ subject = await resolveSubject();
 function respondToClipboardChange(){
 
         onClipboardUpdate(() => {
-            console.log('detectMyDash-returns',detectMyDash());
+          //  console.log('detectMyDash-returns',detectMyDash());
      if (!detectMyDash()) return; //normaly sent'panel'
           updateProfileAndStats(); 
         loadSection('surveys'); //ADDED 23:13 March 13  Because changing the subject through the clipboard was not changing this data
@@ -58,7 +58,7 @@ if(!subject) {console.log('Error - no subject returned'); return}
   if (NON_PROFILE_TYPES.includes(subject.type)) {return;} //we only display appros.
 
 
-
+/*
 console.log('resolveSubject', subject,
    'auth:', subject.id,
     'appro:',subject.approUserId,
@@ -67,8 +67,8 @@ console.log('resolveSubject', subject,
     'created',subject.created_at,
     'type:',subject.type,
     'source:',subject.source);
-
-        try {console.log('sending to readStudentAssignments subject.id',subject.id, 'student id:',subject.approUserId);
+*/
+        try {//console.log('sending to readStudentAssignments subject.id',subject.id, 'student id:',subject.approUserId);
             // Get all assignments for current student
             //function needs const { student_id, type } = payload;
             const assignments = await executeIfPermitted(
@@ -76,7 +76,7 @@ console.log('resolveSubject', subject,
                 'readStudentAssignments', 
                 { student_id: subject.approUserId, type: subject.type } //if send type 'app-human' the registry will not look for assignments !! 22:36 March 13  WHY?
             );
-          console.log('assignments',assignments);  //correctly recieved assignments 22:40 March 13 but not displaying
+//          console.log('assignments',assignments);  //correctly recieved assignments 22:40 March 13 but not displaying
             if (!assignments || assignments.length === 0) {
                 setStatsValues('?', '?', '?','?' , '?', '?'); // what is this?
                 return;
@@ -90,7 +90,7 @@ console.log('resolveSubject', subject,
             // Get surveys (when implemented)
             
             const surveys = assignments.surveyData;
-            console.log('surveys', surveys); //why log just surveys?
+  //          console.log('surveys', surveys); //why log just surveys?
            const availableSurveys = surveys?.length || 0; //why this?
         
             const relationsCount = await getRelationsCount();
@@ -106,7 +106,8 @@ console.log('resolveSubject', subject,
     }
     
  function setStatsValues(active, completed, abandoned, surveys, relations, rewards) {
-        const stats = {
+    console.log('setStatsValues');
+    const stats = {
             'active-tasks': active,
             'completed-tasks': completed, 
             'abandoned-tasks': abandoned,
@@ -122,6 +123,7 @@ console.log('resolveSubject', subject,
     }
 
 async function getAssignedSurveys() {
+    console.log('getAssignedSurveys()');
     try {
 //        const studentId = this.getCurrentStudentId();
         if (!subject.id) return [];
@@ -143,6 +145,7 @@ async function getAssignedSurveys() {
 }
 
 async function getRelationsCount() {
+    console.log('getRelationsCount()');
     try {
                 if (!subject.id) return [];
                 
@@ -178,7 +181,7 @@ function  loadSection(sectionName) {
         
         // Signal state change to load module
         appState.setPetitioner(petition);
-        console.log(`Loading ${sectionName} section via petition:`, petition);
+//        console.log(`Loading ${sectionName} section via petition:`, petition);
     }
 
 
@@ -186,7 +189,8 @@ function  loadSection(sectionName) {
 
 
 function updateAll(selector, value) {
-  const elements = document.querySelectorAll(selector);
+  console.log('updateAll', selector, value);
+    const elements = document.querySelectorAll(selector);
   if (elements.length === 0) {
     console.warn(`No elements found for selector: ${selector}`);
     return;

@@ -9,5 +9,17 @@ export default defineConfig({
         app: 'organise.html'
       }
     }
+  },
+  
+  // ✅ ADD THIS SECTION:
+  preview: {
+    port: 4173,
+    strictPort: true,
+    headers: {
+      // Allow auth cookies and CORS in preview
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Allow-Origin': 'http://localhost:4173',
+      'Permissions-Policy': 'storage-access=(self)'
+    }
   }
 });

@@ -90,7 +90,8 @@ async function renderLargeCards(panel) { //should not be plural
         const taskDescription = assignment.task_description;
         const currentStepName = assignment.step_name || 'Unnamed Step';
         const currentStepDescription = assignment.step_description || 'No description available';
-        
+      //  const stepExternalURL = taskSteps.step_external_url;  //is an array
+console.log('taskSteps',taskSteps,'stepExternalURL', taskSteps[2].step_external_url);//ok but later is lost
         // Set up autoPetition - I have forgotten what this is March 8
         autoPetition.assignment_id = assignment.assignment_id;
         autoPetition.task_id = assignment.assignment.task_header;
@@ -120,13 +121,13 @@ async function renderLargeCards(panel) { //should not be plural
         // Generate buttons using assignment object directly
         const buttonHTML = decideButtonsToDisplay(assignment, taskSteps);
         
-        // Render external URL content
-        let externalContent = '';
+        // Render external URL content - 
+        let taskExternalContent = '';
         if (taskExternalURL) {
             if (taskExternalURL.startsWith('<iframe')) {
-                externalContent = `<div class="mt-4">${taskExternalURL}</div>`;
+                taskExternalContent = `<div class="mt-4">${taskExternalURL}</div>`;
             } else if (taskExternalURL.startsWith('http')) {
-                externalContent = `
+                taskExternalContent = `
                     <div class="mt-4">
                         <a href="${taskExternalURL}" target="_blank" rel="noopener noreferrer"
                            class="text-blue-600 underline hover:text-blue-800">
@@ -135,11 +136,17 @@ async function renderLargeCards(panel) { //should not be plural
                     </div>`;
             }
         }
+//to display the video for current step in the step need taskSteps and step_order ?  
+//const stepUrl = taskSteps[assignment.assignment.step_order].step_external_url;
+//const arrayElementForStepExertalUrl = assignment.current_step-1;
+const assignedCurrentStepExternalUrl = taskSteps[assignment.current_step-1].step_external_url
+//BUG 18:13 March 28 current_step undefined when logged in as newSignup (but okay as lin Coder) Changed rpc to inlcude setting this to 3
+console.log('taskSteps',taskSteps, 'assignment',assignment,'current_step',assignment.current_step, taskSteps[assignment.current_step-1].step_external_url, 'stepUrl?');
         
         const card = document.createElement('div');
         card.classList.add('bg-white', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200');
         card.dataset.assignmentId = assignment.assignment_id; // Store assignment ID
-        
+        //console.log('assignment url ?',assignment, assignment.external_url); //says which step is assigned. step_order is available
         card.innerHTML = `
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-semibold text-gray-900">${taskName}</h3>
@@ -148,13 +155,13 @@ async function renderLargeCards(panel) { //should not be plural
                 <div class="text-sm text-gray-500"> Student: ${assignment.student_name || 'Unknown Student'}</div>
             </div>
             <div class="rounded-lg p-6 shadow-md border relative whitespace-pre-line">${taskDescription}</div>
-            ${externalContent}
+            ${taskExternalContent}
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 ${renderStepCard('Previous Step', previousStep, assignment.student_name, true, 'gray')}
                 ${renderStepCard('Current Step', {
                     step_name: currentStepName,
                     step_description: currentStepDescription,
-                    external_url: assignment.external_url  
+                    external_url: assignedCurrentStepExternalUrl  
                 }, assignment.displayedStep === 1 ? 'red' : assignment.displayedStep === 2 ? 'green' : 'blue', assignment.student_name, false, assignment.displayedStep, assignment.assignment_id)}
                 ${renderStepCard(
                     assignment.displayedStep === 2 ? 'Completed' :
@@ -194,11 +201,12 @@ function decideButtonsToDisplay(assignment, taskSteps) {
     const currentStep = assignment.displayedStep;
     const numberOfSteps = taskSteps.length;
     const moveBy = assignment.move_by;
+    console.log('move_by',moveBy);
     const studentName = assignment.student_name;
     const managerName = assignment.manager_name;
-    const taskId = assignment.assignment.task_header;
-    const stepId = assignment.step_id;
-    const taskName = assignment.task_name;
+   // const taskId = assignment.assignment.task_header;
+   // const stepId = assignment.step_id;
+   // const taskName = assignment.task_name;
     const assignmentId = assignment.assignment_id;
     
     // Abandon button
@@ -373,17 +381,39 @@ function reRenderAssignmentCard(assignmentId) {
        renderLargeCards(panelEl); 
     }
 }
-
+// being sent  'Current Step', {step_name: currentStepName,step_description: currentStepDescription, external_url: assignedCurrentStepExternalUrl}
+//assignment.student_name, false, assignment.displayedStep, assignment.assignment_id)}  How does this function handle this???
+//The video on the assigned card now displays. 17:38 March 25
+// being sent 'Previous Step', previousStep, assignment.student_name, true, 'gray'  - in wrong order (how does it work?). Not sent the video url
 function renderStepCard(title, step, color, studentName = null, showCheckmark = false, stepNumber = null, assignmentId = null) {
     if (!step) return '';
     
     const name = step.step_name || 'Unnamed';
     const description = step.step_description || 'No description available';
-    const externalUrl = step.external_url || null;
+    const stepExternalURL = step.external_url || null;
+console.log('step',step,'stepExternalURL', stepExternalURL);// why is external_url undefined here but was oky in steps?
+        let stepExternalContent = '';
+        if (stepExternalURL) {
+            if (stepExternalURL.startsWith('<iframe')) {
+                stepExternalContent = `<div class="mt-4">${stepExternalURL}</div>`;
+            } else if (stepExternalURL.startsWith('http')) {
+                stepExternalContent = `
+                    <div class="mt-4">
+                        <a href="${stepExternalURL}" target="_blank" rel="noopener noreferrer"
+                           class="text-blue-600 underline hover:text-blue-800">
+                            Open external resource
+                        </a>
+                    </div>`;
+            }
+        }
+
+
+
     
 console.log('renderStepCard() title:',title, 'length',title.length);
   let completeButton = '';
   if (title ==='Current Step' && stepNumber > 2) { console.log('Current step & >2');
+
     completeButton = `
       <div class="mt-4">
         <button data-button="complete-step" 
@@ -407,14 +437,14 @@ console.log('renderStepCard() title:',title, 'length',title.length);
         red: 'bg-red-50 border-red-200'
     }[color] || 'bg-white border-gray-200';
     
-    let externalContent = '';
-    if (externalUrl) {
-        if (externalUrl.startsWith('<iframe')) {
-            externalContent = `<div class="mt-4">${externalUrl}</div>`;
-        } else if (externalUrl.startsWith('http')) {
-            externalContent = `
+
+    if (stepExternalURL) {
+        if (stepExternalURL.startsWith('<iframe')) {
+            stepExternalContent = `<div class="mt-4">${stepExternalURL}</div>`;
+        } else if (stepExternalURL.startsWith('http')) {
+            stepExternalContent = `
                 <div class="mt-4">
-                    <a href="${externalUrl}" target="_blank" rel="noopener noreferrer"
+                    <a href="${stepExternalURL}" target="_blank" rel="noopener noreferrer"
                        class="text-blue-600 underline hover:text-blue-800">
                         Open external resource
                     </a>
@@ -429,7 +459,7 @@ console.log('renderStepCard() title:',title, 'length',title.length);
             </div>
             <h4 class="text-lg font-bold">${name}</h4>
             <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">${description}</p>
-            ${externalContent}
+            ${stepExternalContent}
             ${completeButton}
             ${studentName && title === 'Current Step' ? `
                 <div class="absolute -top-4 -left-4 bg-white rounded-full p-2 text-xs font-medium text-gray-700 shadow border border-gray-200">

@@ -2,7 +2,7 @@
 
 export let userChoices = { //amended 12:22 March 16 2026
     userId: null,
-    dropdown: null, 
+    respondent: null, //chaned from dropdown  19:30 March 25
     // Address filtering
     address: 'self',
     addressFilterActive: true,  // ✅ NEW - toggle state
@@ -23,7 +23,7 @@ export let userChoices = { //amended 12:22 March 16 2026
 /**
 userChoices = { //amended 12:22 March 16 2026
     userId: null,
-    dropdown: null, 
+    dropdown: null, <---- respondent
     // Address filtering
     address: 'self',
     addressFilterActive: true,  // ✅ NEW - toggle state
@@ -47,11 +47,11 @@ console.log('userChoices',userChoices);
 
 
   const respondentSelect = document.querySelector('#respondentSelect');
-  if(respondentSelect){ 
+  if(respondentSelect){ console.log('respondentSelect', respondentSelect);
     const respondent = respondentSelect.value;
-console.log('respondent', respondent);
+console.log('respondent', respondent);  // empty string 19:30 March 25
 
-    userChoices.dropdown = respondent;
+    userChoices.respondent = respondent;
   };
 
 const selected = [...document.querySelectorAll('#notes-panel input[type=checkbox]:checked')];

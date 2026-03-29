@@ -1,7 +1,7 @@
 //  ../legal/privacy.js
 
 import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
-console.log('plans.js loaded');
+console.log('privacy.js loaded');
 
 
 function getTemplateHTML() { console.log('getTemplateHTML()');

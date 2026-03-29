@@ -162,7 +162,7 @@ if (currentStep <3) return; // where get currentStep ??
 
 }
 
-decideDefaultMoveBy(taskHeaderDefault){
+decideDefaultMoveBy(taskHeaderDefault){ // this default value needs to be read from the task_header table. Not yet implemented 25 March
   if(!taskHeaderDefault)
 if (this.AssignmentDefaultMoveBy) return this.AssignmentDefaultMoveBy;
   else if (taskHeaderDefault) return taskHeaderDefault;

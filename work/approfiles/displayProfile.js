@@ -36,7 +36,9 @@ console.log('displayProfile.js - loaded');
 let subject=null;
 
 export async function render(panel, query = {}) { //Called from loader (standard interface) 
-  console.log('displayProfile.render()', panel, query);
+  //console.log('displayProfile.render()', panel, query);
+  console.log('displayProfile.render()');
+  
   if (!panel || !panel.isConnected) {
     console.warn('Render target not found or disconnected');
     return;
@@ -52,7 +54,7 @@ displayAppro();
 
 
 async function displayAppro(){
-
+console.log('displayAppro()');
 subject = await resolveSubject(); 
 if(!subject) {console.log('Error - no subject returned'); return}
 
@@ -61,7 +63,7 @@ if(!subject) {console.log('Error - no subject returned'); return}
 
 
 
-console.log('resolveSubject', subject,
+console.log('profiles -resolveSubject', subject,
    'auth:', subject.id,
     'appro:',subject.approUserId,
     'name:',subject.name,
@@ -102,7 +104,7 @@ console.log('resolveSubject', subject,
 
             // Set initials  -- not used
             if (initialsEl && subject.name) {
-                const initials = subject.name.substring(0, 3)
+                const initials = ">>" + subject.name.substring(0, 18) +' '+ subject.name.substring(3, 12)+"<<";
                 initialsEl.textContent = initials;
             }
 }
@@ -111,11 +113,11 @@ console.log('resolveSubject', subject,
 
 
 
-
+//not called
 function attachListener(panel){
   console.log('attachListeners()');
 const updateBtn = panel.querySelector('#updateBtn');
-console.log('panel,profile,updateBtn',panel, updateBtn);
+//console.log('panel,profile,updateBtn',panel, updateBtn);
 if(!updateBtn) {console.log('no button'); return};
 
 updateBtn.addEventListener('click', ()=> updateAppro() );
@@ -125,7 +127,8 @@ updateBtn.addEventListener('click', ()=> updateAppro() );
 
 
 function respondToClipboardChange(){  // it doesn't instantly respond. Need to refresh the myDash to show clipboard content
-        onClipboardUpdate(() => {
+  console.log('respondToClipboardChange()');
+  onClipboardUpdate(() => {
           displayAppro(); 
         }); 
 }
@@ -135,7 +138,7 @@ function respondToClipboardChange(){  // it doesn't instantly respond. Need to r
 
 
 
-
+//only called if attachListener were called
 function updateAppro(subject){ //?  what was this for???  Why load onto clipboard? Is it for admin to be able to reuse elsewhere?
   console.log('updateAppro()', subject);
 //put the subjectId on the clipboard and load the editAppro module.
@@ -174,8 +177,8 @@ console.log(appState.clipboard);
 function getTemplateHTML() {
     return `
                 <!-- PROFILE CARD -->
-<div class="w-20 h-20  rounded-full bg-blue-500 text-white text-lg font-semibold" data-user="avatar" >
-  <!--div data-user="initials">ABC</div-->
+<div class="w-20 h-20  rounded-full bg-green-200 text-white text-lg font-semibold" data-user="avatar" >
+  <div data-user="initials">Organise using this app, have your say, do your bit</div>
 </div>
 <h6 class="text-xl font-semibold" data-user="name">Waiting for database.</h6> 
 <div data-user='placeholder'> Are you logged in? Perhaps new here & haven't confirmed email? Or perhaps have no permissions?</div>                  

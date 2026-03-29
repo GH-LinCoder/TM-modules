@@ -1,12 +1,10 @@
 // ./notes/notes.js   module based on 'The Lab' notes page. For reporting bugs and part of future messaging system.
-//import { appState } from '../state/appState.js';
-//import { executeIfPermitted } from '../registry/executeIfPermitted.js';
-//import { showToast } from '../ui/showToast.js';
+
 import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { setupNotesListeners } from './noteListeners.js';
 import { displayNotes } from './displayNotes.js';
 import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
-import { showToast } from '../ui/showToast.js';
+//import { showToast } from '../ui/showToast.js';
 
 
 console.log('notes.js loaded');
@@ -50,7 +48,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
             <div class="space-y-2">
               <label for="respondentSelect" class="block text-sm font-medium text-gray-700">
               Use [Select] menu to choose a name & the buttons to choose to: or from:</label>
-              <select id="respondentSelect" data-form="relationSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm "  >
+              <select id="respondentSelect" type="dropdown" data-form="relationSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm "  >
                 <option value="">Use the menu [Select] button then this dropdown to select author/audience</option>
               </select>
             </div>
@@ -239,7 +237,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 export function render(panel, petition = {}) {
-    console.log('plans Render(', panel, petition, ')');
+    console.log('notes Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
 //new 18:20 Nov 4
 

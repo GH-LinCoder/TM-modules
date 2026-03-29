@@ -9,7 +9,12 @@ import { render as renderOneTask } from './displayOneTask.js';
 //need resolve if use the function from loadMyDashWithData
 import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../../utils/contextSubjectHideModules.js'
 
+// Import the shared panel tracking
+
 console.log('displayTasksCards.js loaded');
+
+let itemOnDisplay = null; // to be able to close the item when the button has a 2nd click
+
 
 function clearContainer(container){//trying to empty the display area when subject changes. Failed
 container.innerHTML='';
@@ -76,7 +81,7 @@ console.log('assignments', assignments, 'assignments.length',assignments.length)
 container.innerHTML=''; //FAILS - I want to clear the card area because old cards stay here even if the subject has been changed via the selection module  BUG
     //I don't think this is being called at all when the subject gets changed via the selection module. Profile changes.
 assignments.forEach(task => {
-        console.log('task', task, 'task.assignment_id',task.assignment_id);//task.assignment_id 
+    //    console.log('task', task, 'task.assignment_id',task.assignment_id);//task.assignment_id 
          const card = document.createElement('div');
 
   card.className =
@@ -90,8 +95,10 @@ assignments.forEach(task => {
   //card.dataset.section = 'task-card'; //the section is already defined in the myDash HTML as: data-section = "tasks-section"
   card.dataset.destination = 'display-area';
 //To properly display this student's task we need task.assignmentId. Otherwise the display woulnd't know which step the student is on, and would not be able to write back to the db if the student changes the step
-  
-card.innerHTML = `
+  //card.dataset.studentId = 'studentId';
+console.log('petion',appState.query.petitioner);
+
+  card.innerHTML = `
     <div>
       <h4 class="text-sm font-semibold text-blue-800">${task.task_name}</h4>
       <p class="text-xs text-gray-600">
@@ -103,20 +110,42 @@ card.innerHTML = `
   `;
 
 
-card.addEventListener('click', (e) => {
-    e.stopPropagation(); // Keep this — prevents bubbling duplication
+card.addEventListener('click', (e) => { // why are we using a bespoke method instead of the standard module loading?
+//this breaks the convention that a 2nd click closes the module
+//I see no justification for breaking the convention here.
+//the relevant data inside the card should be enough to inform the displayOneCTask what to display and how to handle it.
+//This breach of convention is cause by ai genertaing code without context
+//the card html needs the relevant 
+// data-action and destination.
+//  the assignmentId: assignmentId, entityType: 'task',
+
+//  Then the displayTaskCards can ignore the click. It will propagte and be handled normally
+
+    e.stopPropagation(); // prevents bubbling duplication
     
     const assignmentId = e.currentTarget.dataset.assignmentId;
-    console.log('🖱️ Card clicked, loading directly:', assignmentId);
-    
+    console.log('🖱️ Card clicked, loading directly:', assignmentId, 'full data',e.currentTarget.dataset);
+  
+
+
     // ✅ Find the detail panel target
     const detailPanel = document.querySelector('[data-section="display-area"]');
     if (!detailPanel) {
         console.error('Detail panel not found');
         return;
     }
+
+    // new 17:30 March 29 toggle to mimic the behaviour of the pertition system. 2nd click closes the item.
+        if (itemOnDisplay === assignmentId){detailPanel.innerHTML =''; itemOnDisplay = null; return;} // toggle close if same card clicked again. Mimics the normal petition flexmain method
+    itemOnDisplay = assignmentId; // set the currently displayed item
+//the close should remove listeners in the module that is being closed, but that can't be done here.
+
+// Toggle logic: if open, close; if closed, open (Mimics the normal petition flexmain method)
+
+
+
     
-    // ✅ Call the render function directly with a custom query object
+    // Call the render function directly with a custom query object
     renderOneTask(detailPanel, {
         assignmentId: assignmentId,
         entityType: 'task',
