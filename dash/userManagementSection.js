@@ -49,7 +49,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <h3 class="text-sm font-medium text-red-700 mb-1">Display temp signups</h3>
     <p class="text-xs text-red-600">The new user's details are stored in the temp signup table. This shows if they have logged in, whether an appro has been created, 
     whether they have been granted myDash permissions and notes permissions and whether the appro is assigned to the 'welcome' task </p>
-  <div id="temp-signups-display">Waiting for database table 'temp_signups' </div>
+  <!-- div id="temp-signups-display">Waiting for database table 'temp_signups' </div -->
     </div>
 
       <!-- relate -->

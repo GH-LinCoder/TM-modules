@@ -215,7 +215,7 @@ function filterByCategories(notes) {
         selected: categories,
         selectedTypes: categories.map(c => typeof c),
         mode,
-        noteCount: notes.length
+        noteCount: notes.length,
     });
 /*
   // ✅ Log first note's category_ids
@@ -234,6 +234,7 @@ function filterByCategories(notes) {
     const matchFn = mode === 'more-clicks-fewer-notes' ? 'every' : 'some';
   
 return notes.filter(note => {
+  if(note.category_ids?.length<1) console.log('no tags for this note - possible RLS problem?');
         if (!note.category_ids?.length) return false;
         
         const result = matchFn === 'every' 

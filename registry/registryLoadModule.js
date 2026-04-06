@@ -117,8 +117,9 @@ export const registry = { // this registry is for loading a new page to the righ
 'money-management-section': () => import('../dash/moneyManagementSection.js'),
 'recruitment-management-section': () => import('../dash/recruitmentManagementSection.js'),
 
-'open-permissions-dialogue': () => import('../db/permissionsModule.js'),   
-
+'open-permissions-dialogue': () => import('../rules/permissionsModule.js'), 
+'open-bundle-permissions-dialogue': () => import('../rules/permissionsBundleModule.js'),   
+'open-create-bundle-appro': () => import('../rules/createBundleAppro.js'),
 
 
 

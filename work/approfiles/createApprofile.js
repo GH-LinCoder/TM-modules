@@ -44,6 +44,19 @@ console.log('createApprofileForm.js loaded');
 
 const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
 
+let typeOfAppro = null;
+let prefix='';  //using globals in case there are future other values for prefix and suffix
+let suffix='';
+
+export function createBundleAppro(panel){
+  console.log('createBundleAppro', panel);
+  typeOfAppro = 'bundle'; // an appro that reprsents a bundle of permissions uses a special syntax in names. This is forced and cannot be user edited
+ prefix = '(]BUNDLE:'; // prefix and suffix will encase the user input name of the bundle
+ suffix ='[)';
+  render(panel);
+}
+
+
 export function render(panel, query = {}) {
   console.log('Render Approfile Form:', panel, query);
   panel.innerHTML = getTemplateHTML();
@@ -80,8 +93,8 @@ function getTemplateHTML() {
 
         <div class="bg-gray-200 p-6 space-y-6">
           <div id="createApprofileForm" class="space-y-4">
-          <label for="approfileName" class="block text-sm font-medium text-gray-700 mb-1">
-                Approfile Name *
+          <label for="approfileName" class="block text-sm font-medium text-gray-700 mb-1" title='Any indicated prefix or suffix will be added automatically'>
+          <span class='text-xs text-blue-300'> ${prefix} </span>     Approfile Name * <span class='text-xs text-blue-300'> ${suffix} </span>
           </label>
             <input id="approfileName" placeholder="Unique name for approfile" maxlength="64" required class="w-full p-2 border rounded" />
             <p id="approfileNameCounter" class="text-xs text-gray-500">0/64 characters</p>
@@ -157,14 +170,51 @@ async function handleApprofileSubmit(e) {
       saveBtn.textContent = 'Check the existing approfile with this name Or change the name';
       return;
     }
-
+let nameToUse = name;
+if(typeOfAppro === 'bundle') nameToUse = prefix + name + suffix; //add the prefix and suffix to the name to create the full approfile name that is stored in the database
     const newApprofile = await executeIfPermitted(userId, 'createApprofile', {
-      name,
+      name: nameToUse,
       description
     });
+if (typeOfAppro === 'bundle') {console.log('New bundle appro id:', newApprofile.id);//logged 22:13 March 30
+// regsitry needs const { id, name, description, bundleId=null } = payload;
+// place the appro id into the column 'permission_bundle' as a way to identify this row as a bundle
+const approUpdate = await executeIfPermitted(userId, 'updateApprofile', {
+id: newApprofile.id,
+  name: nameToUse,
+  description,    
+  bundleId: newApprofile.id,
+    });
+        if(approUpdate) showToast('Bundle appro created successfully!');      
 
-    showToast('Approfile created successfully!');
-    saveBtn.disabled = true;
+}
+if (typeOfAppro === 'bundle') { //it is a bundle that needs to be registered in the permission_relationships table
+//write the new bundle name and id into the permission_relationships table. Once there it can have permissions related to it.
+//relation permissions to it makes it the source of truth of what permissions to grant when using the bundle
+const category ='bundle'; //this would be be best used to indicate the general scope of the bundle, but not sure how to do that now.
+
+//registry needs const {name, description,category,bundleId} = payload;
+
+const newRelationship = await executeIfPermitted(userId, 'writePermissionRelationships', {
+  name: nameToUse,
+      description,
+      category,
+      bundleId: newApprofile.id
+    });
+console.log('new relationship', newRelationship); //the entry had bundle_id null -typo fixed 22:13 March 31
+//need to communicate some/all of this to the relateAppro module
+//do this via clipboard.
+if(newRelationship) showToast('Bundle appro registered');
+
+pushBundleToClipboard(nameToUse, description, category, newApprofile.id);
+
+
+} 
+else showToast('Successfully created the appro.'); //it isn't a bundle.
+
+// if bundle push it into an array  appState.clipboard using the standard selection syntax AS 
+
+saveBtn.disabled = true;
     saveBtn.textContent = 'You can create another by editing the name';
    // panel.remove(); // Optionally close the dialog
   } catch (error) {
@@ -172,4 +222,76 @@ async function handleApprofileSubmit(e) {
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save Approfile';
   }
+
+}
+/* format guide
+clipboardItem:
+Object { entity: {…}, as: "other", meta: {…} }
+as: "other"
+entity: Object { id: "6004dc44-a451-417e-80d4-e9ac53265beb", name: "cannie", type: "app-human", … }
+id: "6004dc44-a451-417e-80d4-e9ac53265beb"
+
+item: Object { 
+id: "6004dc44-a451-417e-80d4-e9ac53265beb", 
+name: "cannie", 
+email: "can@not.do", … }
+
+auth_user_id: "6004dc44-a451-417e-80d4-e9ac53265beb"
+avatar_url: null
+created_at: "2025-09-20T19:09:44.614635+00:00"
+description: null
+email: "can@not.do"
+external_url: null
+id: "6004dc44-a451-417e-80d4-e9ac53265beb"
+name: "cannie"
+notes: null
+phone: null
+sort_int: 42
+survey_header_id: null
+task_header_id: null
+updated_at: null
+
+*/
+
+
+
+function pushBundleToClipboard(nameToUse, description, category, newApprofileId){
+const item = {name:nameToUse, description, category, id:newApprofileId} 
+  console.log('pushBundleToClipboard()', item);
+
+        const clipboardItem = {
+      entity: {
+        id: newApprofileId,
+        name: nameToUse,
+        type: 'bundle',
+        item: item
+      },
+      as: 'bundle',
+      meta: {
+        timestamp: Date.now(),
+        source: 'create-bundle-appro',
+        id: `clipboard-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+      }
+    };
+
+    // Store
+    if (!appState.clipboard) appState.clipboard = [];
+    appState.clipboard.push(clipboardItem); //test - seen on clipboard 17:48 March 31 But no event emitted
+console.log("Dispatching clipboard event. Document=", document);//this is entire webpage <body class
+
+try {
+  window.document.dispatchEvent(new CustomEvent('clipboard:updated', {
+    detail: { clipboard: appState.clipboard }
+  }));
+  console.log('✅ [createAppro] Dispatch completed without error');
+} catch (err) {
+  console.error('❌ [createAppro] Dispatch threw error:', err);
+}
+
+    // Notify
+ //   if (document) {document.dispatchEvent(new CustomEvent('clipboard:item-added', { detail: clipboardItem }));}
+//or use this ?
+    // After updating the display
+//window.document.dispatchEvent(new CustomEvent('clipboard:updated', {detail: { clipboard: appState.clipboard }}));
+
 }

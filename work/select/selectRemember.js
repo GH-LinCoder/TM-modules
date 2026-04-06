@@ -285,7 +285,7 @@ console.log('ViewChange:');
 console.log('appros for surveys',this.loadedData.surveyApprofiles);
     } catch (error) {
       console.error('Error loading approfiles:', error);
-      showToast('Failed to load', 'error');
+      showToast('Failed to load', 'error',5000);
     }
   }
 
@@ -294,7 +294,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       this.loadedData.tasks = await executeIfPermitted(appState.query.userId, 'readTaskHeaders', {});
     } catch (error) { // if access is forbidden by RLS there is no error
       console.error('Error loading tasks:', error);
-      showToast('Failed to load', 'error');
+      showToast('Failed to load', 'error', 5000);
     }
   }
 
@@ -304,7 +304,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       console.log('Surveys:',this.loadedData.surveys);//works  20:30 Oct 10th 2025
     } catch (error) {
       console.error('Error loading surveys:', error);
-      showToast('Failed to load', 'error');
+      showToast('Failed to load', 'error', 5000);
     }
   }
 
@@ -314,7 +314,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       console.log('Assignments:',this.loadedData.assignments);
     } catch (error) {
       console.error('Error loading assignements:', error);
-      showToast('Failed to load', 'error');
+      showToast('Failed to load', 'error', 5000);
     }
   }
 
@@ -324,7 +324,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       console.log('AssignmentsNew:',this.loadedData.assignmentsnew);
     } catch (error) {
       console.error('Error loading assignementsNew:', error);
-      showToast('Failed to load', 'error');
+      showToast('Failed to load', 'error', 5000);
     }
   }
 
@@ -334,7 +334,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       console.log('Relations:',this.loadedData.relations);
     } catch (error) {
       console.error('Error loading relations:', error);
-      showToast('Failed to load', 'error');
+      showToast('Failed to load', 'error', 5000);
     }
   }
 
@@ -576,7 +576,7 @@ updated_at: null
       document.dispatchEvent(new CustomEvent('clipboard:item-added', { detail: clipboardItem }));
     }
 
-    showToast(`Stored: ${clipboardItem.entity.name} as ${clipboardItem.as}`, 'success');
+    showToast(`Stored: ${clipboardItem.entity.name} as ${clipboardItem.as}`, 'success', 2000);
   }
 
   refreshFeedbackDisplay() {
@@ -626,6 +626,6 @@ document.dispatchEvent(new CustomEvent('clipboard:updated', {
 
     const removedItem = appState.clipboard.splice(index, 1)[0];
     this.refreshFeedbackDisplay();
-    showToast(`Removed: ${removedItem.entity.name}`, 'info');
+    showToast(`Removed: ${removedItem.entity.name}`, 'info', 2000);
   }
 }

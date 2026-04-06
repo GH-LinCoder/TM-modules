@@ -4,14 +4,22 @@ console.log('toast.js loaded');
 
 export function showToast(message, type = 'info', duration = 10000) {
   // Ensure a container exists
+  
+  const positionTop = (duration/100+25).toString()+'px';
+  const positionLeft = (duration/500+300).toString()+'px';
+
+
   let container = document.getElementById('informationSection');//is this too low on the display?? Could put in summary area
+console.log('positionTop',positionTop, 'positionLeft',positionLeft, message, type, duration, container);
+
+
   if (!container) {
     container = document.createElement('div');
     container.id = 'toast-container';
     Object.assign(container.style, {
       position: 'fixed',
-      top: '220px',
-      left: '50%',
+      top: positionTop,
+      left: positionLeft,
       transform: 'translateX(-50%)',
       display: 'flex',
       flexDirection: 'column',

@@ -1,85 +1,196 @@
-CREATE OR REPLACE FUNCTION is_permitted(
-  p_table_name TEXT,
-    p_row_id UUID,        -- NULL for aggregates like COUNT
-    p_operation TEXT      -- 'SELECT', 'INSERT', 'UPDATE', 'DELETE'
+CREATE OR REPLACE FUNCTION public.is_permitted(
+  p_user_auth_id uuid,
+  p_table_name text,
+  p_operation text,
+  p_row_id uuid DEFAULT NULL
 )
-RETURNS BOOLEAN
+RETURNS boolean
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
 AS $$
 DECLARE
-    v_user_appro_id UUID;
-  --  v_auth_user_id  UUID; 
-    v_result BOOLEAN := FALSE;
+  v_user_appro_id uuid;
+  v_granted_scopes uuid[];
+  v_result boolean := false;
+  v_target_row record;
+  v_self_uuid constant uuid := 'db20d8fa-ef74-4ba5-8ce5-7c925fb7249d'::uuid;
+  v_scope_id uuid;
 BEGIN
-
---v_auth_user_id := auth.uid();
-
-    -- Get current user's approfile ID
-    SELECT id INTO v_user_appro_id
-    FROM app_profiles
-    WHERE auth_user_id = auth.uid();
-
-    -- If user has no approfile, deny access
-    IF v_user_appro_id IS NULL THEN
-      RAISE LOG 'No appro';
-        RETURN FALSE;
+  -- 1. Get the user's appro_id from auth ID
+  SELECT id INTO v_user_appro_id 
+  FROM app_profiles 
+  WHERE auth_user_id = p_user_auth_id 
+  LIMIT 1;
+  
+  IF v_user_appro_id IS NULL THEN
+    RAISE LOG 'is_permitted: No appro found for auth user %', p_user_auth_id;
+    RETURN false;
+  END IF;
+  
+  -- 2. Fetch user's granted scopes that match ANY registered function for this table/operation
+  SELECT ARRAY_AGG(pr.of_approfile)
+  INTO v_granted_scopes
+  FROM permission_relations pr
+  JOIN permission_molecule_required pmr 
+    ON trim(pr.relationship, '()[]') = pmr.name
+  WHERE pr.approfile_is = v_user_appro_id
+    AND pr.is_deleted IS NOT TRUE
+    AND pmr.table_name = p_table_name
+    AND pmr.operation = p_operation;
+  
+  IF v_granted_scopes IS NULL OR array_length(v_granted_scopes, 1) IS NULL THEN
+    RAISE LOG 'is_permitted: No grants found for user % on %.%', v_user_appro_id, p_table_name, p_operation;
+    RETURN false;
+  END IF;
+  
+  -- 4. Evaluate each granted scope -moved earlier for faster decision
+   FOREACH v_scope_id IN ARRAY v_granted_scopes
+  LOOP
+    -- === GENERIC SCOPE: Check if this scope matches ANY function's generic_scope ===
+    IF EXISTS (
+      SELECT 1 FROM permission_molecule_required
+      WHERE table_name = p_table_name
+        AND operation = p_operation
+        AND generic_scope_id = v_scope_id
+    ) THEN
+      v_result := true;
+      EXIT;  -- ← This EXIT is now inside the FOREACH loop
     END IF;
 
 
--- Self-access: is this the user's own profile?
-IF p_row_id IS NOT NULL 
-   AND v_user_appro_id IS NOT NULL
-   AND p_table_name = 'app_profiles' 
-   AND p_operation = 'SELECT' 
-   AND p_row_id = v_user_appro_id THEN
-    RETURN TRUE;
-END IF;
 
 
---test to check params This clutters the log and seems irrelevant most of the time
- -- RAISE LOG 'is_permitted infocheck: table=%, row_id=%, op=%, auth_uid=%', p_table_name, p_row_id, p_operation, auth.uid();
+  -- 3. If row-specific check requested, fetch the target row
+  IF p_row_id IS NOT NULL THEN
+    EXECUTE format('SELECT * FROM %I WHERE id = $1', p_table_name)
+    INTO v_target_row
+    USING p_row_id;
+    
+    IF v_target_row IS NULL THEN
+      RAISE LOG 'is_permitted: Row % not found in %', p_row_id, p_table_name;
+      RETURN false;
+    END IF;
+  END IF;
+  
 
-
-
-    -- Main permission check using the permission system
-    SELECT EXISTS (
-        SELECT 1
-        FROM permissions_view pv
-        INNER JOIN function_table_access fta 
-            ON pv.function_name = '(]' || fta.function_name || '[)'
-        WHERE 
-            fta.table_name = p_table_name
-            AND fta.operation = p_operation
-            AND pv.user_id = v_user_appro_id
-            AND (
-                -- Specific row permissions (only checked if p_row_id is provided)
-                (p_row_id IS NOT NULL AND (
-                    (p_table_name = 'task_headers' AND pv.task_header_id = p_row_id)
-                    OR (p_table_name = 'survey_headers' AND pv.survey_header_id = p_row_id)
-
-                    OR (p_table_name = 'app_profiles' AND pv.scope_id = p_row_id)
-
-                 --   OR (p_table_name = 'task_assignments' AND pv.id = p_row_id) //removed pv.assignments.id  13:24 Jan 4 changed 13:38
-                  --  OR (p_table_name = 'notes' AND pv.note_id = p_row_id)
-                --    OR (p_table_name = 'relationships' AND pv.relation_id = p_row_id)
-                ))
-                -- OR generic scope permission (works for all cases)
-                -- RAISE NOTICE 'Checking generic permission for % on %', v_user_appro_id, p_table_name;
-                OR pv.scope_id = fta.generic_scope --original bug the fta coulmn was text and fails to be = to the uuid scope. view now edited to be uuid 16:00 Jan 4
-            )
-    ) INTO v_result;
-      RAISE LOG 'result= %', v_result;
-    RETURN v_result;
+    
+    -- === SPECIFIC SCOPE: Table-by-table rules ===
+    
+    -- --- app_profiles ---
+    IF p_table_name = 'app_profiles' THEN
+      IF v_scope_id = v_self_uuid THEN
+        IF p_row_id = v_user_appro_id THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      ELSE
+        IF p_row_id = v_scope_id THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      END IF;
+    END IF;
+    
+    -- --- assignments ---
+    IF p_table_name = 'assignments' THEN
+      IF v_scope_id = v_self_uuid THEN
+        IF v_target_row.student_id = v_user_appro_id 
+           OR v_target_row.manager_id = v_user_appro_id THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      ELSE
+        IF v_target_row.student_id = v_scope_id 
+           OR v_target_row.manager_id = v_scope_id THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      END IF;
+    END IF;
+    
+    -- --- approfile_relations ---
+    IF p_table_name = 'approfile_relations' THEN
+      IF v_scope_id = v_self_uuid THEN
+        IF v_target_row.is_id = v_user_appro_id 
+           OR v_target_row.of_id = v_user_appro_id THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      ELSE
+        IF v_target_row.is_id = v_scope_id 
+           OR v_target_row.of_id = v_scope_id THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      END IF;
+    END IF;
+    
+    -- --- permission_relations ---
+    IF p_table_name = 'permission_relations' THEN
+      IF v_scope_id = v_self_uuid THEN
+        IF v_target_row.approfile_is = v_user_appro_id THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      ELSE
+        IF v_target_row.approfile_is = v_scope_id THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      END IF;
+    END IF;
+    
+    -- --- task_headers ---
+    IF p_table_name = 'task_headers' THEN
+      IF v_scope_id = v_self_uuid THEN
+        IF EXISTS (
+          SELECT 1 FROM app_profiles 
+          WHERE id = v_user_appro_id 
+            AND task_header_id = p_row_id
+        ) THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      ELSE
+        IF EXISTS (
+          SELECT 1 FROM app_profiles 
+          WHERE id = v_scope_id 
+            AND task_header_id = p_row_id
+        ) THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      END IF;
+    END IF;
+    
+    -- --- survey_headers ---
+    IF p_table_name = 'survey_headers' THEN
+      IF v_scope_id = v_self_uuid THEN
+        IF EXISTS (
+          SELECT 1 FROM app_profiles 
+          WHERE id = v_user_appro_id 
+            AND survey_header_id = p_row_id
+        ) THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      ELSE
+        IF EXISTS (
+          SELECT 1 FROM app_profiles 
+          WHERE id = v_scope_id 
+            AND survey_header_id = p_row_id
+        ) THEN
+          v_result := true;
+          EXIT;
+        END IF;
+      END IF;
+    END IF;
+    
+  END LOOP;  -- ← FOREACH loop ends here
+  
+  RAISE LOG 'is_permitted: user=% table=% op=% row=% result=%', 
+    v_user_appro_id, p_table_name, p_operation, p_row_id, v_result;
+  
+  RETURN v_result;
 END;
 $$;
-
-/*
-  Permission model: 
-  - RLS checks table + operation
-  - We find ALL functions that can perform this table+operation
-  - If user has ANY of those functions → access granted
-  - This means granting one function (e.g., readApprofileById) 
-    enables ALL read access to app_profiles
-*/

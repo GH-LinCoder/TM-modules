@@ -1,0 +1,896 @@
+[
+  {
+    "number": 1,
+    "function": "getAuthenticatedUser",
+    "action": "NONE",
+    "table": "NONE"
+  },
+  {
+    "number": 2,
+    "function": "XcreateOrUpdateApprofile",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 3,
+    "function": "autoAssignTask",
+    "action": "SELECT",
+    "table": "assignments"
+  },
+  {
+    "number": 4,
+    "function": "autoAssignTask",
+    "action": "SELECT",
+    "table": "task_assignments"
+  },
+  {
+    "number": 5,
+    "function": "autoAssignTask",
+    "action": "INSERT",
+    "table": "assignments"
+  },
+  {
+    "number": 6,
+    "function": "autoAssignTask",
+    "action": "INSERT",
+    "table": "task_assignments"
+  },
+  {
+    "number": 7,
+    "function": "autoAssignSurvey",
+    "action": "SELECT",
+    "table": "assignments"
+  },
+  {
+    "number": 8,
+    "function": "autoAssignSurvey",
+    "action": "SELECT",
+    "table": "task_assignments"
+  },
+  {
+    "number": 9,
+    "function": "autoAssignSurvey",
+    "action": "INSERT",
+    "table": "assignments"
+  },
+  {
+    "number": 10,
+    "function": "autoAssignSurvey",
+    "action": "INSERT",
+    "table": "task_assignments"
+  },
+  {
+    "number": 11,
+    "function": "autoRelateAppro",
+    "action": "SELECT",
+    "table": "approfile_relations"
+  },
+  {
+    "number": 12,
+    "function": "autoRelateAppro",
+    "action": "INSERT",
+    "table": "approfile_relations"
+  },
+  {
+    "number": 13,
+    "function": "softDeleteRelation",
+    "action": "SELECT",
+    "table": "approfile_relations"
+  },
+  {
+    "number": 14,
+    "function": "softDeleteRelation",
+    "action": "UPDATE",
+    "table": "approfile_relations"
+  },
+  {
+    "number": 15,
+    "function": "approfilesCount",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 16,
+    "function": "relationsCount",
+    "action": "SELECT",
+    "table": "approfile_relations"
+  },
+  {
+    "number": 17,
+    "function": "assignmentsCount",
+    "action": "SELECT",
+    "table": "assignments"
+  },
+  {
+    "number": 18,
+    "function": "authorsCount",
+    "action": "SELECT",
+    "table": "unique_authors"
+  },
+  {
+    "number": 19,
+    "function": "managersCount",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 20,
+    "function": "membersCount",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 21,
+    "function": "studentsCount",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 22,
+    "function": "tasksCount",
+    "action": "SELECT",
+    "table": "task_headers"
+  },
+  {
+    "number": 23,
+    "function": "tempSignupCount",
+    "action": "SELECT",
+    "table": "temp_signups"
+  },
+  {
+    "number": 24,
+    "function": "signupCount",
+    "action": "SELECT",
+    "table": "temp_signups"
+  },
+  {
+    "number": 25,
+    "function": "readTempSignup",
+    "action": "SELECT",
+    "table": "temp_signups"
+  },
+  {
+    "number": 26,
+    "function": "surveysCount",
+    "action": "SELECT",
+    "table": "survey_headers"
+  },
+  {
+    "number": 27,
+    "function": "respondentsCount",
+    "action": "SELECT",
+    "table": "assignments_survey_view"
+  },
+  {
+    "number": 28,
+    "function": "createApprofile",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 29,
+    "function": "createApprofile",
+    "action": "INSERT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 30,
+    "function": "createApproFromNewAuthUser",
+    "action": "NONE",
+    "table": "NONE"
+  },
+  {
+    "number": 31,
+    "function": "createAssignment",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 32,
+    "function": "createAssignment",
+    "action": "SELECT",
+    "table": "assignments_survey_view"
+  },
+  {
+    "number": 33,
+    "function": "createAssignment",
+    "action": "SELECT",
+    "table": "assignments"
+  },
+  {
+    "number": 34,
+    "function": "createAssignment",
+    "action": "INSERT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 35,
+    "function": "createAssignment",
+    "action": "INSERT",
+    "table": "assignments_survey_view"
+  },
+  {
+    "number": 36,
+    "function": "createAssignment",
+    "action": "INSERT",
+    "table": "assignments"
+  },
+  {
+    "number": 37,
+    "function": "createTask",
+    "action": "SELECT",
+    "table": "task_headers"
+  },
+  {
+    "number": 38,
+    "function": "createTask",
+    "action": "INSERT",
+    "table": "task_headers"
+  },
+  {
+    "number": 39,
+    "function": "readTaskSteps",
+    "action": "SELECT",
+    "table": "task_steps"
+  },
+  {
+    "number": 40,
+    "function": "createTaskStep",
+    "action": "SELECT",
+    "table": "task_steps"
+  },
+  {
+    "number": 41,
+    "function": "createTaskStep",
+    "action": "INSERT",
+    "table": "task_steps"
+  },
+  {
+    "number": 42,
+    "function": "createApprofileRelation",
+    "action": "INSERT",
+    "table": "approfile_relations"
+  },
+  {
+    "number": 43,
+    "function": "createPermissionRelation",
+    "action": "INSERT",
+    "table": "permission_relations"
+  },
+  {
+    "number": 44,
+    "function": "updateTaskStep",
+    "action": "SELECT",
+    "table": "task_steps"
+  },
+  {
+    "number": 45,
+    "function": "updateTaskStep",
+    "action": "UPDATE",
+    "table": "task_steps"
+  },
+  {
+    "number": 46,
+    "function": "assignmentUpdateStep",
+    "action": "SELECT",
+    "table": "assignments"
+  },
+  {
+    "number": 47,
+    "function": "assignmentUpdateStep",
+    "action": "SELECT",
+    "table": "task_steps"
+  },
+  {
+    "number": 48,
+    "function": "assignmentUpdateStep",
+    "action": "UPDATE",
+    "table": "assignments"
+  },
+  {
+    "number": 49,
+    "function": "assignmentUpdateStep",
+    "action": "UPDATE",
+    "table": "task_steps"
+  },
+  {
+    "number": 50,
+    "function": "updateApprofile",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 51,
+    "function": "updateApprofile",
+    "action": "UPDATE",
+    "table": "app_profiles"
+  },
+  {
+    "number": 52,
+    "function": "updateTask",
+    "action": "SELECT",
+    "table": "task_headers"
+  },
+  {
+    "number": 53,
+    "function": "updateTask",
+    "action": "UPDATE",
+    "table": "task_headers"
+  },
+  {
+    "number": 54,
+    "function": "readApprofiles",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 55,
+    "function": "readApprofileByName",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 56,
+    "function": "readApprofileById",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 57,
+    "function": "readApprofileByAuthUserId",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 58,
+    "function": "readApprofileRelationships",
+    "action": "SELECT",
+    "table": "approfile_relations_view"
+  },
+  {
+    "number": 59,
+    "function": "readApprofileRelationships",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 60,
+    "function": "readPermissionRelationsById",
+    "action": "SELECT",
+    "table": "permission_relations_view"
+  },
+  {
+    "number": 61,
+    "function": "readPermissionRelationsById",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 62,
+    "function": "readWorkRelationsById",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 63,
+    "function": "readWorkRelationsById",
+    "action": "SELECT",
+    "table": "assignments"
+  },
+  {
+    "number": 64,
+    "function": "readWorkRelationsById",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 65,
+    "function": "readWorkRelationsById",
+    "action": "SELECT",
+    "table": "assignments_survey_view"
+  },
+  {
+    "number": 66,
+    "function": "readThisAssignment",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 67,
+    "function": "readAllAssignmentsNew",
+    "action": "SELECT",
+    "table": "assignments"
+  },
+  {
+    "number": 68,
+    "function": "readAllAssignments",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 69,
+    "function": "readAssignmentExists",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 70,
+    "function": "readStudentAssignments",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 71,
+    "function": "readStudentAssignments",
+    "action": "SELECT",
+    "table": "assignments_survey_view"
+  },
+  {
+    "number": 72,
+    "function": "readAssignmentsTasks",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 73,
+    "function": "readAssignmentsSurveys",
+    "action": "SELECT",
+    "table": "assignments_survey_view"
+  },
+  {
+    "number": 74,
+    "function": "readManagerAssignments",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 75,
+    "function": "readPermissionRelationships",
+    "action": "SELECT",
+    "table": "permission_relationships"
+  },
+  {
+    "number": 76,
+    "function": "NOTreadPermissionRelationsById",
+    "action": "SELECT",
+    "table": "permission_relations_view"
+  },
+  {
+    "number": 77,
+    "function": "readRelationships",
+    "action": "SELECT",
+    "table": "relationships"
+  },
+  {
+    "number": 78,
+    "function": "readRelationshipExists",
+    "action": "SELECT",
+    "table": "approfile_relations"
+  },
+  {
+    "number": 79,
+    "function": "readApprofile_relations_view",
+    "action": "SELECT",
+    "table": "approfile_relations_view"
+  },
+  {
+    "number": 80,
+    "function": "saveNoteStatus",
+    "action": "UPDATE",
+    "table": "notes"
+  },
+  {
+    "number": 81,
+    "function": "insertNote",
+    "action": "SELECT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 82,
+    "function": "insertNote",
+    "action": "SELECT",
+    "table": "function_table_access"
+  },
+  {
+    "number": 83,
+    "function": "insertNote",
+    "action": "SELECT",
+    "table": "permissions_view"
+  },
+  {
+    "number": 84,
+    "function": "insertNote",
+    "action": "SELECT",
+    "table": "notes"
+  },
+  {
+    "number": 85,
+    "function": "insertNote",
+    "action": "INSERT",
+    "table": "app_profiles"
+  },
+  {
+    "number": 86,
+    "function": "insertNote",
+    "action": "INSERT",
+    "table": "function_table_access"
+  },
+  {
+    "number": 87,
+    "function": "insertNote",
+    "action": "INSERT",
+    "table": "permissions_view"
+  },
+  {
+    "number": 88,
+    "function": "insertNote",
+    "action": "INSERT",
+    "table": "notes"
+  },
+  {
+    "number": 89,
+    "function": "fetchNotes",
+    "action": "SELECT",
+    "table": "notes_with_categories_array3"
+  },
+  {
+    "number": 90,
+    "function": "readCategoryMap",
+    "action": "SELECT",
+    "table": "notes_categories"
+  },
+  {
+    "number": 91,
+    "function": "linkNoteToCategories",
+    "action": "INSERT",
+    "table": "notes_categorised"
+  },
+  {
+    "number": 92,
+    "function": "readNoteCategorised",
+    "action": "SELECT",
+    "table": "notes_categorised"
+  },
+  {
+    "number": 93,
+    "function": "reactToNoteClick",
+    "action": "UPDATE",
+    "table": "notes"
+  },
+  {
+    "number": 94,
+    "function": "readTaskHeaders",
+    "action": "SELECT",
+    "table": "task_headers"
+  },
+  {
+    "number": 95,
+    "function": "readStep3Id",
+    "action": "SELECT",
+    "table": "task_steps"
+  },
+  {
+    "number": 96,
+    "function": "readTaskWithSteps",
+    "action": "SELECT",
+    "table": "task_view"
+  },
+  {
+    "number": 97,
+    "function": "readAllSteps",
+    "action": "SELECT",
+    "table": "task_steps"
+  },
+  {
+    "number": 98,
+    "function": "readAllStudent",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 99,
+    "function": "readAllManager",
+    "action": "SELECT",
+    "table": "assignments_task_view"
+  },
+  {
+    "number": 100,
+    "function": "readAllAuthor",
+    "action": "SELECT",
+    "table": "task_headers"
+  },
+  {
+    "number": 101,
+    "function": "readAssignmentSurveyById",
+    "action": "SELECT",
+    "table": "assignments_survey_view"
+  },
+  {
+    "number": 102,
+    "function": "createSurvey",
+    "action": "SELECT",
+    "table": "survey_headers"
+  },
+  {
+    "number": 103,
+    "function": "createSurvey",
+    "action": "INSERT",
+    "table": "survey_headers"
+  },
+  {
+    "number": 104,
+    "function": "updateSurvey",
+    "action": "SELECT",
+    "table": "survey_headers"
+  },
+  {
+    "number": 105,
+    "function": "updateSurvey",
+    "action": "UPDATE",
+    "table": "survey_headers"
+  },
+  {
+    "number": 106,
+    "function": "createSurveyQuestion",
+    "action": "SELECT",
+    "table": "survey_questions"
+  },
+  {
+    "number": 107,
+    "function": "createSurveyQuestion",
+    "action": "INSERT",
+    "table": "survey_questions"
+  },
+  {
+    "number": 108,
+    "function": "updateSurveyQuestion",
+    "action": "SELECT",
+    "table": "survey_questions"
+  },
+  {
+    "number": 109,
+    "function": "updateSurveyQuestion",
+    "action": "UPDATE",
+    "table": "survey_questions"
+  },
+  {
+    "number": 110,
+    "function": "updateSurveyQuestionSoftDelete",
+    "action": "SELECT",
+    "table": "survey_questions"
+  },
+  {
+    "number": 111,
+    "function": "updateSurveyQuestionSoftDelete",
+    "action": "UPDATE",
+    "table": "survey_questions"
+  },
+  {
+    "number": 112,
+    "function": "createSurveyAnswer",
+    "action": "SELECT",
+    "table": "survey_questions"
+  },
+  {
+    "number": 113,
+    "function": "createSurveyAnswer",
+    "action": "SELECT",
+    "table": "survey_answers"
+  },
+  {
+    "number": 114,
+    "function": "createSurveyAnswer",
+    "action": "INSERT",
+    "table": "survey_questions"
+  },
+  {
+    "number": 115,
+    "function": "createSurveyAnswer",
+    "action": "INSERT",
+    "table": "survey_answers"
+  },
+  {
+    "number": 116,
+    "function": "updateSurveyAnswer",
+    "action": "SELECT",
+    "table": "survey_answers"
+  },
+  {
+    "number": 117,
+    "function": "updateSurveyAnswer",
+    "action": "UPDATE",
+    "table": "survey_answers"
+  },
+  {
+    "number": 118,
+    "function": "readTaskAutomations",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 119,
+    "function": "readSurveyAutomations",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 120,
+    "function": "createAutomationAddTaskByTask",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 121,
+    "function": "createAutomationAddTaskByTask",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 122,
+    "function": "createAutomationAddSurveyByTask",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 123,
+    "function": "createAutomationAddSurveyByTask",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 124,
+    "function": "createAutomationRelateByTask",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 125,
+    "function": "createAutomationRelateByTask",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 126,
+    "function": "createAutomationDeleteRelationByTask",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 127,
+    "function": "createAutomationDeleteRelationByTask",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 128,
+    "function": "createAutomationSendMessageByTask",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 129,
+    "function": "createAutomationSendMessageByTask",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 130,
+    "function": "createAutomationAddTaskBySurvey",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 131,
+    "function": "createAutomationAddTaskBySurvey",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 132,
+    "function": "createAutomationAddSurveyBySurvey",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 133,
+    "function": "createAutomationAddSurveyBySurvey",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 134,
+    "function": "createAutomationRelateBySurvey",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 135,
+    "function": "createAutomationRelateBySurvey",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 136,
+    "function": "createAutomationDeleteRelationBySurvey",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 137,
+    "function": "createAutomationDeleteRelationBySurvey",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 138,
+    "function": "createAutomationSendMessageBySurvey",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 139,
+    "function": "createAutomationSendMessageBySurvey",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 140,
+    "function": "createSurveyAutomation",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 141,
+    "function": "createSurveyAutomation",
+    "action": "INSERT",
+    "table": "automations"
+  },
+  {
+    "number": 142,
+    "function": "softDeleteAutomation",
+    "action": "SELECT",
+    "table": "automations"
+  },
+  {
+    "number": 143,
+    "function": "softDeleteAutomation",
+    "action": "UPDATE",
+    "table": "automations"
+  },
+  {
+    "number": 144,
+    "function": "readSurveyHeaders",
+    "action": "SELECT",
+    "table": "survey_headers"
+  },
+  {
+    "number": 145,
+    "function": "readSurveyQuestions",
+    "action": "SELECT",
+    "table": "survey_questions"
+  },
+  {
+    "number": 146,
+    "function": "readSurveyAnswers",
+    "action": "SELECT",
+    "table": "survey_answers"
+  },
+  {
+    "number": 147,
+    "function": "readSurveyView",
+    "action": "SELECT",
+    "table": "survey_view"
+  },
+  {
+    "number": 148,
+    "function": "readRecentLogs",
+    "action": "SELECT",
+    "table": "app_event_log"
+  },
+  {
+    "number": 149,
+    "function": "updateAssignmentSystem",
+    "action": "NONE",
+    "table": "NONE"
+  }
+]

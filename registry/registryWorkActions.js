@@ -1039,7 +1039,7 @@ updateApprofile: {
   },
   handler: async (supabase, userId, payload) => {
     console.log('updateApprofile()');
-    const { id, name, description } = payload; // id is required for update & name same as sent
+    const { id, name, description, bundleId=null } = payload; // id is required for update & name same as sent
 
     if (!id) {
       throw new Error('id is required for update');
@@ -1050,9 +1050,10 @@ updateApprofile: {
       .update({ 
         name: name, 
         description: description,
-        updated_at: new Date().toISOString() // ✅ Good practice to update timestamp
+        permission_bundle_id: bundleId,
+        updated_at: new Date().toISOString() // Good practice to update timestamp
       })
-      .eq('id', id) // ✅ Supabase uses .eq() for WHERE conditions
+      .eq('id', id) //  Supabase uses .eq() for WHERE conditions
       .select()
       .single();
       
@@ -1274,7 +1275,7 @@ readApprofileRelationships: {
 },
 
 //APPRO PERMISSIONS
-readPermissionRelationsById: {
+readPermissionRelationsById: {//
   metadata: {
     tables: ['permissions_relations_view'],
     columns: ['*'],
@@ -1882,6 +1883,29 @@ readPermissionRelationships: {//HIGH SECURITY ISSUE -- doesn't supply an iconMap
   }
 },
 
+//RELATIONSHIPS PERMISSIONS
+writePermissionRelationships: {//HIGH SECURITY ISSUE -- doesn't supply an iconMap the way Xread did
+  metadata: {
+    tables: [],
+    columns: [],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    console.log('writePermissionRelationships(',payload,')');
+    const {name, description,category,bundleId} = payload;
+    
+    const { data, error } = await supabase
+      .from('permission_relationships')
+      .insert({ name, description, category, bundle_id: bundleId }) //readPermissionRelations
+      //.order('category') // category is in permission_relations
+     
+    if (error) console.error(`Failed to insert:`, error);
+    return { data, error };
+  }
+},
+
+
 NOTreadPermissionRelationsById: {//HIGH SECURITY ISSUE
   metadata: {
     tables: [],
@@ -1906,6 +1930,40 @@ NOTreadPermissionRelationsById: {//HIGH SECURITY ISSUE
     return data;
   }
 },
+
+//BUNDLE GRANT PERMISSIONS
+grantBundlePermissions: {
+  metadata: {
+    tables: [],
+    columns: [],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    const { permissionsToGrant } = payload;  // Already mapped array
+    
+    // Insert with onConflict to skip duplicates
+    const {  error } = await supabase
+      .from('permission_relations')
+      .insert(permissionsToGrant, { 
+        onConflict: 'approfile_id,relationship,of_approfile_id',
+        ignoreDuplicates: true  // ← Critical: skip instead of error
+      });
+    
+    if (error) {
+      console.error('❌ Grant failed:', error);
+      return { success: false, error: error.message };
+    }
+    
+    return { 
+      success: true, 
+      granted: permissionsToGrant.length,
+      message: `✅ Granted ${permissionsToGrant.length} permission(s)`
+    };
+  }
+},
+
+
 
 
 
@@ -2029,8 +2087,8 @@ handler: async (supabase,userId, payload) => {
   
   
   
-  //check the permissions data
-  
+  //check the permissions data  WHY?????  This code may differ from the code that creates the entries in the db
+  /*
   // 1. Auth user
   const { data: { user }, error: authErr } = await supabase.auth.getUser();
   if (authErr || !user) {
@@ -2052,13 +2110,13 @@ handler: async (supabase,userId, payload) => {
   }
   console.log("🧩 approfile.id:", appro.id);
 
-  // 3. function_table_access for insertNote
+  // 3. function_table_access for insertNote  WHY IS A FUNCTION DOING THIS ?????? 
 const { data: ftaRows, error: ftaErr } = await supabase
   .from("function_table_access")
   .select("*")
   
-  .eq("function_name", "insertNote")
-  .eq("operation", "INSERT")
+  .eq("function_name", "insertNote") //this is idiocy the code doesn't know this. The name is produce by molecule maker
+  .eq("operation", "INSERT")  //why is this function doing this ????? This is absurd.
   .eq("table_name", "notes");
 
 if (ftaErr) {
@@ -2070,7 +2128,7 @@ console.log('🔍 fta raw:', JSON.stringify(ftaRows, null, 2));
 console.log('🔍 ftaErr:', ftaErr);
 
 if (!ftaRows || ftaRows.length === 0) {
-  console.error("❌ No FTA rows found for insertNote INSERT notes");
+  console.error("❌ No FTA rows found - is this an RLS problem?");
   return;
 }
 
@@ -2112,19 +2170,7 @@ const fta = ftaRows[0]; //
 
   console.log("🧪 Pre-check complete.");
   
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
+*/
   
   try {
     const { data, error } = await supabase

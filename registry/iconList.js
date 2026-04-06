@@ -30,6 +30,7 @@ cross:'❎',
 
 delete:'🗑️',
 display:'👁️',
+DNA:'🧬',
 dollar:'💵',
 down:'🔽',
 
@@ -37,11 +38,14 @@ edit:'✍️',
 email:'📧',
 empty:'🫗',
 euro:'💶',
+examine:'🧐',
 
 fast: '🌀',
 forward:'▶️',
+folder:'📂',
 
 gear:'⚙️',
+global:'🌐',
 
 hierarchy:'🏯',
 humans:'👥',
@@ -50,16 +54,27 @@ idea:'💡',
 index:'📇',
 island:'🏝️',
 
+judge:'⚖️',
 
+keyModern:'🔑',
+keyOld:'🗝️',
 knowledge:'📚',
 // other possible manager icon 📋
+
+location:'📍',
+lock:'🔒',
+lockKey:'🔐',
+
 manager:'💼',
 manager_assigned:'🎆💼',
+megaphone:'📢',
 moveStudent:'🛼🧑‍🎓',
 
 news: '🫣',
 
-permission:'🔐', 
+permission:'🔐',
+permissiionBundle:'📦🔐',
+
 pound:'💷',
 
 question:'❔',
@@ -84,8 +99,10 @@ task:'🔧' ,
 task_create:'🎆🔧',
 thinking:'🤔',
 tick:'✅',
-
+tree:'🌲',
 
 up:'🔼',
 
+warn:'⚠️',
+//Source: https://emojipedia.org/ and https://www.emojicopy.com/ standard Unicode Emojis.
 }

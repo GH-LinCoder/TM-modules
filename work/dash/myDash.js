@@ -29,8 +29,8 @@ function getTemplateHTML() {
 <div class="bg-white rounded-lg shadow p-6 flex-col ">
 
         <div class="mb-3 bg-blue-50 p-3 rounded border border-blue-200 text-sm text-blue-700">    
-         <p>Navigation: click menu button at top of screen - new stuff opens to right of dashboard (scroll down if needed)</p>
-         <p> click a card within the page [rectangles with words in them]. - new stuff opens in the dashboard (scroll right if needed)</p>
+         <p>Navigation: click menu button at top of screen - new stuff opens to right of dashboard (scroll if needed)</p>
+         <p> click a card within the page [rectangles with words in them]. - new stuff opens in the dashboard (scroll down if needed)</p>
          <p>If you get lost click top menu button [My Dash] - that will close all the extra bits and return you to the dashboard ready for another adventure.</p>
          <p>The dashboard is on 1 page. The browser back button will return you to the login page.</p>
          <p>What the page displays depends on what you click. </p>
@@ -177,20 +177,17 @@ function getTemplateHTML() {
 
                 </div>
 
+</div>
 
-
-                <!-- 5. SETTINGS (kept minimal, unchanged) -->
+                <!-- 5. SETTINGS (kept minimal) -->
                 <div class="bg-gray-100 rounded-lg shadow p-6" data-section='settings' data-destination='settings'>
                   <h2 class="text-lg font-semibold mb-2">Settings  ⚙️</h2>
                   <p class="text-sm text-gray-500 mb-4">System configuration and settings</p>
-                  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('User Roles not yet implemented')">
-                      <h3 class="text-sm font-medium text-gray-800">My Roles</h3>
-                      <p class="text-xs text-gray-500">Manage my permissions and roles</p>
-                    </div>
 
+                  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" data-action="recruitment-management-section")>
-                      <h3 class="text-sm font-medium text-gray-800">Invite others to join</h3>
+                      <h3 class="text-sm font-medium text-gray-800">Invite others to join 📢</h3>
                       <p class="text-xs text-gray-500">You can use a link on social media or email to recruit others to join.</p>
                     </div>
 
@@ -199,18 +196,12 @@ function getTemplateHTML() {
                       <h3 class="text-sm font-medium text-gray-800">Rewards</h3>
                       <p class="text-xs text-gray-500">Check reward systems and my achievements</p>
                     </div>
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" data-action="money-management-section">
-                      <h3 class="text-sm font-medium text-gray-800">Money</h3>
-                      <p class="text-xs text-gray-500">Becoming a member, managing membership fees , subscriptions, donations</p>
-                    </div>
+
                     <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('Support not yet implemented')">
                       <h3 class="text-sm font-medium text-gray-800">Support</h3>
                       <p class="text-xs text-gray-500">Access support tools and documentation</p>
                     </div>
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('Messages not yet implemented')">
-                      <h3 class="text-sm font-medium text-gray-800">Messages</h3>
-                      <p class="text-xs text-gray-500">System notifications and announcements</p>
-                    </div>
+ 
                   </div> 
                 </div>
                 

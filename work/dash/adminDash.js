@@ -24,6 +24,8 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </div>
     <!-- button class="text-sm text-blue-600 hover:underline" data-action="sign-out">Sign out</button -->
   </div>
+<!-- INFORMATION SECTION added April 5 2026-->
+<div id='informationSection'></div>
 
   <div class="container mx-auto px-4 py-8 space-y-8">
     
@@ -265,15 +267,6 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
       <p class="text-xs text-gray-600">See who is in the signup table and what stage they are at</p>
     </div>
 
-<!-- Grant permissions -->
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4"  data-action='open-permissions-dialogue'>
-      <h3 class="text-sm font-medium text-gray-800">Grant User Permissions</h3>
-      <p class="text-xs text-gray-500">Manage user permissions by relating appros</p>
-    </div>
-
-
-
-
   </div>
 </div>
 
@@ -454,73 +447,153 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- AUTOMATION MANAGEMENT -->
-  <div class="bg-yellow-50 rounded-lg shadow p-6" data-section='automation-management' data-destination='automation-management'>
+  <!--div class="bg-yellow-50 rounded-lg shadow p-6" data-section='automation-management' data-destination='automation-management'>
     <h2 class="text-lg font-semibold mb-2">Automation Management 🚂</h2>
     <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4"-->
 
     <!-- Surveys & Quiz-->         
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation" data-action="automation-survey">
+    <!--div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation" data-action="automation-survey">
       <p class="text-3xl font-bold text-blue-900" data-value="surveys-count">?</p>
       <h3 class="text-sm font-medium text-blue-700">Surveys & Quiz automations </h3>
       <p class="text-xs text-gray-500">View, edit, and manage any survey or quiz including automations</p>
-    </div>
+    </div-->
 
     <!-- TASK automation-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-task">
+    <!--div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-task">
       <p class="text-3xl font-bold text-indigo-900" data-value="task-automation-count">?</p>
       <h3 class="text-sm font-medium text-indigo-700">Task automations</h3>
       <p class="text-xs text-gray-500">View and manage the automation for tasks</p>
-    </div>
+    </div-->
 
     <!-- HOWTOS-->         
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-knowledge">
+    <!-- div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-knowledge">
       <p class="text-3xl font-bold text-blue-900" data-value="howto-count">?</p>
       <h3 class="text-sm font-medium text-blue-700">How to automation</h3>
       <p class="text-xs text-gray-500">View, edit, and manage any of the training or instructional automation</p>
-    </div>
+    </div -->
 
 
 
 <!-- MEMBER automation-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-member">
+    <!-- div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-member">
       <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
       <h3 class="text-sm font-medium text-purple-700">Member automation</h3>
       <p class="text-xs text-gray-500">View and manage the automation for members</p>
-    </div>
+    </div -->
 
 <!-- GROUP automation-->    
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-group">
+    <!-- div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-group">
       <p class="text-3xl font-bold text-blue-900" data-value="profiles-count">?</p>
       <h3 class="text-sm font-medium text-blue-700">Group automation</h3>
       <p class="text-xs text-gray-500">View, edit, and manage  the automation for groups</p>
-    </div>
+    </div -->
 
 <!-- ABSTRACT automation-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-abstract">
+    <!-- div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-abstract">
       <p class="text-3xl font-bold text-pink-900" data-value="abstract-approfiles-count">?</p>
       <h3 class="text-sm font-medium text-pink-700">Abstract automation</h3>
       <p class="text-xs text-gray-500">View and manage abstract automation</p>
-    </div>
+    </div -->
 
 <!-- RELATE automation-->    
-    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="automation-relations">
+    <!-- div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="automation-relations">
       <p class="text-3xl font-bold text-yellow-900" data-value="relationships-count">?</p>
       <h3 class="text-sm font-medium text-yellow-700">Relationship automation</h3>
       <p class="text-xs text-gray-500">Assign and organize automation about relationships between approfiles</p>
-    </div>
+    </div -->
 
 <!-- RELATIONSHIPS automation-->    
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="automation-relationships">
+    <!-- div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="automation-relationships">
       <p class="text-3xl font-bold text-red-900" data-value="relations-count">?</p>
       <h3 class="text-sm font-medium text-red-700">Relations</h3>
       <p class="text-xs text-gray-500">Create and edit the automation on the concept of a relationship that can be applied to any two approfiles</p>
+    </div -->
+
+  <!-- /div>
+</div-->
+
+<!-- new section March 30 -->
+
+<!-- permision management section -->
+<div class="bg-red-100 rounded-lg shadow p-6" data-section="permission-management" data-destination='permission-management'>
+  <h2 class="text-lg font-semibold mb-2">Permission Management</h2>
+  <p class="text-sm text-gray-500 mb-4">Click to carry-out the action, it opens below (you may need to scroll down) </p>
+<div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="stats-cards">
+  
+  <!-- Search -->
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="permission-search">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Search permissions</h3>
+    <p class="text-xs text-blue-600">This searches the permissions. If you want to search approfiles, try the other section. </p>
+  </div>
+
+      <!-- Create -->
+  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="open-create-bundle-appro">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Create a new permission bundle 🎆📦🔐</h3>
+    <p class="text-xs text-blue-600"> Admin can put permissions together in bundles and later assign all those permissions to someone in one go.</p>
+  </div>
+    
+    <!-- Edit -->
+  <div class="bg-red-200 border border-blue-200 rounded-lg p-4" data-action="edit-permission-bundle">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Edit an existing permission Bundle</h3>
+    <p class="text-xs text-blue-600">Editing a bundle means removing or adding permissions.</p>
+  </div>
+
+      <!-- Delete -->
+  <div class="bg-red-200 border border-blue-200 rounded-lg p-4" data-action="delete-permission_bundle">
+    <h3 class="text-sm font-medium text-blue-700 mb-1">Delete an existing permission bundle</h3>
+    <p class="text-xs text-blue-600">Deletion of a bundle means that you can't grant that bundle of permissions to anyone in future, but deleting it does not effect anyone who had been granted this bundle. They continue to have the permissions. When you display permissions for such a person you will no longer know that they were granted this bundle if you delete the bundle.</p>
+  </div>
+
+      <!-- Display -->
+  <div class="bg-blue-100 border border-red-200 rounded-lg p-4" data-action="display-related-approfiles-dialogue">
+    <h3 class="text-sm font-medium text-red-700 mb-1">Display permissions 👁️🔐</h3>
+     <p class="text-xs text-blue-600">See who has which permisions. The permissions are under the 'Rules' tab.</p>
     </div>
 
+      <!-- Grant bundle of permissions -->
+  <div class="bg-green-100 border border-red-200 rounded-lg p-4" data-action="open-bundle-permissions-dialogue">
+    <h3 class="text-sm font-medium text-red-700 mb-1">Grant a BUNDLE of permissions to someone 📦🔐</h3>
+    <p class="text-xs text-red-600">
+    Usually permissions are granted in preset bundles.
+The bundle has a name and a list of underlying permissions and a scope<br>
+(]BUNDLE:name[) - (]permission name[) - [scope]. <br>
+    </p>
+    <p class="text-xs text-red-600">
+    When a bundle of permissions is granted to someone the details can be seen in the display function 
+    </p>
   </div>
+
+  <!-- Grant single permission -->
+  <div class="bg-green-50 border border-red-200 rounded-lg p-4" data-action='open-permissions-dialogue'>
+    <h3 class="text-sm font-medium text-red-700 mb-1">Grant a permission to someone 🔐</h3>
+    <p class="text-xs text-red-600">This is for bespoke permissions where you need to select specific permissions to grant to someone. 
+    Sometimes you need to grant a specific permission that is not in a bundle.
+    Both kinds end up as individual permissions stored as a colection of three things<br>
+    [the person] - [the permission name] - [ the scope of the permission ]<br> 
+    </p>
+  </div>
+
+  <!-- Revoke permission or bundle of permissions -->
+    <div class="bg-green-50 border border-red-200 rounded-lg p-4" data-action='open-permissions-revoke-dialogue'>
+    <h3 class="text-sm font-medium text-red-700 mb-1">Revoke a permission someone has 🗑️ 🔐</h3>
+    <p class="text-xs text-red-600">Removing a permission or bundle of permissions effects the individual's ability to see or change data in the database. 
+    <br>
+    All bundle permissions are stored as individual permissions:<br>
+    [the person] - [the permission name] - [ the scope of the permission ]<br>
+    </p>
+  </div>
+
+
+</div>
 </div>
 
 
+
+
+
+
+<!-- end of new section -->
 <!-- Settings -->
 <div class="bg-gray-100 rounded-lg shadow p-6" data-section='settings' data-destination='settings'>
   <h2 class="text-lg font-semibold mb-2">Settings  ⚙️  ⚙️</h2>

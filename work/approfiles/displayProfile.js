@@ -27,10 +27,6 @@ what it lacks is 'last login' which is only availeble from a call to a different
 */
 
 
-
-
-
-
 console.log('displayProfile.js - loaded');
 
 let subject=null;
@@ -102,9 +98,14 @@ console.log('profiles -resolveSubject', subject,
 
             if(placeholderEl) placeholderEl.textContent = ''; //remove error guidance
 
-            // Set initials  -- not used
+            // Set initials 
             if (initialsEl && subject.name) {
-                const initials = ">>" + subject.name.substring(0, 18) +' '+ subject.name.substring(3, 12)+"<<";
+              //                const initials = ">>" + subject.name.substring(0, 18) +' '+ subject.name.substring(3, 12)+"<<";
+//const LON = subject.name.length;
+              const initials = ">¬" + subject.name.substring(0,4) +'#'
+              + subject.name.substring(3,6)+"*ap"+ subject.name.substring(4,7)+"@pro" 
+              + subject.name.substring(2,6)+ "*"+subject.name.substring(5,9)
+              + subject.name.substring(3,7)+ "]["+subject.name.substring(6,10)+')(';
                 initialsEl.textContent = initials;
             }
 }

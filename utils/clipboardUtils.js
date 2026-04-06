@@ -2,10 +2,10 @@
 import { appState } from '../state/appState.js';
 
 export function getClipboardItems({ as = null, type = null, sortBy = 'newest' } = {}) {
-  if (!appState.clipboard) return [];
+  if (!appState.clipboard) return []; //collect one type, puts them into time order
   console.log('GetClipboardItems()');
   let items = [...appState.clipboard];
-  
+  //
   // Filter
   if (as) items = items.filter(item => item.as === as);
   if (type) items = items.filter(item => item.entity.type === type);
@@ -21,7 +21,7 @@ export function getClipboardItems({ as = null, type = null, sortBy = 'newest' } 
 }
 
 export function onClipboardUpdate(callback) {
-  console.log('onClipboarUpdated()');
+  console.log('onClipboarUpdated() document=', document);
   document.addEventListener('clipboard:updated', (e) => {
     callback(e.detail.clipboard);
   });
