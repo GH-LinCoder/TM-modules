@@ -106,25 +106,37 @@ console.log('No tags + need tags to display');
 //new filterByAddress 20:03 March 16
 
 function filterByAddress(notes) { //anomolies in test March 18 FROM gives zero notes when it should give all
-  console.log('filterByAddress()' );  // to + respondent is giving everyone. Should just be respondent
+ console.log('filterByAddress()' );  // to + respondent is giving everyone. Should just be respondent
+
 
 const userId = userChoices.userId;
 const address = userChoices.address;
-const respondent = userChoices.respondent || null; //showing up as null 19:20 March 25  userChoices missing respondent FIXED 19:35
+const respondent = userChoices.respondent || null; 
+//the dropdown gives the 'respondent' this is a way to filter and to address
+
+
+ console.log('🔍 filterByAddress userId check:', {
+    localUserId: userId,              // ← The captured variable (still null)
+    objectUserId: userChoices.userId, // ← The live object property (should be set)
+    areTheySame: userId === userChoices.userId
+  });
+
+
+
 
 console.log('filter by address: these notes',notes,'with userId',userId, 'address',address, 'respondent',respondent);
 
   const uid = String(userId); // isn't it already a string?
-  const respondentId = respondent ? String(respondent) : null;
+  const respondentId = respondent ? String(respondent) : null; //Why are we using 'respondent' ?
 
   // Helper: dedupe by note.id
   const dedupe = (a, b) => {
-    const seen = new Set(a.map(n => n.id));
+    const seen = new Set(a.map(n => n.note_id));
     return [
       ...a,
       ...b.filter(n => {
-        if (seen.has(n.id)) return false;
-        seen.add(n.id);
+        if (seen.has(n.note_id)) return false;
+        seen.add(n.note_id);
         return true;
       })
     ];
@@ -164,16 +176,19 @@ console.log('filter by address: these notes',notes,'with userId',userId, 'addres
 
   // -------------------------
   // MODE: SELF
-  // -------------------------
+  // ------------------------- //this was coded to use 'respondent' but the UI supplies 'audience'
   if (address === 'self') {
     let store1 = notes.filter(n => String(n.author_id) === uid);
     let store2 = notes.filter(n => String(n.audience_id) === uid);
 console.log('store1', store1,'used author_id===',uid, 'store2', store2, 'used audience_id===',uid);    
-console.log('sometimes the output is 0. Is it a problem with respondentId when changed?',respondentId);
-    if (respondentId && respondentId.length > 0) { //respondent id was made into a string and so always exists?
+ 
+
+if (respondentId && respondentId.length > 0) { //respondent id was made into a string and so always exists?
       store1 = store1.filter(n => String(n.audience_id) ===respondentId);
       store2 = store2.filter(n => String(n.author_id) ===respondentId);
-    }
+  //If there is a vlue in the dropdown do extra filtereing for message ebtween us 
+ 
+     }
 
     return dedupe(store1, store2);
   }
@@ -297,9 +312,9 @@ export async function displayNotes(page = 1) { //first call is without being pas
 
 
 const subject = await resolveSubject(); //This has been returning the value in the clipboard from the select module.
-console.log('subject',subject, 'id',subject.id);
-    userChoices.userId = subject.id;
-console.log('userChoices.userId',userChoices.userId);
+console.log('subject',subject, 'auth id',subject.id, 'appro Id:',subject.approUserId ); //subject has approUserId 
+    userChoices.userId = subject.approUserId; //what should user id be???
+console.log('userChoices.userId',userChoices.userId); // this is auth id. 
 
 if(page < 1) page = 1; 
 else 
