@@ -22,8 +22,8 @@ container.innerHTML='';
 
 
 export async function render(panel, petition = {}) {
-    console.log('displayTasksCards.render(', panel, petition, ')');
-
+ //   console.log('displayTasksCards.render(', panel, petition, ')');
+console.log('displayTasksCards.render()');
     const userId = petition.student;
     if (!userId) {
         panel.innerHTML = `<div class="text-red-600 p-4">No user ID provided.</div>`;
@@ -32,7 +32,7 @@ export async function render(panel, petition = {}) {
 
     // Read assignments   In loadMyDashWithData readStudentAssignments finds all the assignments and delivers them in two arrays
     let assignments = [];
-    try {console.log('render() readAssignmentTasks with student_id:',userId);
+    try {//console.log('render() readAssignmentTasks with student_id:',userId);
      
     //changing the function called. The old one fails on a new user. I don't know why. It works for old Lin Coder
 //the new one works within the other file loadMyDashWithData even with the new user
@@ -46,15 +46,9 @@ const tasksAndSurveys = await executeIfPermitted(
                 { student_id: subject.approUserId, type: subject.type } //if send type 'app-human' the registry will not look for assignments !! 22:36 March 13  WHY?
             );    
     
-        /* 
-        assignments = await executeIfPermitted(
-            userId,
-            'readAssignmentsTasks',
-            { student_id: userId }
-        );
-    */
+ 
 
-console.log('tasksAndSurveys',tasksAndSurveys);
+//console.log('tasksAndSurveys',tasksAndSurveys);
         assignments = tasksAndSurveys.taskData; //because readStudentAssignments returns both tasks and surveys, we need to specify which one we want. 22:36 March 13    
     
     } catch (err) {
@@ -62,7 +56,7 @@ console.log('tasksAndSurveys',tasksAndSurveys);
         panel.innerHTML = `<div class="text-red-600 p-4">Error loading tasks.</div>`;
         return;
     }
-console.log('assignments', assignments, 'assignments.length',assignments.length); // okay - we have assignment_id at this line
+//console.log('assignments', assignments, 'assignments.length',assignments.length); // okay - we have assignment_id at this line
     if (!assignments || assignments.length === 0) {
         panel.innerHTML = `
             <div class="text-gray-500 text-center py-8">
@@ -96,7 +90,7 @@ assignments.forEach(task => {
   card.dataset.destination = 'display-area';
 //To properly display this student's task we need task.assignmentId. Otherwise the display woulnd't know which step the student is on, and would not be able to write back to the db if the student changes the step
   //card.dataset.studentId = 'studentId';
-console.log('petion',appState.query.petitioner);
+//console.log('petion',appState.query.petitioner);
 
   card.innerHTML = `
     <div>
@@ -142,7 +136,10 @@ card.addEventListener('click', (e) => { // why are we using a bespoke method ins
 
 // Toggle logic: if open, close; if closed, open (Mimics the normal petition flexmain method)
 
-
+detailPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+});
 
     
     // Call the render function directly with a custom query object
@@ -172,4 +169,10 @@ card.addEventListener('click', (e) => { // why are we using a bespoke method ins
 
         container.appendChild(card);
     });
+//scroll to displayArea  10:00 April 10
+
+
+
+
+
 }

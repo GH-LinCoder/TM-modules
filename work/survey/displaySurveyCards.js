@@ -135,6 +135,12 @@ const currentStep = e.currentTarget.dataset.currentStep;
         return;
     }
     
+detailPanel.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+});
+
+
 // new 17:30 March 29 toggle to mimic the behaviour of the pertition system. 2nd click closes the item.
         if (itemOnDisplay === assignmentId){detailPanel.innerHTML =''; itemOnDisplay = null; return;} // toggle close if same card clicked again. Mimics the normal petition flexmain method
     itemOnDisplay = assignmentId; // set the currently displayed item

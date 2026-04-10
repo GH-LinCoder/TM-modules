@@ -77,11 +77,11 @@ const enhancedContent = content;  // next line would add metadata to the note
 
   console.log('Saving note with tags:', { tags });
 
-  console.log('📥 [save] params:', params);
+  console.log('📥 [save] params:', params); // 16:40 April 7 using wrong id. Using auth id . Needs appro Id
 console.log('📥 [save] tags:', tags);
 //console.log('📥 [save] tags type:', typeof tags, 'is array?', Array.isArray(tags));
 
-  try {
+  try { //seems that authorId has been using auth when it should use appro 15:23 April 7
     const noteId = await executeIfPermitted(userId, 'insertNote', {
       author_id,
       audience_id,

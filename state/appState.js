@@ -228,7 +228,7 @@ replaced 21:57 sept 10 2025 to use petitionHistory[]*/
   // Export a function to initialize with user ID
   export function initializeState(userId) {
 console.log('initializeState with userId:', userId);
-    appState.query.userId = userId;
+    appState.query.userId = userId; //but where is userId coming from?
   }
 
 // noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 

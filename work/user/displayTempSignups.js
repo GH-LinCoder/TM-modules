@@ -20,7 +20,7 @@ export async function render(panel, query = {}) {
 async function readTableFromDb(){
      try {console.log('readTableFromDb');
     const table = await executeIfPermitted(null, 'readTempSignup', null);
-    console.log(table);
+    //console.log(table);
     return table;
   } catch (error) {
     console.error('Failed to read table from db:', error);

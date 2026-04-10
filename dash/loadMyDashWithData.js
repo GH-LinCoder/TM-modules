@@ -122,27 +122,7 @@ console.log('resolveSubject', subject,
         });
     }
 
-async function getAssignedSurveys() {
-    console.log('getAssignedSurveys()');
-    try {
-//        const studentId = this.getCurrentStudentId();
-        if (!subject.id) return [];
-        
-        // Read from task_assignments where survey_header_id is not null
-        const { data, error } = await executeIfPermitted(
-            appState.query.userId,
-            'readAssignmentsSurveys', 
-            { student_id: subject.id }
-        );
-        
-        if (error) throw error;
-        return data || [];
-        
-    } catch (error) {
-        console.error('Error getting assigned surveys:', error);
-        return [];
-    }
-}
+
 
 async function getRelationsCount() {
     console.log('getRelationsCount()');

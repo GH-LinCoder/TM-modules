@@ -9,36 +9,6 @@ import { showToast } from '../ui/showToast.js';
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 
 
-/**
-userChoices = { //amended 12:22 March 16 2026
-    userId: null,
-    dropdown: null, 
-    // Address filtering
-    address: 'self',
-    addressFilterActive: true,  // ✅ NEW - toggle state
-    
-    // Category filtering
-    categories: [],
-    categoryFilterActive: true,  // ✅ NEW - toggle state
-    
-    importance: null,
-    mode: 'more-clicks-more-notes',
-    
-    // Future
-    threadsActive: false
- */ //this doesn't have the essential data of a note
-
-
-
-function handleReply(){ // need to obtain the audience from the note that is loaded into the textarea not the value from the dropdown
-
-
-//if (!audience || audience == '') {showToast('Message audience needs to be set from click on the note you want to reply to ','warning');return;}
-
-return audience
-}
-
-
 
 export async function reactToSaveButton() {
   console.log('reactToSaveButton()');
@@ -49,12 +19,8 @@ const user = await executeIfPermitted( null,'getAuthenticatedUser', {approfileId
     return;
   }
   console.log("content found");
-
-
-
-  //all out of date March
-
-  //const userChoices = collectUserChoices();  //This is the old flat array. Out of date
+  
+//const userChoices = collectUserChoices();  //This is the old flat array. Out of date
   collectUserChoices(); // this sets the global userChoices
   
 // Convert Set → Array → Integers
@@ -62,18 +28,15 @@ const categoryIds = Array.from(userChoices.categories)
   .map(Number)
   .filter(n => Number.isInteger(n));
 
-
-
   console.log('reactToSaveButton()', { noteContent: noteContent, userChoices:userChoices });
+console.log(userChoices.categories.length, " tags found", 'userId:', user.id);//this userId is authUser
 
-console.log(userChoices.categories.length, " tags found", 'userId:', user.id);
-
-
+const authorId = userChoices.userId; //added this 16:51 April 7 to be different to 'userId'
 //////////////////////////////////////////////this happens even if not appropriate 21:19 Jan 9
   const result = await saveNoteWithTags(user.id, {
     content: noteContent,
     tags: categoryIds,
-    author_id: user.id,
+    author_id: authorId,
     audience_id:audience
   });
 

@@ -514,7 +514,7 @@ else if(page < 1) page = 1;
                 data-note-name="${note.author_name}" 
                 data-note-int="${note.sort_int}"  
                 data-note-author-id="${note.author_id}"
-                data-note-audience-id=${note.audience_id}" 
+                data-note-audience-id="${note.audience_id}" 
             
             "class="space-y-2 text-sm text-gray-800">
                   <p class="flex items-center">
