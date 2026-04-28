@@ -33,6 +33,7 @@ console.log('🔥 relateApprofiles.js: START');
 
 
 export function grantBundlePermissions(panel){
+  console.log('grantBundlePermission()')
 relationType='permission';
 category = 'bundle';
 renderPermissions(panel,{}, 'permission');
@@ -71,7 +72,7 @@ export function renderPermissions(panel,query={}){
   const approfile2Select = panel.querySelector('[data-form="approfile2Select"]');
   const relationshipSelect = panel.querySelector('[data-form="relationshipSelect"]');
   const relateBtn = panel.querySelector('[data-form="relateBtn"]');
-   informationFeedback = panel.querySelector('[data-task="information-feedback"]');
+   informationFeedback = panel.querySelector('[data-task="information-feedback-relate"]');
 
 if (informationFeedback) {
       informationFeedback.innerHTML += `<div class="p-1 text-sm bg-purple-50 border border-purple-200 rounded">
@@ -115,7 +116,7 @@ else {console.log('relationType unknown', relationType) }
   const approfile2Select = panel.querySelector('[data-form="approfile2Select"]');
   const relationshipSelect = panel.querySelector('[data-form="relationshipSelect"]');
   const relateBtn = panel.querySelector('[data-form="relateBtn"]');
- // const informationFeedback = panel.querySelector('[data-task="information-feedback"]');
+if(!informationFeedback) informationFeedback = panel.querySelector('[data-task="information-feedback-relate"]');
 
   init(panel, {
     dialog,
@@ -193,7 +194,7 @@ function getTemplateHTML() {
         </div>
         <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
           <p class="text-lg font-bold">Information:</p>
-          <p data-task="information-feedback"></p>
+          <p data-task="information-feedback-relate"></p>
         </div>
       </div>
     </div>
@@ -224,7 +225,7 @@ function init(panel, elements) {
     relateBtn,
     informationFeedback,
     relationType
-  }));
+  }));  // relationType determines if permissions or ordinary. removed ,relationType. I don't think this is ever set in the button. It's a global
 
   // Check if dealing with a BUNDLE & Update button state on change
   approfile1Select.addEventListener('change',async (e) => {await checkHandleApproIsBundle(e.target.selectedOptions[0],relateBtn, panel); 
@@ -496,6 +497,8 @@ function addClipboardItemsToDropdown(items, selectElement) {
 }
 
 function updateSubmitButtonState({ approfile1Select, approfile2Select, relationshipSelect, relateBtn }) {
+  console.log('updateSubmitButtonState()');
+  
   const approfile1Selected = approfile1Select?.value !== '';
   const relationshipSelected = relationshipSelect?.value !== '';
   const approfile2Selected = approfile2Select?.value !== '';
@@ -558,7 +561,7 @@ ofApproName: null
  try {
     relateBtn.textContent = 'Creating relationship...'; //needs different for different types
     
-if(relationType ==='ordinaryRelation'){
+if(relationType ==='ordinary'){
 
     const newRelation = await executeIfPermitted(userId, 'createApprofileRelation', {
       approfile_is:permissionTuplet.approIsId,
@@ -648,7 +651,7 @@ async function OLDhandleRelate(e, { approfile1Select, approfile2Select, relation
   try {
     relateBtn.textContent = 'Creating relationship...'; //needs different for different types
     
-if(relationType ==='ordinaryRelation'){
+if(relationType ==='ordinary'){
 
     const newRelation = await executeIfPermitted(userId, 'createApprofileRelation', {
       approfile_is,

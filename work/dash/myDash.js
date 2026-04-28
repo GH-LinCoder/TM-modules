@@ -83,10 +83,21 @@ function getTemplateHTML() {
                         <div class="bg-indigo-100 space-y-6" data-list="my-tasks" data-section="tasks-section">
                             <!-- Tasks loaded here by existing code -->
                         </div>
-                        <div class="mt-3 flex gap-2">
-                            <button class="text-sm text-blue-600 hover:underline" data-action="browse-tasks" title="Click to choose a new task for yourself. Tasks drive relations and surveys">Find a new task</button>
-                            
-                        </div>
+
+                           <div class="mt-3 flex gap-2 " data-section="tasks-section" data-action="display-task-choice" data-destination ="tasks-section"  >
+                        <h3 class="text-lg font-sm text-purple-700 mb-2">Choose more tasks 🔧</h3>
+                        <p class="text-sm text-gray-600 mb-3">See what tasks you could take on. </p>
+                    </div>
+                        <!--div class="mt-3 flex gap-2">
+                            <span class="text-sm text-blue-600 hover:underline" data-action="browse-tasks" 
+                            title="Click to choose a new task for yourself. Tasks drive relations and surveys">Find a new task
+                            </span>
+                        </div-->
+
+
+
+
+
                     </div>
 
                     <!-- Surveys List -->

@@ -200,13 +200,13 @@ document.getElementById('toggle-login-password').addEventListener('click', funct
 
 
     // Signup
-  document.getElementById('signupBtn').onclick = async (e) => {
+document.getElementById('signupBtn').onclick = async (e) => {
     e.preventDefault();
     const userName = escapeHtml(document.getElementById('user-name').value);    //added escape 22:08 Jan 30 2026
     const email = document.getElementById('signup-email').value;
     const password = document.getElementById('signup-password').value;
 if(!userName || !email || !password){
-  document.getElementById('signup-error').textContent = 'Please fill in all fields.';
+document.getElementById('signup-error').textContent = 'Please fill in all fields.';
       document.getElementById('signup-error').classList.remove('hidden');
       return;
 }
@@ -216,16 +216,15 @@ if(!userName || !email || !password){
       email,
       password });
     if (error) {
-      document.getElementById('signup-error').textContent = error.message;
-      document.getElementById('signup-error').classList.remove('hidden');
+document.getElementById('signup-error').textContent = error.message;
+document.getElementById('signup-error').classList.remove('hidden');
     } else {
-      document.getElementById('signup-success').classList.remove('hidden');
-      document.getElementById('signup-error').classList.add('hidden');
+document.getElementById('signup-success').classList.remove('hidden');
+document.getElementById('signup-error').classList.add('hidden');
       console.log(description, email, userName);//doesn't happen
 
    await writeToTempSignupTable(userName, email, description, data) //failed on deploy Jan 23, but working locally.     11:30 Jan 13. The redirect removes the console.log. For test comment out the redirect
-//    redirectTo: `${window.location.origin}/index.html`
-  //      window.location.href = '/index.html';  //<---- can't do this here, it seems to interfere with the above function
+
 }
   };
 
@@ -324,7 +323,7 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
         }
       } else {
         if (successEl) successEl.classList.remove('hidden');
-        setTimeout(() => window.location.href = '/flexload.html', 1500);
+        setTimeout(() => window.location.href = '/index.html', 1500);
       }
     }
   });
@@ -397,7 +396,6 @@ async function setupUserInitialNeeds(authId){//the parameter is auth id, it isn'
 //console.log(approId);
 //if(!approId) {console.warn("No appro profile found for auth user", authId); return;}
 
-
  const { data, error } = await supabase.rpc('grant_mydash_permissions', {p_user_id:authId});
  if (error)   console.error('approfile_relations rpc myDashPermission error',error);
    else {
@@ -407,11 +405,8 @@ async function setupUserInitialNeeds(authId){//the parameter is auth id, it isn'
         if (error2) console.error('write relations table rpc notesPermission error',error);
         else 
              console.log('Granted notes permissions.');
-            //window.location.href = '/organise.html'; //goes to myDash
+            
    }
-
-
-
 
 
 // Assign welcome task
@@ -424,6 +419,26 @@ if (taskError) {
 } else {
   console.log('Welcome task assigned');
 }
+
+// relate newUser to appro 'Humans' uuid 0a025b65-ea1a-419f-ac79-3bb57978486a
+//added 22:37 April 9
+
+    try {
+    const {  hRId, error: humanError } = await supabase.rpc('create_human_relation', {
+    p_auth_user_id: authId,
+    p_relationship: 'a member'  // The db defaults to 'a member' but passing the correct relationship text
+});
+ if (humanError) {
+            console.warn('Human relation not created:', humanError);
+        } else if (hRId) {
+            console.log('✅ Human relation created:', hRId);
+        } else {
+            console.log('ℹ️ Already processed');
+        }
+    } catch (errH) {
+        console.error('Error calling create_human_relation:', errH);
+    }
+
 
     // NEW: Create recruitment relation if recruiter was specified 19:35 March 10 2026
     try {

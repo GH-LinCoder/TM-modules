@@ -3,7 +3,7 @@ CREATE OR REPLACE FUNCTION public.grant_notes_permissions(p_user_id UUID)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
-SET search_path = public
+SET search_path =  _internal, public, auth
 AS $$
 
 DECLARE

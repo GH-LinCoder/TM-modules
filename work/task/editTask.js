@@ -6,10 +6,27 @@ import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import {icons} from '../../registry/iconList.js';
 
+/**
+ * refactor April 19 - Only have 1 dropdown. What it displays is determined by a new tab setting
+ * relate / task /survey / pay
+ * 
+ * the pay calls the new registry function readAllActivePaymentPlans() no params needed returns 'plans' 
+ * 
+ * Need to add a write to new is_visible column of automations. (So can hide answers to quizzes/tests)
+* Where do we store the html for a button template is it already designed in TABLE payment_plans has an iframe_snippet but I don't think it is actually an iframe.
+
+
+*/
 console.log('editTask.js loaded');
 
-const state = {
-  user: appState.query.userId,
+import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
+
+
+const subject = await resolveSubject();
+console.log('subject:',subject);
+// if source:'authUser' then the id is the auth user, else it could be almost anything
+const state = { //This user is not correct
+  user: subject.id,
   currentTask: null,
   currentTaskId: null, //different to editSurvey
   //questions: [], //only used in edit Survey.
@@ -21,11 +38,13 @@ const state = {
   currentAutomationId: null, //added 22:57 Nov 29
   initialStepId: null
 };
+console.log('local state', state);//has the right user April 20 15:00
+
 let stepOrder = null;
 let stepId = null; // was on line 705 used for no obvious reason to replaced 'initialStepId'
 // used lines 549, 1256, 1273 but always   as =stepId so always null !
 
-
+let activeTab = 'tasks';  // Track active tab state
 let automationsNumber = 0; //added 16:16 Nov 23
 
 export function render(panel, query = {}) {
@@ -34,6 +53,9 @@ export function render(panel, query = {}) {
   // Initialize clipboard integration
   initClipboardIntegration(panel);
   attachListeners(panel);
+
+  populateFromClipboardAuto(panel); //added 10:53 april 24
+
   //taskSelect = panel.querySelector('[data-form="taskSelect"]');//surveys has nothing here
 }
 
@@ -279,6 +301,51 @@ function populateStepSelect(panel) {
   stepSelect.appendChild(newStepOption);
 }
 
+
+
+
+// Populate the attachment dropdown for the Payments tab
+async function populatePaymentPlansDropdown(panel) {
+  console.log('populatePaymentPlansDropdown()');
+  
+  const dropdown = panel.querySelector('#attachmentSelect');
+  if (!dropdown) return;
+  
+  // Show loading state
+  dropdown.innerHTML = '<option value="">Loading plans...</option>';
+  dropdown.disabled = true;
+  
+  try {
+    // Use your EXISTING registry function (no new code needed) also done again line 800?
+//    const plans = await registry.readAllActivePaymentPlans(supabase, state.user, {});
+  const plans = await executeIfPermitted(state.user, 'readAllActivePaymentPlans', {});  
+    if (plans?.length) {
+      // Clear and add options
+      dropdown.innerHTML = '<option value="">Select a plan...</option>';
+      
+      plans.forEach(plan => {
+        const option = document.createElement('option');
+        option.value = plan.id;
+        // Match your display style: name + price
+        option.textContent = `${plan.name} (${plan.amount} ${plan.currency})`;
+        dropdown.appendChild(option);
+      });
+      
+      dropdown.disabled = false;
+      console.log(`Loaded ${plans.length} payment plans`);
+    } else {
+      dropdown.innerHTML = '<option value="">No payment plans found</option>';
+      console.warn('⚠️ No active payment plans found');
+    }
+  } catch (error) {
+    console.error('Failed to load payment plans:', error);
+    dropdown.innerHTML = '<option value="">Error loading plans</option>';
+  }
+}
+
+
+
+
 function getTemplateHTML() {
   return `
     <div id="editTaskDialog" class="edit-task-dialogue relative z-10 flex flex-col h-full" data-destination="new-panel">
@@ -395,47 +462,68 @@ function getTemplateHTML() {
 
               <!--new 19:18 Nov 12 -->
 
-<div id="automationControls" class="mt-6 bg-green-50 p-4 rounded border border-green-300">
-  <h5 class="font-medium text-green-800 mb-2">Add Step Automations</h5>
+<!-- NEW: Tab-based attachment system -->
+<div id="attachmentControls" class="mt-6 bg-green-50 p-4 rounded border border-green-300">
+  <h5 class="font-medium text-green-800 mb-3">Add Attachment</h5>
+  
+  <!-- Tabs -->
+  <div class="flex gap-2 mb-4 border-b border-gray-200 pb-2" id="attachmentTabs">
+    <button class="tab-btn px-3 py-1 text-sm rounded-t border border-transparent hover:bg-gray-100" data-tab="tasks">📋 Tasks</button>
+    <button class="tab-btn px-3 py-1 text-sm rounded-t border border-transparent hover:bg-gray-100" data-tab="surveys">📝 Surveys</button>
+    <button class="tab-btn px-3 py-1 text-sm rounded-t border border-transparent hover:bg-gray-100" data-tab="appros">🔗 Connections</button>
+    <button class="tab-btn px-3 py-1 text-sm rounded-t border border-transparent hover:bg-gray-100" data-tab="payments">💳 Payments</button>
+  </div>
+  
+  <!-- Dropdown + options -->
+  <div class="mb-3">
+    <label for="attachmentSelect" class="block text-sm font-medium text-gray-700 mb-1">Select:</label>
+    <select id="attachmentSelect" class="w-full p-2 border rounded">
+      <option value="">Select an item...</option>
+    </select>
+  </div>
+  
+  <!-- Relationships dropdown (only for appros tab) -->
+  <div id="relationshipSelector" class="mb-3 hidden">
+    <label for="relationshipSelect" class="block text-sm font-medium text-gray-700 mb-1">Relationship:</label>
+    <select id="relationshipSelect" class="w-full p-2 border rounded">
+      <option value="">Select relationship...</option>
+    </select>
+  </div>
+  
+  <!-- Visibility checkbox (hidden for payments) -->
+  <label id="visibilityCheckbox" class="flex items-center gap-2 mb-3">
+    <input type="checkbox" name="is_visible" checked class="rounded border-gray-300">
+    <span class="text-sm text-gray-600">Show to users (uncheck to hide)</span>
+  </label>
 
-  <div class="mb-4">
-    <label for="taskAutomationSelect" class="block text-sm font-medium text-gray-700">Assign a Task</label>
-    <select id="taskAutomationSelect" class="w-full p-2 border rounded">
-      <option value="">Select a task to assign</option>
-    </select>
-    <button type="button" id="saveTaskAutomationBtn" class="mt-2 bg-purple-600 text-white py-1 px-3 rounded hover:bg-purple-700 opacity-50" style="pointer-events: none;">
-      Save Task Automation
-    </button>
-  </div>
-<!-- Assign Survey Section -->
-              <div class="mt-4 p-3 bg-white rounded border mb-4">
-                <h5 class="font-medium text-gray-800 mb-2">Assign a survey</h5>
-                <div class="flex gap-2">
-                  <select id="surveyAutomationSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                    <option value="">Select a survey to assign</option>
-                  </select>
-                </div>
-                  <button type="button" id="saveSurveyAutomationBtn" class="bg-purple-400 text-white py-1 px-3 rounded hover:bg-blue-700 opacity-50" style="pointer-events: none;">
-                    Save Survey Assignment automation
-                  </button>
-              </div>    
-  <div>
-    <label for="approfileAutomationSelect" class="block text-sm font-medium text-gray-700">Relate to a Category</label>
-    <select id="approfileAutomationSelect" class="w-full p-2 border rounded mb-2">
-      <option value="">Select an appro</option>
-    </select>
-    <select id="relationshipAutomationSelect" class="w-full p-2 border rounded mb-2">
-      <option value="">Select relationship</option>
-      <option value="a member">a member</option>
-      <option value="customer">customer</option>
-      <option value="explanation">explanation</option>
-    </select>
-    <button type="button" id="saveRelationshipAutomationBtn" class="bg-green-600 text-white py-1 px-3 rounded hover:bg-green-700 opacity-50" style="pointer-events: none;">
-      Save Relationship Automation
-    </button>
-  </div>
+
+
+
+
+  <!-- Tasks tab dropdown -->
+<select id="taskAutomationSelect" class="w-full p-2 border rounded">
+  <option value="">Select a task...</option>
+</select>
+
+<!-- Surveys tab dropdown -->
+<select id="surveyAutomationSelect" class="w-full p-2 border rounded">
+  <option value="">Select a survey...</option>
+</select>
+
+<!-- Approfiles tab dropdown -->
+<select id="approfileAutomationSelect" class="w-full p-2 border rounded">
+  <option value="">Select an approfile...</option>
+</select>
+
+
+
+  
+  
+  <!-- Save button -->
+  <button type="button" id="saveAttachmentBtn" class="w-full bg-purple-600 text-white py-2 px-4 rounded hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
+    Add Attachment
+  </button>
 </div>
-
 
 
 <div id="automationSection" class="mt-6">
@@ -466,7 +554,7 @@ function attachListeners(panel) {
     console.log('attachListeners()');
   const nameInput = panel.querySelector('#taskName');
   const descriptionInput = panel.querySelector('#taskDescription');
-  const urlInput = panel.querySelector('#taskUrl');
+  //const urlInput = panel.querySelector('#taskUrl');
   const stepNameInput = panel.querySelector('#stepName');
   const stepDescriptionInput = panel.querySelector('#stepDescription');
   const stepSelect = panel.querySelector('#stepSelect');
@@ -535,7 +623,7 @@ stepSelect?.addEventListener('change', (e) => {
     }
   });
 
-  // Button listeners
+  // Button listeners - are these redunant?
   saveTaskBtn?.addEventListener('click', (e) => handleTaskUpdate(e, panel));
   saveStepBtn?.addEventListener('click', (e) => handleStepUpdate(e, panel));
   panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
@@ -562,57 +650,99 @@ stepSelect?.addEventListener('change', (e) => {
   
     loadTaskSteps(panel, state.currentTaskId);
   });
-//end new 17:39 oct 4  
-const surveySelect = panel.querySelector('#surveyAutomationSelect');
-const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
-
-surveySelect?.addEventListener('change', () => {
-  if (surveySelect.value) {
-    saveSurveyAutomationBtn.disabled = false;
-    saveSurveyAutomationBtn.style.pointerEvents = 'auto';
-    saveSurveyAutomationBtn.classList.remove('opacity-50');
-  } else {
-    saveSurveyAutomationBtn.disabled = true;
-    saveSurveyAutomationBtn.style.pointerEvents = 'none';
-    saveSurveyAutomationBtn.classList.add('opacity-50');
+// ONE click listener on save button:
+panel.querySelector('#saveAttachmentBtn')?.addEventListener('click', async (e) => {
+  e.stopPropagation();
+  
+  // ✅ Get active tab
+//  const activeTab = panel.querySelector('#attachmentTabs .tab-btn.border-green-600')?.dataset.tab;
+   
+  // ✅ Read from the correct dropdown based on active tab
+  let selectedValue = null;
+  let selectedDropdown = null;
+  
+  if (activeTab === 'payments') {
+    selectedDropdown = panel.querySelector('#attachmentSelect');
+  } else if (activeTab === 'tasks') {
+    selectedDropdown = panel.querySelector('#taskAutomationSelect');
+  } else if (activeTab === 'surveys') {
+    selectedDropdown = panel.querySelector('#surveyAutomationSelect');
+  } else if (activeTab === 'appros') {
+    selectedDropdown = panel.querySelector('#approfileAutomationSelect');
+  }
+  
+  selectedValue = selectedDropdown?.value;
+  console.log('selected Value:',selectedValue, 'active tab:',activeTab);
+  // ✅ Validate: Must have a selection in the ACTIVE tab
+  if (!selectedValue) {
+    showToast('Please select an item', 'error');
+    return;
+  }
+  
+  // ✅ Route to correct handler
+  if (activeTab === 'payments') {
+    await handlePaymentAttachmentSubmit(e, panel);
+  } else if (activeTab === 'tasks') {
+    await handleTaskAutomationSubmit(e, panel);
+  } else if (activeTab === 'surveys') {
+    await handleSurveyAutomationSubmit(e, panel);
+  } else if (activeTab === 'appros') {
+    await handleRelationshipAutomationSubmit(e, panel);
   }
 });
 
-const taskAutoSelect = panel.querySelector('#taskAutomationSelect');
-const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
+//new april 19
+  // Payment plan selection listener (new)
+  const attachmentSelect = panel.querySelector('#attachmentSelect');
+  const saveAttachmentBtn = panel.querySelector('#saveAttachmentBtn');
+  
+  attachmentSelect?.addEventListener('change', () => {
+    if (attachmentSelect.value) {
+      saveAttachmentBtn.disabled = false;
+    } else {
+      saveAttachmentBtn.disabled = true;
+    }
+  });
 
-taskAutoSelect?.addEventListener('change', () => {
-  if (taskAutoSelect.value) {
-    saveTaskAutomationBtn.disabled = false;
-    saveTaskAutomationBtn.style.pointerEvents = 'auto';
-    saveTaskAutomationBtn.classList.remove('opacity-50');
-  } else {
-    saveTaskAutomationBtn.disabled = true;
-    saveTaskAutomationBtn.style.pointerEvents = 'none';
-    saveTaskAutomationBtn.classList.add('opacity-50');
+// ✅ ADD THESE THREE CHANGE LISTENERS (after the payments listener):
+
+// Task dropdown change listener
+panel.querySelector('#taskAutomationSelect')?.addEventListener('change', (e) => {
+  const saveBtn = panel.querySelector('#saveAttachmentBtn');
+  if (saveBtn) {
+    saveBtn.disabled = !e.target.value;
   }
 });
 
-const approSelect = panel.querySelector('#approfileAutomationSelect');
-const saveRelateAutomationBtn = panel.querySelector('#saveRelationshipAutomationBtn');
+// Survey dropdown change listener
+panel.querySelector('#surveyAutomationSelect')?.addEventListener('change', (e) => {
+  const saveBtn = panel.querySelector('#saveAttachmentBtn');
+  if (saveBtn) {
+    saveBtn.disabled = !e.target.value;
+  }
+});
 
-approSelect?.addEventListener('change', () => {
-  if (approSelect.value) {
-    saveRelateAutomationBtn.disabled = false;
-    saveRelateAutomationBtn.style.pointerEvents = 'auto';
-    saveRelateAutomationBtn.classList.remove('opacity-50');
-  } else {
-    saveRelateAutomationBtn.disabled = true;
-    saveRelateAutomationBtn.style.pointerEvents = 'none';
-    saveRelateAutomationBtn.classList.add('opacity-50');
+// Appro dropdown change listener
+panel.querySelector('#approfileAutomationSelect')?.addEventListener('change', (e) => {
+  const saveBtn = panel.querySelector('#saveAttachmentBtn');
+  if (saveBtn) {
+    saveBtn.disabled = !e.target.value;
   }
 });
 
 
- //new 19:25 Nov 12
-  panel.querySelector('#saveTaskAutomationBtn')?.addEventListener('click', (e) => handleTaskAutomationSubmit(e, panel));
-  panel.querySelector('#saveSurveyAutomationBtn')?.addEventListener('click', (e) => handleSurveyAutomationSubmit(e, panel));
-  panel.querySelector('#saveRelationshipAutomationBtn')?.addEventListener('click', (e) => handleRelationshipAutomationSubmit(e, panel));
+// april 19 reinstated 12:06 April 24 - but with this there is a false 'please select payment plan' toast
+
+  panel.querySelectorAll('#attachmentTabs .tab-btn').forEach(btn => {
+    btn?.addEventListener('click', (e) => {
+      const tabId = e.currentTarget.dataset.tab;
+      switchAttachmentTab(panel, tabId);
+    });
+  });
+
+
+  // Initialize with Tasks tab active
+  switchAttachmentTab(panel, 'tasks');
 
 }
 //new 19:40 Nov 12
@@ -637,14 +767,14 @@ async function handleTaskAutomationSubmit(e, panel) {
     const selectedOption = taskSelect?.options[taskSelect.selectedIndex];
     const taskCleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
     
-    const saveTaskAutomationBtn = panel.querySelector('#saveTaskAutomationBtn');
-    if (!saveTaskAutomationBtn) {
+    const saveAttachmentBtn = panel.querySelector('#saveAttachmentBtn');
+    if (!saveAttachmentBtn) {
         showToast('Save button not found', 'error');
         return;
     }
     
-    saveTaskAutomationBtn.disabled = true;
-    saveTaskAutomationBtn.textContent = 'Saving...'; //? 
+    saveAttachmentBtn.disabled = true;
+    saveAttachmentBtn.textContent = 'Saving...'; //? 
     automationsNumber++;    
     
     const managerSelect = panel.querySelector('#managerAutomationSelect'); 
@@ -693,12 +823,12 @@ addInformationCard({
         ); 
 // we don't know the currentStepId !!! 
 
-
+//regisrty needs     const { source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number } = payload;
 const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTask', { 
        source_task_step_id : state.currentStepId, //works, but in survey it is undefined  12:18 Nov 30
        //student_id: state.user, //the person being assigned to the task that person is not known when editing the automation.
        manager_id: managerData.managerId, // needs to be from the dropdown    
-       task_header_id: selectedTaskId,
+       target_task_header_id: selectedTaskId,
             task_step_id: state.initialStepId, // 
             name: taskCleanName || 'Unknown Task', // 
             automation_number: automationsNumber
@@ -721,9 +851,102 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTa
          automationsNumber--; // ROLLBACK: Decrement on failure
     }
     
-    saveTaskAutomationBtn.disabled = false;
-    saveTaskAutomationBtn.textContent = 'Save Task';
+    saveAttachmentBtn.disabled = false;
+    saveAttachmentBtn.textContent = 'Save Task';
 }
+
+
+async function handlePaymentAttachmentSubmit(e, panel) {
+  console.log('handlePaymentAttachmentSubmit()');
+
+  console.log('🚨 PAYMENT HANDLER CALLED:', {
+    activeTab,
+    caller: 'handlePaymentAttachmentSubmit',
+    stack: new Error().stack?.split('\n').slice(1, 3).join('\n')
+  });
+
+
+  console.count('UI_TRIGGER'); // Log 1
+  e.preventDefault();
+    e.stopPropagation();
+  
+
+
+  const attachmentSelect = panel.querySelector('#attachmentSelect');
+  const selectedPlanId = attachmentSelect?.value;
+  
+  const saveAttachmentBtn = panel.querySelector('#saveAttachmentBtn');
+  if (!saveAttachmentBtn) {
+    showToast('Save button not found', 'error');
+    return;
+  }
+  
+  if (!selectedPlanId) {
+    showToast('Please select a payment plan', 'error');
+    return;
+  }
+  
+  // Disable button during save
+  saveAttachmentBtn.disabled = true;
+  saveAttachmentBtn.textContent = 'Saving...';
+  
+  try {
+    // Get the selected plan details (for display) - also done on line 320?
+    const plans = await executeIfPermitted(state.user, 'readAllActivePaymentPlans', {});
+    const selectedPlan = plans.find(p => p.id === selectedPlanId);
+    const planName = selectedPlan?.name || 'Unknown Plan';
+    
+    // Determine target_type: 'task' for header, 'task_step' for step
+    const targetType = state.currentStepId ? 'task_step' : 'task';
+    const targetId = state.currentStepId || state.currentTaskId;
+    
+    // Call your RPC with hardcoded registry ID (no extra lookup needed)
+    const result = await executeIfPermitted(state.user, 'createAttachmentPaymentButton', {//state.user wrong id
+      auto_registry_id: 'd1f2028e-95fa-4a9b-ae6f-ff4753d5913d',  
+      payment_plan_id: selectedPlanId,
+      planName:planName,
+      target_type: targetType,
+      target_id: targetId,
+      source_task_header_id: state.currentTaskId,
+      source_task_step_id: state.currentStepId || null,
+      is_visible: true
+    });
+    
+    // Show confirmation (matches your existing pattern)
+    addInformationCard({
+      'name': `${planName?.substring(0, 60) || 'Unknown Plan'}...`,
+      'type': 'payment_button',
+      'step': state.currentStepId || 'header',
+      'planId': `${selectedPlanId?.substring(0, 8) || 'unknown'}...`,
+      'id': `${result.id?.substring(0, 8) || 'unknown'}...`
+    });
+    
+    showToast('Payment attachment saved successfully!');
+    
+    // Reload automations display -- not sure why this is looking for the step that the student
+  
+   renderTaskStructure(panel);
+  
+    
+  } catch (error) {
+    console.error('Failed to save payment attachment:', error);
+    showToast('Failed to save: ' + error.message, 'error');
+  }
+  
+  // Re-enable button
+  saveAttachmentBtn.disabled = false;
+  saveAttachmentBtn.textContent = 'Add Attachment';
+  
+  // Reset dropdown (reuse existing variable)
+  if (attachmentSelect) {
+    attachmentSelect.value = '';
+  }
+}
+
+
+
+
+
 
 function addInformationCard(stepData) { 
   console.log('addInformationCard()');
@@ -800,14 +1023,14 @@ async function handleSurveyAutomationSubmit(e, panel) {
   const selectedOption = surveySelect?.options[surveySelect.selectedIndex];
   const surveyCleanName = selectedOption?.textContent?.replace(' (clipboard)', '');
   
-  const saveSurveyAutomationBtn = panel.querySelector('#saveSurveyAutomationBtn');
-  if (!saveSurveyAutomationBtn) {
+  const saveAttachmentBtn = panel.querySelector('#saveAttachmentBtn');
+  if (!saveAttachmentBtn) {
       showToast('Save button not found', 'error');
       return;
   }
   
-  saveSurveyAutomationBtn.disabled = true;
-  saveSurveyAutomationBtn.textContent = 'Saving...'; //? 
+  saveAttachmentBtn.disabled = true;
+  saveAttachmentBtn.textContent = 'Saving...'; //? 
   automationsNumber++;    
   
   //this could be a function
@@ -856,8 +1079,8 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
      showToast('Failed to save survey automation: ' + error.message, 'error');
       automationsNumber--; // ROLLBACK: Decrement on failure
  }
-  saveSurveyAutomationBtn.disabled = false;
-  saveSurveyAutomationBtn.textContent = 'Save Survey';
+  saveAttachmentBtn.disabled = false;
+  saveAttachmentBtn.textContent = 'Save Survey';
 }
 
 
@@ -871,7 +1094,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
     e.preventDefault();
     
     const approfileSelect = panel.querySelector('#approfileAutomationSelect'); // Changed ID to match task module
-    const relationshipSelect = panel.querySelector('#relationshipAutomationSelect'); // Changed ID to match task module
+    const relationshipSelect = panel.querySelector('#relationshipSelect'); // Changed ID to match task module
     
     const selectedApproId = approfileSelect?.value;
     // Get the selected option text
@@ -1012,6 +1235,7 @@ async function handleTaskUpdate(e, panel) {
     console.log('handleStepUpdate');
     if (!state.currentTaskId || !state.user) {
       showToast('Task not loaded or user missing', 'error');
+      console.log('state',state);
       return;
     }
   
@@ -1100,8 +1324,8 @@ enableAutomationControls(panel);
 
   function enableAutomationControls(panel) {
     console.log('enableAutomationControls()');
-    const taskBtn = panel.querySelector('#saveTaskAutomationBtn');
-    const relBtn = panel.querySelector('#saveRelationshipAutomationBtn');
+    const taskBtn = panel.querySelector('#saveAttachmentBtn');
+    const relBtn = panel.querySelector('#saveAttachmentBtn');
   
     [taskBtn, relBtn].forEach(btn => {
       if (btn) {
@@ -1138,7 +1362,7 @@ const step = state.steps.find(s => s.id === clickedStepId); //extract this steps
 
 
 async function handleDeleteAutomationButton(panel, automationId){
-  const deletedBy = state.user;
+  const deletedBy = state.user;  //WRONG
   console.log('handleDelete  button of', automationId, 'by', deletedBy);
   try {
     await executeIfPermitted(state.user, 'softDeleteAutomation', { automationId, deletedBy });
@@ -1342,9 +1566,49 @@ else if (autoType ==='survey') {
 else if (autoType==='relate') {
       p.innerHTML = `automation🚂🖇️ <strong>Relation:</strong>  <strong>Respondent ${autoApproIs}</strong>[${autoApproIs ||'id?'} ] is → ${autoRelationship} → of <strong> ${auto.name}</strong>[id:${autoOfAppro}] "${auto.sourceSourcestep}"` ;
     } 
+else if (autoType === 'payment') {
+  // Payment button - render interactive button, not static card
+  //const planId = auto.target_data?.target?.header || auto.payment_plan_id;
+  
+  // For display: show plan name (fetch from cache or use fallback)
+ const planName = auto.name || 'Payment Plan';
+  
+  p.className = 'clickable-automation hover:scale-105 transition-transform bg-indigo-50 border-l-4 border-indigo-500 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
+  p.innerHTML = `
+    <div class="flex items-center gap-2">
+      <span class="text-gray-700">💳${(planName)}</span>
+    </div>
+  `;
+  /*
+  // Add the actual clickable button below the card
+  const buttonContainer = document.createElement('div');
+  buttonContainer.className = 'ml-2 mt-2';
+  
+  // Build checkout URL with runtime user info
+  // Note: variantId comes from payment_plans.provider_plan_id (fetched separately)
+  // For now, we'll use a placeholder - you can fetch plan details if needed
+  const checkoutUrl = `#`;  // Will be updated after fetching plan details
+  
+  buttonContainer.innerHTML = `
+    <a href="${checkoutUrl}" 
+       target="_blank" 
+       rel="noopener noreferrer"
+       class="inline-flex items-center px-3 py-1.5 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition text-xs font-medium"
+       data-plan-id="${planId}"
+       data-automation-id="${auto.id}">
+       Buy Now
+    </a>
+  `;
+  
+  // Store planId for later URL resolution
+  buttonContainer.dataset.planId = planId;
+  
+  p.appendChild(buttonContainer);
+  */
+} 
 else {
-      p.innerHTML = `❓ <strong>Not understood:</strong> ${JSON.stringify(auto)} "${autoSourceStep}"`;
-    }
+  p.innerHTML = `❓ <strong>Not understood:</strong> ${JSON.stringify(auto)} "${autoSourceStep}"`;
+}
 
 
     /*
@@ -1372,4 +1636,139 @@ else {
 
     container.appendChild(row);
   });
+    // ... end of automations.forEach ...
+  
+  // Resolve payment button URLs (async, but doesn't block render)
+  resolvePaymentButtonUrls(container);
+
+
 }
+
+async function populateRelationshipsDropdown(panel) {
+  console.log('populateRelationshipsDropdown()');
+  
+  const dropdown = panel.querySelector('#relationshipSelect');
+  if (!dropdown) return;
+  
+  dropdown.innerHTML = '<option value="">Loading relationships...</option>';
+  dropdown.disabled = true;
+  
+  try {
+    // ✅ Use existing registry function:
+    const relationships = await executeIfPermitted(state.user, 'readRelationships', {});
+    
+    if (relationships?.length) {
+      dropdown.innerHTML = '<option value="">Select relationship...</option>';
+      
+      relationships.forEach(rel => {
+        const option = document.createElement('option');
+        option.value = rel.name;  // e.g., '(]member_of[)'
+        option.textContent = rel.name;
+        dropdown.appendChild(option);
+      });
+      
+      dropdown.disabled = false;
+      console.log(`Loaded ${relationships.length} relationships`);
+    } else {
+      dropdown.innerHTML = '<option value="">No relationships found</option>';
+    }
+  } catch (error) {
+    console.error('Failed to load relationships:', error);
+    dropdown.innerHTML = '<option value="">Error loading relationships</option>';
+  }
+}
+
+
+
+
+// Resolve checkout URLs for payment buttons after render
+async function resolvePaymentButtonUrls(container) {
+  const buttons = container.querySelectorAll('[data-plan-id]');
+  if (!buttons.length) return;
+  
+  // Fetch all plans once
+  const plans = await executeIfPermitted(state.user, 'readAllActivePaymentPlans', {});
+  
+  buttons.forEach(btn => {
+    const planId = btn.dataset.planId;
+    const plan = plans.find(p => p.id === planId);
+    
+    if (plan?.provider_plan_id) {
+      const variantId = plan.provider_plan_id;
+      const approId = state.user;  // Runtime user ID
+      const checkoutUrl = `https://myorg.lemonsqueezy.com/checkout/buy/${variantId}?embed=1&checkout[custom][appro_id]=${approId}`;
+      btn.href = checkoutUrl;
+      
+      // Update button text with plan details
+      btn.textContent = `${plan.name} - ${plan.amount} ${plan.currency}`;
+    }
+  });
+}
+
+
+
+
+
+
+//April 19
+// Simple tab switcher for attachments - UI only, no data loading yet
+async function switchAttachmentTab(panel, tabId) {
+  console.log('switchAttachmentTab:', tabId);
+  activeTab = tabId; 
+  // ... existing visual tab button update code ...
+  
+  // ✅ Show/hide dropdowns based on active tab
+  const dropdowns = {
+    'tasks': panel.querySelector('#taskAutomationSelect'),
+    'surveys': panel.querySelector('#surveyAutomationSelect'),
+    'appros': panel.querySelector('#approfileAutomationSelect'),
+    'payments': panel.querySelector('#attachmentSelect')
+  };
+  
+  // Hide all, show active
+  Object.values(dropdowns).forEach(dd => {
+    if (dd) dd.classList.add('hidden');
+  });
+  if (dropdowns[tabId]) {
+    dropdowns[tabId].classList.remove('hidden');
+    dropdowns[tabId].disabled = false;
+  }
+  
+  // ✅ ONLY reset/populate the payments dropdown (it uses #attachmentSelect)
+  if (tabId === 'payments') {
+    const dropdown = panel.querySelector('#attachmentSelect');
+    if (dropdown) {
+      dropdown.innerHTML = '<option value="">Loading plans...</option>';
+      dropdown.disabled = true;
+    }
+    await populatePaymentPlansDropdown(panel);  // ✅ Already exists
+  } else if (tabId === 'appros') {
+  const approfiles = getClipboardItems({ as: 'other' });
+  addClipboardItemsToDropdown(approfiles, panel.querySelector('#approfileAutomationSelect'));
+  
+  // ✅ Load relationships from DB using existing function
+  await populateRelationshipsDropdown(panel);
+  
+  // Show relationship selector
+  panel.querySelector('#relationshipSelector')?.classList.remove('hidden');
+}
+  // ✅ For other tabs: dropdowns already populated by populateFromClipboardAuto() elsewhere
+  
+  // Show/hide relationship selector (only for appros)
+  const relationshipSelector = panel.querySelector('#relationshipSelector');
+  if (relationshipSelector) {
+    relationshipSelector.classList.toggle('hidden', tabId !== 'appros');
+  }
+  
+  // Show/hide visibility checkbox (hidden for payments)
+  const visibilityCheckbox = panel.querySelector('#visibilityCheckbox');
+  if (visibilityCheckbox) {
+    visibilityCheckbox.style.display = (tabId === 'payments') ? 'none' : 'flex';
+  }
+  
+  // Disable save button until item selected
+  const saveBtn = panel.querySelector('#saveAttachmentBtn');
+  if (saveBtn) saveBtn.disabled = true;
+}
+
+

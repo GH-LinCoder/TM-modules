@@ -5,6 +5,12 @@ export const appState = {
 
 isDevMode:true,
 
+paymentProvider:{
+  platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4',
+  approId:'8f9e5a4d-b9ea-458a-b7a6-843c7022e8d5',
+  name:'Lemon Squeezy',
+} , // store data the customer's chosen payment provider as set in TABLE platform_providers
+
 clipboard:[],
 
     query: {

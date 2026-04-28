@@ -1,5 +1,5 @@
 import { appState } from '../../state/appState.js';
-//import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
+import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 //import { showToast } from '../../ui/showToast.js';
 //import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { onClipboardUpdate } from '../../utils/clipboardUtils.js';
@@ -42,7 +42,8 @@ export async function render(panel, query = {}) { //Called from loader (standard
   panel.innerHTML = getTemplateHTML();
 
 respondToClipboardChange();
-displayAppro();
+await displayAppro();
+
  }
  
 
@@ -57,8 +58,6 @@ if(!subject) {console.log('Error - no subject returned'); return}
   const NON_PROFILE_TYPES = ['relations', 'surveys', 'tasks', 'assignments'];
   if (NON_PROFILE_TYPES.includes(subject.type)) {return;} //we only display appros.
 
-
-
 console.log('profiles -resolveSubject', subject,
    'auth:', subject.id,
     'appro:',subject.approUserId,
@@ -67,7 +66,21 @@ console.log('profiles -resolveSubject', subject,
     'created',subject.created_at,
     'type:',subject.type,
     'source:',subject.source);
+// function needs userApproId
+const approUserId = subject.approUserId;
+const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans',{approUserId});
 
+/** the registry returns
+ .from('user_active_purchases')
+    .select(`
+      plan_name,
+      plan_description,
+      status
+    `)
+    .eq('app_profile_id', approUserId)
+    .in('status', ['active', 'trialing', 'past_due']);
+ * 
+ */
 
             // Update profile card
             const initialsEl = document.querySelector('[data-user="initials"]');
@@ -80,16 +93,84 @@ console.log('profiles -resolveSubject', subject,
             const authIdEl = document.querySelector('[data-user="auth-id"]');
             
             const createdAtEl = document.querySelector('[data-user="created-at"]');
-            const lastLoginEl = document.querySelector('[data-user="last-login"]'); 
+
+            const badgesEl = document.querySelector('[data-user="badges"]'); 
 
                         const typeEl = document.querySelector('[data-user="type"]');
             const sourceEl = document.querySelector('[data-user="source"]');
 
-            
+            //email and authId should be toggled. Normally concealed, but click to reveal. This is so won't be exposed if we do a screen video or if used in a public place
+            //But April 14, just partly hidden.
             if (nameEl) nameEl.textContent = subject.name || 'Choose a user name';
-            if (emailEl) emailEl.textContent = subject.email || 'No email?';
             if (approIdEl) approIdEl.textContent = subject.approUserId;
-            if (authIdEl) authIdEl.textContent = subject.id;
+            
+           
+            
+// After your existing element selections:
+//nst emailEl = panel.querySelector('[data-user="email"]');
+//nst authIdEl = panel.querySelector('[data-user="auth-id"]');
+
+// ... set name, etc. ...
+console.log('subject.id',subject.id);
+// CONCEAL EMAIL + AUTH ID: Click container to reveal both
+if (emailEl && authIdEl) {
+  // Store full values
+  const fullEmail = subject.email || 'No email';
+  const fullAuthId = subject.id || 'No auth ID';
+  console.log('fullAuthId',fullAuthId);
+  // Obscure initially
+  emailEl.textContent = '••••@••••.•••';
+  authIdEl.textContent = '••••••••-••••-••••-••••-••••••••••••';
+
+const text = renderActivePlans(activePlans);  
+//console.log(text);
+badgesEl.innerHTML = text;
+  
+  // Find a common parent to wrap (or create one)
+  // The email and auth-id spans are siblings inside .flex.items-center
+  const container = emailEl.closest('.flex.items-center');
+  
+  if (container) {
+    container.classList.add('cursor-pointer', 'group');
+    container.title = 'Click to reveal email and auth ID';
+    
+    // Add subtle hint (insert after auth-id)
+    const hintEl = document.createElement('span');
+    hintEl.className = 'text-xs text-gray-400 group-hover:text-gray-600 transition ml-1';
+    hintEl.textContent = '[ show 👁️ ]';
+    hintEl.title = 'Click to reveal';
+     emailEl.parentNode?.insertBefore(hintEl, emailEl);
+    // Change hint classes: This hides the 'show' message. Fades in on hover. Probably not good.
+//hintEl.className = 'text-xs text-gray-300 group-hover:text-gray-600 transition mr-1 opacity-0 group-hover:opacity-100';
+    // Toggle logic
+    let isRevealed = false;
+    container.addEventListener('click', (e) => {
+      // Avoid triggering if clicking other interactive elements
+      if (e.target.closest('[data-action], button, a')) return;
+      
+      e.stopPropagation();
+      isRevealed = !isRevealed;
+      
+      if (isRevealed) {
+        emailEl.textContent = fullEmail;
+        authIdEl.textContent = fullAuthId;
+        hintEl.textContent = '[ hide ❎  ]';
+        hintEl.title = 'Click to hide';
+        container.classList.add('bg-yellow-50', 'px-1', 'rounded');
+      } else {
+        emailEl.textContent = '••••@••••.•••';
+        authIdEl.textContent = '••••••••-••••-••••-••••-••••••••••••';
+        hintEl.textContent = '[ show 👁️ ]';
+        hintEl.title = 'Click to reveal';
+        container.classList.remove('bg-yellow-50', 'px-1', 'rounded');
+      }
+    });
+  }
+}
+
+
+
+            
             if (createdAtEl) createdAtEl.textContent = subject.created_at?.substring(0, 10) || 'error';
            // if (lastLoginEl) lastLoginEl.textContent = subject.lastLogin_at.substring(0, 10) || 'error';
             
@@ -114,17 +195,79 @@ console.log('profiles -resolveSubject', subject,
 
 
 
-//not called
-function attachListener(panel){
-  console.log('attachListeners()');
-const updateBtn = panel.querySelector('#updateBtn');
-//console.log('panel,profile,updateBtn',panel, updateBtn);
-if(!updateBtn) {console.log('no button'); return};
 
-updateBtn.addEventListener('click', ()=> updateAppro() );
- //console.log('updateAppro');
-//put the subjectId on the clipboard and load the editAppro module.
+
+function renderActivePlans(plans) {
+  console.log('renderActivePlans', plans);
+  
+  if (!plans?.length) return '';  // Return empty string, not undefined
+  
+  // Build the container
+  const container = document.createElement('div');
+  container.className = 'mt-4 space-y-2';
+  container.innerHTML = `<p class="text-xs font-medium text-gray-600">🏆 <b>Badges</b></p>`;
+  
+  // Build HTML for each plan (view columns: plan_name, current_period_end, status, amount, currency, provider_name)
+  const planHTML = plans.map(plan => {
+    // ✅ Use view column names (snake_case)
+    const planName = plan.plan_name || 'Unknown Plan';
+    const periodEnd = plan.current_period_end;  // ← Was: plan.endDate
+    const status = plan.status;
+    const amount = plan.amount;
+    const currency = plan.currency;
+    const provider = plan.provider_name;
+    
+    // Determine if active and calculate days until renewal
+    const isActive = status === 'active';
+    const statusLabel = isActive ? 'Active' : status?.charAt(0).toUpperCase() + status?.slice(1) || 'Unknown';
+    
+    const daysUntil = periodEnd 
+      ? Math.floor((new Date(periodEnd) - new Date()) / (1000 * 60 * 60 * 24))
+      : null;
+    
+    // Build badge text
+    let text = `<span class="font-semibold text-indigo-700">${escapeHtml(planName)}</span>`;
+    
+    // Add price if available
+    if (amount != null && currency) {
+      text += `<span class="text-gray-500 ml-2">• ${currency} ${amount}</span>`;
+    }
+    
+    // Add status
+    text += `<span class="text-gray-500 ml-2">• ${statusLabel}</span>`;
+    
+    // Add renewal countdown if active and has end date
+    if (daysUntil != null && daysUntil > 0 && isActive) {
+      text += `<span class="text-gray-400 ml-1">(${daysUntil}d)</span>`;
+    }
+    
+    // Add provider name (optional, subtle)
+    if (provider) {
+      text += `<span class="text-gray-300 ml-2 text-xs">via ${escapeHtml(provider)}</span>`;
+    }
+    
+    // Return the HTML for ONE plan
+    return `<div class="px-3 py-2 bg-indigo-50 border border-indigo-200 rounded text-sm">${text}</div>`;
+  }).join('');  // Join all plan HTML strings
+  
+  // Add all plans to container
+  container.innerHTML += planHTML;
+  
+  // Return the full HTML string
+  return container.outerHTML;
 }
+
+// Helper: Escape HTML to prevent XSS
+function escapeHtml(str) {
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+
+
+
 
 
 function respondToClipboardChange(){  // it doesn't instantly respond. Need to refresh the myDash to show clipboard content
@@ -193,13 +336,8 @@ function getTemplateHTML() {
                                 <span >auth🆔<span data-user="auth-id"> ???? ?? ??</span></span>
 
                                 <span ><b>Joined:</b><span data-user="created-at"> ???? ?? ??</span></span>
-                                <span ><b>Last login:</b><span data-user="last-login"> ???? ?? ??</span></span>
-                                
-                               
-                                <span >type: <span data-user="type"> ???? ?? ??</span></span>
-                                <span >source: <span data-user="source"> ???? ?? ??</span></span>
-
-
+                                       
+                                <span data-user="badges"></span>                        
                  <!--button id="updateBtn" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors"  data-action='edit-approfile-dialogue' data-destination='profile-section'>
                 Click for the edit form
               </button-->

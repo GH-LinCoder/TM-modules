@@ -239,14 +239,31 @@ async function renderRules(panel) {
 //  const data = await loadPermissionRelations(state.subjectId);// why call that function that just calls another function?
 
 let rowsOfRelationData =null;
- try{
-    rowsOfRelationData = await executeIfPermitted(state.userId, 'readPermissionRelationsById', { approfileId: state.subjectId });
-    }catch (error) { console.error('loadPermissionRelations failed:', error); throw error; // let displayByMode handle it
-               }
-//console.log('rowsOfRelationData:',rowsOfRelationData);
+try {
+    // Capture the RPC return object (which includes {success, is, of, iconMap})
+    const result = await executeIfPermitted(state.userId, 'readPermissionRelationsById', { 
+      approfileId: state.subjectId 
+    });
+
+    // 1. Check if the RPC actually succeeded
+    if (result && result.success) {
+      rowsOfRelationData = result; 
+    } else {
+      console.warn('Permission denied or RPC failed:', result?.hint);
+      // Handle the "No Access" state in the UI
+      const container = panel.querySelector('#relationshipsContainer');
+      container.innerHTML = `<div class="p-4 text-red-500">Access Denied. ${result?.hint?.message || ''}</div>`;
+      return;
+    }
+
+  } catch (error) { 
+    console.error('loadPermissionRelations failed:', error); 
+    throw error; 
+  }
 
   const container = panel.querySelector('#relationshipsContainer');
 
+  // 2. Now rowsOfRelationData is the object containing .is and .of
   if (!rowsOfRelationData || (!rowsOfRelationData.is.length && !rowsOfRelationData.of.length)) {
     container.innerHTML = emptyMessage(state.subjectName);
     return;

@@ -12,7 +12,7 @@ let subject=null;
 export async function loadMyDashWithData() {
   console.log('loadMyDashWithData()');
 
-showToast('This website uses cookies. [ ] I agree so I can use the site.  [ ] I refuse and will not use the site');
+showToast('This website uses cookies. [ ] I agree so I can use the site.  [ ] I refuse and will not use the site','info', 8000);
 
 
 subject = await resolveSubject();  

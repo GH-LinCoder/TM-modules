@@ -34,6 +34,9 @@ export const registry = { // this registry is for loading a new page to the righ
 'humans-stats' :() => import('../work/approfiles/humans-stats.js'),
 'approfiles-stats':()=> import('../work/approfiles/appro-stats.js'),
 
+'display-task-choice' :()=> import('../work/task/displayTaskChoice.js'), 
+
+
 'tasks-stats' :() => import('../work/task/tasks-stats.js'),
 'steps-stats' :() => import('../work/task/steps-stats.js'),
 
@@ -114,12 +117,19 @@ export const registry = { // this registry is for loading a new page to the righ
 
 
 //////////          SETTINGS            AdminDash      /////////                 
+
+
+'modules-market-section': () => import('../dash/modulesMarketSection.js'),
 'money-management-section': () => import('../dash/moneyManagementSection.js'),
+'payment-processors-section': () => import('../dash/paymentProcessorsSection.js'),
+'provider-mockups': () => import('../dash/providerMockupSection.js'),
+
 'recruitment-management-section': () => import('../dash/recruitmentManagementSection.js'),
 
 'open-permissions-dialogue': () => import('../rules/permissionsModule.js'), 
 'open-bundle-permissions-dialogue': () => import('../rules/permissionsBundleModule.js'),   
 'open-create-bundle-appro': () => import('../rules/createBundleAppro.js'),
+
 
 
 

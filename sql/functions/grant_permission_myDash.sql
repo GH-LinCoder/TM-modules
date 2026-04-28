@@ -4,6 +4,7 @@ CREATE OR REPLACE FUNCTION public.grant_mydash_permissions(p_user_id UUID)
 RETURNS VOID
 LANGUAGE plpgsql
 SECURITY DEFINER
+SET search_path =  _internal, public, auth
 AS $$
 DECLARE
   v_appro_id UUID;

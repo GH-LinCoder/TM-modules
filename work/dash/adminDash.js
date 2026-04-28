@@ -552,7 +552,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </div>
 
       <!-- Grant bundle of permissions -->
-  <div class="bg-green-100 border border-red-200 rounded-lg p-4" data-action="open-bundle-permissions-dialogue">
+  <div class="bg-yellow-100 border border-red-200 rounded-lg p-4" data-action="open-bundle-permissions-dialogue">
     <h3 class="text-sm font-medium text-red-700 mb-1">Grant a BUNDLE of permissions to someone 📦🔐</h3>
     <p class="text-xs text-red-600">
     Usually permissions are granted in preset bundles.
@@ -575,7 +575,7 @@ The bundle has a name and a list of underlying permissions and a scope<br>
   </div>
 
   <!-- Revoke permission or bundle of permissions -->
-    <div class="bg-green-50 border border-red-200 rounded-lg p-4" data-action='open-permissions-revoke-dialogue'>
+    <div class="bg-yellow-50 border border-red-200 rounded-lg p-4" data-action='open-permissions-revoke-dialogue'>
     <h3 class="text-sm font-medium text-red-700 mb-1">Revoke a permission someone has 🗑️ 🔐</h3>
     <p class="text-xs text-red-600">Removing a permission or bundle of permissions effects the individual's ability to see or change data in the database. 
     <br>
@@ -600,27 +600,29 @@ The bundle has a name and a list of underlying permissions and a scope<br>
   <p class="text-sm text-gray-500 mb-4">System configuration and administrative settings</p>
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-    <!--div class="bg-gray-50 border border-gray-200 rounded-lg p-4" data-action='open-permissions-dialogue'>
-      <h3 class="text-sm font-medium text-gray-800">Grant permission</h3>
-      <p class="text-xs text-gray-500">Manage user permissions and role assignments</p>
-    </div-->
 
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('Rewards not yet implemented')">
-      <h3 class="text-sm font-medium text-gray-800">Rewards</h3>
-      <p class="text-xs text-gray-500">Configure reward systems and achievements</p>
+    <div class="bg-blue-100 border border-gray-200 rounded-lg p-4" data-action="modules-market-section">
+      <h3 class="text-sm font-medium text-gray-800">Upgrades and Developer Market 🏗️</h3>
+      <p class="text-xs text-gray-500">Purchase major upgrades or earn by developing upgrades</p>
     </div>
 
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" data-action="money-management-section">
+    <div class="bg-green-200 border border-gray-200 rounded-lg p-4" data-action="money-management-section">
       <h3 class="text-sm font-medium text-gray-800">Money💷💵💶</h3>
       <p class="text-xs text-gray-500">Setting-up and managing membership fees , subscriptions, donations</p>
     </div>
 
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('Support not yet implemented')">
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" data-action="rewards-section">
+      <h3 class="text-sm font-medium text-gray-800">Rewards</h3>
+      <p class="text-xs text-gray-500">Configure reward systems and achievements</p>
+    </div>
+
+
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" data-actioon="support-section">
       <h3 class="text-sm font-medium text-gray-800">Support</h3>
       <p class="text-xs text-gray-500">Access support tools and documentation</p>
     </div>
 
-    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" onclick="showToast('Messages not yet implemented')">
+    <div class="bg-gray-50 border border-gray-200 rounded-lg p-4" data-action="messages-section">
       <h3 class="text-sm font-medium text-gray-800">Messages</h3>
       <p class="text-xs text-gray-500">System notifications and announcements</p>
     </div>

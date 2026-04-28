@@ -17,7 +17,7 @@ async function generateReferralLink() {
     // window.location.origin gives the base URL (e.g., https://app.example.com)
     // No hardcoding needed — works in dev, staging, production
     const baseUrl = window.location.origin;
-    return `${baseUrl}/signup?ref=${subject.approUserId}`;
+    return `${baseUrl}/index.html?ref=${subject.approUserId}`;
 }
 
 /**

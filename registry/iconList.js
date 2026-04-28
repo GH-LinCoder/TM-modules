@@ -21,6 +21,7 @@ answer_edit:'✍️🔮',
 answer_update:'🔮',
 
 back:'◀️',
+build:'🏗️',
 
 clock:'🕰️',
 computer:'💻',
@@ -105,4 +106,7 @@ up:'🔼',
 
 warn:'⚠️',
 //Source: https://emojipedia.org/ and https://www.emojicopy.com/ standard Unicode Emojis.
+
+//1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣8️⃣9️⃣0️⃣
+
 }

@@ -831,12 +831,11 @@ createPermissionRelation:{
     const { approfile_is, relationship, of_approfile } = payload;
     console.log('writePermissionRelation()', payload);
 
-    const { data, error } = await supabase
-      .from('permission_relations')
-      .insert([{ 
-        approfile_is:approfile_is, 
-        relationship:relationship, 
-        of_approfile: of_approfile }]);
+    const { data, error } = await supabase.rpc('safe_create_permission_relation', {
+  p_approfile_is: approfile_is,
+  p_relationship: relationship,
+  p_of_approfile: of_approfile
+});
 
     if (error) throw error;
     return data;
@@ -1282,6 +1281,30 @@ readPermissionRelationsById: {//
     type: 'SELECT',
     requiredArgs: ['approfileId']
   },
+handler: async (supabase, userId, payload) => {
+  const { approfileId } = payload;
+  
+  const { data, error } = await supabase.rpc('safe_read_permissions_with_icons', {
+    p_target_id: approfileId
+  });
+
+  if (error) throw error;
+  
+  // 'data' already has the 'is', 'of', and 'iconMap' keys ready to go!
+  return data; 
+}
+},
+
+
+
+//APPRO PERMISSIONS
+/*readPermissionRelationsById: {//
+  metadata: {
+    tables: ['permissions_relations_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
   handler: async (supabase, userId, payload) => {
     const { approfileId } = payload;
 console.log('readPermissionRelationsById');
@@ -1333,7 +1356,7 @@ console.log('DEBUG: Returning permissions data:', {
       iconMap:profileMap    
     };
   }
-},
+}, */
 
 //complete refactor 22:35 Feb 22 which failed
 //and again changed 23:11 feb 22
@@ -1932,7 +1955,7 @@ NOTreadPermissionRelationsById: {//HIGH SECURITY ISSUE
 },
 
 //BUNDLE GRANT PERMISSIONS
-grantBundlePermissions: {
+/*grantBundlePermissions: {
   metadata: {
     tables: [],
     columns: [],
@@ -1962,9 +1985,30 @@ grantBundlePermissions: {
     };
   }
 },
+*/
+grantBundlePermissions: {
+  metadata: {
+    tables: [],
+    columns: [],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    const { permissionsToGrant } = payload;  // Already mapped array
+    
+    // Insert with onConflict to skip duplicates
+    const {  error } = await supabase.rpc('safe_grant_bundle_permissions', {
+        p_permissions: permissionsToGrant});
 
-
-
+    
+    if (error) {
+      console.error('❌ Grant failed:', error);
+      return { success: false, error: error.message };
+    }
+    
+    return { success: true,};
+  }
+},
 
 
 
@@ -2897,6 +2941,7 @@ createAutomationAddTaskByTask: {
   handler: async (supabase, userId, payload) => {
     const { source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number } = payload;
 const autoRegistryId = '5473de51-a0d7-466f-8cea-ac342bf16d90';//the place to find what kind of function this is
+console.log('auto task by task',source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number);
     const { data, error } = await supabase
       .from('automations')
       .insert({
@@ -3026,11 +3071,7 @@ createAutomationRelateByTask: {
 }
 
 
-  }  // should relate use a 'payload' instead? There could be future functions with >3 parameters
-
-
-
-        
+  }  // should relate use a 'payload' instead? There could be future functions with >3 parameters        
       })
       .select()
       .single();
@@ -3179,14 +3220,7 @@ console.log('..SurveyBySurvey, source_survey_header_id',source_survey_header_id)
    },
    payload:{}
   
-  },
-
-
-
-
-
-
-        
+  },        
       })
       .select()
       .single();
@@ -3377,7 +3411,8 @@ console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id)
   }
 },
 
-//SURVEYS     DELETE (soft)
+//SURVEYS     DELETE (soft) 
+/*
 softDeleteAutomation:{
   metadata: {
     tables: ['automations'],
@@ -3396,17 +3431,64 @@ console.log('registry softDelete', automationId, 'by', deletedBy);
         deleted_by: deletedBy
       })
       .eq('id', automationId)
-      .select()
-      .single();
-
+     // .select()
+     // .maybeSingle();
+console.log('data',data);
     if (error) throw error;
     return data; // returns the updated automation row
   }
 },
 
+*/
 
+softDeleteAutomation:{
+  metadata: {
+    tables: ['automations'],
+    columns: ['is_deleted', 'deleted_at', 'deleted_by'],
+    type: 'UPDATE',
+    requiredArgs: ['automationId', 'deletedBy']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { automationId, deletedBy } = payload;
+    
+    console.log('🔴 softDeleteAutomation START');
+    console.log('🔴 automationId:', automationId, typeof automationId);
+    console.log('🔴 deletedBy:', deletedBy, typeof deletedBy);
+    console.log('🔴 userId:', userId);
+    
+console.log('🔴 supabase client:', supabase ? 'EXISTS' : 'UNDEFINED');
+console.log('🔴 supabase.from:', typeof supabase?.from);
 
-
+    // Test: Can we SELECT the row first?
+    const {  data: selectData, selectError } = await supabase
+      .from('automations')
+      .select('id, is_deleted')
+      .eq('id', automationId)
+      .maybeSingle();
+    
+    console.log('🔴 SELECT before UPDATE: automationId', { automationId, 'selectData':selectData, selectError });
+    //It knows the id but does not return the data from the row.  because it didn't have 'data' in the deconstruct
+    // Now do the UPDATE
+    const {  data, error } = await supabase
+      .from('automations')
+      .update({
+        is_deleted: true,
+        deleted_at: new Date().toISOString(),
+        deleted_by: deletedBy
+      })
+      .eq('id', automationId);
+    //It is not updating
+    console.log('🔴 UPDATE result:', { data, error });
+    
+    if (error) {
+      console.error('🔴 UPDATE ERROR:', error);
+      throw error;
+    }
+    
+    console.log('🔴 softDeleteAutomation SUCCESS');//but this has been saying success even when it fails April 19 2026
+    return data || { success: true, id: automationId }; //why reurn true if no data returned???
+  }
+},
 
 
 /////////////////////////////////////    READ  SURVEYS   //////////////////////
@@ -3558,11 +3640,123 @@ const { data, error } = await supabase.rpc('update_assignment_lowsec', {
 }
 },
 
+//PAYMENT PLANS
+
+readActivePaymentPlans:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 
+  metadata: {
+  tables: ['assignments'],
+  columns: [],
+  type: 'UPDATE',
+  requiredArgs: [] // could be either completed::boolean or step::int
+  // rpc needs: p_assignment_id uuid,p_step int default null, p_completed boolean default null
+},  
+
+handler: async (supabase, userId, payload) => {
+const {approUserId} = payload;
+const {data: relations, error } = await supabase
+    .from('user_active_purchases')
+    .select(`*`)
+    .eq('app_profile_id', approUserId)
+    .in('status', ['active', 'trialing', 'past_due']);
+  
+  if (error) {
+    console.warn('⚠️ Failed to load active plans:', error);
+    return [];
+  }
+  return relations;
+/*
+  // Transform to simple format
+  return (relations || []).map(r => ({
+    planName: r.payment_plans?.name || 'Unknown Plan',
+    status: r.status,
+    endDate: r.end_date
+  }));*/ 
+} 
+},
+
+readAllActivePaymentPlans:{ 
+  metadata: {
+  tables: ['payment_plans'],
+  columns: ['*'],
+  type: 'SELECT',
+  requiredArgs: [] // could be either completed::boolean or step::int
+  // rpc needs: p_assignment_id uuid,p_step int default null, p_completed boolean default null
+},  
+
+handler: async (supabase, userId, payload) => {
+//const {approUserId} = payload;
+const {data: plans, error } = await supabase
+    .from('payment_plans')
+    .select(`*`)
+    
+    .eq('is_active', true);
+  
+  if (error) {
+    console.warn('⚠️ Failed to load active plans:', error);
+    return [];
+  }
+  return plans;
+} 
+},
+
+createAttachmentPaymentButton: {
+  metadata: {
+    tables: ['automations'],
+    columns: ['registry_id', 'payment_plan_id', 'target_type', 'target_id', 'source_data', 'target_data', 'is_visible'],
+    type: 'INSERT',
+    requiredArgs: ['registry_id', 'payment_plan_id', 'target_type', 'target_id']
+  },
+  handler: async (supabase, userId, payload) => {
+    const {  
+      payment_plan_id, 
+      planName:planName,
+      source_task_header_id,  // for source_data
+      source_task_step_id,    // for source_data  
+      is_visible = true
+    } = payload;
+console.count('REGISTRY_CALL'); // Log 2
+    // Hardcoded registry ID for payment_button type
+    const autoRegistryId = 'd1f2028e-95fa-4a9b-ae6f-ff4753d5913d';
+
+    // Build source_data (matches your existing pattern)
+    const sourceData = {
+      type: 'task',
+      header: source_task_header_id,
+      secondary: source_task_step_id || null,
+      tertiary: null
+    };
+
+    // Build target_data (documents expected params, not runtime values)
+    const targetData = {
+      target: {
+        type: 'payment',
+        header: payment_plan_id,
+        secondary: null
+      },
+      payload: {}
+    };
+// deleted the  payload {approUserId: "uuid (runtime: subject.approUserId)",variantId: "uuid (from: payment_plans.provider_plan_id)" }
+// payload is for predetermined data that has to be supplied at time of creation/editing
 
 
-
-
-
+    const {  data, error } = await supabase
+      .from('automations')
+      .insert({
+        auto_registry_id: autoRegistryId,  // FK to automation_registry
+        payment_plan_id,              // FK to payment_plans (new column)
+        name:planName,
+        
+        source_data: sourceData,
+        target_data: targetData,
+        is_visible,
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  }
+},
 
 }//EOF
 // 18:43 sunday 14 Sept added encodeURIComponent(    )  around values in .eq because Supabase has been warning

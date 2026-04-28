@@ -32,19 +32,19 @@ function readPetition(e){
 console.log('readPetition (', e, ')');  //
 
   const actionEl = e.target.closest('[data-action]');
-    if (!actionEl) {    console.log('fails !target (', actionEl, ')');  return;}
+    if (!actionEl) {    console.log('fails action (', actionEl, ')');  return;}
     const action = actionEl.dataset.action;
 
   const sectionEl = e.target.closest('[data-section]');
-    if (!sectionEl) {    console.log('fails !target (', sectionEl, ')');  return;}
+    if (!sectionEl) {    console.log('fails section (', sectionEl, ')');  return;}
     const section = sectionEl.dataset.section;
 
   const moduleEl = e.target.closest('[data-module]');
-    if (!moduleEl) {    console.log('fails !target (', moduleEl, ')');  return;}
+    if (!moduleEl) {    console.log('fails module (', moduleEl, ')');  return;}
     const module = moduleEl.dataset.module;
 
   const destinationEl = e.target.closest('[data-destination]');
-    if (!destinationEl) {    console.log('fails !target (', actionEl, ')');  return;}
+    if (!destinationEl) {    console.log('fails destination (', destinationEl, ')');  return;}
     const destination = destinationEl.dataset.destination;
 //13:32 10 sept  destination showing wrong address. It is showing destination = action, but should be =section
 

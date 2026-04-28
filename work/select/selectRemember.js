@@ -252,7 +252,7 @@ class DevDataSelector {
   async onViewChange(e) {
     const view = e.target.value;
     this.currentView = view;
-console.log('ViewChange:');
+console.log('ViewChange:',view);
     // Load data if not already loaded
     if (view.startsWith('app-') && !this.loadedData.humanApprofiles) { //they mostly are not human. What does this do?
       await this.loadApprofiles();
