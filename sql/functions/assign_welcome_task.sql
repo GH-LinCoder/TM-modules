@@ -12,7 +12,7 @@ AS $$
 DECLARE
   v_appro_id UUID;
   v_appro_name TEXT; -- ← Missing type declaration
-  v_manager_id UUID := '9066554d-1476-4655-9305-f997bff43cbb';
+  v_manager_id UUID := NULL; -- when cloning system the default manager id is unknown.
   v_task_header_id UUID := 'dc9a0e71-4adf-42e7-8649-3620089e4df8';
   v_step_id UUID := '254fdb07-c7dd-41d1-a1af-05380ae97f71';
   v_existing_count INT;

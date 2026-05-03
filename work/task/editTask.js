@@ -25,7 +25,7 @@ import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
 const subject = await resolveSubject();
 console.log('subject:',subject);
 // if source:'authUser' then the id is the auth user, else it could be almost anything
-const state = { //This user is not correct
+const state = { //This user is not correct should it be approUserId// subject.id is auth
   user: subject.id,
   currentTask: null,
   currentTaskId: null, //different to editSurvey
@@ -1179,15 +1179,11 @@ async function handleTaskUpdate(e, panel) {
   
     saveBtn.disabled = true;
     saveBtn.textContent = 'Checking for duplicates...';
-  
     try {
       // Check for duplicates only if name has changed
       if (!state.currentTask || state.currentTask.name !== name) {
         const existing = await executeIfPermitted(state.user, 'readTaskHeaders', { taskName: name });
        // console.log('checkIfExists:', existing);
-        
-
-
         if (existing && existing.length > 0) {
           nameError.classList.remove('hidden');
           showToast('A task with this name already exists', 'error');
@@ -1196,10 +1192,7 @@ async function handleTaskUpdate(e, panel) {
           return;
         }
       }
-  
       saveBtn.textContent = 'Updating Task...';
-  
-
       const updatedTask = await executeIfPermitted(state.user, 'updateTask', {
         id: state.currentTaskId,
         name,
@@ -1209,11 +1202,8 @@ async function handleTaskUpdate(e, panel) {
   
       showToast('Task updated successfully!');
       saveBtn.textContent = 'Task updated!';
-      
       // Update state
       state.currentTask = updatedTask;
-  
-
       // Enable steps section if not already enabled
       const stepsSection = panel.querySelector('#stepsSection');
       if (stepsSection && stepsSection.classList.contains('opacity-50')) {
@@ -1233,14 +1223,13 @@ async function handleTaskUpdate(e, panel) {
   async function handleStepUpdate(e, panel) {
     e.preventDefault();
     console.log('handleStepUpdate');
-    if (!state.currentTaskId || !state.user) {
-      showToast('Task not loaded or user missing', 'error');
+//    if (!state.currentTaskId || !state.user) { //<---- the sandbox deploy is failing here. why is userId undefined?
+//removed the test for state.user  (The save of task_header doesnt have this test)
+    if (!state.currentTaskId) { //<---- 
+          showToast('Task not loaded', 'error');
       console.log('state',state);
       return;
-    }
-  
-
-    
+    }    
     const order = parseInt(panel.querySelector('#stepOrder')?.value);//but if clicked summary?
     const stepName = panel.querySelector('#stepName')?.value.trim();
     const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
@@ -1268,16 +1257,6 @@ async function handleTaskUpdate(e, panel) {
       console.log('Found existing step:', existingStep);
   
 //Edit survey has very different code here      
-
-
-
-
-
-
-
-
-
-
 //
 
       if (existingStep) { //edit survey uses isNew & reacts to new first
@@ -1304,8 +1283,6 @@ async function handleTaskUpdate(e, panel) {
         showToast('New step created!', 'success');
       }
 
-      
-  
       // Reload steps to reflect changes
       await loadTaskSteps(panel, state.currentTaskId);
       
@@ -1313,8 +1290,6 @@ async function handleTaskUpdate(e, panel) {
       console.error('Error saving step:', error);
       showToast('Failed to save step: ' + error.message, 'error');
     }
-  
-
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save Step';
 //new 19:39 Nov 12

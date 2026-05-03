@@ -26,6 +26,30 @@
 
 console.log('flexmain.js  loaded');
 
+//on local host the env vars are read from .env.local which can be edited. Netlify reads the values set in the control panel for each instance
+document.addEventListener('DOMContentLoaded', () => {
+//this reads the env vars at Netlify (or in env.local on localhost to choose what name to display)
+const envName = import.meta.env.VITE_ENVIRONMENT_NAME; // e.g., the Sandbox or the HQ
+const labelElement = document.getElementById('env-label');
+
+if (labelElement && envName) {
+    labelElement.textContent = envName;
+}
+//this reads env vars to see which favicon to display in the browser tab
+const faviconUrl = import.meta.env.VITE_FAVICON_URL;
+const faviconTag = document.getElementById('app-favicon');
+
+if (faviconTag && faviconUrl) {
+    faviconTag.href = faviconUrl;
+}
+
+//This reads env vars to display the favicon in the row that has the menu buttons
+const logoImg = document.getElementById('main-logo');
+//console.log("Logo Element:", logoImg);
+//console.log("Favicon URL from Env:", faviconUrl);
+
+if (logoImg && faviconUrl) logoImg.src = faviconUrl;
+});
 // === LISTENERS 
 import { adminListeners } from './listeners/adminListeners.js';
 import { windowEventListener } from './listeners/windowEventListener.js';

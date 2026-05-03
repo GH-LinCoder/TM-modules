@@ -27,7 +27,7 @@
         margin-right: 0;
       }
       
-      .nav-btn {
+      .nav-btn , .like-nav-btn {
         padding-left: 1rem;
         padding-right: 1rem;
         padding-top: 0.5rem;

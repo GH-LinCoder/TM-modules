@@ -35,7 +35,7 @@ panel.innerHTML = getTitleHTML() +       `<div class="rounded-lg p-6 shadow-md b
 
 <div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"><i>If you were using the app to create and manage your own organisation. You would edit this plan by editing the appro that stores this description: "Plans of the Organisation" with id: fab5776c-d7e9-4d2a-b52e-85b19ba9ae53</i></div>`
 
-    panel.innerHTML += getTemplateHTML();
+   // panel.innerHTML += getTemplateHTML();
 
 }
 

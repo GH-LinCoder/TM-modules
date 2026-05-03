@@ -399,7 +399,7 @@ async function setupUserInitialNeeds(authId){//the parameter is auth id, it isn'
  const { data, error } = await supabase.rpc('grant_mydash_permissions', {p_user_id:authId});
  if (error)   console.error('approfile_relations rpc myDashPermission error',error);
    else {
-       console.log('Granted myDash permissions.');
+       console.log('Granted myDash permissions.'); //these logs are fugitive because the page redirects
 
        const { data, error2 } = await supabase.rpc('grant_notes_permissions', {p_user_id:authId});
         if (error2) console.error('write relations table rpc notesPermission error',error);

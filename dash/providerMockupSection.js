@@ -28,13 +28,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
   <!-- money -->
   
-      <!-- Return -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-action="provider-mockups">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">◀️ Return to previous section</h3>
-    
-    <p class="text-xs text-blue-600">Click here as a back button to return the section to its previous contents.</p>
-  </div>
+
   
+      <!-- Return -->
+  <div class="bg-gray-200 border border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-300 flex flex-col justify-center items-center text-center"  data-action="provider-mockups">
+    <h3 class="text-sm font-bold text-gray-700"">◀️ CLOSE PROVIDER EXAMPLES</h3>    
+    <p class="text-xs text-blue-600">Return the section to its previous contents.</p>
+  </div>
 
 
 
