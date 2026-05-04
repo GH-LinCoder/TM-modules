@@ -51,6 +51,7 @@ global:'🌐',
 hierarchy:'🏯',
 humans:'👥',
 
+id:'🆔',
 idea:'💡',
 index:'📇',
 island:'🏝️',

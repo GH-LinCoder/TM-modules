@@ -410,7 +410,7 @@ function renderAutomationCards(container, automations) {
     p.className = 'clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md';
     p.dataset.stepId = auto.source_task_step_id;
     p.dataset.automationId = auto.id;
-console.log('automation',auto);
+console.log('auto',auto);
     // choose border color per type
     const borderClass =
       auto.taskHeaderId ? 'border-yellow-500' :
@@ -420,7 +420,7 @@ console.log('automation',auto);
 
     if (auto.task_header_id) {
       p.innerHTML = `automation🚂🔧 <strong>Task:</strong> Assign to "${auto.name || 'Unknown Task'}" → assigned to step ${auto.task_step_id || 'Initial'} "${auto.source_task_step_id}"}`;
-    } else if (auto.survey_header_id) {
+    } else if (auto.id) {
       p.innerHTML = `automation🚂📜 <strong>Survey:</strong> Assign to "${auto.name || 'Unknown Survey'}" "${auto.source_task_step_id}"`;
     } else if (auto.relationship) {
       p.innerHTML = `automation🚂🖇️ <strong>Relation:</strong>  <strong>${auto.approIsName || 'Respondent'}</strong>[${auto.approIsId ||'id?'} ] is → ${auto.relationship} → of <strong> ${auto.name}</strong>[id:${auto.of_appro_id}] "${auto.source_task_step_id}"` ;

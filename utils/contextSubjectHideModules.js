@@ -34,6 +34,28 @@ check result.source
 
   export async function resolveSubject() {
     console.log('resolveSubject()');
+//moved this to start 19:05 May 3. So many errors over this.
+const authUser = await executeIfPermitted( null,'getAuthenticatedUser', {approfileId: null });
+if(authUser) {console.log('Authenticated user found:', authUser); appState.query.userAuthId = authUser.id;}
+console.log('appState.query.userAuthId',appState.query.userAuthId,'authUser',authUser);//ok
+let approUserId=null;
+
+if(appState.query.userAuthId) 
+
+  { //avoid throwing error if not found
+  const approData  = await executeIfPermitted( null,'readApprofileByAuthUserId', {authUserId: appState.query.userAuthId });
+  console.log('approData',approData);  //ok has name
+  if(approData.data){ 
+   // console.log('approData',approData);
+    appState.query.userName = approData.data.name || 'Needs to choose a name';   
+    console.log ('appState.query.userName',appState.query.userName,'approData.data',approData.data), 'approId', approData.data.id;
+    appState.query.userId = approData.data.id; //appro id
+//    console.log('approData',approData,'approUserId', approUserId) 
+   } 
+   console.log('authUser',appState.query.userAuthId, 'approId',appState.query.userId, 'userName', appState.query.userName);
+  }
+
+
     const clipboardItems = getClipboardItems(); // no type filter
     //console.log('clipboardItems', clipboardItems);
   
@@ -54,7 +76,7 @@ but see tasks, surveys, relations & managed
     'source:',entity.items.source);
   */
 
-//Need to send back all three values and let the calling module determine which to use. Or put them in the appState together with a timestamp. If time is within 10? seconds don't update
+//Need to send back all three values and let the calling module determine which to use. Or put them in the appState.query together with a timestamp. If time is within 10? seconds don't update
 
 
     if (clipboardItems.length > 0) { //treat the first item on the clipboard as the subject? (first is most recent?)
@@ -76,33 +98,19 @@ but see tasks, surveys, relations & managed
 
 //only continues if nothing on clipbaord
 
-const authUser = await executeIfPermitted( null,'getAuthenticatedUser', {approfileId: null });
 //console.log('context  authUser',authUser);
 //func needs { authUserId } = payload;  // if auth doesn't know a name, get the name from the appro for that auth user
 //remember that appro id != authId. The app mostly does not use authId. auth_user_id is a column in the appro & may be != to the appro id
 //sorry for the complication. It is based on the idea that not exposing authId is safer.
 
-if(authUser) appState.userIdentified = true; //use to skip functions that need authId
 
-let approUserId=null;
 
-if(authUser && !authUser.name) //Does this happen??? 
-    // this is anyone who has signedup, assumed to have an appro with a name, but we don't yet know the name here. Can that happen? 
-  { //avoid throwing error if not found
-  const userTempData  = await executeIfPermitted( null,'readApprofileByAuthUserId', {authUserId: authUser.id });  
-  if(userTempData.data){ //added 12:00 Jan 13
-   // console.log('userTempData',userTempData);
-    authUser.name = userTempData.data.name || 'Needs to choose a name';   
-    approUserId = userTempData.data.id; 
-//    console.log('userTempData',userTempData,'approUserId', approUserId) 
-   } 
-   // console.log('authUser',authUser, 'approId',approUserId);
-  }//added 12:00 Jan 13
+
 
 if (authUser ) return {
               id:authUser.id, 
-              approUserId:approUserId || null, //added  || nul 12:00 Jan 13
-              name:authUser.name || 'unknown',
+              approUserId:appState.query.userId || null, //added  || nul 12:00 Jan 13
+              name:appState.query.userName || 'unknown',
               email:authUser.email,
               created_at:authUser.created_at,
 

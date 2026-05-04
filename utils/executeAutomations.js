@@ -6,18 +6,6 @@ import { createSupabaseClient } from '../db/supabase.js';
 // The Supabase client is created once and passed to the functions.
 const supabase = createSupabaseClient();
 
-
-//NOTE: the automation functions in DISPLAY_TASK read from the automations Table
-//BUT those functions were copied here and adapted to instead expect different names for variables because
-// the export version is built to use data from survey_view or task_view which clearly distinguish
-//between source-columns and target-columns (Is the stepId from the source task or from the task you want to assign?)
-//At some time the DISPLAY TASK module should refactor to use the task_view instead of direct table access Dec 25 2025
-
-//let subject = null;
-//let subjectId = null;
-//const authUserId = appState.query.defaultManagerId;
-
-
 export async function executeAutomations(automations, subject, autoPetition){//autoPetition gathers the data to be sent to permissions_judge
   console.log('executeAutomations() automations:',automations, ', subject: ',subject,', autoPetition:', autoPetition);//subject correct here but is getting changed wrongly 16:40 dec 26
   if(!automations || automations.length ===0) {console.log('No automations to execute'); return;}
@@ -35,15 +23,6 @@ console.log('executeAutomations() automations',automations);
     automation_id: auto.id
   };
 
-//autoPetition.automation_id = auto.id;
-/*
-console.log('@@@@@@ automation',auto,
-  'auto_id', auto.id,
-  'SOURCE_data',auto.source_data, 
-  'TARGET_data', auto.target_data);// auto.target undefined jan 25 20:00
-
-console.log('type:',auto.target_data.target.type ,'auto.target_data.target.header:',auto.target_data.target.header);//id of the survey
-*/
 const type = auto.target_data.target.type; // 
 console.log('type:',type);
 const autoId = auto.id;
@@ -144,23 +123,6 @@ async function autoRelateAppros(autoId,payload, autoPetition) {//Jan 26. When a 
   });
 console.log('autoResponse:',autoResponse); //correctly logs 17:35 March 12 but 
 return autoResponse;
-/*
-  try{//func needs  const { approfile_is, relationship, of_approfile, assigned_by_automation } = payload; assigned by is a uuid
-const newRelation = await executeIfPermitted(authUserId, 'autoRelateAppro', {
-  approfile_is:appro_is_id, 
-  relationship:relationship, 
-  of_approfile:of_appro_id, 
-  assigned_by_automation:auto_id
-}) // can't use the newUserId as not auth. Need to use a db function
-console.log('related:', newRelation);
-
-
-
-} catch (error) { //console.log(error.message);
-console.log('Failed to relate appro: ' + error.message);
-  showToast('Failed to relate appro: ' + error.message, 'error');
-    }
-*/
 }
 
 

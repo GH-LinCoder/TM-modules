@@ -5,10 +5,18 @@ import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import {icons} from '../../registry/iconList.js';
+import {  resolveSubject} from '../../utils/contextSubjectHideModules.js';
 
 console.log('createTaskForm.js loaded');
 
-const userId = appState.query.userId;
+//const userId = appState.query.userId; //this is bad. Default is not relevant. And worse in other instance where non existent user
+await resolveSubject();// resolve puts the auth and appro values in appState
+const userAuthId = appState.query.userAuthId;
+const userApproId = appState.query.userId;      
+
+  console.log('userAuthId:',userAuthId, 'userApproId:',userApproId);
+
+
 let automationsNumber = 0;
 //let currentStep = 3;  // this was "currentStepId = 3" which was a stupid name.  A step id is :uuid not an integer.
 let  currentStepId = null;
@@ -510,7 +518,7 @@ async function handleTaskSubmit(e, panel) {
   saveBtn.textContent = 'Saving Task...';
 
   try {
-    const newTask = await executeIfPermitted(userId, 'createTask', {
+    const newTask = await executeIfPermitted(userAuthId, 'createTask', {
       taskName: taskName,
       taskDescription: taskDescription,
       taskUrl: taskUrl,
@@ -541,7 +549,7 @@ addInformationCard({
     showToast('Task created successfully!');
     
     // Load steps (including step 3)
-    const loadedSteps = await executeIfPermitted(userId, 'readTaskSteps', { taskId: taskId });
+    const loadedSteps = await executeIfPermitted(userAuthId, 'readTaskSteps', { taskId: taskId });
     steps = loadedSteps || [];
     
     // Pre-fill step 3 if it exists
@@ -598,7 +606,7 @@ async function handleStepSubmit(e, panel) {
       
       if (existingStep) {  
         // Update existing step   {taskId, stepOrder, stepName, stepDescription, stepUrl}
-        result = await executeIfPermitted(userId, 'updateTaskStep', {
+        result = await executeIfPermitted(userAuthId, 'updateTaskStep', {
           taskId: taskId,
           stepOrder: stepOrder,
           stepName: stepName,
@@ -618,7 +626,7 @@ console.log('result:',result);
 
       } else {
         // Create new step
-        result = await executeIfPermitted(userId, 'createTaskStep', {  // this has been duplicated
+        result = await executeIfPermitted(userAuthId, 'createTaskStep', {  // this has been duplicated
           taskId: taskId,
           stepOrder: stepOrder,
           stepName: stepName,
@@ -642,7 +650,7 @@ console.log('result:',result);
       currentStepId = result.id; //update the global
       console.log('currentStepId', currentStepId);
 
-      const loadedSteps = await executeIfPermitted(userId, 'readTaskSteps', { taskId: taskId });
+      const loadedSteps = await executeIfPermitted(userAuthId, 'readTaskSteps', { taskId: taskId });
       steps = loadedSteps || [];
       
       updateStepsList(panel);
@@ -839,12 +847,12 @@ function getManagerName(managerSelect) {
           managerId = selectedOption.value;
       } else {
           // Got placeholder text or empty - use default
-          managerId = userId;
+          managerId = userApproId;
           managerName = 'The Author';
       }
   } else {
       // No selection or invalid selection - use default
-      managerId = userId;
+      managerId = userApproId;
       managerName = 'The Author';
   }
   
@@ -911,7 +919,7 @@ addInformationCard({
     try { 
         // LOOK UP ALL STEPS FOR THIS TASK
         console.log('Looking up steps for task:', selectedTaskId);
-        const steps = await executeIfPermitted(userId, 'readTaskSteps', {
+        const steps = await executeIfPermitted(userAuthId, 'readTaskSteps', {
             taskId: selectedTaskId
         });
         
@@ -931,7 +939,7 @@ addInformationCard({
         console.log(
           'currentStepId:', currentStepId,
           'source_task_step_id :', stepId,
-          'student_id:', userId, //should be null because usually this is a future unknown person
+          'student_id:', userApproId, //should be null because usually this is a future unknown person
           'manager_id:', managerData.managerId,     
           'taskId:', selectedTaskId,
           'task_step_id:', stepId,
@@ -940,10 +948,10 @@ addInformationCard({
         ); 
 
 
-        const result = await executeIfPermitted(userId, 'createAutomationAddTaskByTask', { //assingTask ???
+        const result = await executeIfPermitted(userAuthId, 'createAutomationAddTaskByTask', { //assingTask ???
       
        source_task_step_id : stepId, // is that the correct step we are adding the automation to? No wrong name was being used here 'currentStepId'
-       student_id: userId, //the person being assigned to the task
+       student_id: userApproId, //the person being assigned to the task
        manager_id: managerData.managerId, // needs to be from the dropdown    
        taskId: selectedTaskId,
             task_step_id: stepId, // 
@@ -1014,7 +1022,7 @@ async function handleSurveyAutomationSubmit(e, panel) {
 
   
 try{
-const result = await executeIfPermitted(userId, 'createAutomationAddSurveyByTask', { // BUG - this assigns a task not a survey <------------------------
+const result = await executeIfPermitted(userAuthId, 'createAutomationAddSurveyByTask', { // BUG - this assigns a task not a survey <------------------------
             source_task_step_id : stepId, //need this 
             survey_header_id : selectedSurveyId, 
             name: surveyCleanName, 
@@ -1077,9 +1085,9 @@ const result = await executeIfPermitted(userId, 'createAutomationAddSurveyByTask
     
     try {  
         // Save relationship automation to database - ADAPTED FOR TASKS
-        const result = await executeIfPermitted(userId, 'createAutomationRelateByTask', { // Same function name?
+        const result = await executeIfPermitted(userAuthId, 'createAutomationRelateByTask', { // Same function name?
             source_task_step_id:  currentStepId,    // NULL
-          //  student_id: userId,                         // Not relevant
+          //  student_id: userApproId,                         // Not relevant
             approfileId: selectedApproleId,            
             itemName: cleanName,                        
             relationship: selectedRelationship,         

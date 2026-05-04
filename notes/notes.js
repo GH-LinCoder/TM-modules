@@ -40,7 +40,9 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
                 </div>
                 
               </div>
-            </div>
+  📝<i>If there aren't any notes displayed below: login again</i>
+            
+              </div>
           </div><!--closes flex-->
 
 

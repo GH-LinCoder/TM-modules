@@ -213,7 +213,8 @@ console.log('taskSteps',taskSteps, 'assignment',assignment,'current_step',assign
     
     addEventListenerToButtons(panel);
 
-         loadStepAutomations(assignment.step_id, card);  // ✅ Pass 'card'
+         loadStepAutomations(assignment.step_id, card);  // that function calls a funtion that reads the automations locally
+         runTheAutomations(assignment.step_id); // this function does the same read again WASTE
 }
 
 function decideButtonsToDisplay(assignment, taskSteps) {
@@ -502,8 +503,8 @@ console.log('renderStepCard() title:',title, 'length',title.length);
     `;
 }
 
-async function XloadStepAutomations(stepId) {
-    console.log('loadStepAutomations()', 'subject',subject);
+async function runTheAutomations(stepId) {
+    console.log('runTheAutomations()', 'stepId',stepId,'subject',subject);
     try {
         const automations = await executeIfPermitted(subject.approUserId, 'readTaskAutomations', {
             source_task_step_id: stepId

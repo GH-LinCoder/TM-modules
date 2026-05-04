@@ -16,15 +16,14 @@ clipboard:[],
     query: {
 
 userIdentified:null, // added 11:23 Dec 18 2025 changed Jan 5 2026
-
-userAuthId:'e0c6201d-66e0-4b1c-8826-027ec059d523',
-userId :'e0c6201d-66e0-4b1c-8826-027ec059d523',//Huyie T&M vidoes task, member of TestMock,
-userName:'Huyie Evridge',
-userEmail:'huyie@test.com',
+userAuthId: null,
+userId :null,
+userName:null,
+userEmail:null,
 userType: 'app-human',
 created_at:'2025-07-28 18:13:47.723148+00',
 
-defaultManagerId:'9066554d-1476-4655-9305-f997bff43cbb',
+defaultManagerId:null,
 defaultManagerName:'Lin Coder',
       
 petitioner:{},  // Module: name, Section: name, Action: name Destination: name  as data-* attributes, 

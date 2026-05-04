@@ -52,14 +52,19 @@ await displayAppro();
 
 async function displayAppro(){
 console.log('displayAppro()');
-subject = await resolveSubject(); 
+subject = await resolveSubject(); //resolveSubject now puts the values in appState. No need to extract from returned values
+//subject may return the contents of the clipboard, but it also loads the auth user details in appState
+//How should we handle this?  
+//subject.name = appState.query.userName || subject.name || 'unknown'; //appState query name should override the authUser name. This is because approfiles can choose a different display name from the auth name. And if no authUser (eg clipboard only) then use the subject name if available, otherwise 'unknown'
+
+
 if(!subject) {console.log('Error - no subject returned'); return}
 
   const NON_PROFILE_TYPES = ['relations', 'surveys', 'tasks', 'assignments'];
   if (NON_PROFILE_TYPES.includes(subject.type)) {return;} //we only display appros.
 
 console.log('profiles -resolveSubject', subject,
-   'auth:', subject.id,
+   'auth:', appState.query.userAuthId,
     'appro:',subject.approUserId,
     'name:',subject.name,
     'email:',subject.email,
@@ -68,6 +73,7 @@ console.log('profiles -resolveSubject', subject,
     'source:',subject.source);
 // function needs userApproId
 const approUserId = subject.approUserId;
+console.log('approUserId', approUserId);
 const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans',{approUserId});
 
 /** the registry returns

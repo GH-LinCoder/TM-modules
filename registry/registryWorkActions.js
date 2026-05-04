@@ -727,7 +727,7 @@ createTask: {
     if (existingTask) {
       throw new Error('A task with that name exists. Your task needs a different name.');
     }
-
+console.log('userId',userId);
     const { data, error } = await supabase
       .from('task_headers')
       .insert({

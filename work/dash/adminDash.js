@@ -10,11 +10,11 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <!-- dashboard content -->
 <div class="min-h-screen bg-gray-200 text-gray-900">
   <!-- Header -->
-<!-- DASHBOARD TOGGLE-->   
+<!-- DASHBOARD HEADER (userName user appro and data name and appro-->   
   <div class="px-6 py-4 border-b bg-blue-200 flex justify-between items-center">
-    <div class = "name"  title="Toggle between admin or member dashboard">
-      <!--button class="text-sm text-blue-600 hover:underline" data_action='toggleDash'>Member/Admin</button -->
-    </div>
+    <div class = "userDetails text-sm text-gray-500" data-value="user-details" title="User name and appro of the logged in person">UserDetails</div>
+<div class = "dataDetails text-sm text-gray-400" data-value="data-details" title="Name and appro id of the selected item">DataDetails</div>
+
 
 <!-- DASHBOARD TITLE + DESCRIPTION-->   
    <div>
