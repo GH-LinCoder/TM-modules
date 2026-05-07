@@ -544,7 +544,7 @@ else if(page < 1) page = 1;
                   </p>
                   <p class="flex">
                     <span class="font-medium w-20 pt-1">Content:</span>
-                   <span class="text-gray-700 flex-1">${content}</span>
+                   <span class="text-gray-700 flex-1  whitespace-pre-line">${content}</span>
                   </p>
                 </div>
               </div>

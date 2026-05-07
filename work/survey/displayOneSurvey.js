@@ -164,7 +164,7 @@ console.log('questionId', questionId, 'currentStep',currentStep);
     console.log('currentQuestionId',currentQuestionId, 'progress.totalQuestions',progress.totalQuestions, 'progress', progress);
     
     const card = document.createElement('div');
-    card.classList.add('bg-white', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200');
+    card.classList.add('bg-orange-300', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200');
     card.dataset.assignmentId = assignment.assignment_id;
     
     // Detect myDash context

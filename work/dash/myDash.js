@@ -151,7 +151,7 @@ function getTemplateHTML() {
                 <div class="bg-white rounded-lg shadow p-6 border-b-4 border-blue-500">
                     <div class="flex items-center justify-between mb-4">
                         <h2 class="text-xl font-bold text-gray-800">Select a 
-                        <span class="text-blue-700">task</span>, <span class="text-orange-600">survey</span>, or <span class="text-green-700">message</span> above to view details here.</h2>
+                        <span class="text-blue-700">task</span>, <span class="text-orange-600">survey</span>, or <span class="text-green-700">message</span> above to view details here:-</h2>
                         <!--button class="text-sm text-gray-500 hover:text-gray-700" data-action="close-detail">✕ Close</button-->
                     </div>
                     <div id="detail-placeholder" class="text-center py-8 text-gray-500">
