@@ -10,6 +10,7 @@
 *.userosscache
 *.sln.docstates
 *.env
+*.env.local
 db/supabase.js #contains keys
 xOld/
 

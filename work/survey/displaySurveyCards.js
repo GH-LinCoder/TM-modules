@@ -17,8 +17,8 @@ let itemOnDisplay = null; // to be able to close the item when the button has a 
 
 
 export async function render(panel, petition = {}) {
-    console.log('displaySurveyCards.render(', panel, petition, ')');
-
+   // console.log('displaySurveyCards.render(', panel, petition, ')');
+  console.log('displaySurveyCards.render()');
     const userId = petition.student;
     if (!userId) {
         panel.innerHTML = `<div class="text-red-600 p-4">No user ID provided.</div>`;
@@ -48,7 +48,7 @@ const tasksAndSurveys = await executeIfPermitted(
             { student_id: userId }
         );
 */
-console.log('tasksAndSurveys',tasksAndSurveys);
+//console.log('tasksAndSurveys',tasksAndSurveys);
         assignments = tasksAndSurveys.surveyData; //because readStudentAssignments returns both tasks and surveys, we need to specify which one we want. 22:36 March 13    
 
 
@@ -60,7 +60,7 @@ console.log('tasksAndSurveys',tasksAndSurveys);
 
 
 
-    console.log('assignments', assignments); // 
+   // console.log('assignments', assignments); // 
     if (!assignments || assignments.length === 0) {
         panel.innerHTML = `
             <div class="text-gray-500 text-center py-8">
@@ -126,7 +126,7 @@ card.addEventListener('click', (e) => {
 const surveyId = e.currentTarget.dataset.surveyHeader;
 const currentStep = e.currentTarget.dataset.currentStep;
 
-    console.log('🖱️ Card clicked, loading directly: assignment', assignmentId, 'survey', surveyId);
+ //   console.log('🖱️ Card clicked, loading directly: assignment', assignmentId, 'survey', surveyId);
     
     // ✅ Find the detail panel target
     const detailPanel = document.querySelector('[data-section="display-area"]');

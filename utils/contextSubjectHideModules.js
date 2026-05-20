@@ -36,23 +36,24 @@ check result.source
     console.log('resolveSubject()');
 //moved this to start 19:05 May 3. So many errors over this.
 const authUser = await executeIfPermitted( null,'getAuthenticatedUser', {approfileId: null });
-if(authUser) {console.log('Authenticated user found:', authUser); appState.query.userAuthId = authUser.id;}
-console.log('appState.query.userAuthId',appState.query.userAuthId,'authUser',authUser);//ok
+if(authUser) {
+console.log('Authenticated user found:', authUser); appState.query.userAuthId = authUser.id;}
+//console.log('appState.query.userAuthId',appState.query.userAuthId,'authUser',authUser);//ok
 let approUserId=null;
 
 if(appState.query.userAuthId) 
 
   { //avoid throwing error if not found
   const approData  = await executeIfPermitted( null,'readApprofileByAuthUserId', {authUserId: appState.query.userAuthId });
-  console.log('approData',approData);  //ok has name
+ // console.log('approData',approData);  //ok has name
   if(approData.data){ 
    // console.log('approData',approData);
     appState.query.userName = approData.data.name || 'Needs to choose a name';   
-    console.log ('appState.query.userName',appState.query.userName,'approData.data',approData.data), 'approId', approData.data.id;
+ //   console.log ('appState.query.userName',appState.query.userName,'approData.data',approData.data), 'approId', approData.data.id;
     appState.query.userId = approData.data.id; //appro id
 //    console.log('approData',approData,'approUserId', approUserId) 
    } 
-   console.log('authUser',appState.query.userAuthId, 'approId',appState.query.userId, 'userName', appState.query.userName);
+//   console.log('authUser',appState.query.userAuthId, 'approId',appState.query.userId, 'userName', appState.query.userName);
   }
 
 

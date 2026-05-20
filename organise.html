@@ -15,6 +15,10 @@
 
 
   <style>
+  header[data-panel="nav-header"] {
+    height: auto !important;
+    flex: 0 0 auto !important;
+  }
 
   </style>
 </head>
@@ -51,8 +55,9 @@
       </div>
     </header>
 
-    <!-- Main Content Area -->
+    <!-- Main Content Area   removing overflow-hidden in hope this is source of bug of unresponsive dropdowns WRECKED THE APP-->
     <main id="main-container" class="flex-1 overflow-hidden" data-panel="the-frame-around-the-pages">
+    
       <section id="primary-panel" class="flex flex-row flex-1 overflow-x-auto p-4 bg-gray-50" data-panel="inject-here">
         <!-- Dynamic content will be injected here -->
       </section>

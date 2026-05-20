@@ -1907,7 +1907,7 @@ readPermissionRelationships: {//HIGH SECURITY ISSUE -- doesn't supply an iconMap
 },
 
 //RELATIONSHIPS PERMISSIONS
-writePermissionRelationships: {//HIGH SECURITY ISSUE -- doesn't supply an iconMap the way Xread did
+writePermissionRelationships: {//HIGH SECURITY ISSUE -- used for creating bundles
   metadata: {
     tables: [],
     columns: [],
@@ -2827,28 +2827,7 @@ updateSurveyAnswer: {
 readTaskAutomations: {
   metadata: {
     tables: ['automations'],
-    columns: [
-      'id',
-      'name',
-      'description',
-      'task_header_id',
-      'task_step_id',
-      'survey_answer_id',
-      'student_id',
-      'from_step',
-      'to_step',
-      'appro_is_id',
-      'relationship',
-      'of_appro_id',
-      'appro_relations_id',
-      'automation_number',
-      'source_task_step_id',
-      'manager_id',
-      'task_assignment_id',
-      'created_at',
-      'last_updated_at',
-      'is_deleted'
-    ],
+    columns: ['*'],
     type: 'SELECT',
     requiredArgs: ['source_task_stepId']
   },
@@ -2881,28 +2860,7 @@ console.log('readTaskAutomations;',data);// empty  23:46 Jan 22
 readSurveyAutomations: {
   metadata: {
     tables: ['automations'],
-    columns: [
-      'id',
-      'name',
-      'description',
-      'task_header_id',
-      'task_step_id',
-      'survey_answer_id',
-      'student_id',
-      'from_step',
-      'to_step',
-      'appro_is_id',
-      'relationship',
-      'of_appro_id',
-      'appro_relations_id',
-      'automation_number',
-      'source_task_step_id',
-      'manager_id',
-      'task_assignment_id',
-      'created_at',
-      'last_updated_at',
-      'is_deleted'
-    ],
+    columns: [ '*'],
     type: 'SELECT',
     requiredArgs: ['answerId']
   },
@@ -2914,8 +2872,7 @@ console.log('registryReadAutomations-answerId:',answer_id);
     const { data, error } = await supabase
       .from('automations')
       .select('*')
-      
-      .eq('survey_answer_id', answer_id)
+      .filter('source_data->>tertiary', 'eq', answer_id)
       .is('deleted_at', null) // exclude soft-deleted
       .order('created_at', { ascending: true });
 
@@ -3644,7 +3601,7 @@ const { data, error } = await supabase.rpc('update_assignment_lowsec', {
 
 readActivePaymentPlans:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 
   metadata: {
-  tables: ['assignments'],
+  tables: ['payment_user_active_view'],
   columns: [],
   type: 'UPDATE',
   requiredArgs: [] // could be either completed::boolean or step::int
@@ -3654,7 +3611,7 @@ readActivePaymentPlans:{    // VIEW   Read only   // surveys show-up in this vie
 handler: async (supabase, userId, payload) => {
 const {approUserId} = payload;
 const {data: relations, error } = await supabase
-    .from('user_active_purchases')
+    .from('payment_user_active_view')
     .select(`*`)
     .eq('app_profile_id', approUserId)
     .in('status', ['active', 'trialing', 'past_due']);
@@ -3663,6 +3620,7 @@ const {data: relations, error } = await supabase
     console.warn('⚠️ Failed to load active plans:', error);
     return [];
   }
+  console.log('readActivePaymentPlans data',relations);
   return relations;
 /*
   // Transform to simple format
@@ -3699,7 +3657,7 @@ const {data: plans, error } = await supabase
 } 
 },
 
-createAttachmentPaymentButton: {
+createAttachmentPaymentButton: { //THIS IS TRASH. May 15. This is hard coded for tasks only. Can't use it for surveys
   metadata: {
     tables: ['automations'],
     columns: ['registry_id', 'payment_plan_id', 'target_type', 'target_id', 'source_data', 'target_data', 'is_visible'],
@@ -3710,15 +3668,88 @@ createAttachmentPaymentButton: {
     const {  
       payment_plan_id, 
       planName:planName,
-      source_task_header_id,  // for source_data
-      source_task_step_id,    // for source_data  
+      source_header_id,  // for source_data for TASKS ONLY Need change to source_header
+      source_secondary_id,    // for source_data  for TASKS ONLY need change to source_secondary + add source_tertiary for answers
+      source_tertiary_id,
+      source_type,
       is_visible = true
     } = payload;
-console.count('REGISTRY_CALL'); // Log 2
+console.count('CreateAttachmentPaymentButton() source_tertiary_id:',source_tertiary_id); // 
     // Hardcoded registry ID for payment_button type
     const autoRegistryId = 'd1f2028e-95fa-4a9b-ae6f-ff4753d5913d';
 
-    // Build source_data (matches your existing pattern)
+    // Build source_data (matches existing pattern) WHAT??? This has 'task' MADNESS
+    //this can't be  source 'task' . It has to be the actual source which could be task or survey.
+    //This is absurd as none of this data is available as a paramter. What idiot write this???
+
+    //source_tertiary is missing the table 21:04 May 15
+    const sourceData = {
+      type: source_type || 'task',
+      header: source_header_id,
+      secondary: source_secondary_id || null,
+      tertiary: source_tertiary_id || null
+    };
+console.log('sourceData built:', sourceData);
+    // Build target_data (documents expected params, not runtime values)
+    const targetData = {
+      target: {
+        type: 'payment',
+        header: payment_plan_id,
+        secondary: null,
+        tertiary:null
+      },
+      payload: {}
+    };
+    console.log('targetData built:', targetData);
+// deleted the  payload {approUserId: "uuid (runtime: subject.approUserId)",variantId: "uuid (from: payment_plans.provider_plan_id)" }
+// payload is for predetermined data that has to be supplied at time of creation/editing
+
+//The survey_answer_id is missing from the table 21:04 May 15
+
+console.log('calling db with payment_plan_id', payment_plan_id, 'planName', planName);
+    const {  data, error } = await supabase
+      .from('automations')
+      .insert({
+        auto_registry_id: autoRegistryId,  // FK to automation_registry
+        payment_plan_id,              // FK to payment_plans (new column)
+        name:planName,
+        survey_answer_id:source_tertiary_id,
+        source_data: sourceData,
+        target_data: targetData,
+        is_visible,
+      })
+      .select()
+      .single();
+    
+    if (error) throw error;
+    return data;
+  }
+},
+
+
+/*
+createAttachmentPaymentButton: { //THIS IS TRASH. May 15. This is hard coded for tasks only. Can't use it for surveys
+  metadata: {
+    tables: ['automations'],
+    columns: ['registry_id', 'payment_plan_id', 'target_type', 'target_id', 'source_data', 'target_data', 'is_visible'],
+    type: 'INSERT',
+    requiredArgs: ['registry_id', 'payment_plan_id', 'target_type', 'target_id']
+  },
+  handler: async (supabase, userId, payload) => {
+    const {  
+      payment_plan_id, 
+      planName:planName,
+      source_task_header_id,  // for source_data for TASKS ONLY Need change to source_header
+      source_task_step_id,    // for source_data  for TASKS ONLY need change to source_secondary + add source_tertiary for answers
+      is_visible = true
+    } = payload;
+console.count('CreateAttachmentPaymentButton()'); // 
+    // Hardcoded registry ID for payment_button type
+    const autoRegistryId = 'd1f2028e-95fa-4a9b-ae6f-ff4753d5913d';
+
+    // Build source_data (matches existing pattern) WHAT??? This has 'task' MADNESS
+    //this can't be  source 'task' . It has to be the actual source which could be task or survey.
+    //This is absurd as none of this data is available as a paramter. What idiot write this???
     const sourceData = {
       type: 'task',
       header: source_task_header_id,
@@ -3756,7 +3787,8 @@ console.count('REGISTRY_CALL'); // Log 2
     if (error) throw error;
     return data;
   }
-},
+}, 
+*/
 
 }//EOF
 // 18:43 sunday 14 Sept added encodeURIComponent(    )  around values in .eq because Supabase has been warning

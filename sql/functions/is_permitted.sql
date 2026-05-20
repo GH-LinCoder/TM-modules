@@ -204,7 +204,7 @@ FOREACH v_scope_id IN ARRAY v_granted_scopes LOOP
           RETURN true;
         END IF;
 
-      WHEN 'permission_relations' THEN
+      WHEN 'permission_relations','payment_details', 'payment_event_log'  THEN
         IF v_scope_id = v_self_uuid AND v_approfile_is = v_user_appro_id THEN
           RETURN true;
         END IF;

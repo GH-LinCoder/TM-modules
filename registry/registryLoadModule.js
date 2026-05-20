@@ -35,7 +35,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'approfiles-stats':()=> import('../work/approfiles/appro-stats.js'),
 
 'display-task-choice' :()=> import('../work/task/displayTaskChoice.js'), 
-
+'display-survey-choice' :()=> import('../work/survey/displaySurveyChoice.js'),
 
 'tasks-stats' :() => import('../work/task/tasks-stats.js'),
 'steps-stats' :() => import('../work/task/steps-stats.js'),

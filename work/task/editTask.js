@@ -896,19 +896,21 @@ async function handlePaymentAttachmentSubmit(e, panel) {
     const selectedPlan = plans.find(p => p.id === selectedPlanId);
     const planName = selectedPlan?.name || 'Unknown Plan';
     
-    // Determine target_type: 'task' for header, 'task_step' for step
-    const targetType = state.currentStepId ? 'task_step' : 'task';
-    const targetId = state.currentStepId || state.currentTaskId;
+    // Determine target_type: 'task' for header, 'task_step' for step //WHAT IS THIS??? the target isn't a task. What is this trash?
+    //const targetType = state.currentStepId ? 'task_step' : 'task';
+    //const targetId = state.currentStepId || state.currentTaskId;
     
-    // Call your RPC with hardcoded registry ID (no extra lookup needed)
+    // Call registry function with hardcoded registry ID for the type 'payment button' 
+    //BUT the registry function is written for tasks only. This means we need a different function for surveys or we change the params to be dual use
+    // source_header, source_secondary. soure_tertiary instead of task_header and task_step  (tertiary is for answers)
     const result = await executeIfPermitted(state.user, 'createAttachmentPaymentButton', {//state.user wrong id
       auto_registry_id: 'd1f2028e-95fa-4a9b-ae6f-ff4753d5913d',  
       payment_plan_id: selectedPlanId,
       planName:planName,
-      target_type: targetType,
-      target_id: targetId,
-      source_task_header_id: state.currentTaskId,
-      source_task_step_id: state.currentStepId || null,
+
+      source_header_id: state.currentTaskId,
+      source_secondary_id: state.currentStepId || null,
+      source_tertiary_id:null,
       is_visible: true
     });
     

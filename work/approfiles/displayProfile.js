@@ -62,7 +62,7 @@ if(!subject) {console.log('Error - no subject returned'); return}
 
   const NON_PROFILE_TYPES = ['relations', 'surveys', 'tasks', 'assignments'];
   if (NON_PROFILE_TYPES.includes(subject.type)) {return;} //we only display appros.
-
+/*
 console.log('profiles -resolveSubject', subject,
    'auth:', appState.query.userAuthId,
     'appro:',subject.approUserId,
@@ -71,9 +71,11 @@ console.log('profiles -resolveSubject', subject,
     'created',subject.created_at,
     'type:',subject.type,
     'source:',subject.source);
-// function needs userApproId
+*/
+
+    // function needs userApproId
 const approUserId = subject.approUserId;
-console.log('approUserId', approUserId);
+//console.log('approUserId', approUserId);
 const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans',{approUserId});
 
 /** the registry returns
@@ -117,13 +119,13 @@ const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans'
 //nst authIdEl = panel.querySelector('[data-user="auth-id"]');
 
 // ... set name, etc. ...
-console.log('subject.id',subject.id);
+//console.log('subject.id',subject.id);
 // CONCEAL EMAIL + AUTH ID: Click container to reveal both
 if (emailEl && authIdEl) {
   // Store full values
   const fullEmail = subject.email || 'No email';
   const fullAuthId = subject.id || 'No auth ID';
-  console.log('fullAuthId',fullAuthId);
+ // console.log('fullAuthId',fullAuthId);
   // Obscure initially
   emailEl.textContent = '••••@••••.•••';
   authIdEl.textContent = '••••••••-••••-••••-••••-••••••••••••';
@@ -290,8 +292,9 @@ function respondToClipboardChange(){  // it doesn't instantly respond. Need to r
 
 //only called if attachListener were called
 function updateAppro(subject){ //?  what was this for???  Why load onto clipboard? Is it for admin to be able to reuse elsewhere?
-  console.log('updateAppro()', subject);
-//put the subjectId on the clipboard and load the editAppro module.
+  //console.log('updateAppro()', subject);
+console.log('updateAppro()');
+  //put the subjectId on the clipboard and load the editAppro module.
 
     const clipboardItem = {
       entity: {
@@ -320,7 +323,7 @@ function updateAppro(subject){ //?  what was this for???  Why load onto clipboar
 document.dispatchEvent(new CustomEvent('clipboard:updated', {
   detail: { clipboard: appState.clipboard }
 }));
-console.log(appState.clipboard);
+//console.log(appState.clipboard);
  }
 
 

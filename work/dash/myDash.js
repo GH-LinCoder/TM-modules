@@ -128,11 +128,18 @@ function getTemplateHTML() {
                         <div class="bg-orange-100 space-y-6" data-list="my-surveys" data-section="surveys-section">
                             <!-- Surveys loaded here by existing code -->
                         </div>
-                        <div class="mt-3 flex gap-2">
+                        <!--div class="mt-3 flex gap-2">
                             <button class="text-sm text-indigo-600 hover:underline" data-action="browse-surveys" title="Click to choose a new survey for yourself. Surveys drive relations & tasks">Find a new survey</button>
-                            
-                        </div>
+                        </div-->
+
+<div class="mt-3 flex gap-2 " data-section="survey-section" data-action="display-survey-choice" data-destination ="survey-section"  >
+                        <h3 class="text-lg font-sm text-purple-700 mb-2">Choose more surveys 📜</h3>
+                        <p class="text-sm text-gray-600 mb-3">See what surveys you could take on. </p>
                     </div>
+
+
+
+                        </div>
 
                     <!-- Messages Placeholder -->
                     <div>

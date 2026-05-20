@@ -4,8 +4,9 @@ import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
-
 import {getClipboardAppros} from './getClipboardAppros.js';
+import { makeSelectList } from '../../ui/selectList.js';
+
 
 const userId = appState.query.userId;
 let relationType ='ordinary';//could be permission
@@ -163,7 +164,7 @@ function getTemplateHTML() {
           </div>
         </div>
         <div class="p-6 space-y-6">
-          <div class="space-y-2">
+          <div class="space-y-2"> <!-- relative added May 15 & then removed again -->
             <label for="approfile1Select" class="block text-sm font-medium text-gray-700">Select First Approfile</label>
             <select id="approfile1Select" data-form="approfile1Select" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-purple-500 focus:border-purple-500" required>
               <option value="">Select an approfile</option>
@@ -202,7 +203,91 @@ function getTemplateHTML() {
   `;
 }
 
+function init(panel, elements) {
+  const { dialog, form, approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback, relationType } = elements;
 
+  // Setup the ropdowns as scrollable lists instead of native dropdowns. This was the hack to avoid the strange bug of dropdowns that do not respond to clicks.
+  //Many hours of tests and hypotheses failed to discoiver the reason for that bug. Changing to scrollabel lists seems to avoid it. (I hope)
+  // Top & bottom: short lists → size 3
+
+makeSelectList(approfile1Select, 3);
+  // Middle: dozens of relationships → size 10
+makeSelectList(relationshipSelect, 10);
+makeSelectList(approfile2Select, 3);
+
+//changed to external function 16:45 May 14
+/*  const applySizeHack = (sel) => {
+  sel.addEventListener('mousedown', (e) => {
+    // Only trigger if the dropdown is currently 'closed'
+    if (sel.size <= 1) {
+      // e.preventDefault() is the magic: it stops the browser from trying 
+      // to open the 'broken' native menu so our size change can take over.
+      e.preventDefault(); 
+      
+      sel.size = 6; 
+      sel.focus();
+      
+      // Visual cue so the user knows it's active
+      sel.classList.add('ring-2', 'ring-purple-500', 'border-purple-500');
+    }
+  });
+
+  const collapse = () => {
+    sel.size = 0; // Reset to 0 (default dropdown)
+    sel.classList.remove('ring-2', 'ring-purple-500', 'border-purple-500');
+  };
+
+  sel.addEventListener('change', collapse);
+  sel.addEventListener('blur', collapse);
+}
+
+
+// Apply to your three dropdowns
+[approfile1Select, approfile2Select, relationshipSelect].forEach(applySizeHack);
+*/  
+ 
+
+  onClipboardUpdate(() => {
+    populateFromClipboard({
+      approfile1Select,
+      approfile2Select,
+      informationFeedback
+    });
+  });
+
+
+
+// Close dialog
+  dialog.querySelectorAll('[data-action="close-dialog"]').forEach(el => {
+    el.addEventListener('click', () => {
+      if (panel.parentElement) {
+        panel.parentElement.removeChild(panel);
+      }
+    });
+  });
+
+  // existing change listeners...
+  approfile1Select.addEventListener('change', async (e) => {
+    await checkHandleApproIsBundle(e.target.selectedOptions[0], relateBtn, panel); 
+    updateSubmitButtonState({ approfile1Select, approfile2Select, relationshipSelect, relateBtn });
+  });
+
+  relationshipSelect.addEventListener('change', async (e) => { 
+    await checkHandleRelationshipBundle(e.target.selectedOptions[0], relateBtn, panel); 
+    updateSubmitButtonState({ approfile1Select, approfile2Select, relationshipSelect, relateBtn });
+  });
+
+  approfile2Select.addEventListener('change', async(e) => {
+    await checkHandleOfApproBundle(e.target.selectedOptions[0], relateBtn, panel);
+    updateSubmitButtonState({ approfile1Select, approfile2Select, relationshipSelect, relateBtn });
+  });
+
+  // Load and clipboard logic...
+  populateRelationshipsDropdown(relationshipSelect, relationType);
+  populateFromClipboard({ approfile1Select, approfile2Select, informationFeedback });
+}
+
+/* changed 15:36 May 15
 function init(panel, elements) {
   const { dialog, form, approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback, relationType } = elements;
   
@@ -270,16 +355,10 @@ function init(panel, elements) {
     informationFeedback
   });
    //console.log('relationType',relationType);
-  onClipboardUpdate(() => {
-    populateFromClipboard({
-      approfile1Select,
-      approfile2Select,
-      informationFeedback
-    });
-  });
+
    //console.log('relationType',relationType);
 }
-
+*/
 /**
  * 
  * let permissionTuplet ={
@@ -433,9 +512,9 @@ return allAppros;
 function populateFromClipboard({ approfile1Select, approfile2Select, informationFeedback }) {
   //this function has odd rules about what it autofills
   console.log('populateFromClipboard()');
-   //console.log('relationType',relationType);
+   
   const approfiles =getClipboardAppros(); //moved to separate function
-
+console.log('approfiles[0],[1]:',approfiles[0], approfiles[1]);
   // Get all approfile types
 /*
   const approfiles = getClipboardItems({ type: 'app-human' })
@@ -454,8 +533,6 @@ function populateFromClipboard({ approfile1Select, approfile2Select, information
       Auto-filled from clipboard</div>`;
     }
 //console.log('autofill',approfiles[0].entity);
-
-
 
   }
   
@@ -482,8 +559,12 @@ console.log('tuplet:',permissionTuplet);
 }
 
 function addClipboardItemsToDropdown(items, selectElement) {
+    console.log('addClipboardItemsToDropdown()');
+    console.log('items',items,'items.length',items.length);//20:34 May 14 no items being passed
   if (!items || items.length === 0 || !selectElement) return;
    //console.log('relationType',relationType);
+    console.log(`[addClipboard] Called for #${selectElement?.id}, items count: ${items?.length || 0}`);
+  
   items.forEach(item => {
     const existingOption = Array.from(selectElement.options).find(opt => opt.value === item.entity.id);
     if (!existingOption) {
@@ -492,8 +573,25 @@ function addClipboardItemsToDropdown(items, selectElement) {
       option.textContent = `${item.entity.name} (clipboard)`;
       option.dataset.source = 'clipboard';
       selectElement.appendChild(option);
+       console.log(`[addClipboard] ➕ Added option: "${option.textContent}"`);
     }
   });
+console.log(`[addClipboard] Options in DOM after: ${selectElement[0].length} ${selectElement[1].length}`);
+
+   // if clipboard items added, the code to make it as a list needs to be rerun.  //16:44 May 14 fails. List still empty
+  
+  
+  // Force browser to repaint listbox view with new options
+  //const currentSize = selectElement.size;
+  //console.log(`[addClipboard] 🔁 Current size: ${currentSize}. Forcing DOM reflow...`);
+  
+  //selectElement.size = 0;
+  //void selectElement.offsetHeight; // Triggers synchronous reflow
+  //selectElement.size = currentSize;
+  
+//  console.log(`[addClipboard] ✅ Size restored to ${currentSize}. Reflow complete.`);
+  
+   makeSelectList(selectElement);
 }
 
 function updateSubmitButtonState({ approfile1Select, approfile2Select, relationshipSelect, relateBtn }) {

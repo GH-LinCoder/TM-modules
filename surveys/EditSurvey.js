@@ -546,6 +546,8 @@ default: console.log('section of survey not known') ;
     }
 
     renderSurveyStructure(survey) {
+console.log('renderSurveyStructure()');
+
         let html = '<h3>Summary:</h3><br>';
 
         html += `<p class="clickable-header hover:scale-105 transition-transform bg-gray-50 border-l-4 border-gray-600 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md" data-header-id="${survey.surveyId}">
@@ -565,10 +567,12 @@ default: console.log('section of survey not known') ;
                 //`<p><em>A${answer.answerNumber}:</em> ${answer.text}</p>`;
                 
                 if (answer.automations.length > 0) {
+                    console.log('answer.automations', answer.automations);
                  //   html += `<p><em>Automations:</em></p>`;
                     
                     answer.automations.forEach(auto => {
                         // DECISION LOGIC: Check if it's a task or relationship automation
+                        //What is this?  Why aren't surveys here?  THIS DOES NOT HAPPEN. Is it called?
                         if (auto.taskHeaderId) {
                             // TASK AUTOMATION   `<p class="clickable-automation" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}" data-automation-id="${auto.automationId}">🔄 ${auto.name || 'Unnamed'}</p>`;
                             html += `<p class="clickable-automation hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-yellow-500 rounded-lg p-3 ml-8 mb-2 shadow-sm hover:shadow-md" data-question-id="${question.questionId}" data-answer-id="${answer.answerId}" data-automation-id="${auto.automationId}">automation🚂🔧 <strong>Task:</strong> Assign to "${auto.name || 'Unknown Task'}" → Step ${auto.taskStepId || 'Initial'}</p>`;

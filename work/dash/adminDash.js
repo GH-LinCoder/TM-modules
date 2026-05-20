@@ -247,7 +247,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- User Management -->
- <div class="bg-orange-100 rounded-lg shadow p-6" data-section='user-management' data-destination='user-management'>
+ <div class="bg-orange-100 rounded-lg  250 shadow p-6" data-section='user-management' data-destination='user-management'>
    <h2 class="text-lg font-semibold mb-2">User Management </h2>
    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -385,7 +385,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 </div>
 
 <!-- Relations & hierarchy Management -->
-  <div class="bg-orange-100 rounded-lg shadow p-6" data-section='r&h-management' data-destination='r&h-management'>
+  <div class="bg-orange-100 rounded-lg 388 shadow p-6" data-section='r&h-management' data-destination='r&h-management'>
     <h2 class="text-lg font-semibold mb-2">Relations & hierarchy Management 🏯</h2>
     <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
     <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">

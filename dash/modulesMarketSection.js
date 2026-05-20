@@ -22,17 +22,17 @@ function getTemplateHTML() {
     </div>
 
     <div class="space-y-10">
-        
-        <section>
-            <h3 class="text-xs font-bold uppercase tracking-widest text-green-400 mb-4 border-b pb-1">Content & Collaboration</h3>
-            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
-                <div class="bg-gray-200 border border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-300 flex flex-col justify-center items-center text-center" data-action="modules-market-section">
+                    <div class="bg-gray-200 border border-gray-300 rounded-lg p-4 cursor-pointer hover:bg-gray-300 flex flex-col justify-center items-center text-center" data-action="modules-market-section">
                     <h3 class="text-sm font-bold text-gray-700">◀️ CLOSE MARKET</h3>
                     <p class="text-[9px] text-gray-500 uppercase">Return to Settings</p>
                 </div>
 
-                
+
+        <section>
+            <h3 class="text-xs font-bold uppercase tracking-widest text-green-400 mb-4 border-b pb-1">Content & Collaboration</h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+
                 <div class="bg-green-50 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-tiptap">
                     <h3 class="text-sm font-bold text-green-900">
                         <a href="https://tiptap.dev/" target="_blank" rel="noopener noreferrer" class="hover:underline">Tiptap Editor</a>
@@ -67,6 +67,46 @@ function getTemplateHTML() {
                 </div>
             </div>
         </section>
+
+  <section>
+            <h3 class="text-xs font-bold uppercase tracking-widest text-indigo-400 mb-4 border-b pb-1">Meetings & Coomunications</h3>
+            <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+                
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-zoom">
+                    <h3 class="text-sm font-bold text-gray-900">
+                        <a href="https://www.zoom.com/" target="_blank" rel="noopener noreferrer" class="hover:underline">Zoom</a>
+                    </h3>
+                    <p class="text-[9px] bg-grey-200 text-green-800 px-1 rounded w-max mb-2 uppercase">See website</p>
+                    <p class="text-xs text-green-700">Commercial audio or video conferencing</p>
+                </div>
+
+
+                <div class="bg-purple-50 border border-purple-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-jitsi">
+                    <h3 class="text-sm font-bold text-gray-900">
+                        <a href="https://meet.jit.si/" target="_blank" rel="noopener noreferrer" class="hover:underline">Jitsi Meet</a>
+                    </h3>
+                    <p class="text-[9px] bg-grey-200 text-purple-800 px-1 rounded w-max mb-2 uppercase">See website</p>
+                    <p class="text-xs text-purple-700">Open source audio/video conferencing.</p>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-google-meet">
+                    <h3 class="text-sm font-bold text-green-900">
+                        <a href="" target="_blank" rel="noopener noreferrer" class="hover:underline">Google Meet</a>
+                    </h3>
+                    <p class="text-[9px] bg-gray-200 text-gray-800 px-1 rounded w-max mb-2 uppercase">See website</p>
+                    <p class="text-xs text-green-700">Audio/video conferencing</p>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-whereby">
+                    <h3 class="text-sm font-bold text-green-900">
+                        <a href="" target="_blank" rel="noopener noreferrer" class="hover:underline">Audio/video conferencing</a>
+                    </h3>
+                    <p class="text-[9px] bg-gray-200 text-green-800 px-1 rounded w-max mb-2 uppercase">See website</p>
+                    <p class="text-xs text-green-700">Whereby</p>
+                </div>
+            </div>
+        </section>
+
 
         <section>
             <h3 class="text-xs font-bold uppercase tracking-widest text-blue-400 mb-4 border-b pb-1">Data & Finance</h3>

@@ -51,7 +51,7 @@ export function render(panel, query = {}) {
 }
 
 
-// READ SURVEY VIEW
+// READ SURVEY VIEW - this did not have source_data or target_data. Rebuilt view 15:50 May 7 2026 to include
 
 async function readSurveyView(surveyId){
   console.log('readSurveyView');
@@ -164,13 +164,163 @@ const stepCard = document.createElement('p');
     summary.appendChild(stepCard);
 }
 
-function renderAutoCard(summary, row, type){
- console.log('renderAutoCard');
+
+function renderAutoCard(summary, row, type) {
+  console.log('renderAutoCard()'); 
+ // console.log('renderAutoCard()', row); // Keep for debugging
+
+
+  
+  if (type !== 'auto') return;
+
+  const autoId = row.auto_id;
+  const autoName = row.auto_name || row.name || '';
+  const autoDescription = row.auto_description || row.description || '';
+  const autoNumber = row.auto_number || '';
+  const autoDeletedAt = row.auto_deleted_at;
+
+  // 👇 PARSE target_data (comes as string from DB)
+//  if (row.target_data) → Skips if the column is null or empty.
+//typeof row.target_data === 'string' → Checks if Postgres returned it as raw text (which JSON columns usually do in JS).
+//? JSON.parse(row.target_data) → If it's a string, convert it to a real JS object.
+//: row.target_data → If it's already an object, leave it alone.
+
+  let targetData = {};
+  if (row.target_data) {
+    targetData = typeof row.target_data === 'string' 
+      ? JSON.parse(row.target_data) 
+      : row.target_data;
+  }
+
+//  console.log('XXX targetData', targetData);
+
+  const targetType = targetData?.target?.type || 'unknown';
+  const header = targetData?.target?.header || '-';
+
+  const safeName = escapeHtml(autoName);
+  const safeDesc = escapeHtml(autoDescription || '');
+  const icon = targetType === 'payment' ? '💳' : getIconByType('automation');
+
+  const stepCard = document.createElement('p');
+  stepCard.dataset.type = type;
+  stepCard.dataset.id = autoId;
+
+  if (autoDeletedAt) {
+    stepCard.innerHTML = `<span class="text-sm text-gray-400"><i>${icon} auto: ${autoNumber}: ${safeName} soft deleted</i></span>`;
+  } else {
+    stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-indigo-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`;
+    
+    // 👇 PAYMENT-SPECIFIC RENDERING
+    if (targetType === 'payment') {
+      const planId = header !== '-' ? header.substring(0, 8) + '...' : '-';
+      stepCard.innerHTML = `
+        <span><strong>💳 Payment:</strong></span> ${safeName}
+        <span class="block text-sm text-gray-600">Plan ID: ${planId}</span>
+        <strong>${icon} auto: ${autoNumber}:</strong> ${autoId}
+        <span class='deleteAutomationBtn text-red-600 text-sm ml-4' data-id=${autoId}>Delete</span>
+      `;
+    } else {
+      // Tasks/Surveys/Approvals (use legacy columns or JSON fallback)
+      const legacyName = row.target_task_name || row.target_survey_name || row.target_appro_is_name || '';
+      stepCard.innerHTML = `
+        <span><strong>${targetType}:</strong></span> ${safeName}
+        ${legacyName ? `<span class="block text-sm text-gray-600">→ ${legacyName}</span>` : ''}
+        <span class="block text-sm text-gray-600">${safeDesc}</span>
+        <strong>${icon} auto: ${autoNumber}:</strong> ${autoId}
+        <span class='deleteAutomationBtn text-red-600 text-sm ml-4' data-id=${autoId}>Delete</span>
+      `;
+    }
+  }
+  summary.appendChild(stepCard);
+}
+
+
+/*
+function renderAutoCard(summary, row, type) {
+  if (type !== 'auto') return;
+
+  // Use existing view fields (these stay for now)
+  const autoId = row.auto_id;
+  const autoName = row.auto_name || '';
+  const autoDescription = row.auto_description || '';
+  const autoNumber = row.auto_number || '';
+  const autoDeletedAt = row.auto_deleted_at;
+
+  // 👇 PARSE JSON COLUMNS (already in the view)
+  const targetData = typeof row.target_data === 'string' 
+    ? JSON.parse(row.target_data) 
+    : (row.target_data || {});
+    
+  const targetType = targetData?.target?.type || 'unknown';
+  const header = targetData?.target?.header || '-';
+  const secondary = targetData?.target?.secondary || '-';
+  const tertiary = targetData?.target?.tertiary || null;
+  const relationship = targetData?.payload?.relationship || '-';
+  const ofAppro = targetData?.payload?.of_appro_id || '-';
+
+  const safeName = escapeHtml(autoName);
+  const safeDesc = escapeHtml(autoDescription || '');
+  const icon = getIconByType(targetType === 'payment' ? 'payment_button' : 'automation');
+
+  const stepCard = document.createElement('p');
+  stepCard.dataset.type = type;
+  stepCard.dataset.id = autoId;
+
+  if (autoDeletedAt) {
+    stepCard.innerHTML = `<span class="text-sm text-gray-400"><i>
+      ${icon} auto: ${autoNumber}: ${safeName} soft deleted</i></span>`;
+  } else {
+    stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-indigo-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`;
+    
+    // 👇 RENDER BASED ON JSON CONTENT, NOT LEGACY COLUMNS
+    if (targetType === 'payment') {
+      const planName = safeName;
+      // payment_plan_id isn't in the view, but header contains the plan UUID
+      const planId = header !== '-' ? header.substring(0, 8) + '...' : '-';
+      stepCard.innerHTML = `
+        <span><strong>💳 Payment:</strong></span> ${planName}
+        <span class="block text-sm text-gray-600">Plan: ${planId}</span>
+        <strong>${icon} auto: ${autoNumber}:</strong> ${autoId}
+        <span class='deleteAutomationBtn text-red-600 text-sm ml-4' data-id=${autoId}>Delete</span>
+      `;
+    } else {
+      // Existing rendering for task/survey/appro (also reads from JSON now)
+      stepCard.innerHTML = `
+        <span><strong>${targetType}:</strong></span> ${safeName}
+        <span class="block text-sm text-gray-600">${safeDesc}</span>
+        <span class="block text-sm text-gray-600">Header: ${header} | Rel: ${relationship}</span>
+        <strong>${icon} auto: ${autoNumber}:</strong> ${autoId}
+        <span class='deleteAutomationBtn text-red-600 text-sm ml-4' data-id=${autoId}>Delete</span>
+      `;
+    }
+  }
+  summary.appendChild(stepCard);
+}
+*/
+/*
+function renderAutoCard(summary, row, type){//summary is the element where to display, type = 'auto'
+ console.log('renderAutoCard()');  
+// console.log('renderAutoCard()','row:',row, 'relationship', row.target_relationship);
  // console.log('row:',row, 'summary:',summary,'type:',type);
 if(type!=='auto') return;
+/* the row data should allow the display to show what kind of automation each is
 
+"source_data":"{
+\"type\": \"survey\", 
+\"header\": \"635c6c3e-2fb2-48d6-a34b-e8b7cb257676\", 
+\"tertiary\": \"4fb4c804-c31d-466a-8c27-9a7abd722b11\", 
+\"secondary\": null}"
+,
+"target_data":"{
+\"target\": {// <--- repeated 'target' because also have 'payload'
+\"type\": \"task\",  <---------use this
+ \"header\": \"05f6efe7-376f-434d-86a5-0877d624bd05\", 
+\"secondary\": \"629a9589-1d6a-4dbb-be9d-fd6b9a260a10\"}, <---- task step
+\"payload\": {}}",  <---
+*/
+/*
 const safeAutoName = escapeHtml(row.auto_name);
-const safeAutoDescription = escapeHtml(row.auto_description || ''); 
+const safeAutoDescription = escapeHtml(row.auto_description || ''); //no such data?
 
 
 let icon = getIconByType('automation');
@@ -178,23 +328,33 @@ const stepCard = document.createElement('p');
     stepCard.dataset.type = type; 
 //    stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`;
 stepCard.dataset.id = row.auto_id; 
-   
+const targetType = row.target_data?.target?.type || 'unknown';
+//let header =null;
+//if (targetType==='task' || targetType === 'survey') header = row.target_data?.target?.header || '';
+const header = row.target_data?.target?.header || '-';
+const secondary = row.target_data?.target?.secondary || '-';
+const tertiary = row.target_data?.target?.tertiary || null;
+const relationship = row.target_data?.payload?.relationship || '-';
+const ofAppro = row.target_data?.payload?.of_appro_id || '-';   
+//const targetOfApproName = row.targetOfApproName || '-';
+//console.log('row.auto',row.auto); //what is this function readin - it doesn't contain the json
+
 if(row.auto_deleted_at) {stepCard.innerHTML+= `<span class=" text-sm text-gray-400"><i>
   ${icon} ${type}: ${row.auto_number}: ${safeAutoName} ${safeAutoDescription} ${row.auto_id} soft deleted</i></span>`} 
     else 
     { 
       stepCard.className = `clickable-item data-type=${type} hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-indigo-400 rounded-lg p-3 mb-2 shadow-sm hover:shadow-md`; 
-      stepCard.innerHTML = `
-      <strong>${icon} ${type}: ${row.auto_number}:</strong> ${safeAutoName}
+      stepCard.innerHTML = ` <span><strong>${targetType}:</strong></span> ${safeAutoName}
       <span class="block text-sm text-gray-600 whitespace-pre-line">${safeAutoDescription  || ''}</span>
-    ${row.auto_id} 
+    <span class="block text-sm text-gray-600 whitespace-pre-line">Header id: ${header} Secondary id: ${secondary} Tertiary id:${tertiary} | Relationship: ${relationship} | of_appro: ${ofAppro} </span>
+       <strong>${icon} ${type}: ${row.auto_number}:</strong>   ${row.auto_id} 
     <span class= 'deleteAutomationBtn text-red-600 text-sm ml-4' data-id=${row.auto_id}>Delete</span>
       `};
 //console.log('stepCard',stepCard);
     summary.appendChild(stepCard);
 
 }
-
+*/
 function markActiveStepInSummary(panel) {
     console.log('markActiveStepInSumary()');
   panel.querySelectorAll('.clickable-item').forEach(el => {
@@ -224,7 +384,7 @@ async function renderSurveyStructure(panel) { //should this put more data in dis
   summary.innerHTML = '<h3>The survey is summarised below. To edit, click on a part and then scroll up to edit the text. :</h3><br>';
 
 const surveyId = state.currentSurveyHeaderId;
-const rows = await readSurveyView(surveyId);
+const rows = await readSurveyView(surveyId); //this is not finding any attached payment buttons, but it finds attached tasks & surveys
 //console.log('rows',rows);
 
 let oldHeader = null;
@@ -253,8 +413,18 @@ if (row.survey_id !== oldHeader) {
   }
 
   if (row.auto_id !== oldAuto && row.auto_id) {
-  //  console.log("Automation:",row.auto_number, row.auto_name, row.auto_description, row.auto_id);
+ //  console.log("Automation:",row.auto_number, row.auto_name, row.auto_description, row.auto_id);
     oldAuto = row.auto_id;
+
+// Inside the loop in renderSurveyStructure():
+/*
+if (row.auto_id !== oldAuto && row.auto_id) {
+  console.log('🔍 Auto row | target_data type:', typeof row.target_data, '| value:', row.target_data);
+  oldAuto = row.auto_id;
+  renderAutoCard(summary, row, 'auto');
+}
+*/
+
     renderAutoCard(summary, row, 'auto');
   } 
 });
@@ -306,11 +476,12 @@ function initClipboardIntegration(panel) {
     console.log('initClipboardIntegration()');
   // Check clipboard immediately
  checkClipboardForSurveys(panel); // renderSurveyStructure(panel);//at this point state.currentSurveyId not in state
-
+populateAutomationDropdowns(panel);
   // Listen for future changes
   onClipboardUpdate(() => {
     checkClipboardForSurveys(panel);
-    //populateFromClipboardAuto(panel); //should this be inside checkclipboard?
+    populateAutomationDropdowns(panel);
+
   });
 }
 
@@ -323,7 +494,34 @@ console.log('checkClipboardForSurveys()');
 
   //at least one survey is in the clipboard so let's use it
   populateFromClipboard(panel,surveys);
-populateFromClipboardAuto(panel); //moved here from init  19:31 dec 9
+//populateFromClipboardAuto(panel); //moved here from init  19:31 dec 9
+}
+
+// Populate clipboard-based automation dropdowns
+function populateAutomationDropdowns(panel) {
+  console.log('populateAutomationDropdowns()');
+//  console.log('going to show task dropdown log---');
+  const tasks = getClipboardItems({ as: 'task' });
+  const taskDropdown = panel.querySelector('#taskAutomationSelect');
+  
+//  console.log('Task dropdown:', taskDropdown);  // Should be <select id="taskAutomationSelect">
+  if (taskDropdown && tasks?.length) {
+    addClipboardItemsToThisDropdown(tasks, taskDropdown);
+  }
+  
+  const surveys = getClipboardItems({ as: 'survey' });
+  const surveyDropdown = panel.querySelector('#surveyAutomationSelect');  // NOT #surveySelect
+ // console.log('Survey dropdown:', surveyDropdown);  // Should be <select id="surveyAutomationSelect">
+  if (surveyDropdown && surveys?.length) {
+    addClipboardItemsToThisDropdown(surveys, surveyDropdown);
+  }
+  
+  const approfiles = getClipboardItems({ as: 'other' });
+  const approDropdown = panel.querySelector('#approfileAutomationSelect');
+ // console.log('Appro dropdown:', approDropdown);  // Should be <select id="approfileAutomationSelect">
+  if (approDropdown && approfiles?.length) {
+    addClipboardItemsToThisDropdown(approfiles, approDropdown);
+  }
 }
 
 
@@ -396,14 +594,22 @@ function populateFromClipboard(panel,surveys) { //Only call this when there is a
 
 //New 19:38 Nov 12
 function populateFromClipboardAuto(panel) { //for the automations dropdowns
-    console.log('populateFromClipboardAuto()');
-    
+    console.log('populateFromClipboardAuto()'); // this is out of date. These selectors have been replaced by the tabs with shared selectors
+    let items = null;
+    const itemSelectTask = panel.querySelector('#taskAutomationSelect');
+        const itemSelectSurvey = panel.querySelector('#surveyAutomationSelect');
+            const itemSelectAppro = panel.querySelector('#approfileAutomationSelect'); 
     // Get clipboard items
-    const tasks = getClipboardItems({ as: 'task' });
-    const surveys = getClipboardItems({ as: 'survey' });
-    const approfiles = getClipboardItems({ as: 'other' });
-        const managers = getClipboardItems({ as: 'manager' });
-    
+    if(state.activeTab === 'tasks') {items = getClipboardItems({ as: 'task' });       addClipboardItemsToThisDropdown(items, itemSelectTask, state.activeTab);} 
+  else if (state.activeTab === 'surveys') {items = getClipboardItems({ as: 'survey' });      addClipboardItemsToThisDropdown(items, itemSelectSurvey, state.activeTab);} 
+  else if (state.activeTab === 'appros') {items = getClipboardItems({ as: 'other' });      addClipboardItemsToThisDropdown(items, itemSelectAppro, state.activeTab);} 
+  
+
+
+  const managers = getClipboardItems({ as: 'manager' });
+
+  
+
    /* 
    console.log('Clipboard items loaded:', 
    {
@@ -413,46 +619,12 @@ function populateFromClipboardAuto(panel) { //for the automations dropdowns
       managers: managers.length
     });
     */
-    // Populate task automation dropdown
-    const taskSelect = panel.querySelector('#taskAutomationSelect');
-    if (taskSelect) {
-      //console.log('Populating task automation dropdown with', tasks.length, 'items');
-      addClipboardItemsToThisDropdown(tasks, taskSelect, 'task');
-    }
-    
-    // Populate survey automation dropdown 
-    const surveyAutomationSelect = panel.querySelector('#surveyAutomationSelect');
-    if (surveyAutomationSelect) {
-      //console.log('Populating survey automation dropdown with', surveys.length, 'items');
-      addClipboardItemsToThisDropdown(surveys, surveyAutomationSelect, 'survey');
-    }
 
-
-    // Populate approfile automation dropdown
-    const approfileSelect = panel.querySelector('#approfileAutomationSelect');
-    if (approfileSelect) {
-    //  console.log('Populating approfile automation dropdown with', approfiles.length, 'items');
-      addClipboardItemsToThisDropdown(approfiles, approfileSelect, 'approfile');
-    }
-    /*
-    // Populate manager automation dropdown (if you want managers in automations too)
-    const managerSelect = panel.querySelector('#managerAutomationSelect');
-    if (managerSelect) {  //15:20 Dec 10 - no such dropdown in the HTML
-      //console.log('Populating manager automation dropdown with', managers.length, 'items');
-      addClipboardItemsToThisDropdown(managers, managerSelect, 'manager');
-    } 
-    
-    // Also populate the main manager dropdown in the header section
-    const headerManagerSelect = panel.querySelector('#managerSelect');
-    if (headerManagerSelect) {
-      //console.log('Populating header manager dropdown with', managers.length, 'items');
-      addClipboardItemsToThisDropdown(managers, headerManagerSelect, 'manager');
-    }  */
   }
 
 
 function addClipboardItemsToThisDropdown(items, selectElement) {//helper to build a dropdown display in the supplied element
-    console.log('addClipboardItemsToThisDropdown()');
+    console.log('addClipboardItemsToThisDropdown() items:', items, 'selecteElement',selectElement);
   if (!items || items.length === 0) return;
   
   items.forEach(item => {
@@ -536,14 +708,13 @@ function attachListeners(panel) {
 
   addQuestionBtn?.addEventListener('click', (e) => {state.currentItemType='question'; insertNewQuestion(panel)}); // handlestepUpdate also tries to handle this
   addAnswerBtn?.addEventListener('click', (e) => {state.currentItemType='answer'; insertNewAnswer(panel)});  //there may be a conflict between direct insert and update calling insert
-
+//Need to check if the question is selected else throws error
 
 
 const surveySelect = panel.querySelector('#surveySelect'); //used in edit task  #taskSelect
-
   surveySelect?.addEventListener('change', (e) => {
+    console.log('survey change');
     const selectedSurveyId = e.target.value;//this is the new displayed data of the selected survey
-
     renderNewSelectedSurvey(panel,selectedSurveyId);
 /*
     const surveys = getClipboardItems({ as: 'survey', type: 'surveys' });
@@ -568,8 +739,9 @@ const surveyAutomationSelect = panel.querySelector('#surveyAutomationSelect');
 const saveAttachmentBtn = panel.querySelector('#saveAttachmentBtn');
 
 surveyAutomationSelect?.addEventListener('change', () => {
+ // console.log('survey automations change');
   if (surveyAutomationSelect.value) {
-    saveAttachmentBtn.disabled = false;  // can't find button
+    saveAttachmentBtn.disabled = false;
     saveAttachmentBtn.style.pointerEvents = 'auto';
     saveAttachmentBtn.classList.remove('opacity-50');
   } else {
@@ -582,8 +754,9 @@ surveyAutomationSelect?.addEventListener('change', () => {
 const taskAutoSelect = panel.querySelector('#taskAutomationSelect');
 
 taskAutoSelect?.addEventListener('change', () => {
+//console.log('task automations change');
   if (taskAutoSelect.value) {
-    saveAttachmentBtn.disabled = false;  // no such button now
+    saveAttachmentBtn.disabled = false;  
     saveAttachmentBtn.style.pointerEvents = 'auto';
     saveAttachmentBtn.classList.remove('opacity-50');
   } else {
@@ -596,6 +769,7 @@ taskAutoSelect?.addEventListener('change', () => {
 const approSelect = panel.querySelector('#approfileAutomationSelect');
 
 approSelect?.addEventListener('change', () => {
+//  console.log('appro change');
   if (approSelect.value) {
     saveAttachmentBtn.disabled = false;
     saveAttachmentBtn.style.pointerEvents = 'auto';
@@ -614,6 +788,7 @@ approSelect?.addEventListener('change', () => {
 // ✅ Tab click listeners + initialization (identical)
 panel.querySelectorAll('#attachmentTabs .tab-btn').forEach(btn => {
   btn?.addEventListener('click', (e) => {
+//console.log('tab change');
     const tabId = e.currentTarget.dataset.tab;
     switchAttachmentTab(panel, tabId);
   });
@@ -623,19 +798,20 @@ switchAttachmentTab(panel, 'tasks');  // Initialize
 // ✅ Dropdown change listeners (identical logic)
 ['#taskAutomationSelect', '#surveyAutomationSelect', '#approfileAutomationSelect', '#attachmentSelect'].forEach(selector => {
   panel.querySelector(selector)?.addEventListener('change', (e) => {
+    console.log('selector change', selector);
     const saveBtn = panel.querySelector('#saveAttachmentBtn');
     if (saveBtn) saveBtn.disabled = !e.target.value;
   });
 });
 
-// ✅ Copy this exactly — your handlers already use survey_answer_id
+
 panel.querySelector('#saveAttachmentBtn')?.addEventListener('click', async (e) => {
   e.stopPropagation();
-  
+//console.log('save attachment button clicked');
   let selectedValue = null;
   let selectedDropdown = null;
   const activeTab = state.activeTab; 
-  
+ // console.log('saveAttachmentBtn clicked','active tab:',activeTab);  
   if (activeTab === 'payments') {
     selectedDropdown = panel.querySelector('#attachmentSelect');
   } else if (activeTab === 'tasks') {
@@ -706,7 +882,7 @@ async function populatePaymentPlansDropdown(panel) {
       });
       
       dropdown.disabled = false;
-      console.log(`Loaded ${plans.length} payment plans`);
+     // console.log(`Loaded ${plans.length} payment plans`);
     } else {
       dropdown.innerHTML = '<option value="">No payment plans found</option>';
       console.warn('⚠️ No active payment plans found');
@@ -821,7 +997,7 @@ addInformationCard({
     }
     
     saveAttachmentBtn.disabled = false;
-    saveAttachmentBtn.textContent = 'Save Task';
+    saveAttachmentBtn.textContent = 'Attach Task';
 }
 
 function addInformationCard(itemData) { //16:00 Dec 11   This function does not work
@@ -881,7 +1057,7 @@ async function handleSurveyAutomationSubmit(e, panel) {
     
 try{
 //function needs:    source_survey_answer_id, source_survey_header_id,target_survey_header_id, name, automation_number } = payload;
-console.log('source_survey in state?',state, 'target survey',selectedAutoSurveyId , 'state.currentItemId',state.currentItemId);// survey_id is not in state. 
+//console.log('source_survey in state?',state, 'target survey',selectedAutoSurveyId , 'state.currentItemId',state.currentItemId);// survey_id is not in state. 
 
 const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBySurvey', { 
 
@@ -909,7 +1085,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
      // automationsNumber--; // ROLLBACK: Decrement on failure
  }
   saveAttachmentBtn.disabled = false;
-  saveAttachmentBtn.textContent = 'Save Survey';
+  saveAttachmentBtn.textContent = 'Attach Survey';
 }
 
 
@@ -925,7 +1101,7 @@ let nextAutoNumber = findNumberInSurvey('auto_number');
    } 
 
     const approfileSelect = panel.querySelector('#approfileAutomationSelect'); // Changed ID to match task module
-    const relationshipSelect = panel.querySelector('#relationshipAutomationSelect'); // Changed ID to match task module
+    const relationshipSelect = panel.querySelector('#relationshipSelect'); // Changed ID to match task module
     
     const selectedApproId = approfileSelect?.value;
     // Get the selected option text
@@ -950,7 +1126,7 @@ let nextAutoNumber = findNumberInSurvey('auto_number');
 //    automationsNumber++;        
     
     try {  
-  console.log('ofAppro',selectedApproId,'selectedRelationship:', selectedRelationship); //undefined here 16:15 Nov 26
+//  console.log('ofAppro',selectedApproId,'selectedRelationship:', selectedRelationship); //undefined here 16:15 Nov 26
       // Save relationship automation to database
 //function needs:    const { source_survey_header_id, source_survey_answer_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
         const result = await executeIfPermitted(state.user, 'createAutomationRelateBySurvey', { 
@@ -985,7 +1161,7 @@ let nextAutoNumber = findNumberInSurvey('auto_number');
     
      // Re-enable the button:
      e.target.disabled = false;
-     e.target.textContent = 'Save Relationship';
+     e.target.textContent = 'Attach Relationship';
 }
 
 
@@ -1143,7 +1319,7 @@ console.log('updateHeader()');
       }
   //the above test would have been done by the db anyway.
       saveBtn.textContent = 'Updating Survey...'; //description has value here 23:05
-  //console.log('handleSurv update()id:', state.currentSurveyHeader.id,'name:', stepName,'descr:',stepDescription, 'external_url:', url); //looks ok  15:16 Dec 3//state.currentSurveyHeaderId null 14:13 Dec 3  id was known on line 998 also in ifP line 59
+  //console.log('handleSurv update()id:', state.currentSurveyHeader.id,'name:', stepName,'descr:',stepDescription, 'external_url:', url); //looks ok  15:16 Dec 3//state.currentSurveyHeaderId null 14:13 Dec 3  id was known on line 998 also in if P line 59
        //function requires:     const { surveyId, name, description} = payload;
   //console.log('surveyId, name, description',state.currentSurveyHeaderId, stepName, stepDescription);
        const updatedSurvey = await executeIfPermitted(state.user, 'updateSurvey', {
@@ -1183,10 +1359,10 @@ console.log('updateHeader()');
     if (!state.currentSurveyHeaderId) {  //20:00 dec 6 null when select new from dropdown  
     showToast('Survey not loaded', 'error');
       return;}
-          if (!state.user) {  //20:00 dec 6 null when select new from dropdown  
-    showToast('User missing', 'error');
+//          if (!state.user) {  //20:00 dec 6 null when select new from dropdown  Does it matter?
+//    showToast('User missing', 'error');
       //return;
-    }
+    
 
 switch (state.currentItemType){//is it a question, answer or header? Is it an old or new one?
   case 'question':{//selected question or answer uuid @ state.currentItemId number @ state.currentItemNumber
@@ -1205,8 +1381,6 @@ else insertNewAnswer(panel); // is this needed? listener goes directly to insert
   break;
   default:{ showToast('state.currentItemType not recognised', state.currentItemType) }
 }
-
-    
 
   e.disabled = true;
 e.textContent = 'Saving...';
@@ -1337,7 +1511,7 @@ function attachStepsListeners(panel) {
     if (target.classList.contains('clickable-item')) {
       const type = target.dataset.type; // 'survey', 'question', etc. 
       const clickedItemId = target.dataset.id; // is this an id or a DOM element?
-      state.currentItemId = clickedItemId;
+      state.currentItemId = clickedItemId; //isn't this already assigned with that value?
       state.currentItemType =type; 
 switch (type) {
 case "question":  state.currentItemNumber = target.dataset.question_number; break;
@@ -1356,7 +1530,7 @@ default: console.log('type of clickable item not recognised', type);
     } else if (target.classList.contains('clickable-automation')) {
       const clickedItemId = target.dataset.id;
       const automationId = target.dataset.automationId;
-      state.currentItemId = clickedItemId;
+      state.currentItemId = clickedItemId; //does this remove the answer id & replace with auto id?
       state.currentAutomationId = automationId;
       if (saveBtn) { saveBtn.textContent = 'Manage automations'; saveBtn.disabled = false; }
       if (sectionToEditEl) sectionToEditEl.textContent = 'automation';
@@ -1552,13 +1726,7 @@ function getTemplateHTML() {console.log('getTemplateHTML');
     </select>
   </div>
   
-  <!-- Relationships dropdown (only for appros tab) -->
-  <div id="relationshipSelector" class="mb-3 hidden">
-    <label for="relationshipSelect" class="block text-sm font-medium text-gray-700 mb-1">Relationship:</label>
-    <select id="relationshipSelect" class="w-full p-2 border rounded">
-      <option value="">Select relationship...</option>
-    </select>
-  </div>
+
   
   <!-- Visibility checkbox (hidden for payments) -->
   <label id="visibilityCheckbox" class="flex items-center gap-2 mb-3">
@@ -1575,6 +1743,16 @@ function getTemplateHTML() {console.log('getTemplateHTML');
 <select id="surveyAutomationSelect" class="w-full p-2 border rounded">
   <option value="">Select a survey...</option>
 </select>
+
+
+
+  <!-- Relationships dropdown (only for appros tab) -->
+  <div id="relationshipSelector" class="mb-3 hidden">
+    <label for="relationshipSelect" class="block text-sm font-medium text-gray-700 mb-1">Relationship:</label>
+    <select id="relationshipSelect" class="w-full p-2 border rounded">
+      <option value="">Select relationship...</option>
+    </select>
+  </div>
 
 <!-- Approfiles tab dropdown -->
 <select id="approfileAutomationSelect" class="w-full p-2 border rounded">
@@ -1650,6 +1828,14 @@ async function switchAttachmentTab(panel, tabId) {
   console.log('switchAttachmentTab:', tabId);
    state.activeTab = tabId;
 
+/* test
+document.querySelectorAll('*').forEach(el => {
+  const style = getComputedStyle(el);
+  if (style.position === 'absolute' || style.position === 'fixed') {
+    el.style.outline = '2px solid red';
+  }
+});
+*/
 
    // ✅ VISUAL: Update tab button styling
   const tabs = panel.querySelectorAll('#attachmentTabs .tab-btn');
@@ -1700,7 +1886,7 @@ async function switchAttachmentTab(panel, tabId) {
   // Show relationship selector
   panel.querySelector('#relationshipSelector')?.classList.remove('hidden');
 }
-  // ✅ For other tabs: dropdowns already populated by populateFromClipboardAuto() elsewhere
+
   
   // Show/hide relationship selector (only for appros)
   const relationshipSelector = panel.querySelector('#relationshipSelector');
@@ -1722,19 +1908,15 @@ async function switchAttachmentTab(panel, tabId) {
 async function handlePaymentAttachmentSubmit(e, panel) {
   console.log('handlePaymentAttachmentSubmit()');
 
-  console.log('🚨 PAYMENT HANDLER CALLED:', {
-    activeTab,
-    caller: 'handlePaymentAttachmentSubmit',
+/*
+  console.log('🚨', { //what does this do???
+    stateActiveTab:state.activeTab,
     stack: new Error().stack?.split('\n').slice(1, 3).join('\n')
   });
-
-
-  console.count('UI_TRIGGER'); // Log 1
+*/
   e.preventDefault();
     e.stopPropagation();
   
-
-
   const attachmentSelect = panel.querySelector('#attachmentSelect');
   const selectedPlanId = attachmentSelect?.value;
   
@@ -1759,19 +1941,33 @@ async function handlePaymentAttachmentSubmit(e, panel) {
     const selectedPlan = plans.find(p => p.id === selectedPlanId);
     const planName = selectedPlan?.name || 'Unknown Plan';
     
-    // Determine target_type: 'task' for header, 'task_step' for step
-    const targetType = state.currentStepId ? 'task_step' : 'task';
-    const targetId = state.currentStepId || state.currentTaskId;
-    
-    // Call your RPC with hardcoded registry ID (no extra lookup needed)
+    // Determine target_type: 'task' for header, 'task_step' for step THIS IS ABSURD. There is no target task
+    //const targetType = state.currentStepId ? 'task_step' : 'task';
+    //const targetId = state.currentStepId || state.currentTaskId;
+    //const targetType ='payment'; //Is there such a thing???
+    //const targetId =
+
+    // Call with hardcoded registry ID for 'payment button' BUT the called function doesn't use it
+/**what the registry function requires
+ *    payment_plan_id, 
+      planName:planName,
+      source_header_id,  // for source_data for TASKS ONLY Need change to source_header
+      source_secondary_id,    // for source_data  for TASKS ONLY need change to source_secondary + add source_tertiary for answers
+      source_tertiary_id,
+      is_visible = true 
+ */
+
+console.log('🚨 calling to create button-1815 with answerId state.currentItemId:',state.currentItemId);
+
     const result = await executeIfPermitted(state.user, 'createAttachmentPaymentButton', {//state.user wrong id
       auto_registry_id: 'd1f2028e-95fa-4a9b-ae6f-ff4753d5913d',  
       payment_plan_id: selectedPlanId,
       planName:planName,
-      target_type: targetType,
-      target_id: targetId,
-      source_task_header_id: state.currentTaskId,
-      source_task_step_id: state.currentStepId || null,
+      
+      source_header_id: state.currentSurveyHeaderId,
+      source_secondary_id: null,
+      source_tertiary_id:state.currentItemId, 
+      source_type:'survey',
       is_visible: true
     });
     
@@ -1779,17 +1975,16 @@ async function handlePaymentAttachmentSubmit(e, panel) {
     addInformationCard({
       'name': `${planName?.substring(0, 60) || 'Unknown Plan'}...`,
       'type': 'payment_button',
-      'step': state.currentStepId || 'header',
+      'step': state.currentSurveyHeaderId || 'header',
       'planId': `${selectedPlanId?.substring(0, 8) || 'unknown'}...`,
       'id': `${result.id?.substring(0, 8) || 'unknown'}...`
     });
     
     showToast('Payment attachment saved successfully!');
     
-    // Reload automations display -- not sure why this is looking for the step that the student
+    // Reload automations display
   
-   renderTaskStructure(panel);
-  
+ renderSurveyStructure(panel); //This had been renderTASK  changed May 15 to survey   
     
   } catch (error) {
     console.error('Failed to save payment attachment:', error);
@@ -1845,7 +2040,7 @@ async function populateRelationshipsDropdown(panel) {
       });
       
       dropdown.disabled = false;
-      console.log(`Loaded ${relationships.length} relationships`);
+    //  console.log(`Loaded ${relationships.length} relationships`);
     } else {
       dropdown.innerHTML = '<option value="">No relationships found</option>';
     }

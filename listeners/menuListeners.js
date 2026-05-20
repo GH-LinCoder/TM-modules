@@ -5,15 +5,17 @@ console.log('menuListeners loaded');
 
 export function menuListeners() {//unlike admiListeners navListeners have not been loading petition by reading html
 //    console.log('Setting up navigation listeners');
-
-    document.addEventListener('click', async (e) => {
+//changed from document.  in hope this will solve the problem with unresponsive dropdowns - FAILED
+    document.querySelector('[data-nav="main-nav"]').addEventListener('click', async (e) => {
 console.log('Navigation click event:', e.target);
     
     const btn = e.target.closest('.nav-btn');
     if (!btn) return;
 
-    e.preventDefault();
-    e.stopPropagation();
+if (['SELECT', 'OPTION', 'INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+ e.preventDefault(); //removed in hope that the dropdowns would now respond - failed  17:12 May 9
+ e.stopPropagation(); //removed in hope that the dropdowns would now respond - failed
 
     const pageName = btn.dataset.page; //pageName is set in flex load.html Nothing else set there
 markMenuButton(pageName, btn);

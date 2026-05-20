@@ -62,40 +62,54 @@ return petition;
  * @param {Element} container - The container element of the admin dashboard
  */
 export function adminListeners(container) {
-  // Listen for clicks on the container
-  // console.log('adminListeners add Listeners or respond');//this is the entire html div being passed !
- 
-if (!window.__adminListenersLoaded) { window.__adminListenersLoaded = true; //introduced this guard March 8 2026.
-    
+  // Guard so we only attach once per page load
+  if (container.__adminListenersAttached) return;
+  container.__adminListenersAttached = true;
 
-   container.addEventListener('click', (e) => {
+  container.addEventListener('click', (e) => {
+    const tag = e.target.tagName;
 
-   const petition  = readPetition(e); // Finds the module, section & action to be loaded in query{} 
-   console.log('petition (', petition, ')');
-    if (!petition) { console.log('No petition found, exiting listener'); return; } // Exit if no valid petition
-   appState.setPetitioner(petition); // petitioner is a part of appState.query{}
 
-   const action = petition.Action;
-   console.log('adminListeners (',action,')');
-///////////////////////////////////////////////////////  Switch Action  (legacy) ///////////////////////////////////////////////////////
+    /*
+    // Let native form controls behave normally - this failed to solve the problem
+    if (['SELECT', 'OPTION', 'INPUT', 'TEXTAREA'].includes(tag)) {
+      console.log('adminListeners: native form element clicked, skipping admin logic');
+      return; // IMPORTANT: no preventDefault / no stopPropagation
+    }
+*/
+// Trying this instead: Check if click is on or inside a form element
+if (e.target.closest('select, input, textarea')) {
+  console.log('adminListeners: native form element clicked, skipping admin logic');
+  return;
+}
+
+
+    const petition = readPetition(e);
+    console.log('petition (', petition, ')');
+    if (!petition) {
+      console.log('No petition found, exiting listener');
+      return;
+    }
+
+    appState.setPetitioner(petition);
+    const action = petition.Action;
+    console.log('adminListeners (', action, ')');
+
     switch (action) {
       case 'create-task-dialogue':
         console.log('case: (', action, ') changing name to createTaskForm.html Then call handleCardClick()');
-        handleCardClick(action, 'createTaskForm.html');//redundant ?
+        handleCardClick(action, 'createTaskForm.html');
         break;
 
       case 'assign-task-dialogue':
         console.log('case: (', action, ') changing name to asignTaskForm.html Then call handleCardClick()');
-        handleCardClick(action,'assignTaskForm.html');
+        handleCardClick(action, 'assignTaskForm.html');
         break;
 
-
-        case 'move-student-dialogue':
-          console.log('case: (', action, ')changing name to moveStudentForm.html Then call handleCardClick()');
-         handleCardClick(action, 'moveStudentForm.html');
+      case 'move-student-dialogue':
+        console.log('case: (', action, ') changing name to moveStudentForm.html Then call handleCardClick()');
+        handleCardClick(action, 'moveStudentForm.html');
         break;
-
-
 
       case 'relate-approfiles-dialogue':
         console.log('case: (', action, ') changing name to relateApprofilesForm.html Then call handleCardClick()');
@@ -107,12 +121,11 @@ if (!window.__adminListenersLoaded) { window.__adminListenersLoaded = true; //in
         break;
 
       default:
-        handleCardClick(action, action );
-//        console.warn('Unknown action:', action);
+        handleCardClick(action, action);
     }
-  });
-}//eof guard
+  }); // NOTE: no capture flag here
 }
+
 
 
 // === ADMIN LISTENERS ===
