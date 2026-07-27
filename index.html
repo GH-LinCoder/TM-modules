@@ -521,7 +521,12 @@ console.log('Failed to assign: ' + error.message);
           displayArea.classList.remove('opacity-0', 'pointer-events-none');
           displayArea.classList.add('opacity-100');
         }
-        showForm('newPasswordForm');
+     if(type === 'recovery')   showForm('newPasswordForm');
+      else if (type === 'signup') {//skip login. Go direct to myDash
+          setTimeout(() => {
+            window.location.href = '/organise.html'; 
+          }, 1000);
+        }
       }
     }
   }

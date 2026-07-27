@@ -8,6 +8,7 @@ AS $$
 
 DECLARE
   v_approfile_id UUID;
+    v_bundle_id UUID := '7efa57d4-9ba4-4c91-83b6-bbaa8d1ac030'::UUID;  -- notes bundle UUID
 BEGIN
   -- Get user's approfile
   SELECT id INTO v_approfile_id FROM app_profiles WHERE auth_user_id = p_user_id;
@@ -28,11 +29,15 @@ BEGIN
 
   ON CONFLICT DO NOTHING; -- Safe for re-runs
 
+ -- 3. Mark notes as granted & process complete
 UPDATE public.temp_signups 
-  SET grant_notes_at = now(),
-      completed_at = now(), 
-      description = 'Notes granted successfully. '
+  SET grant_notes_at = NOW(),
+      completed_at = NOW(), 
+      description = 'Notes granted successfully. User confirmed.'
   WHERE user_id = p_user_id;
+
+    -- 4. Log for debugging
+  RAISE LOG 'grant_notes_permissions: to user appro_id %', v_approfile_id;
 
 END;
 $$;
