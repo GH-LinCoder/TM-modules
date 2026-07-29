@@ -182,6 +182,10 @@ if (!text || typeof text !== 'string') return '';
   }
 
 
+
+
+
+  
   async function render() {
 
 document.getElementById('toggle-signup-password').addEventListener('click', function() {
@@ -248,7 +252,7 @@ console.log('email',email,' password ', password);
     
     // Wait for animation to complete, then redirect
     setTimeout(() => {
-     window.location.href = '/organise.html'; //for tests comment out this line & the signup redirect (lines 218 & 322) so can see error messages on console
+     window.location.href = '/organise.html'; //for tests comment out this line & the signup redirect (lines 369 & 326) so can see error messages on console
     }, 1000); // Match this delay to your CSS transition duration
   
       }
@@ -366,7 +370,7 @@ const { data, error2 } = await supabase.rpc('create_appro_from_new_auth_user_v2'
         p_user_id:signupData.user.id || null});
         if (error2) { console.error('write app_profile table error',error); showToast('Failed to create appro'); }
  else { console.log('Write to app_profile:', data); 
- window.location.href = '/index.html' //for tests comment out this line & the other redirect (lines 218 & 322) so can see error messages on console
+ window.location.href = '/index.html' //for tests comment out this line & the other redirect (lines 218 & 326) so can see error messages on console
  ;} //moved to here from signup function
  //where it was didn't seem to work.
   } 
@@ -500,41 +504,73 @@ console.log('Failed to assign: ' + error.message);
   //UNIQUE IN INDEX.HTML
 
   // Handle auth token on load - this is unique to index.html as this is where the db email redirects
-  async function handleRecoveryToken() {
+
+  async function handleRecoveryToken() { //new version 21:16 July 29 2026 to handle email confirmation
+    // Check both hash and search params for maximum compatibility
     const hash = window.location.hash.substring(1);
-    const urlParams = new URLSearchParams(hash);
+    const search = window.location.search.substring(1);
+    const paramSource = hash.includes('access_token') ? hash : search;
+    const urlParams = new URLSearchParams(paramSource);
 
     const accessToken = urlParams.get('access_token');
     const refreshToken = urlParams.get('refresh_token');
     const type = urlParams.get('type');
 
     if (accessToken && refreshToken && (type === 'recovery' || type === 'invite' || type === 'signup')) {
-      const { error } = await supabase.auth.setSession({ access_token: accessToken, refresh_token: refreshToken });
+      const { error } = await supabase.auth.setSession({ 
+        access_token: accessToken, 
+        refresh_token: refreshToken 
+      });
 
       if (error) {
-        alert('Failed to apply recovery link. It may have expired.');
+        alert('Failed to apply link. It may have expired.');
       } else {
-        // Show password form
+        // Clear the URL so tokens aren't exposed if the user refreshes
         window.history.replaceState({}, document.title, window.location.pathname);
+        
         const displayArea = document.getElementById('display-area');
         if (displayArea) {
           displayArea.classList.remove('opacity-0', 'pointer-events-none');
           displayArea.classList.add('opacity-100');
         }
-     if(type === 'recovery')   showForm('newPasswordForm');
 
-/* removed this skip of login 15:39 July 29. Login appears to be needed
-      else if (type === 'signup') {//skip login. Go direct to myDash
-          setTimeout(() => {
-            window.location.href = '/organise.html'; 
-          }, 1000);
+        // ✅ PATH A: Password recovery or invite -> Show password form
+        if (type === 'recovery' || type === 'invite') {
+          showForm('newPasswordForm');
+        } 
+        // ✅ PATH B: Email confirmation for new signup -> Run setup and redirect
+        else if (type === 'signup') {
+          const { data: { user }, error: userError } = await supabase.auth.getUser();
+          
+          if (userError || !user) {
+            console.error('Could not get user after email confirmation:', userError);
+            alert('Email confirmed, but could not load user data. Please log in manually.');
+            showForm('loginForm');
+          } else {
+            console.log('✅ Email confirmed. Running setup for:', user.id);
+            
+            // 🔑 THIS IS THE MISSING LINK:
+            // Manually trigger the exact same setup function the login button uses.
+            // We 'await' it so the browser waits for the database to finish 
+            // updating temp_signups, granting permissions, and assigning tasks.
+            await setupUserInitialNeeds(user.id);
+            
+            // Now that the database is fully ready, redirect to the app
+            setTimeout(() => {
+              console.log('Redirecting to app...');
+              window.location.href = '/organise.html'; 
+            }, 1000); // 1 second delay for smooth UI transition
+          }
         }
-/*
-
       }
     }
   }
 
+
+
+
+
+  
   // Animation + init  Unique to index.html. The module version has no fades
   window.addEventListener('load', async () => {
     await handleRecoveryToken();
