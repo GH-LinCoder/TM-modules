@@ -522,11 +522,15 @@ console.log('Failed to assign: ' + error.message);
           displayArea.classList.add('opacity-100');
         }
      if(type === 'recovery')   showForm('newPasswordForm');
+
+/* removed this skip of login 15:39 July 29. Login appears to be needed
       else if (type === 'signup') {//skip login. Go direct to myDash
           setTimeout(() => {
             window.location.href = '/organise.html'; 
           }, 1000);
         }
+/*
+
       }
     }
   }
