@@ -505,7 +505,7 @@ console.log('Failed to assign: ' + error.message);
 
   // Handle auth token on load - this is unique to index.html as this is where the db email redirects
 
-  async function handleRecoveryToken() { //new version 21:16 July 29 2026 to handle email confirmation
+  async function processAuthRedirect() { //new version 21:16 July 29 2026 to handle email confirmation
     // Check both hash and search params for maximum compatibility
     const hash = window.location.hash.substring(1);
     const search = window.location.search.substring(1);
@@ -573,7 +573,7 @@ console.log('Failed to assign: ' + error.message);
   
   // Animation + init  Unique to index.html. The module version has no fades
   window.addEventListener('load', async () => {
-    await handleRecoveryToken();
+    await processAuthRedirect();
 
     const splashModal = document.getElementById('splash-modal');
     const displayArea = document.getElementById('display-area');

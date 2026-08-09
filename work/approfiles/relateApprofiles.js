@@ -266,8 +266,21 @@ makeSelectList(approfile2Select, 3);
     });
   });
 
+//brought back the listener on the relate button 16:15 Aug 9
+
+  // submit Button click
+  relateBtn.addEventListener('click', (e) => handleRelate(e, {
+    approfile1Select,
+    approfile2Select,
+    relationshipSelect,
+    relateBtn,
+    informationFeedback,
+    relationType
+  }));  // relationType determines if permissions or ordinary. removed ,relationType. I don't think this is ever set in the button. It's a global
+
+
   // existing change listeners...
-  approfile1Select.addEventListener('change', async (e) => {
+  approfile1Select.addEventListener('change', async (e) => {//is this pointless?
     await checkHandleApproIsBundle(e.target.selectedOptions[0], relateBtn, panel); 
     updateSubmitButtonState({ approfile1Select, approfile2Select, relationshipSelect, relateBtn });
   });
@@ -369,7 +382,7 @@ function init(panel, elements) {
  *ofApproName: null}
  */
 
-
+//is this function pointless? It doesn't do anything
 async function checkHandleApproIsBundle(selected,relateBtn, panel){ //why do anything special when applying permission to a bundle??
   console.log('checkHandleApproIsBundle');
    //console.log('relationType',relationType);
@@ -379,9 +392,9 @@ const approIsName = selected.textContent.replace(' (clipboard)', '');
 console.log('approIsId', approIsId, 'approIsName',approIsName);
 if (informationFeedback) {
       informationFeedback.innerHTML += `<div class="p-1 text-sm bg-purple-50 border border-purple-200 rounded">
-      Want to grant permissions to:${approIsName} whose appro id is: [ ${approIsId} ]</div>`;
+      Appro is:${approIsName} whose appro id is: [ ${approIsId} ]</div>`;
     }
-permissionTuplet.approIsId = approIsId;
+permissionTuplet.approIsId = approIsId;  //are these set in several functions???
 permissionTuplet.approIsName = approIsName;
 console.log('tuplet:',permissionTuplet);
 }
@@ -400,7 +413,7 @@ console.log('handleBundle()',selected, 'relationshipName',relationshipName, 'cat
 //const informationFeedback = panel.querySelector('[data-task="information-feedback"]');  
   if (informationFeedback) {
       informationFeedback.innerHTML += `<div class="p-1 text-sm bg-purple-50 border border-purple-200 rounded">
-      Selected permission:${relationshipName} Recognised as category: [ ${category} ] with appro id:${id}</div>`;
+      Selected permission or relationship:${relationshipName} Recognised as category: [ ${category} ]</div>`;
     }
 if(category==='bundle') {await extractBundleContents(category, relationshipName, id, panel); permissionTuplet.relationshipType = category}
 
@@ -417,9 +430,13 @@ const ofApproName = selected.textContent.replace(' (clipboard)', '');
 
 console.log('ofApproId', ofApproId, 'ofApproName',ofApproName);
 if (informationFeedback) {
-      informationFeedback.innerHTML += `<div class="p-1 text-sm bg-purple-50 border border-purple-200 rounded">
-      Want to grant permissions with scope :${ofApproName} which has appro id of: [ ${ofApproId} ]</div>`;
-    }
+
+if (relationType === 'permission')
+      informationFeedback.innerHTML +=`<div class="p-1 text-sm bg-purple-50 border border-purple-200 rounded">Want to grant permissions with scope :${ofApproName} which has appro id of: [ ${ofApproId} ]</div>`;
+    else if (relationType === 'ordinary')
+      informationFeedback.innerHTML +=`<div class="p-1 text-sm bg-purple-50 border border-purple-200 rounded">Want to relate to :${ofApproName} which has appro id of: [ ${ofApproId} ]</div>`;
+}
+
 permissionTuplet.ofApproId = ofApproId;
 permissionTuplet.ofApproName = ofApproName; 
 console.log('tuplet:',permissionTuplet);
@@ -541,8 +558,19 @@ console.log('approfiles[0],[1]:',approfiles[0], approfiles[1]);
   addClipboardItemsToDropdown(approfiles, approfile2Select);
 
  if(approfile1Select.value)    {
+console.log('approfileSelect line 557 relationType:',relationType);
+if(relationType === 'permission')
+{
       informationFeedback.innerHTML += `<div class="p-1 text-sm bg-purple-50 border border-purple-200 rounded">
       Want to grant permissions to:${approfiles[0].entity.name} whose appro id is: [ ${approfile1Select.value} ]</div>`;
+}
+else if (relationType === 'ordinary') {
+     informationFeedback.innerHTML += `<div class="p-1 text-sm bg-purple-50 border border-purple-200 rounded">
+      Want to relate:${approfiles[0].entity.name} whose appro id is: [ ${approfile1Select.value} ]</div>`;
+} else console.log('relationType unknown', relationType); 
+
+
+
 permissionTuplet.approIsId = approfile1Select.value;
 permissionTuplet.approIsName = approfiles[0].entity.name;
 console.log('tuplet:',permissionTuplet);
