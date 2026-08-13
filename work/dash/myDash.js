@@ -161,9 +161,11 @@ function getTemplateHTML() {
                         <span class="text-blue-700">task</span>, <span class="text-orange-600">survey</span>, or <span class="text-green-700">message</span> above to view details here:-</h2>
                         <!--button class="text-sm text-gray-500 hover:text-gray-700" data-action="close-detail">✕ Close</button-->
                     </div>
-                    <div id="detail-placeholder" class="text-center py-8 text-gray-500">
-<!-- not sure if this suggest button should exist. The code should suggest something if nothing is assigned. and find new is already in the task and survey section. -->
-                        <!--button class="mt-4 px-4 py-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-200" data-action="suggest-item">Suggest something for me</button>
+                    <div data-anchor="detail-placeholder" class="text-center py-8 text-gray-500">
+<!-- anchor to scroll too. There seems to be aa problem scrolling to the display-area in Chrome. 
+It goes to end of section. Firefox (localhost) goes to start. 
+May be because of dynamic injection of card contents into same display-area
+Therefore use this anchor div instead -->
                     </div-->
 
                     <!-- flexmain.getDisplayArea() find this element for new-panel injections -->

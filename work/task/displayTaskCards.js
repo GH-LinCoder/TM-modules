@@ -120,7 +120,7 @@ card.addEventListener('click', (e) => { // why are we using a bespoke method ins
     const assignmentId = e.currentTarget.dataset.assignmentId;
     console.log('🖱️ Card clicked, loading directly:', assignmentId, 'full data',e.currentTarget.dataset);
   
-
+//data-anchor="detail-placeholder"
 
     // ✅ Find the detail panel target
     const detailPanel = document.querySelector('[data-section="display-area"]');
@@ -136,7 +136,16 @@ card.addEventListener('click', (e) => { // why are we using a bespoke method ins
 
 // Toggle logic: if open, close; if closed, open (Mimics the normal petition flexmain method)
 
-detailPanel.scrollIntoView({
+    // ✅ Find the detail anchor used just for scrolling to the top of the display area. This is needed because the display area is dynamically injected with content, and scrolling to the display area itself may not work consistently across browsers.
+    const detailAnchor = document.querySelector('[data-anchor="detail-placeholder"]');
+    if (!detailAnchor) {
+        console.error('Detail anchor not found');
+        return;
+    }
+
+
+
+detailAnchor.scrollIntoView({
     behavior: "smooth",
     block: "start"
 });

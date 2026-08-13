@@ -157,7 +157,7 @@ console.log('LoadAdminDash... logs');
   if (!activityList) return;
   try {
   const events = await executeIfPermitted(null,'readRecentLogs',{number:'5'});
-
+//would be useful to be able to click to display another batch
 
     if (!events || events.length === 0) {
       activityList.innerHTML = '<p class="text-gray-500 text-sm">No recent activity</p>';
