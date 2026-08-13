@@ -148,8 +148,8 @@ card.addEventListener('click', (e) => { // why are we using a bespoke method ins
 detailAnchor.scrollIntoView({
     behavior: "smooth",
     block: "start"
+  });
 });
-
     
     // Call the render function directly with a custom query object
     renderOneTask(detailPanel, {
