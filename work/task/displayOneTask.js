@@ -261,16 +261,20 @@ function decideButtonsToDisplay(assignment, taskSteps) {
         <button data-button="previous" 
                 data-assignment-id="${assignmentId}"
                 class="flex-1 py-3 px-6 bg-gray-100 text-blue rounded-lg hover:bg-orange-300 transition">
-            ◀️ Look at Previous Step
+            ◀️ Look at Previous Step ${currentStep - 1}
         </button>` : '';
     
     // Next button
-    const showNextButton = (currentStep < numberOfSteps + 1 && moveBy === 'student' && currentStep>2);
+    const showNextButton = (currentStep < numberOfSteps + 1 && moveBy === 'student' && currentStep>1);
+    let nextButtonText ='' ;
+    if(currentStep===2) nextButtonText ='Return to step 3'; 
+     else if (currentStep===numberOfSteps) nextButtonText ='Move to completed'; 
+     else nextButtonText = `Look at Next Step ${currentStep + 1}`;
     const nextButton = showNextButton ? `
         <button data-button="next" 
                 data-assignment-id="${assignmentId}"
                 class="flex-1 py-3 px-6 bg-gray-100 text-blue rounded-lg hover:bg-blue-300 transition">
-            Look at Next Step ▶️
+            ${nextButtonText}  ▶️
         </button>` : '';
     
     // Message manager button
@@ -284,15 +288,15 @@ function decideButtonsToDisplay(assignment, taskSteps) {
         </button>` : '';
     
     // Complete step button
-/*    const showCompleteButton = (moveBy === 'student' && currentStep > 2 && currentStep !== 2);
-    const completeButton = showCompleteButton ? `
+/*    const showsaveStepButton = (moveBy === 'student' && currentStep > 2 && currentStep !== 2);
+    const saveStepButton = showsaveStepButton ? `
         <button data-button="complete" 
                 data-assignment-id="${assignmentId}"
                 class="flex-1 py-3 px-6 bg-green-600 text-white rounded-lg hover:bg-green-700 transition">
             ✓ Mark Step Complete
         </button>` : '';  */
     
-    return abandonButton + previousButton + nextButton + messageManagerButton;// + completeButton;
+    return abandonButton + previousButton + nextButton + messageManagerButton;// + saveStepButton;
 }
 
 function addEventListenerToButtons(panel) {
@@ -354,15 +358,17 @@ function handlePreviousStep(assignmentId) {
 }
 
 function handleNextStep(assignmentId) {
-    console.log('handleNextStep()');
+    console.log('handleNextStep() step:',assignment.displayedStep);
   //  const assignment = assignments.find(a => a.assignment_id === assignmentId); //we are not handling an array
     
-    if (!assignment || assignment.displayedStep <= 2) return;
+    if (!assignment || assignment.displayedStep <= 1) return; //if saved as completed or abandonded can't repeat until assigned again.
+    //but has been changed to aloow repeat from completed.  This is supposed to only be for someone who has clicked through the steps.
+    //should not be for a task marked 'completed' in the db.  Need change code here to diferentiate. Aug 13 2026
     
-    let newStep;
+    let newStep; // teskSteps.length includes steps 1 & 2. User normally sees step 3 and greater. If user clicks next on the last step, we want to go to step 2 (completed) not step 1 (abandoned)
     if (assignment.displayedStep === assignment._taskSteps.length) { // only make this happen if user clicks "step completed"
-        showToast("The next step is completion. If you want to mark it completed click the completed button");
-        //newStep = 2; // completion
+        showToast("The next step is completion. If you want to mark it completed click the save button");
+        newStep = 2; // completion  //added back 11:40 Augu 13. Because user needs to see this after going through steps.
     } else {
         newStep = assignment.displayedStep + 1;
     }
@@ -445,19 +451,19 @@ console.log('step',step,'stepExternalURL', stepExternalURL);// why is external_u
         }
 
 console.log('renderStepCard() title:',title, 'length',title.length);
-  let completeButton = '';
+  let saveStepButton = '';
   if (title ==='Current Step' && stepNumber > 2) { console.log('Current step & >2');
 
-    completeButton = `
+    saveStepButton = `
       <div class="mt-4">
         <button data-button="complete-step" 
                 data-assignment-id="${assignmentId}"
                 class="w-1/4 py-2 px-4 bg-green-600 text-xs text-white rounded-lg hover:bg-green-700 transition">
-          Clicking step ${stepNumber} as 'completed', stores that you are on the next step 
+          Taking a break, back later. Save place: Step ${stepNumber} . 
         </button>
       </div>
     `;
-    console.log('complete button', completeButton);
+    console.log('complete button', saveStepButton);
   }
   
 
@@ -495,7 +501,7 @@ console.log('renderStepCard() title:',title, 'length',title.length);
             <h4 class="text-lg font-bold">${name}</h4>
             <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">${displayDescription}</p>
             ${stepExternalContent}
-            ${completeButton}
+            ${saveStepButton}
             ${studentName && title === 'Current Step' ? `
                 <div class="absolute -top-4 -left-4 bg-white rounded-full p-2 text-xs font-medium text-gray-700 shadow border border-gray-200">
                     Student: ${studentName}

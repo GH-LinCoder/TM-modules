@@ -144,12 +144,12 @@ card.addEventListener('click', (e) => { // why are we using a bespoke method ins
     }
 
 
-
+// Fails on Chrome when this anchor is next to the div that gets injected. May be better not to try. Complicated by embedded YouTube video 11:02 Aug 13 2026
 detailAnchor.scrollIntoView({
     behavior: "smooth",
     block: "start"
   });
-});
+
     
     // Call the render function directly with a custom query object
     renderOneTask(detailPanel, {

@@ -154,6 +154,13 @@ function getTemplateHTML() {
                     </div>
                 </div>
 
+                    <div data-anchor="detail-placeholder" class="text-center py-8 text-gray-500">
+<!-- anchor to scroll too. There seems to be aa problem scrolling to the display-area in Chrome. 
+It goes to end of section. Firefox (localhost) goes to start. 
+May be because of dynamic injection of card contents into same display-area
+Therefore use this anchor div instead -->
+                    </div-->
+
                 <!-- 4. DETAIL DISPLAY AREA (single injection point for expanded content) -->
                 <div class="bg-white rounded-lg shadow p-6 border-b-4 border-blue-500">
                     <div class="flex items-center justify-between mb-4">
@@ -161,12 +168,7 @@ function getTemplateHTML() {
                         <span class="text-blue-700">task</span>, <span class="text-orange-600">survey</span>, or <span class="text-green-700">message</span> above to view details here:-</h2>
                         <!--button class="text-sm text-gray-500 hover:text-gray-700" data-action="close-detail">✕ Close</button-->
                     </div>
-                    <div data-anchor="detail-placeholder" class="text-center py-8 text-gray-500">
-<!-- anchor to scroll too. There seems to be aa problem scrolling to the display-area in Chrome. 
-It goes to end of section. Firefox (localhost) goes to start. 
-May be because of dynamic injection of card contents into same display-area
-Therefore use this anchor div instead -->
-                    </div-->
+
 
                     <!-- flexmain.getDisplayArea() find this element for new-panel injections -->
                     <div data-section="display-area">
