@@ -135,12 +135,13 @@ card.addEventListener('click', (e) => { // why are we using a bespoke method ins
 //the close should remove listeners in the module that is being closed, but that can't be done here.
 
 // Toggle logic: if open, close; if closed, open (Mimics the normal petition flexmain method)
-
-detailPanel.scrollIntoView({
+//change to delay scroll because a task is being injected into the place where trying to scroll to. Without animation it scrolls too far. 9:58 Aug 13
+requestAnimationFrame(() => {
+  detailPanel.scrollIntoView({
     behavior: "smooth",
     block: "start"
+  });
 });
-
     
     // Call the render function directly with a custom query object
     renderOneTask(detailPanel, {
