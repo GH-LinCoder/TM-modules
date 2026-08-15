@@ -38,6 +38,7 @@ const state = { //This user is not correct should it be approUserId// subject.id
   currentAutomationId: null, //added 22:57 Nov 29
   initialStepId: null
 };
+let ratingSelected = null; //global to hold the selected rating value from the dropdown. Could be set to 7
 console.log('local state', state);//has the right user April 20 15:00
 
 let stepOrder = null;
@@ -98,11 +99,34 @@ function initClipboardIntegration(panel) {
     console.log('initClipboardIntegration()');
   // Check clipboard immediately
   populateFromClipboard(panel);
+  populateRatingSelect(panel);
+  
   // Listen for future changes
   onClipboardUpdate(() => {
     populateFromClipboard(panel);
     populateFromClipboardAuto(panel);
+    populateRatingSelect(panel);
   });
+}
+
+async function populateRatingSelect(panel)
+{
+// 1. Fetch definitions via registry
+const ratingDefinitions = await executeIfPermitted(state.user, 'readTrustSecurityDefinitions');
+
+//2. load into dropdown
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect && Array.isArray(ratingDefinitions)) {
+  ratingDefinitions.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.sort_int; // Save numeric rating
+    option.textContent = item.name;
+   // if (Number(item.sort_int) === Number(ratingSelected)) { //ratingSelected??
+     // option.selected = true;
+  //  }
+    ratingSelect.appendChild(option);
+  });
+ }
 }
 
 
@@ -382,7 +406,28 @@ function getTemplateHTML() {
               <li>• Edit existing steps by clicking the summary or use the dropdown</li>
               <li>• Click "Save step" to save your changes to steps</li>
               <li>• Automations are added in the section below the summary</li>
-              <li>• Click "Save" Automation to add it to the displayed step</li>        
+              <li>• Click "Save" Automation to add it to the displayed step</li>  
+                      <div class="p-6">
+          <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200" data-action="selector-dialogue">
+            <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
+           
+            <ul class="text-blue-700 text-sm mt-2 space-y-1">
+              <li>📋 Auto-fill from clipboard after you click the [Select] menu button </li>
+              <li>You choose an existing survey fro, the Select module</li>  
+              <li>• You can modify the name, description, and URL of the header, any existing question or answer</li>
+              <li>• The main name must be unique & will be auto checked across all existing surveys</li>
+              <li>• Click "Update Survey Header" of "Update step" to save your changes</li>
+              <li>• Create a new question with the buttons below the survey</li>
+              <li>• Edit existing questions or answers by clicking the summary</li>
+              <li>• Automations cannot beedited, just delete and add new ones</li>
+              <li>• Automations are added in the section below the summary</li>
+              <li>• Click "Save" Automation to add it to the displayed answer</li>
+                            <li> To rate a resource or participant use the [Rating] dropdown</li>
+              <li> This rates how much a participant should be trusted</li>
+              <li> or how much to protect a resource</li>
+  
+            </ul>
+          </div>      
             </ul>
           </div>
 
@@ -415,6 +460,15 @@ function getTemplateHTML() {
             <button id="saveTaskBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
               Update Task
             </button>
+
+             <!--  Rating Select  -->
+            <div class="space-y-2">
+              <label for="ratingSelect" class="block text-sm font-medium text-gray-700">Every appro, task & survey is rated for trustSecurity. It defaults to the minimum</label>
+              <select id="ratingSelect" data-form="ratingSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Change rating (optional)</option>
+              </select>
+            </div>
+
           </div>
 
           <div id="stepsSection" class="opacity-50 pointer-events-none mt-6">
@@ -581,6 +635,16 @@ function attachListeners(panel) {
   saveTaskBtn.disabled = false;
     saveTaskBtn.textContent = 'Update Task';
   });
+
+  // Listener for change in dropdown 
+panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (val !== '') {
+    ratingSelected = Number(val);
+console.log('ratingSelected:',ratingSelected)  
+}
+});
+
 
   // Step field listeners
   stepNameInput?.addEventListener('input', e => {

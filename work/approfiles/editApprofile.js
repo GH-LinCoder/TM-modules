@@ -7,6 +7,7 @@ console.log('editApprofileForm.js loaded');
 
 import {getClipboardAppros} from './getClipboardAppros.js';
 let currentSelection = null;
+let ratingSelected = null; //global to hold the selected rating value from the dropdown. Could be set to 7
 
 const state = {
   user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df', // Replace with dynamic user ID
@@ -27,11 +28,13 @@ export function render(panel, query = {}) {
 function initClipboardIntegration(panel) {
   // Check clipboard immediately
   populateFromClipboard(panel);
-    populateApprofileSelect(panel);  
+    populateApprofileSelect(panel); 
+    populateRatingSelect(panel); 
   // Listen for future changes
   onClipboardUpdate(() => {
     populateFromClipboard(panel);
     populateApprofileSelect(panel);
+    populateRatingSelect(panel);
   });
 }
 
@@ -71,6 +74,28 @@ else  currentSelection = select.value;
 
 }
 
+async function populateRatingSelect(panel)
+{
+// 1. Fetch definitions via registry
+const ratingDefinitions = await executeIfPermitted(state.user, 'readTrustSecurityDefinitions');
+
+//2. load into dropdown
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect && Array.isArray(ratingDefinitions)) {
+  ratingDefinitions.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.sort_int; // Save numeric rating
+    option.textContent = item.name;
+   // if (Number(item.sort_int) === Number(ratingSelected)) { //ratingSelected??
+     // option.selected = true;
+  //  }
+    ratingSelect.appendChild(option);
+  });
+ }
+}
+
+
+
 function attachDropdownListener(panel) {
   const select = panel.querySelector('#approfile1Select'); //change 16:17 Oct 27
 
@@ -102,7 +127,14 @@ select.addEventListener('change', async (e) => {
     }
   }
 });
-
+// Listener for change in dropdown 
+panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (val !== '') {
+    ratingSelected = Number(val);
+console.log('ratingSelected:',ratingSelected)  
+}
+});
 }
 
 function loadApprofileIntoForm(panel, approfile) {
@@ -176,6 +208,10 @@ function getTemplateHTML() {
               <li>• The name must be unique across all existing approfiles</li>
               <li>• Click "Update Approfile" to save your changes</li>
               <li>📋 Auto-filled from clipboard if available</li>
+                            <li> To rate a resource or participant use the [Rating] dropdown</li>
+              <li> This rates how much a participant should be trusted</li>
+              <li> or how much to protect a resource</li>
+
             </ul>
           </div>
 
@@ -213,6 +249,13 @@ function getTemplateHTML() {
               <button id="cancelBtn" class="px-4 py-2 border border-gray-300 rounded hover:bg-gray-50 transition-colors">
                 Cancel
               </button>
+                       <!--  Rating Select  -->
+            <div class="space-y-2">
+              <label for="ratingSelect" class="block text-sm font-medium text-gray-700">Every appro, task & survey is rated for trustSecurity. It defaults to the minimum</label>
+              <select id="ratingSelect" data-form="ratingSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Change rating (optional)</option>
+              </select>
+            </div>
             </div>
           </div>
         </div>

@@ -1,3 +1,16 @@
+.debug * {
+  outline: 1px solid red;
+}
+
+.debug div:nth-child(1) { background: rgba(255,0,0,0.1); }
+.debug div:nth-child(2) { background: rgba(0,255,0,0.1); }
+.debug div:nth-child(3) { background: rgba(0,0,255,0.1); }
+.debug div:nth-child(4) { background: rgba(255,255,0,0.1); }
+.debug div:nth-child(5) { background: rgba(255,0,255,0.1); }
+.debug div:nth-child(6) { background: rgba(0,255,255,0.1); }
+
+
+
 
     #primary-panel {
         display: flex;
@@ -9,8 +22,9 @@
         height: 100%; 
       }
       
-      .page-panel {
+      .page-panelX {
         flex: 1 1 auto;
+
         min-width: 300px;
         margin-right: 1rem;
         background-color: white;
@@ -23,7 +37,7 @@
     /*overflow-x: hidden; /* Prevent horizontal scrolling within panel */
       }
       
-      .page-panel:last-child {
+      .page-panelX:last-child {
         margin-right: 0;
       }
       

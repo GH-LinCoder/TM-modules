@@ -47,6 +47,7 @@ const userId = appState.query.userId;// first use of the global userId 15:15 sep
 let typeOfAppro = null;
 let prefix='';  //using globals in case there are future other values for prefix and suffix
 let suffix='';
+let ratingSelected = null; //global to hold the selected rating value from the dropdown. Could be set to 7
 
 export function createBundleAppro(panel){
   console.log('createBundleAppro', panel);
@@ -61,6 +62,7 @@ export function render(panel, query = {}) {
   console.log('Render Approfile Form:', panel, query);
   panel.innerHTML = getTemplateHTML();
   attachListeners(panel);
+  populateRatingSelect(panel)
           //panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
 
@@ -88,6 +90,10 @@ function getTemplateHTML() {
               <li>• Provide a description that explains the purpose of this approfile</li>
               <li>• The name must be unique across all existing approfiles</li>
               <li>• Click "Save Approfile" when you're ready to create it</li>
+              <li> To rate a resource or participant use the [Rating] dropdown</li>
+              <li> This rates how much a participant should be trusted</li>
+              <li> or how much to protect a resource</li>
+
             </ul>
           </div>
 
@@ -105,7 +111,14 @@ function getTemplateHTML() {
             <p id="approfileDescriptionCounter" class="text-xs text-gray-500">0/2000 characters</p>
 
             <button id="saveApprofileBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">Save Approfile</button>
-          </div>
+                  <!--  Rating Select  -->
+            <div class="space-y-2">
+              <label for="ratingSelect" class="block text-sm font-medium text-gray-700">Every appro, task & survey is rated for trustSecurity. It defaults to the minimum</label>
+              <select id="ratingSelect" data-form="ratingSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Change rating (optional)</option>
+              </select>
+            </div>
+            </div>
         </div>
       </div>
     </div>
@@ -132,7 +145,16 @@ function attachListeners(panel) {
     saveBtn.textContent = 'New name detected, saving is possible';
   });
 
+// Listener for change in dropdown 
+panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (val !== '') {
+    ratingSelected = Number(val);
+console.log('ratingSelected:',ratingSelected)  
+}
+});
 
+  
 /*
   const nameInput = panel.querySelector('#approfileName');
   nameInput?.addEventListener('input', () => {
@@ -143,6 +165,27 @@ function attachListeners(panel) {
 
 
 }
+
+async function populateRatingSelect(panel)
+{ console.log('populateRatingSelect()');
+// 1. Fetch definitions via registry
+const ratingDefinitions = await executeIfPermitted(userId, 'readTrustSecurityDefinitions');
+
+//2. load into dropdown
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect && Array.isArray(ratingDefinitions)) {
+  ratingDefinitions.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.sort_int; // Save numeric rating
+    option.textContent = item.name;
+   // if (Number(item.sort_int) === Number(ratingSelected)) { //ratingSelected??
+     // option.selected = true;
+  //  }
+    ratingSelect.appendChild(option);
+  });
+ }
+}
+
 
 async function handleApprofileSubmit(e) {
   e.preventDefault();

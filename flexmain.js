@@ -235,7 +235,9 @@ async function renderNewPanel(stubName, query, registryEntry,selectedModule, dis
 
 //moved here 9.44 Sep 10
 const panel = document.createElement('div');
-panel.className = 'page-panel';
+//panel.className = 'page-panel'; //change 23:59 Aug 14 -because panel is smaller than full width
+panel.className = 'page-panel w-full min-w-0 flex-1';
+
 panel.dataset.pageName = stubName; //what is this?
 //
 // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

@@ -58,13 +58,35 @@ constructor(type) {
     // Populate from clipboard immediately
     console.log('initClipboardIntegration:',panel);
     this.populateFromClipboard(panel);  
+    this.populateRatingSelect(panel);
     
     // Listen for clipboard updates
     onClipboardUpdate(() => {
       console.log('onClipboardUpdate:',panel);
       this.populateFromClipboard(panel);
+      this.populateRatingSelect(panel);
     });
   }
+
+async  populateRatingSelect(panel)
+{
+// 1. Fetch definitions via registry
+const ratingDefinitions = await executeIfPermitted(this.userId, 'readTrustSecurityDefinitions');
+
+//2. load into dropdown
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect && Array.isArray(ratingDefinitions)) {
+  ratingDefinitions.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.sort_int; // Save numeric rating
+    option.textContent = item.name;
+   // if (Number(item.sort_int) === Number(ratingSelected)) { //ratingSelected??
+     // option.selected = true;
+  //  }
+    ratingSelect.appendChild(option);
+  });
+ }
+}
 
  getTaskAutomationHTML(){
  return `
@@ -173,7 +195,9 @@ getTemplateHTML() {
                             name that makes it easy to recognise if in a list of surveys.
                             Then add a description. This description will be displayed to
                             anyone who is going to respond to the survey.
-                        </p>
+                        </p><lu> <li> To rate a resource or participant use the [Rating] dropdown</li>
+              <li> This rates how much a participant should be trusted</li>
+              <li> or how much to protect a resource</li></lu>
                     </div>
 
 
@@ -190,7 +214,13 @@ getTemplateHTML() {
                             <button id="saveSurveyBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
                                 Enter name & description then click to save
                             </button>
-
+         <!--  Rating Select  -->
+            <div class="space-y-2">
+              <label for="ratingSelect" class="block text-sm font-medium text-gray-700">Every appro, task & survey is rated for trustSecurity. It defaults to the minimum</label>
+              <select id="ratingSelect" data-form="ratingSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Change rating (optional)</option>
+              </select>
+            </div>
                             <!-- Question Card -->
                             <div id="questionCard" class="bg-white p-4 rounded-lg border border-gray-300 opacity-50" style="pointer-events: none;">
                                 <div class="flex justify-between items-center mb-3">
@@ -311,6 +341,17 @@ attachListeners(panel) {
             panel.querySelector('#answerTextCounter').textContent = `${e.target.value.length}/200 characters`;
         }
     });
+
+// Listener for change in dropdown 
+let ratingSelected = null; //global to hold the selected rating value from the dropdown. Could be set to 7
+panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (val !== '') {
+    ratingSelected = Number(val);
+console.log('ratingSelected:',ratingSelected)  
+}
+});
+
 
 try{
 

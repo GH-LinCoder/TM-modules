@@ -6,11 +6,10 @@ console.log('menuListeners loaded');
 export function menuListeners() {//unlike admiListeners navListeners have not been loading petition by reading html
 //    console.log('Setting up navigation listeners');
 //changed from document.  in hope this will solve the problem with unresponsive dropdowns - FAILED
-    document.querySelector('[data-nav="main-nav"]').addEventListener('click', async (e) => {
-console.log('Navigation click event:', e.target);
-    
-    const btn = e.target.closest('.nav-btn');
-    if (!btn) return;
+document.querySelectorAll('[data-nav="main-nav"]').forEach(nav => {
+    nav.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.nav-btn');
+        if (!btn) return;
 
 if (['SELECT', 'OPTION', 'INPUT', 'TEXTAREA'].includes(e.target.tagName)) return;
 
@@ -43,7 +42,8 @@ console.log('howToContext:',howToContext);
 //    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
 
-  });
+  })
+})
 }
 
 export function markMenuButton(pageName, btn){

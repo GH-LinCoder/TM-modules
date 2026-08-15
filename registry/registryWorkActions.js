@@ -1295,6 +1295,28 @@ handler: async (supabase, userId, payload) => {
 }
 },
 
+readTrustSecurityDefinitions: { //added 21:15 Aug 13 2026
+  metadata: {
+    tables: ['trust_security_definitions'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId) => {
+    console.log('readTrustSecurityDefinitions()');
+    const { data, error } = await supabase
+      .from('trust_security_definitions')
+      .select('*')
+      .eq('is_active', true)
+      .order('sort_int', { ascending: true });
+
+    if (error) {
+      console.error('Error reading trust_security_definitions:', error.message);
+      return [];
+    }
+    return data;
+  }
+},
 
 
 //APPRO PERMISSIONS

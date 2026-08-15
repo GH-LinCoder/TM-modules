@@ -45,6 +45,28 @@ function getContextHTML(petition) { console.log('getContextHTML()');
   </ul>
 </div>`}
 
+function getNavigationHTML() { console.log('getTemplateHTML()');
+return `<div class="bg-white rounded-lg shadow p-6 flex-col ">
+
+        <div class="mb-3 bg-blue-50 p-3 rounded border border-blue-200 text-sm text-blue-700">    
+         <p>Navigation: click menu button at top of screen - new items open to right of dashboard (scroll if needed)</p>
+         <p> May fail on small screens.</p>
+         <p> click a card within the page [rectangles with words in them]. - new item opens in the dashboard (scroll down or up if needed)</p>
+         <p>If you get lost click top menu button [My Dash] - that will close all the extra bits and return you to the dashboard ready for another adventure.</p>
+         <p>The dashboard is on 1 page. The browser back button may return you to the login page.</p>
+         <p>What the displays depends on what you click. </p>
+         <p>When you click a card the new information opens above or below and you may have to scroll to see it.</p> 
+         <p>When you click a menu button it opens to the right and you may have to scroll to the right to see it.</p>
+         <p>The design is easier on a large screen.</p>
+         <p>If it gets messy click [My Dash]</p>
+        </div>
+
+</div>`}
+
+
+
+
+
 function decideContext(petition){
   console.log('decideContext the petition says:(',petition.Action,')');
 
@@ -68,8 +90,14 @@ export function render(panel, petition = {}) {
 petition = decideContext(petition);
 console.log('action:',petition.Action);
 const action = petition.Action;
-if(action === 'adminDash' || action === 'adminDash.html') {console.log('rednering generic menu howto');panel.innerHTML = getTemplateHTML();}// generic menu instructions
-else {console.log('rendering context howto');  panel.innerHTML = getContextHTML(petition);}
+if(action === 'adminDash' || action === 'adminDash.html') 
+  {console.log('rednering generic menu howto');
+  panel.innerHTML = getTemplateHTML() + getNavigationHTML();
+
+}// generic menu instructions
+else {console.log('rendering context howto');  
+  panel.innerHTML = getNavigationHTML()+getContextHTML(petition);
+}
 panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 
 window.addEventListener('state-change', (e) => {

@@ -31,6 +31,7 @@ currentSurveyView:null, // readSurveyView() places the surveyView into currentSu
 activeTab:'tasks'
 
 };
+let ratingSelected = null; //global to hold the selected rating value from the dropdown. Could be set to 7
 
 function escapeHtml(text) {  // 22:04 edited to escape all names and descriptions to prevent html 
   if (typeof text !== 'string') return '';
@@ -64,7 +65,26 @@ return rows;
 }
 
 
+async function populateRatingSelect(panel)
+{ console.log('populateRatingSelect()');
+      const userId = appState.query.userId;
+// 1. Fetch definitions via registry
+const ratingDefinitions = await executeIfPermitted(userId, 'readTrustSecurityDefinitions');
 
+//2. load into dropdown
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect && Array.isArray(ratingDefinitions)) {
+  ratingDefinitions.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.sort_int; // Save numeric rating
+    option.textContent = item.name;
+   // if (Number(item.sort_int) === Number(ratingSelected)) { //ratingSelected??
+     // option.selected = true;
+  //  }
+    ratingSelect.appendChild(option);
+  });
+ }
+}
 
 ////////   RENDER SUMMARY 
 
@@ -477,10 +497,12 @@ function initClipboardIntegration(panel) {
   // Check clipboard immediately
  checkClipboardForSurveys(panel); // renderSurveyStructure(panel);//at this point state.currentSurveyId not in state
 populateAutomationDropdowns(panel);
+populateRatingSelect(panel);
   // Listen for future changes
   onClipboardUpdate(() => {
     checkClipboardForSurveys(panel);
     populateAutomationDropdowns(panel);
+     populateRatingSelect(panel);
 
   });
 }
@@ -691,6 +713,17 @@ function attachListeners(panel) {
   descriptionInput?.addEventListener('input', e => {
     descriptionCounter.textContent = `${e.target.value.length}/2000 characters`;
   });
+
+// Listener for change in dropdown 
+let ratingSelected = null; //global to hold the selected rating value from the dropdown. Could be set to 7
+panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (val !== '') {
+    ratingSelected = Number(val);
+console.log('ratingSelected:',ratingSelected)  
+}
+});
+
 
   // Step field listeners
   stepNameInput?.addEventListener('input', e => {
@@ -1582,7 +1615,11 @@ function getTemplateHTML() {console.log('getTemplateHTML');
               <li>• Edit existing questions or answers by clicking the summary</li>
               <li>• Automations cannot beedited, just delete and add new ones</li>
               <li>• Automations are added in the section below the summary</li>
-              <li>• Click "Save" Automation to add it to the displayed answer</li>  
+              <li>• Click "Save" Automation to add it to the displayed answer</li>
+                            <li> To rate a resource or participant use the [Rating] dropdown</li>
+              <li> This rates how much a participant should be trusted</li>
+              <li> or how much to protect a resource</li>
+  
             </ul>
           </div>
 
@@ -1623,6 +1660,14 @@ function getTemplateHTML() {console.log('getTemplateHTML');
             <button id="saveSurveyBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
               Update Survey Header
             </button>
+ <!--  Rating Select  -->
+            <div class="space-y-2">
+              <label for="ratingSelect" class="block text-sm font-medium text-gray-700">Every appro, task & survey is rated for trustSecurity. It defaults to the minimum</label>
+              <select id="ratingSelect" data-form="ratingSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Change rating (optional)</option>
+              </select>
+            </div>
+      
           </div>
 
           <!--div id="questionsSection" class="opacity-50 pointer-events-none mt-6">

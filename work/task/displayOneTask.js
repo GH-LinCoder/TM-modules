@@ -147,13 +147,20 @@ const assignedCurrentStepExternalUrl = (stepIndex >= 0 && stepIndex < taskSteps.
 console.log('taskSteps',taskSteps, 'assignment',assignment,'current_step',assignment.current_step, taskSteps[assignment.current_step-1].step_external_url, 'stepUrl?');
 
    const stepsHtml = `<!-- steps -->
-            <div class="grid grid-cols-1  gap-6">
+            <div class="hidden md:block  grid grid-cols-1  gap-0 md:gap-6">
                 ${renderStepCard('Previous Step', previousStep, 'gray', assignment.student_name, true)}
-                ${renderStepCard('Current Step', {
+            </div>
+            <div id="taskActionButtons" class="mt-6 flex flex-col md:flex-row justify-center gap-0 md:gap-2 md:p-4" border-t border-gray-200 pt-4">
+                ${buttonHTML}
+            </div>   
+            <div  grid grid-cols-1  gap-0 md:gap-6>   ${renderStepCard('Current Step', {
                     step_name: currentStepName,
                     step_description: currentStepDescription,
                     external_url: assignedCurrentStepExternalUrl  
                 }, assignment.displayedStep === 1 ? 'red' : assignment.displayedStep === 2 ? 'green' : 'blue', assignment.student_name, false, assignment.displayedStep, assignment.assignment_id)}
+            </div>
+
+            <div class="hidden md:block  grid grid-cols-1 gap-0 md:gap-6">
                 ${renderStepCard(
                     assignment.displayedStep === 2 ? 'Completed' :
                     assignment.displayedStep === 1 ? 'Abandoned' :
@@ -163,10 +170,9 @@ console.log('taskSteps',taskSteps, 'assignment',assignment,'current_step',assign
                     assignment.student_name
                 )}
             </div>
-            <div id="taskActionButtons" class="mt-6 flex flex-col md:flex-row justify-center gap-4 border-t border-gray-200 pt-4">
-                ${buttonHTML}
-            </div>
-            <div class="mt-4 bg-green-100 rounded-lg p-4 border border-green-200">
+<!--moved buttons from here to put them below current step 17>25 Aug 14 -->
+
+            <div class="mt-4 bg-green-100 rounded-lg class="p-2 md:p-4" border border-green-200">
                 <p class="text-sm font-bold text-green-800">Information:</p>
                 <p class="text-sm text-green-700">There are ${taskSteps.length} steps in this task.</p>
                 <p class="text-sm text-green-700">The current step is [${assignment.displayedStep}]</p>
@@ -207,7 +213,7 @@ console.log('taskSteps',taskSteps, 'assignment',assignment,'current_step',assign
         }       
 
         const card = document.createElement('div');
-        card.classList.add('bg-blue-400', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200', 'text-left');
+        card.classList.add('bg-blue-400', 'rounded-lg', 'shadow-lg', 'p-1','md:p-6', 'mb-1', 'md:mb-8', 'border', 'border-gray-200', 'text-left');
         card.dataset.assignmentId = assignment.assignment_id; // Store assignment ID
         //console.log('assignment url ?',assignment, assignment.external_url); //says which step is assigned. step_order is available
 
@@ -215,7 +221,7 @@ console.log('taskSteps',taskSteps, 'assignment',assignment,'current_step',assign
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-semibold text-gray-900">${taskName}</h3>
                 <div class="text-sm text-gray-500"> Manager: ${assignment.manager_name || 'Unknown Manager'}</div>
-                <div class="text-sm text-gray-500">${assignment.assignment.task_header}</div>
+                <div class="text-sm text-gray-500 hidden md:block">${assignment.assignment.task_header}</div>
                 <div class="text-sm text-gray-500"> Student: ${assignment.student_name || 'Unknown Student'}</div>
             </div>
             <div class="rounded-lg p-6 bg-white shadow-md border relative whitespace-pre-line">${taskDescription}</div>
@@ -249,9 +255,10 @@ function decideButtonsToDisplay(assignment, taskSteps) {
     // Abandon button
     const showAbandonButton = currentStep !== 1 && currentStep !== 2 && moveBy === 'student';
     const abandonButton = showAbandonButton ? `
-        <button data-button="abandoned" 
+        <button 
+                data-button="abandoned" 
                 data-assignment-id="${assignmentId}"
-                class=" w-1/5  text-xs py-3 px-6 bg-red-600 text-white rounded-lg hover:bg-red-700 transition" 
+                class="hidden md:inline-block w-1/5  text-xs py-0 md:py-3 px-6 bg-red-600 text-white rounded-lg hover:bg-red-700 transition" 
                 title="Two step process. First click, consider, then confirm or ignore. Second click cannot be reversed. An abandoned is closed. To return to it requires a new assignment"
                 >Click to abandon task </button>` : '';
     
@@ -260,8 +267,8 @@ function decideButtonsToDisplay(assignment, taskSteps) {
     const previousButton = showPreviousButton ? `
         <button data-button="previous" 
                 data-assignment-id="${assignmentId}"
-                class="flex-1 py-3 px-6 bg-gray-100 text-blue rounded-lg hover:bg-orange-300 transition">
-            ◀️ Look at Previous Step ${currentStep - 1}
+                class="flex-1 py-0 md:py-3 px-0 md:px-6 bg-gray-100 text-blue rounded-lg hover:bg-orange-300 transition">
+            ◀️ Previous Step ${currentStep - 1}
         </button>` : '';
     
     // Next button
@@ -269,11 +276,11 @@ function decideButtonsToDisplay(assignment, taskSteps) {
     let nextButtonText ='' ;
     if(currentStep===2) nextButtonText ='Return to step 3'; 
      else if (currentStep===numberOfSteps) nextButtonText ='Move to completed'; 
-     else nextButtonText = `Look at Next Step ${currentStep + 1}`;
+     else nextButtonText = `Next Step ${currentStep + 1}`;
     const nextButton = showNextButton ? `
         <button data-button="next" 
                 data-assignment-id="${assignmentId}"
-                class="flex-1 py-3 px-6 bg-gray-100 text-blue rounded-lg hover:bg-blue-300 transition">
+                class="flex-1 py-0 md:py-3 px-0 md:px-6 bg-gray-100 text-blue rounded-lg hover:bg-blue-300 transition">
             ${nextButtonText}  ▶️
         </button>` : '';
     
@@ -282,7 +289,7 @@ function decideButtonsToDisplay(assignment, taskSteps) {
     const messageManagerButton = showMessageManager ? `
         <button data-button="message-manager" 
                 data-assignment-id="${assignmentId}"
-                class="flex-1 py-3 px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition" 
+                class="flex-1 py-0 md:py-3 px-0 md:px-6 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition" 
                 data-action="bug-report">
             Message Manager
         </button>` : '';
@@ -296,7 +303,7 @@ function decideButtonsToDisplay(assignment, taskSteps) {
             ✓ Mark Step Complete
         </button>` : '';  */
     
-    return abandonButton + previousButton + nextButton + messageManagerButton;// + saveStepButton;
+    return  messageManagerButton + previousButton + nextButton +  abandonButton;// + saveStepButton;
 }
 
 function addEventListenerToButtons(panel) {
@@ -367,7 +374,7 @@ function handleNextStep(assignmentId) {
     
     let newStep; // teskSteps.length includes steps 1 & 2. User normally sees step 3 and greater. If user clicks next on the last step, we want to go to step 2 (completed) not step 1 (abandoned)
     if (assignment.displayedStep === assignment._taskSteps.length) { // only make this happen if user clicks "step completed"
-        showToast("The next step is completion. If you want to mark it completed click the save button");
+        showToast("The next step is completion. ");  //If you want to mark it completed click the save button
         newStep = 2; // completion  //added back 11:40 Augu 13. Because user needs to see this after going through steps.
     } else {
         newStep = assignment.displayedStep + 1;
@@ -453,13 +460,14 @@ console.log('step',step,'stepExternalURL', stepExternalURL);// why is external_u
 console.log('renderStepCard() title:',title, 'length',title.length);
   let saveStepButton = '';
   if (title ==='Current Step' && stepNumber > 2) { console.log('Current step & >2');
-
+//added hidden md:block  16:26 Aug 14
     saveStepButton = `
-      <div class="mt-4">
+      <div class="mt-4 hidden md:block">
         <button data-button="complete-step" 
                 data-assignment-id="${assignmentId}"
-                class="w-1/4 py-2 px-4 bg-green-600 text-xs text-white rounded-lg hover:bg-green-700 transition">
-          Taking a break, back later. Save place: Step ${stepNumber} . 
+                class="w-1/4 py-2 px-0 md:px-4 bg-green-600 text-xs text-white rounded-lg hover:bg-green-700 transition"
+                title="The bookmark function not yet implemented">
+          Taking a break, back later. Bookmark Step ${stepNumber} . 
         </button>
       </div>
     `;
@@ -492,7 +500,8 @@ console.log('renderStepCard() title:',title, 'length',title.length);
         }
     }
     let displayDescription = description;
-    if( title !== 'Current Step') displayDescription = description.substring(0,100)+'...';
+//    if( title !== 'Current Step') displayDescription = description.substring(0,100)+'...';
+    if( title !== 'Current Step') displayDescription = '';
     return `
         <div class="${bgColor} rounded-lg p-6 shadow-md border relative">
             <div class="text-sm font-semibold text-${color}-600 mb-2">
@@ -503,9 +512,9 @@ console.log('renderStepCard() title:',title, 'length',title.length);
             ${stepExternalContent}
             ${saveStepButton}
             ${studentName && title === 'Current Step' ? `
-                <div class="absolute -top-4 -left-4 bg-white rounded-full p-2 text-xs font-medium text-gray-700 shadow border border-gray-200">
-                    Student: ${studentName}
-                </div>` : ''}
+            <div class="absolute -bottom-3 -left-3 bg-white px-3 py-1 rounded-full text-xs font-medium text-gray-700 shadow border border-gray-200 z-10">
+    Student: Lin Coder
+</div>` : ''}
             ${showCheckmark && stepNumber !== 1 ? `
                 <div class="absolute top-2 right-2 text-green-500">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
