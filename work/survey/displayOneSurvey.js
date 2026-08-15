@@ -164,7 +164,7 @@ console.log('questionId', questionId, 'currentStep',currentStep);
     console.log('currentQuestionId',currentQuestionId, 'progress.totalQuestions',progress.totalQuestions, 'progress', progress);
     
     const card = document.createElement('div');
-    card.classList.add('bg-orange-300', 'rounded-lg', 'shadow-lg', 'p-6', 'mb-8', 'border', 'border-gray-200');
+    card.classList.add('bg-orange-300', 'rounded-lg', 'shadow-lg', 'p-1', 'md:p-6','mb-1', 'md:mb-8', 'border', 'border-gray-200');
     card.dataset.assignmentId = assignment.assignment_id;
     
     // Detect myDash context
@@ -175,7 +175,7 @@ console.log('questionId', questionId, 'currentStep',currentStep);
     const questionHTML = renderSurveyQuestion(assignment, assignment.assignment_id, currentQuestionId, isMyDash);
     
     card.innerHTML = `
-        <div class="text-center text-sm text-gray-500 mb-4">
+        <div class="text-center text-sm text-gray-500 mb-1 md:mb-4">
          <!--  Question ${progress.currentIndex} of ${progress.totalQuestions} -->
 Question ${progress.currentIndex + 1} of ${progress.totalQuestions}
 </div>
@@ -390,14 +390,14 @@ function displayAutoResults(autoResponse, automations) {
     if (messages.length > 0) {
         infoSection.innerHTML = `
             <div class="text-green-700">
-                <p class="text-sm text-gray-700 mb-3">
+                <p class="text-sm text-gray-700 mb-1 md:mb-3">
                     The answer you chose automatically runs some tasks in response to your choice. 
                     This is to enable automatic processing of the answer. Often the automations will 
                     assign you to a task, or to receive a survey, or to join a group or relate you 
                     to some other person or activity, or send a message or other actions.
                 </p>
-                <p class="font-bold mb-2">Automation Results:</p>
-                <p class="text-sm mb-2">${messages.length} action(s):</p>
+                <p class="font-bold mb-1 md:mb-2">Automation Results:</p>
+                <p class="text-sm mb-1 md:mb-2">${messages.length} action(s):</p>
                 <ul class="list-disc list-inside text-gray-600 space-y-1">
                     ${messages.map(item => `
                         <li class="text-sm">
@@ -410,7 +410,7 @@ function displayAutoResults(autoResponse, automations) {
     } else {
         infoSection.innerHTML = `
             <div class="text-green-700">
-                <p class="text-sm text-gray-700 mb-3">
+                <p class="text-sm text-gray-700 mb-1 md:mb-3">
                     The answer you chose automatically runs some tasks in response to your choice. (This message will self-destruct and display the next question)
                 </p>
                 <p class="font-bold">No automations were triggered.</p>
@@ -425,7 +425,7 @@ function showCompletionMessage() {
     if (!infoSection) return;
     
     const completionCard = document.createElement('div');
-    completionCard.className = 'bg-green-50 border-l-4 border-green-500 rounded-lg p-4 mt-4';
+    completionCard.className = 'bg-green-50 border-l-4 border-green-500 rounded-lg p-1 md:p-4 mt-4';
     completionCard.innerHTML = `
         <div class="flex items-start">
             <div class="text-2xl mr-3">🎉</div>
