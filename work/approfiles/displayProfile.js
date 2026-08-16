@@ -330,24 +330,42 @@ document.dispatchEvent(new CustomEvent('clipboard:updated', {
 function getTemplateHTML() {
     return `
                 <!-- PROFILE CARD -->
-                <div class="bg-green-50">
-<div class="w-20 h-20  rounded-full bg-green-200 text-white text-lg font-semibold" data-user="avatar" >
-  <div data-user="initials">Organise using this app, have your say, do your bit</div>
+                <div class="bg-green-50 p-0 md:p-4 rounded-lg shadow border border-green-200">
+<div class="w-20 h-20 rounded-full bg-green-200 text-white text-lg font-semibold" data-user="avatar" >
+  <div data-user="initials">Organise</div>
 </div>
+
 <h6 class="text-xl font-semibold" data-user="name">Waiting for database.</h6> 
 <div data-user='placeholder'> Are you logged in? Perhaps new here & haven't confirmed email? Or perhaps have no permissions?</div>                  
-                    
-<div class="flex-1 space-y-0">
-  <div class="space-y-1 text-sm text-gray-600">
-    <div class="flex items-center gap-0 flex-wrap">
-                                📧<span data-user="email">???@???.???</span>
-                                
-                                <span ><b>appro🆔<span data-user="appro-id"> ???? ?? ??</b></span></span>
-                                <span >auth🆔<span data-user="auth-id"> ???? ?? ??</span></span>
+  <!-- Tagline -->
+  <div data-user="tagline" class="text-sm text-gray-600">
+    Organising, having my say, doing my bit
+  </div>                    
+<div class="flex-1 space-y-2 mt-2">
+  <div class="space-y-4 text-sm text-gray-600">
+    <div class="flex items-center gap-3 flex-wrap text-sm text-gray-600">
 
-                                <span ><b>Joined:</b><span data-user="created-at"> ???? ?? ??</span></span>
-                                       
-                                <span data-user="badges"></span>                        
+  <span class="flex items-center gap-1">
+    📧 <span data-user="email"></span>
+  </span>
+
+  <span class="flex items-center gap-1">
+    <b>auth🆔</b> <span data-user="auth-id"></span>
+  </span>
+
+  <span class="flex items-center gap-1">
+    <b>appro🆔</b> <span data-user="appro-id"></span>
+  </span>
+
+
+
+  <span class="flex items-center gap-1">
+    <b>Joined:</b> <span data-user="created-at"></span>
+  </span>
+
+  <span data-user="badges"></span>
+
+                                                      
                  <!--button id="updateBtn" class="flex-1 bg-blue-600 text-white py-1 px-2 rounded hover:bg-blue-700 transition-colors"  data-action='edit-approfile-dialogue' data-destination='profile-section'>
                 Click for the edit form
               </button-->
