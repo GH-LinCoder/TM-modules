@@ -48,6 +48,7 @@ try { //the registry function needs: const { assignment_id} = payload;
             return;
         }
         assignment = assignmentData[0]; //how does taking [0] work? what's in [n]?
+console.log('assignmentData', assignmentData, 'assignment', assignment);
         // Store as global source of truth
 //        assignment = assignmentData;
         

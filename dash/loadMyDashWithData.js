@@ -78,7 +78,7 @@ console.log('resolveSubject', subject,
             );
 //          console.log('assignments',assignments);  //correctly recieved assignments 22:40 March 13 but not displaying
             if (!assignments || assignments.length === 0) {
-                setStatsValues('?', '?', '?','?' , '?', '?'); // what is this?
+              //  setStatsValues('?', '?', '?','?' , '?', '?'); // what is this?
                 return;
             }
             
@@ -86,7 +86,7 @@ console.log('resolveSubject', subject,
             const activeTasks = assignments.taskData.filter(a => a.step_order >= 3).length;
             const completedTasks = assignments.taskData.filter(a => a.step_order === 2).length;
             const abandonedTasks = assignments.taskData.filter(a => a.step_order === 1).length;
-            
+            //these values are not being displayed.  19>54  Aug 21 2026
             // Get surveys (when implemented)
             
             const surveys = assignments.surveyData;
@@ -97,7 +97,7 @@ console.log('resolveSubject', subject,
   // const relations = relationsObject.is.length + relationsObject.of.length;
             
             // Update stats display
-            setStatsValues(activeTasks, completedTasks, abandonedTasks, availableSurveys, relationsCount);
+          //  setStatsValues(activeTasks, completedTasks, abandonedTasks, availableSurveys, relationsCount);
             
         } catch (error) {
             console.error('Error updating quick stats:', error);

@@ -112,8 +112,10 @@ const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans'
             if (nameEl) nameEl.textContent = subject.name || 'Choose a user name';
             if (approIdEl) approIdEl.textContent = subject.approUserId;
             
-           
+    const myDashUserName = document.querySelector('[data-value="userName"]');       
             
+if(myDashUserName) myDashUserName.textContent = subject.name; //new 12:00 August 21 2026
+
 // After your existing element selections:
 //nst emailEl = panel.querySelector('[data-user="email"]');
 //nst authIdEl = panel.querySelector('[data-user="auth-id"]');
@@ -234,7 +236,7 @@ function renderActivePlans(plans) {
       : null;
     
     // Build badge text
-    let text = `<span class="font-semibold text-indigo-700">${escapeHtml(planName)}</span>`;
+    let text = `<span class="font-semibold text-green-700">${escapeHtml(planName)}</span>`;
     
     // Add price if available
     if (amount != null && currency) {
@@ -330,9 +332,13 @@ document.dispatchEvent(new CustomEvent('clipboard:updated', {
 function getTemplateHTML() {
     return `
                 <!-- PROFILE CARD -->
-                <div class="bg-green-50 p-0 md:p-4 rounded-lg shadow border border-green-200">
+                <div >
+
+<!--div class=bg-white>
 <div class="w-20 h-20 rounded-full bg-green-200 text-white text-lg font-semibold" data-user="avatar" >
   <div data-user="initials">Organise</div>
+</div-->
+
 </div>
 
 <h6 class="text-xl font-semibold" data-user="name">Waiting for database.</h6> 
@@ -346,6 +352,15 @@ function getTemplateHTML() {
     <div class="flex items-center gap-3 flex-wrap text-sm text-gray-600">
 
   <span class="flex items-center gap-1">
+    <b>Joined:</b> <span data-user="created-at"></span>
+  </span>
+
+  <span class="flex items-center gap-1">
+    <b>appro🆔</b> <span data-user="appro-id"></span>
+  </span>
+
+<div>
+  <span class="flex items-center gap-1">
     📧 <span data-user="email"></span>
   </span>
 
@@ -353,15 +368,10 @@ function getTemplateHTML() {
     <b>auth🆔</b> <span data-user="auth-id"></span>
   </span>
 
-  <span class="flex items-center gap-1">
-    <b>appro🆔</b> <span data-user="appro-id"></span>
-  </span>
+</div>
 
 
 
-  <span class="flex items-center gap-1">
-    <b>Joined:</b> <span data-user="created-at"></span>
-  </span>
 
   <span data-user="badges"></span>
 

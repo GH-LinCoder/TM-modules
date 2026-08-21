@@ -35,7 +35,7 @@ check result.source
   export async function resolveSubject() {
     console.log('resolveSubject()');
 //moved this to start 19:05 May 3. So many errors over this.
-const authUser = await executeIfPermitted( null,'getAuthenticatedUser', {approfileId: null });
+const authUser = await executeIfPermitted( null,'getAuthenticatedUser');//why was this sending an id?
 if(authUser) {
 console.log('Authenticated user found:', authUser); appState.query.userAuthId = authUser.id;}
 //console.log('appState.query.userAuthId',appState.query.userAuthId,'authUser',authUser);//ok

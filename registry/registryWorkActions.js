@@ -31,7 +31,7 @@ getAuthenticatedUser: {
       // role: user?.role, // if you add custom claims
       // user?.user_metadata?.full_name, etc.
       //isAuthenticated: user?.isAuthenticated, //fails?
-      last_sign_in_at: user?.identities.last_sign_in_at  //fails? not available here, can get in local storage
+      last_sign_in_at: user?.identities.last_sign_in_at  //fails? not available here
     };
   }
 },
@@ -715,7 +715,7 @@ createTask: {
     requiredArgs: ['taskName', 'taskDescription'] // ← payload fields
   },
   handler: async (supabase, userId, payload) => {
-    const { taskName, taskDescription, taskUrl } = payload;
+    const { taskName, taskDescription, taskUrl, move_by } = payload;
 
     // Check for duplicate name
     const {  existingTask, error: fetchError } = await supabase
@@ -734,7 +734,9 @@ console.log('userId',userId);
         name: taskName,
         description: taskDescription,
         external_url: taskUrl || null,
+        move_by: move_by,
         author_id: userId // ← use passed userId
+        
       })
       .select()
       .single();
@@ -954,79 +956,6 @@ assignmentUpdateStep: {
   }
 },
 
-/*
-assignmentUpdateStep: {
-  // Metadata for the permissions system
-  metadata: {
-    tables: ['task_assignments'],
-    columns: [],
-    type: 'UPDATE',
-    requiredArgs: ['supabase', 'userId', 'assignment_id', 'step_id']
-    
-  }, 
-  
-  // The actual function that interacts with the database
-  handler: async (supabase, userId, payload) => { //also needs to update step_order
-    const { step_id, assignment_id } = payload;
-    console.log('assignmentUpdateStep() stepId:', step_id, 'assignment_id:', assignment_id);
-    
-    // First, get the current assignment record
-    const { data: currentData, error: fetchError } = await supabase
-      .from('assignments')
-      .select('assignment')
-      .eq('id', assignment_id)
-      .single();
-    
-    if (fetchError) {
-      console.error('Error fetching assignment:', fetchError.message);
-      throw new Error('Failed to fetch assignment.');
-    }
-    
-    // Update the JSONB assignment field with preserved existing data + new step_id
-    const updatedAssignment = {
-      ...currentData.assignment,
-      step_id: step_id
-    };
-    
-    const { data, error } = await supabase
-      .from('assignments')
-      .update({ assignment: updatedAssignment })
-      .eq('id', assignment_id);
-      
-    if (error) {
-      console.error('Error updating assignment:', error.message);
-      throw new Error('Failed to update assignment.');
-    }
-    //find the step_order for this step_id
-    const { data: stepData, error: stepError } = await supabase
-      .from('task_steps')
-      .select('step_order')
-      .eq('id', step_id)
-      .single();
-    
-    if (stepError) {
-      console.error('Error fetching step order:', stepError.message);
-      throw new Error('Failed to fetch step order.');
-    }
-    
-    // Now update the current_step field with the fetched step_order
-    const { data: finalData, error: finalError } = await supabase
-      .from('assignments')
-      .update({ current_step: stepData.step_order })
-      .eq('id', assignment_id);
-    
-    if (finalError) {
-      console.error('Error updating current_step:', finalError.message);
-      throw new Error('Failed to update current_step.');
-    }
-
-
-
-    return finalData; // returns the updated record
-  }
-},
-
-*/
 
 //APPRO
 updateApprofile: {
@@ -1070,7 +999,7 @@ updateTask: {
     requiredArgs: ['id', 'name', 'description']
   },
   handler: async (supabase, userId, payload) => {
-    const { id, name, description, external_url } = payload;
+    const { id, name, description, external_url, move_by } = payload;
 
     const { data, error } = await supabase
       .from('task_headers')
@@ -1078,6 +1007,7 @@ updateTask: {
         name: name,
         description: description,
         external_url: external_url || null,
+        move_by:move_by,
         updated_at: new Date().toISOString() // Good practice to update timestamp
       })
       .eq('id', id)
@@ -1319,69 +1249,6 @@ readTrustSecurityDefinitions: { //added 21:15 Aug 13 2026
 },
 
 
-//APPRO PERMISSIONS
-/*readPermissionRelationsById: {//
-  metadata: {
-    tables: ['permissions_relations_view'],
-    columns: ['*'],
-    type: 'SELECT',
-    requiredArgs: ['approfileId']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { approfileId } = payload;
-console.log('readPermissionRelationsById');
-    const isRels = await supabase
-      .from('permission_relations_view')
-      .select('*')
-      .eq('approfile_is', approfileId);
-console.log('isRels',isRels);
-    const ofRels = await supabase
-      .from('permission_relations_view')
-      .select('*')
-      .eq('of_approfile', approfileId);
-console.log('ofRels',ofRels);
-      const ids = [
-        approfileId,                                   // subject itself
-        ...isRels.data.map(r => r.of_approfile),       // of-appros
-        ...ofRels.data.map(r => r.approfile_is)        // is-appros
-      ];
-       
-console.log('ids:',ids);
-    const profiles = await supabase
-      .from('app_profiles')
-      .select('id, auth_user_id, survey_header_id, task_header_id')
-      .in('id', ids);
-console.log('profiles:',profiles);
-    // build a lookup map of appro id → icon
-    const profileMap = {};
-    for (const ap of profiles.data || []) {
-      let icon = '🎭'; // default abstract
-      if (ap.auth_user_id) {
-        icon = '👥'; // human
-      } else if (ap.survey_header_id) {
-        icon = '📜'; // survey
-      } else if (ap.task_header_id) {
-        icon = '🔧'; // task
-      }
-      profileMap[ap.id] = icon;
-    }
-    console.log('profileMap',profileMap);
-console.log('DEBUG: Returning permissions data:', {
-  is: isRels.data || [],
-  of: ofRels.data || [],
-  iconMap: profileMap
-});
-
-    return {
-      is: isRels.data || [],
-      of: ofRels.data || [],
-      iconMap:profileMap    
-    };
-  }
-}, */
-
-//complete refactor 22:35 Feb 22 which failed
-//and again changed 23:11 feb 22
 
 readWorkRelationsById: {
   metadata: {
@@ -1951,63 +1818,6 @@ writePermissionRelationships: {//HIGH SECURITY ISSUE -- used for creating bundle
 },
 
 
-NOTreadPermissionRelationsById: {//HIGH SECURITY ISSUE
-  metadata: {
-    tables: [],
-    columns: [],
-    type: 'SELECT',
-    requiredArgs: []
-  },
-  handler: async (supabase, userId, payload) => {
-   const { approfileId } = payload;
-   
-    console.log('readPermissionRelationsById()');
-    const { data, error } = await supabase
-      .from('permission_relations_view')
-      .select('*') //readPermissionRelations
-      .eq('approfile_is', approfileId)
-      .order('category') // category is in permission_relations
-      .order('name');
-
-    if (error) throw error;
-
-    console.log('permission by id data',data);
-    return data;
-  }
-},
-
-//BUNDLE GRANT PERMISSIONS
-/*grantBundlePermissions: {
-  metadata: {
-    tables: [],
-    columns: [],
-    type: 'SELECT',
-    requiredArgs: []
-  },
-  handler: async (supabase, userId, payload) => {
-    const { permissionsToGrant } = payload;  // Already mapped array
-    
-    // Insert with onConflict to skip duplicates
-    const {  error } = await supabase
-      .from('permission_relations')
-      .insert(permissionsToGrant, { 
-        onConflict: 'approfile_id,relationship,of_approfile_id',
-        ignoreDuplicates: true  // ← Critical: skip instead of error
-      });
-    
-    if (error) {
-      console.error('❌ Grant failed:', error);
-      return { success: false, error: error.message };
-    }
-    
-    return { 
-      success: true, 
-      granted: permissionsToGrant.length,
-      message: `✅ Granted ${permissionsToGrant.length} permission(s)`
-    };
-  }
-},
-*/
 grantBundlePermissions: {
   metadata: {
     tables: [],
@@ -2399,7 +2209,7 @@ readTaskHeaders: {
 
     let query = supabase
       .from('task_headers')
-      .select('id, name, sort_int, author_id, created_at, description, external_url');
+      .select('id, name, sort_int, author_id, created_at, description, external_url, move_by');
 
     if (payload?.taskName) {
       query = query.eq('name', payload.taskName);
@@ -2414,7 +2224,26 @@ readTaskHeaders: {
   }
 },
 
+readTaskHeaderMoveBy: {
+  metadata: {
+    tables: ['task_headers'],
+    columns: ['id', 'name', 'sort_int', 'author_id', 'created_at', 'description', 'external_url', 'move_by'],
+    type: 'SELECT',
+    requiredArgs: ['taskHeaderId'], 
+  },
+  handler: async (supabase, userId, taskHeaderId) => {
+    console.log('readTaskHeaderMoveBy()', taskHeaderId);
+    let query = supabase
+      .from('task_headers')
+      .select('id, name, sort_int, author_id, created_at, description, external_url,move_by')
+      .eq('id',taskHeaderId);
 
+    const { data, error } = await query;
+
+    if (error) throw error;
+    return data;
+  }
+},
 
 //TASKS
 readStep3Id:{ //find the id of step 3 of a given task
@@ -3390,35 +3219,7 @@ console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id)
   }
 },
 
-//SURVEYS     DELETE (soft) 
-/*
-softDeleteAutomation:{
-  metadata: {
-    tables: ['automations'],
-    columns: ['is_deleted', 'deleted_at', 'deleted_by'],
-    type: 'UPDATE',
-    requiredArgs: ['automationId', 'deletedBy']
-  },
-  handler: async (supabase, userId, payload) => {
-    const { automationId, deletedBy } = payload;
-console.log('registry softDelete', automationId, 'by', deletedBy);
-    const { data, error } = await supabase
-      .from('automations')
-      .update({
-        is_deleted: true,
-        deleted_at: new Date().toISOString(),
-        deleted_by: deletedBy
-      })
-      .eq('id', automationId)
-     // .select()
-     // .maybeSingle();
-console.log('data',data);
-    if (error) throw error;
-    return data; // returns the updated automation row
-  }
-},
 
-*/
 
 softDeleteAutomation:{
   metadata: {
@@ -3749,68 +3550,7 @@ console.log('calling db with payment_plan_id', payment_plan_id, 'planName', plan
 },
 
 
-/*
-createAttachmentPaymentButton: { //THIS IS TRASH. May 15. This is hard coded for tasks only. Can't use it for surveys
-  metadata: {
-    tables: ['automations'],
-    columns: ['registry_id', 'payment_plan_id', 'target_type', 'target_id', 'source_data', 'target_data', 'is_visible'],
-    type: 'INSERT',
-    requiredArgs: ['registry_id', 'payment_plan_id', 'target_type', 'target_id']
-  },
-  handler: async (supabase, userId, payload) => {
-    const {  
-      payment_plan_id, 
-      planName:planName,
-      source_task_header_id,  // for source_data for TASKS ONLY Need change to source_header
-      source_task_step_id,    // for source_data  for TASKS ONLY need change to source_secondary + add source_tertiary for answers
-      is_visible = true
-    } = payload;
-console.count('CreateAttachmentPaymentButton()'); // 
-    // Hardcoded registry ID for payment_button type
-    const autoRegistryId = 'd1f2028e-95fa-4a9b-ae6f-ff4753d5913d';
 
-    // Build source_data (matches existing pattern) WHAT??? This has 'task' MADNESS
-    //this can't be  source 'task' . It has to be the actual source which could be task or survey.
-    //This is absurd as none of this data is available as a paramter. What idiot write this???
-    const sourceData = {
-      type: 'task',
-      header: source_task_header_id,
-      secondary: source_task_step_id || null,
-      tertiary: null
-    };
-
-    // Build target_data (documents expected params, not runtime values)
-    const targetData = {
-      target: {
-        type: 'payment',
-        header: payment_plan_id,
-        secondary: null
-      },
-      payload: {}
-    };
-// deleted the  payload {approUserId: "uuid (runtime: subject.approUserId)",variantId: "uuid (from: payment_plans.provider_plan_id)" }
-// payload is for predetermined data that has to be supplied at time of creation/editing
-
-
-    const {  data, error } = await supabase
-      .from('automations')
-      .insert({
-        auto_registry_id: autoRegistryId,  // FK to automation_registry
-        payment_plan_id,              // FK to payment_plans (new column)
-        name:planName,
-        
-        source_data: sourceData,
-        target_data: targetData,
-        is_visible,
-      })
-      .select()
-      .single();
-    
-    if (error) throw error;
-    return data;
-  }
-}, 
-*/
 
 }//EOF
 // 18:43 sunday 14 Sept added encodeURIComponent(    )  around values in .eq because Supabase has been warning
