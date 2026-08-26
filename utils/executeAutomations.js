@@ -10,6 +10,31 @@ export async function executeAutomations(automations, subject, autoPetition){//a
   console.log('executeAutomations() automations:',automations, ', subject: ',subject,', autoPetition:', autoPetition);//subject correct here but is getting changed wrongly 16:40 dec 26
   if(!automations || automations.length ===0) {console.log('No automations to execute'); return;}
 
+//put the handling of completed and abandonded here so surveys and tasks can ignore automations if not active. 22:44 Aug 24 2026 that restriction has been put in displayOneSurvey. 
+// Perhaps better put here
+
+
+
+const assignmentRow = await executeIfPermitted(subject.id, 'readThisSurveyOrTaskAssignment',{ assignment_id: autoPetition.assignment_id }
+);
+
+// Determine survey state
+let endedOrActive;
+if (assignmentRow.completed_at) { endedOrActive = 'completed';
+} else if (assignmentRow.abandoned_at) { endedOrActive = 'abandoned';
+} else { endedOrActive = 'active';
+}
+console.log('assignmentRow',assignmentRow,'endOrActive',endedOrActive);
+if(endedOrActive!='active'){
+showToast(`This survey is ${endedOrActive}. Automations will not run.`);
+return
+}
+
+
+
+
+
+
 let autoResponses = [];
 console.log('executeAutomations() automations',automations);
 
@@ -38,7 +63,7 @@ if (type === 'survey') { console.log('→ Calling autoAssignSurvey'); autoRespon
 else
   if (type === 'task') { console.log('→ Calling autoAssignTask');  autoResponse = await autoAssignTask(autoId,header,secondary, autoPetitionForThisAuto);} // needs student_id and manager_id
 else 
-  if (type === 'relate') {console.log('→ Calling autoRelateAppros'); autoResponse = await autoRelateAppros(autoId,payload, autoPetitionForThisAuto);};
+  if (type === 'relate') {console.log('→ Calling autoRelateAppros with autoId, payload, autoPetitionFoThisAuto'); autoResponse = await autoRelateAppros(autoId,payload, autoPetitionForThisAuto);};
 // need to collect the autoResponses
 if (autoResponse) {
             autoResponses.push(autoResponse);
@@ -65,11 +90,13 @@ const autoParameters ={'survey_header_id':header, 'student_id':autoPetition.appr
 //console.log('autoParameters',autoParameters);
 //console.log('autoPetition',autoPetition);
 // Call RPC
+console.log('executeAutomations- calling rpc execute_automation with the autoPetition & autParameters');
+
 const autoResponse =await supabase.rpc('execute_automation', {
   p_auto_petition: autoPetition,
   p_auto_parameters: autoParameters
 });
-console.log('autoResponse:',autoResponse);
+console.log('autoResponse from the rpc:',autoResponse);
 return autoResponse;
 
 
@@ -117,6 +144,7 @@ async function autoRelateAppros(autoId,payload, autoPetition) {//Jan 26. When a 
   //console.log('autoParameters',autoParameters);
   //console.log('autoPetition',autoPetition);
 // Call RPC
+console.log('executeAutomations- calling rpc execute_automation with the autoPetition ',autoPetition ,'& autoParameters', autoParameters);
  const autoResponse = await supabase.rpc('execute_automation', {
     p_auto_petition: autoPetition,
     p_auto_parameters: autoParameters

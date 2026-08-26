@@ -1,10 +1,7 @@
--- In Supabase SQL Editor or migration file
-
-CREATE OR REPLACE FUNCTION public.update_assignment(
+--Bookmark a step or question. Also update if completed or abandoned
+CREATE OR REPLACE FUNCTION public.update_assignment_step(
     p_assignment_id uuid,
-    p_step integer DEFAULT NULL,           -- Question number (stored in 'step' column)
-    p_completed boolean DEFAULT NULL,      -- If true, set completed_at = now()
-    p_abandoned boolean DEFAULT NULL       -- If true, set abandoned_at = now()
+    p_bookmark integer
 )
 RETURNS json
 LANGUAGE plpgsql
@@ -13,61 +10,37 @@ AS $$
 DECLARE
     v_updated_fields jsonb := '{}'::jsonb;
 BEGIN
-    -- ✅ Validate: mutually exclusive parameters
-    IF (p_completed = true AND p_abandoned = true) THEN
-        RETURN json_build_object(
-            'status', 'error',
-            'message', 'Cannot mark assignment as both completed and abandoned'
-        );
+    -- 1. Check for required parameters
+    IF p_assignment_id IS NULL THEN
+        RETURN json_build_object('status', 'error', 'message', 'Missing assignment id');
     END IF;
+
+    IF p_bookmark IS NULL THEN
+        RETURN json_build_object('status', 'error', 'message', 'Missing bookmark number');
+    END IF;
+
+    -- 2. Single, efficient UPDATE statement
+    UPDATE assignments
+    SET 
+        current_step = p_bookmark,
+        abandoned_at = CASE WHEN p_bookmark = 1 THEN now() ELSE abandoned_at END,
+        completed_at = CASE WHEN p_bookmark = 2 THEN now() ELSE completed_at END
+    WHERE id = p_assignment_id; -- ✅ Corrected to use 'id'
+
+    -- 3. Check if the row actually existed and was updated
+    IF NOT FOUND THEN
+        RETURN json_build_object('status', 'error', 'message', 'Assignment not found');
+    END IF;
+
+    -- 4. Build the success response
+    v_updated_fields := jsonb_build_object('current_step', p_bookmark);
     
-    IF (p_step IS NOT NULL AND p_completed = true) THEN
-        RETURN json_build_object(
-            'status', 'error',
-            'message', 'Cannot update step and mark completed in same call'
-        );
-    END IF;
-    
-    IF (p_step IS NOT NULL AND p_abandoned = true) THEN
-        RETURN json_build_object(
-            'status', 'error',
-            'message', 'Cannot update step and mark abandoned in same call'
-        );
-    END IF;
-    
-    -- ✅ Validate: at least one field must be provided
-    IF p_step IS NULL AND p_completed IS NULL AND p_abandoned IS NULL THEN
-        RETURN json_build_object(
-            'status', 'error',
-            'message', 'At least one update field (step, completed, or abandoned) must be provided'
-        );
+    IF p_bookmark = 1 THEN
+        v_updated_fields := v_updated_fields || jsonb_build_object('abandoned_at', 'now()');
+    ELSIF p_bookmark = 2 THEN
+        v_updated_fields := v_updated_fields || jsonb_build_object('completed_at', 'now()');
     END IF;
 
-    -- ✅ Update step (question number) if provided
-    IF p_step IS NOT NULL THEN
-        UPDATE assignments
-        SET step = p_step
-        WHERE id = p_assignment_id;
-        v_updated_fields := v_updated_fields || jsonb_build_object('step', p_step);
-    END IF;
-
-    -- ✅ Update completed_at if flag is true
-    IF p_completed = true THEN
-        UPDATE assignments
-        SET completed_at = now()
-        WHERE id = p_assignment_id;
-        v_updated_fields := v_updated_fields || jsonb_build_object('completed_at', now());
-    END IF;
-
-    -- ✅ Update abandoned_at if flag is true
-    IF p_abandoned = true THEN
-        UPDATE assignments
-        SET abandoned_at = now()
-        WHERE id = p_assignment_id;
-        v_updated_fields := v_updated_fields || jsonb_build_object('abandoned_at', now());
-    END IF;
-
-    -- ✅ Return success with updated fields
     RETURN json_build_object(
         'status', 'success',
         'assignment_id', p_assignment_id,
@@ -82,6 +55,3 @@ EXCEPTION
         );
 END;
 $$;
-
--- Grant execute permission (adjust role as needed)
-GRANT EXECUTE ON FUNCTION public.update_assignment(uuid, integer, boolean, boolean) TO authenticated;

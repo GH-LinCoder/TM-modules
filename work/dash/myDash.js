@@ -19,10 +19,10 @@ function getTemplateHTML() {
             <!-- DASHBOARD HEADER (unchanged) -->
             <div class="px-0 md:px-6 py-4 border-b bg-green-200 flex justify-between items-center">
                 <div class="name" data-value="userName"  title="The logged-in user name. If this isn't you, please login">userName
-                </div> <i> ~ using the app for creating and managing an organisation</i>
+                </div> <i> ~ using the app for creating & managing an organisation</i>
                 <div>
                     <h1 class="text-2xl font-bold" data-dash-title="admin">My Dashboard</h1>
-                    <p class="text-sm text-gray-500" data-dash-sub_title="my">Check my tasks, surveys, messages and setting</p>
+                    <p class="text-sm text-gray-500" data-dash-sub_title="my">Check my tasks, surveys, messages & settings</p>
                 </div>
             </div>
             
@@ -195,6 +195,11 @@ May be because of dynamic injection of card contents into same display-area
 Therefore use this anchor div instead -->
                     </div>
 
+                    <!-- flexmain.getDisplayArea() find this element for new-panel injections -->
+                    <div data-section="display-area">
+    <div id="detail-content" data-panel="inject-here"></div>
+</div>
+
                 <!-- 4. DETAIL DISPLAY AREA (single injection point for expanded content) -->
                 <div class="bg-white rounded-lg shadow px-0 md:px-6 border-t border-blue-500">
                     <div class="flex items-center justify-between mb-4">
@@ -203,10 +208,7 @@ Therefore use this anchor div instead -->
                     </div>
 
 
-                    <!-- flexmain.getDisplayArea() find this element for new-panel injections -->
-                    <div data-section="display-area">
-    <div id="detail-content" data-panel="inject-here"></div>
-</div>
+
 
 
                 <!-- 3. ROLE / AIMS / PLANS CARD ROW (clickable cards using normal petitioner method) -->

@@ -70,7 +70,7 @@ const tasksAndSurveys = await executeIfPermitted(
 console.log('assignments', assignments); // 
 
 
-  let activeColors = 'bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-pointer '; 
+  let activeColors = 'bg-yellow-50 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer '; 
 
 let displayNumberEl = null;
   switch(renderType)

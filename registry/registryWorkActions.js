@@ -1018,9 +1018,31 @@ updateTask: {
     return data;
   }
 },
+//duplicate function????
+updateTaskAssignmentStep: {//does this do any good?  Is this column read for display?
+  metadata: {//moves student to new step
+    tables: ['assignments'],
+    columns: ['current_step'],
+    type: 'UPDATE',
+    requiredArgs: ['id', 'name', 'description']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { id, destination } = payload;
 
+    const { data, error } = await supabase
+      .from('assignments')
+      .update({
+        current_step: destination,
+        //updated_at: new Date().toISOString() // Good practice to update timestamp
+      })
+      .eq('id', id)
+      //.select()
+      //.single();
 
-
+    if (error) throw error;
+    return data;
+  }
+},
 
 /////////////////////////////////////  SELECT  READ DATA   ///////////////////////
 
@@ -1545,7 +1567,7 @@ handler: async (supabase, userId, payload) =>{
 
 
 
-//TASK_ASSIGMENT  readAssignmentById
+//TASK_ASSIGMENT  readAssignmentById   TASKS only  TASKS
 readThisAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
   metadata: {
   tables: ['assignments_task_view'],  //VIEW not a table
@@ -1558,17 +1580,44 @@ handler: async (supabase, userId, payload) => {
 console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   const { data, error } = await supabase
   .from('assignments_task_view')
-  .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at')
-  .eq('assignment_id', encodeURIComponent(assignment_id))
+  .select('task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at, current_step')
+  .eq('assignment_id', assignment_id)
   //.eq('task_header_id', encodeURIComponent(task_header_id))
-  .select() //Return the inserted row
+  .select() //Return the entire row ?
   //.single(); //Return single object
-
+console.log('data',data);
   if (error) throw error;
   //console.log('readThisAssignment{} data:',data);
     return data; //
   } 
 },
+
+readThisSurveyOrTaskAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
+  metadata: {
+  tables: ['assignment'],  //table
+  columns: [],
+  type: 'SELECT',
+  requiredArgs: ['assignment_id'] // ← id of a row in assignment
+},
+handler: async (supabase, userId, payload) => {
+  const { assignment_id} = payload;
+console.log('readThisSurveyOrTaskAssignment{}','id:',assignment_id,'payload:', payload);
+  const { data, error } = await supabase
+  .from('assignments')
+  .select('*')
+  .eq('id', assignment_id)
+  //.eq('task_header_id', encodeURIComponent(task_header_id))
+  .select() //Return the entire row ?
+  .single(); //Return single object
+console.log('data',data);
+  if (error) throw error;
+  console.log('readThisSurveyOrTaskAssignment{} data:',data);
+    return data; //
+  } 
+},
+
+
+
 
 //ASSIGMENTS (NEW) 17:10 Jan 19 2026
 readAllAssignmentsNew:{// VIEW  not a table returns all rows )
@@ -3405,13 +3454,12 @@ updateAssignmentSystem:{    // VIEW   Read only   // surveys show-up in this vie
   // rpc needs: p_assignment_id uuid,p_step int default null, p_completed boolean default null
 },  
 
-handler: async (supabase, userId, payload) => {
-const {assignmentId, completed, step} = payload;
-console.log('updateAssignment id:',assignmentId,'as completed: ',completed,' step:', step);
-const { data, error } = await supabase.rpc('update_assignment_lowsec', {
-    p_assignment_id: assignmentId,
-    p_completed: completed,
-    p_step: step
+handler: async (supabase, userId, payload) => { // if p_bookmark =1 the rpc marks abandoned. if 2 completed (for tasks & surveys?)
+const {assignmentId, bookmark} = payload; //bookmark is a step number
+console.log('updateAssignment id:',assignmentId, 'bookmark:', bookmark);
+const { data, error } = await supabase.rpc('update_assignment_step', {
+    p_assignment_id: assignmentId,    
+    p_bookmark: bookmark
   });
   console.log('data',data);
 

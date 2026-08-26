@@ -72,7 +72,7 @@ const tasksAndSurveys = await executeIfPermitted(
 console.log('assignments',assignments);
 //need to filter active completed abandonded onlyshow relevant group
 //assignments.forEach(task => {
-  let activeColors = 'bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-pointer '; 
+  let activeColors = 'bg-blue-50 border border-blue-200 rounded-l-2xl p-3 cursor-pointer '; 
   let displayNumberEl = null;
 switch(renderType)
 {

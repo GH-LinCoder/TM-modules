@@ -1,7 +1,7 @@
 // utils/surveySummaryRenderer.js
 import { icons } from '../registry/iconList.js';
 //import the knowledge of whether duisplaying in myDash or adminDash.  In adminDash can display (greyaed-out) deleted bits. But don't display them in myDash
-import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
+//import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
 // detectMyDash(panel) will return true if the dashboard is myDash
 
 /**
@@ -10,6 +10,29 @@ import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/c
  * @param {string} assignmentId - Assignment ID for data attributes
  * @returns {string} HTML string
  */
+
+export function renderSurveyHeader(assignedSurveyAsArray, assignmentId, isMyDash){
+ if (!assignedSurveyAsArray?.length) return '';
+ const firstRow = assignedSurveyAsArray[0];
+
+ let html = `
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200" data-assignment="${assignmentId}">
+        <div class="text-center mb-4">
+            <h2 class="text-xl font-bold text-gray-900">${escapeHtml(firstRow.survey_name)}</h2>
+            <p class="text-sm text-gray-600">${new Date(firstRow.survey_created_at).toLocaleDateString()}</p>
+            <p class="text-xs text-gray-500">${firstRow.survey_id}</p>
+        </div>
+        
+        <!-- Survey Header -->
+        <div class="clickable-item hover:scale-105 transition-transform bg-orange-50 border-l-4 border-orange-400 rounded-lg p-3 mb-4 shadow-sm">
+            <p class="text-gray-800 whitespace-pre-line">${escapeHtml(firstRow.survey_description || '')}</p>
+        </div>
+    `;
+    return html;
+
+}
+
+
 export function renderSurveySummaryAsReadonly(surveyRows, assignmentId, isMyDash) {
     if (!surveyRows?.length) return '';
     
@@ -76,24 +99,25 @@ for (const qId of sortedQuestionIds) {
     return html;
 }
 
-
 export function renderSurveyQuestion(surveyRows, assignmentId, questionId, isMyDash) {
     if (!surveyRows?.length) return '';
     
-    // ✅ Filter to only this question's rows
     const questionRows = surveyRows.filter(row => row.question_id === questionId);
     if (!questionRows.length) return '';
     
     const surveyInfo = questionRows[0];
-    const questionInfo = questionRows.find(r => r.question_id); // Get question metadata
-    
+    const questionInfo = questionRows.find(r => r.question_id);
+
     let html = '';
-    
-    // ✅ RENDER HEADER ONCE (outside loop)
+
+    // ⭐ FADE-IN WRAPPER ADDED HERE
+    html += `<div class="opacity-0 transition-opacity duration-500" data-fade-question>`;
+
+    // QUESTION HEADER
     if (questionInfo?.question_id) {
         html += `
         <div class="mb-4">
-            <div class="clickable-item bg-yellow-50 border-l-4 border-yellow-400 rounded-lg p-3 mb-2 shadow-sm">
+            <div class="clickable-item bg-yellow-100 border-l-4 border-yellow-400 rounded-lg p-3 mb-2 shadow-sm">
                 <h3>
                     ${icons.question} Question ${questionInfo.question_number}: ${escapeHtml(questionInfo.question_name)}
                 </h3>
@@ -104,83 +128,182 @@ export function renderSurveyQuestion(surveyRows, assignmentId, questionId, isMyD
             </div>
         `;
     }
-    
-    // ✅ Stateful deduplication for answers/automations only
+
     let oldAnswerId = null;
     let oldAutoId = null;
-    
-    // ✅ LOOP: Render answers + automations only
+
+    // ANSWERS + AUTOMATIONS
     for (const row of questionRows) {
-        // Render Answer (deduplicated by answer_id)
+
+        // ANSWER CARD
         if (row.answer_id && row.answer_id !== oldAnswerId) {
+
             html += `
-            <div class="clickable-item data-type='answer' hover:scale-105 transition-transform bg-blue-50 border-l-4 border-blue-400 rounded-lg p-3 mb-2 shadow-sm ml-4">
-                <input type="radio"
-                    data-assignment="${assignmentId}"
-                    data-answer-name="${row.answer_name}"
-                    id="ans_${row.answer_id}"
-                    name="survey_${surveyInfo.survey_id}_q${questionInfo.question_number}"
-                    value="${row.answer_id}"
-                    class="survey-answer-radio mt-1 mr-3">
+            <div class="ml-4 mb-4">   <!-- wrapper for answer + automation -->
+                
+                <!-- Answer card -->
                 <label for="ans_${row.answer_id}" class="flex-1">
-                    <span class="font-medium">${icons.answer} Answer ${row.answer_number}: ${escapeHtml(row.answer_name)}</span>
-                    ${row.answer_description ? `
-                    <div class="mt-2 text-sm text-gray-700">${escapeHtml(row.answer_description)}</div>
-                    ` : ''}
-                </label>
-            </div>
+                <div class="clickable-item hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-blue-400 rounded-lg p-3 pb-6 shadow-sm">
+                    <input type="radio"
+                        data-assignment="${assignmentId}"
+                        data-answer-name="${row.answer_name}"
+                        id="ans_${row.answer_id}"
+                        name="survey_${surveyInfo.survey_id}_q${questionInfo.question_number}"
+                        value="${row.answer_id}"
+                        class="survey-answer-radio mt-1 mr-3">
+                    
+                        <span class="font-medium">${icons.answer} Answer ${row.answer_number}: ${escapeHtml(row.answer_name)}</span>
+                        ${row.answer_description ? `
+                        <div class="mt-2 text-sm text-gray-700">${escapeHtml(row.answer_description)}</div>
+                        ` : ''}
+                    </label>
+                </div>
             `;
+
             oldAnswerId = row.answer_id;
         }
-        
-        // Render Automation (deduplicated by auto_id)
+
+        // AUTOMATION CARD
         if (row.auto_id && row.auto_id !== oldAutoId) {
-            if (isMyDash && row.auto_deleted_at) {
-                // Skip rendering entirely for myDash users
-            } else {
+
+            if (!(isMyDash && row.auto_deleted_at)) {
+
                 const autoClass = row.auto_deleted_at
-                    ? 'bg-gray-100 text-gray-400 border-gray-300 text-sm'
-                    : 'bg-blue-50 border-indigo-400 text-sm';
-                
+                    ? 'bg-gray-100 text-gray-200 border-gray-300'
+                    : 'bg-yellow-50 ';
+
                 const autoText = row.auto_deleted_at
                     ? `<i>${icons.automation} Auto ${row.auto_number}: ${escapeHtml(row.auto_name)} (soft deleted)</i>`
                     : `${icons.automation} Auto ${row.auto_number}: ${escapeHtml(row.auto_name)}<br>
                        <span class="text-sm">${escapeHtml(row.auto_description || '')}</span>`;
-                
+
                 html += `
-                <div class="clickable-item data-type='auto' ${autoClass} rounded-lg p-3 mb-2 ml-40">
+                <!-- Automation card (small overlap) -->
+                <div class="${autoClass} rounded-lg p-2 text-xs shadow-sm 
+                            ml-auto mr-0 -mt-4 w-1/3">
                     ${autoText}
                     <div class="text-xs mt-1">${row.auto_id}</div>
                 </div>
+
+            </div> <!-- closes wrapper -->
                 `;
             }
+
             oldAutoId = row.auto_id;
         }
     }
-    
-    // Information feedback area
-    html += getInfoFeedbackHTML();
-    
-    /*
-    `<div class="bg-green-100 rounded border flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
-        <p class="text-lg font-bold">Information:</p>
-        <div id="informationSection" class="w-full">
-            <!-- Information cards will be added here -->
-        </div>
-    </div>
-    </div>`;
-*/
 
+  //  html += getInfoFeedbackHTML();  //moved to displayOneSurvey renderLargeCards
+
+    // ⭐ CLOSE FADE-IN WRAPPER
+    html += `</div>`;
 
     return html;
 }
 
-function getInfoFeedbackHTML(){
+
+/*  replaced by version that faeds in
+export function renderSurveyQuestion(surveyRows, assignmentId, questionId, isMyDash) {
+    if (!surveyRows?.length) return '';
+    
+    const questionRows = surveyRows.filter(row => row.question_id === questionId);
+    if (!questionRows.length) return '';
+    
+    const surveyInfo = questionRows[0];
+    const questionInfo = questionRows.find(r => r.question_id);
+
+    let html = '';
+
+    // QUESTION HEADER
+    if (questionInfo?.question_id) {
+        html += `
+        <div class="mb-4">
+            <div class="clickable-item bg-yellow-100 border-l-4 border-yellow-400 rounded-lg p-3 mb-2 shadow-sm">
+                <h3>
+                    ${icons.question} Question ${questionInfo.question_number}: ${escapeHtml(questionInfo.question_name)}
+                </h3>
+                ${questionInfo.question_description ? `
+                <p class="mt-2 text-sm text-gray-700 whitespace-pre-line">
+                    ${escapeHtml(questionInfo.question_description)}
+                </p>` : ''}
+            </div>
+        `;
+    }
+
+    let oldAnswerId = null;
+    let oldAutoId = null;
+
+    // ANSWERS + AUTOMATIONS
+    for (const row of questionRows) {
+
+        // ANSWER CARD
+        if (row.answer_id && row.answer_id !== oldAnswerId) {
+
+            html += `
+            <div class="ml-4 mb-4">   <!-- wrapper for answer + automation -->
+                
+                <!-- Answer card -->
+                <div class="clickable-item hover:scale-105 transition-transform bg-yellow-50 border-l-4 border-blue-400 rounded-lg p-3 pb-6 shadow-sm">
+                    <input type="radio"
+                        data-assignment="${assignmentId}"
+                        data-answer-name="${row.answer_name}"
+                        id="ans_${row.answer_id}"
+                        name="survey_${surveyInfo.survey_id}_q${questionInfo.question_number}"
+                        value="${row.answer_id}"
+                        class="survey-answer-radio mt-1 mr-3">
+                    <label for="ans_${row.answer_id}" class="flex-1">
+                        <span class="font-medium">${icons.answer} Answer ${row.answer_number}: ${escapeHtml(row.answer_name)}</span>
+                        ${row.answer_description ? `
+                        <div class="mt-2 text-sm text-gray-700">${escapeHtml(row.answer_description)}</div>
+                        ` : ''}
+                    </label>
+                </div>
+            `;
+
+            oldAnswerId = row.answer_id;
+        }
+
+        // AUTOMATION CARD
+        if (row.auto_id && row.auto_id !== oldAutoId) {
+
+            if (!(isMyDash && row.auto_deleted_at)) {
+
+                const autoClass = row.auto_deleted_at
+                    ? 'bg-gray-100 text-gray-200 border-gray-300'
+                    : 'bg-yellow-50 ';
+
+                const autoText = row.auto_deleted_at
+                    ? `<i>${icons.automation} Auto ${row.auto_number}: ${escapeHtml(row.auto_name)} (soft deleted)</i>`
+                    : `${icons.automation} Auto ${row.auto_number}: ${escapeHtml(row.auto_name)}<br>
+                       <span class="text-sm">${escapeHtml(row.auto_description || '')}</span>`;
+
+                html += `
+                <!-- Automation card (small overlap) -->
+                <div class="${autoClass} rounded-lg p-2 text-xs shadow-sm 
+                            ml-auto mr-0 -mt-4 w-1/3">
+                    ${autoText}
+                    <div class="text-xs mt-1">${row.auto_id}</div>
+                </div>
+
+            </div> <!-- closes wrapper -->
+                `;
+            }
+
+            oldAutoId = row.auto_id;
+        }
+    }
+
+    html += getInfoFeedbackHTML();
+    return html;
+}  */
+
+
+export function getInfoFeedbackHTML(){
 return `
     <div class="bg-green-100 rounded border flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
         <p class="text-lg font-bold">Information:</p>
         <div id="informationSection" class="w-full">
-        NEW QUESTION
+        New question
             <!-- Information cards will be added here -->
         </div>
     </div>`;

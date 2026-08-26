@@ -12,7 +12,7 @@ let subject=null;
 export async function loadMyDashWithData() {
   console.log('loadMyDashWithData()');
 
-showToast('This website uses cookies. [ ] I agree so I can use the site.  [ ] I refuse and will not use the site','info', 8000);
+showToast('This website uses cookies. [ ] I agree so I can use the site.  [ ] I refuse and will not use the site','info', 6000);
 
 
 subject = await resolveSubject();  
@@ -76,28 +76,39 @@ console.log('resolveSubject', subject,
                 'readStudentAssignments', 
                 { student_id: subject.approUserId, type: subject.type } //if send type 'app-human' the registry will not look for assignments !! 22:36 March 13  WHY?
             );
-//          console.log('assignments',assignments);  //correctly recieved assignments 22:40 March 13 but not displaying
+         // console.log('assignments',assignments);  //correctly recieved assignments 22:40 March 13 but not displaying
             if (!assignments || assignments.length === 0) {
               //  setStatsValues('?', '?', '?','?' , '?', '?'); // what is this?
                 return;
             }
             
             // Count different assignment types
-            const activeTasks = assignments.taskData.filter(a => a.step_order >= 3).length;
-            const completedTasks = assignments.taskData.filter(a => a.step_order === 2).length;
-            const abandonedTasks = assignments.taskData.filter(a => a.step_order === 1).length;
-            //these values are not being displayed.  19>54  Aug 21 2026
+            const activeTasks = assignments.taskData.filter(a => !a.completed_at && !a.abandonded_at && !a.is_deleted).length;
+            const completedTasks = assignments.taskData.filter(a => a.completed_at).length;
+            const abandonedTasks = assignments.taskData.filter(a => a.abandoned_at).length;
+            console.log('active,completed,abandonded', activeTasks, completedTasks, abandonedTasks);
+            //these values are not being displayed.  19>54  Aug 21 2026. Psassing 8,0,0  should be 3,3,2
+            //problem is that assignments have been marked as completed or abandonded in date column without step changing
+           
+            
             // Get surveys (when implemented)
+
             
             const surveys = assignments.surveyData;
   //          console.log('surveys', surveys); //why log just surveys?
            const availableSurveys = surveys?.length || 0; //why this?
-        
+
+            const activeSurveys = assignments.surveyData.filter(a => !a.completed_at && !a.abandoned_at && !a.is_deleted).length;
+            const completedSurveys = assignments.surveyData.filter(a => a.completed_at).length;
+            const abandonedSurveys = assignments.surveyData.filter(a => a.abandoned_at).length;
+
+        console.log('SURVEYS:active,completed, abandoned',activeSurveys,completedSurveys,abandonedSurveys);
             const relationsCount = await getRelationsCount();
   // const relations = relationsObject.is.length + relationsObject.of.length;
             
             // Update stats display
-          //  setStatsValues(activeTasks, completedTasks, abandonedTasks, availableSurveys, relationsCount);
+
+          setStatsValues(activeTasks, completedTasks, abandonedTasks, activeSurveys, completedSurveys, abandonedSurveys);
             
         } catch (error) {
             console.error('Error updating quick stats:', error);
@@ -105,13 +116,15 @@ console.log('resolveSubject', subject,
         }
     }
     
- function setStatsValues(active, completed, abandoned, surveys, relations, rewards) {
-    console.log('setStatsValues');
+ function setStatsValues(activeTasks, completedTasks, abandonedTasks, activeSurveys, completedSurveys, abandonedSurveys, relations, rewards) {
+    console.log('setStatsValues active, completed, abandoned',activeTasks, completedTasks, abandonedTasks, activeSurveys, completedSurveys, abandonedSurveys);
     const stats = {
-            'active-tasks': active,
-            'completed-tasks': completed, 
-            'abandoned-tasks': abandoned,
-            'available-surveys': surveys,
+            'active-tasks': activeTasks,
+            'completed-tasks': completedTasks, 
+            'abandoned-tasks': abandonedTasks,
+            'available-surveys': activeSurveys,
+            'completed-surveys': completedSurveys,
+            'abandoned-surveys':abandonedSurveys,
             'available-relations': relations,
             'available-rewards': rewards
         };
