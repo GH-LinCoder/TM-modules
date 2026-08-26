@@ -69,15 +69,15 @@ export class AssignmentBase {
           <div class="bg-gray-200 p-6 space-y-6">
 
     <div class="space-y-2">
-              <label for="dropdown001" class="block text-sm font-medium text-gray-700">Select Task</label>
+              <label for="dropdown001" class="block text-sm font-medium text-gray-700">Select Task or Survey</label>
               <select id="dropdown001" data-form="dropdown001" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
-                <option value="">Select a task</option>
+                <option value="">If no items use menu [Select]</option>
               </select>
             </div>
 
               <!-- ITEM SELECT -->
               <div class="space-y-2">
-                <label for="dropdown002" class="block text-sm font-medium text-gray-700">Select Student/respondent</label>
+                <label for="dropdown002" class="block text-sm font-medium text-gray-700">Select Student/Respondent</label>
                 <select id="dropdown002" data-form="dropdown002" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
                   <option value="">If no items use menu [Select]</option>
                 </select>
@@ -182,7 +182,7 @@ console.log('after if():', this.assignmentType);
       this.addClipboardItemsToDropdown(dropdown03Items, dropdown003, 'manager');
     }
     
-
+const informationFeedback = panel.querySelector('#informationSection');
     // Auto-fill single items - when there is only 1 item and it hasn't already been selected
     if (dropdown01Items.length === 1 && !dropdown001.value) {
       dropdown001.value = dropdown01Items[0].entity.id;

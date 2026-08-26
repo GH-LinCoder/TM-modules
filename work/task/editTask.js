@@ -131,14 +131,62 @@ if (ratingSelect && Array.isArray(ratingDefinitions)) {
 
 
 function populateFromClipboard(panel) {
-  console.log('populateFromClipboard()');
+  console.log('Function populateFromClipboard()');
   
   // Get tasks or surveys from clipboard
-  const tasks = getClipboardItems({ as: 'task', type: 'tasks' });
-  
-  
+    const tasks = getClipboardItems({ as: 'task', type: 'tasks' });
   if (tasks.length === 0) return;
-  const taskSelect = panel.querySelector('#taskSelect'); //added 16:44 Dec 5
+
+  const taskSelect = panel.querySelector('#taskSelect');
+  let selectedTask = null;
+
+  if (tasks.length === 1) {
+    // Only 1 task in clipboard: extract it from the nested structure
+    selectedTask = tasks[0].entity.item;
+    console.log('🎯 Only 1 task found. Using:', selectedTask.name);
+    
+  } else {
+    // Multiple tasks: we MUST rely on the dropdown selection
+    if (taskSelect && taskSelect.value !== '') {
+      const selectedValue = taskSelect.value;
+      
+      // Search through the nested structure
+      const matchingClipboardItem = tasks.find(t => 
+        String(t.entity.item.id) === String(selectedValue) || 
+        t.entity.item.name === selectedValue
+      );
+      
+      if (matchingClipboardItem) {
+        selectedTask = matchingClipboardItem.entity.item;
+        console.log('🎯 Multiple tasks. User selected:', selectedTask.name);
+      }
+    } else {
+      // Dropdown is empty: user hasn't made a selection yet
+      console.log('⏳ Waiting for user to select a task from the dropdown.');
+      return;
+    }
+  }
+
+  // Safety check
+  if (!selectedTask) {
+    console.warn('No matching task found for the selection.');
+    return;
+  }
+
+  // Now we have a valid selectedTask, populate the radio button
+  const currentMoveBy = selectedTask.move_by || 'student'; 
+  console.log('🎯 Target move_by value:', currentMoveBy);
+
+  const moveByRadio = panel.querySelector(`input[name="move_by"][value="${currentMoveBy}"]`);
+  if (moveByRadio) {
+    moveByRadio.checked = true;
+    console.log('✅ Radio button successfully checked');
+  } else {
+    console.warn('⚠️ Could not find radio button for value:', currentMoveBy);
+  } //end of added part
+
+
+
   addClipboardItemsToDropdown(tasks, taskSelect);
   //moved 10:00 dec 4 from below
   if (tasks.length === 1 && !taskSelect.value) { 
@@ -184,7 +232,7 @@ function populateFromClipboard(panel) {
 
 //New 19:38 Nov 12
 function populateFromClipboardAuto(panel) {
-    console.log('populateFromClipboard()');
+    console.log('populateFromClipboardAuto()');
     
     // Get clipboard items
     const tasks = getClipboardItems({ as: 'task' });
@@ -367,7 +415,35 @@ async function populatePaymentPlansDropdown(panel) {
   }
 }
 
+function getMoveByRadioHTML(){
+return`<div class="mb-4">
+  <label class="block text-sm font-medium text-gray-700 mb-2">Who decides when to move from step to step:</label>
+  
+  <div class="flex gap-4">
+    <label class="flex items-center cursor-pointer group">
+      <input type="radio" name="move_by" value="student"  class="w-4 h-4 text-blue-600">
+      <span class="ml-2 text-sm text-gray-700" title="The person on the task can move from step to step via navigation buttons">
+        Student
+      </span>
+    </label>
+    
+    <label class="flex items-center cursor-pointer group">
+      <input type="radio" name="move_by" value="manager" class="w-4 h-4 text-blue-600">
+      <span class="ml-2 text-sm text-gray-700" title="Moving from step to step is decided by the manager">
+        Manager
+      </span>
+    </label>
+    
+    <label class="flex items-center cursor-pointer group">
+      <input type="radio" name="move_by" value="auto" class="w-4 h-4 text-blue-600">
+      <span class="ml-2 text-sm text-gray-700" title="Movement between steps is controlled by software">
+        Auto
+      </span>
+    </label>
+  </div>
+</div> `
 
+}
 
 
 function getTemplateHTML() {
@@ -456,7 +532,7 @@ function getTemplateHTML() {
               </label>
               <input id="taskUrl" type="url" placeholder="https://example.com" class="w-full p-2 border rounded border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
             </div>
-
+${getMoveByRadioHTML()}
             <button id="saveTaskBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
               Update Task
             </button>
@@ -1237,6 +1313,11 @@ async function handleTaskUpdate(e, panel) {
     const url = panel.querySelector('#taskUrl')?.value.trim();
     const saveBtn = panel.querySelector('#saveTaskBtn');
     const nameError = panel.querySelector('#nameError');
+
+      // READ radio button of move_by
+      const selectedMoveBy = panel.querySelector('input[name="move_by"]:checked')
+      console.log('selectedMoveBy',selectedMoveBy.value);
+      const moveBy = selectedMoveBy.value;
   
     if (!name || !description) {
       showToast('Name and description are required', 'error');
@@ -1258,12 +1339,15 @@ async function handleTaskUpdate(e, panel) {
           return;
         }
       }
+
+    
       saveBtn.textContent = 'Updating Task...';
       const updatedTask = await executeIfPermitted(state.user, 'updateTask', {
         id: state.currentTaskId,
         name,
         description,
-        external_url: url
+        external_url: url,
+        move_by:moveBy
       });
   
       showToast('Task updated successfully!');

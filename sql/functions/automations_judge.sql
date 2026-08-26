@@ -42,7 +42,7 @@ BEGIN
     ----------------------------------------------------------------------
     v_task_header_id := (v_assignment.assignment ->> 'task_header')::UUID;
     v_step_id        := (v_assignment.assignment ->> 'step_id')::UUID;
-    v_survey_header_id := (v_assignment.assignment ->> 'survey_header')::UUID;
+    v_survey_header_id := (v_assignment.assignment ->> 'survey_header_id')::UUID;
 
     ----------------------------------------------------------------------
     -- 1. Validate login
@@ -105,7 +105,7 @@ BEGIN
             RETURN jsonb_build_object('result','failed','reason','judge: automation deleted');
         END IF;
 
-    ELSIF v_survey_header_id IS NOT NULL THEN
+    ELSE IF v_survey_header_id IS NOT NULL THEN
         ------------------------------------------------------------------
         -- SURVEY-BASED AUTOMATION
         ------------------------------------------------------------------

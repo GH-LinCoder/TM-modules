@@ -77,6 +77,9 @@ export const registry = { // this registry is for loading a new page to the righ
 //'display-tasks' :()=> import('../work/task/displayTasksStudent.js'),//display the tasks for this student
 'display-tasks' :()=> import('../work/task/displayTaskCards.js'),
 
+'view-completed-tasks':()=> import('../work/task/displayCompletedTasks.js'),
+'view-abandoned-tasks':()=> import('../work/task/displayAbandonedTasks.js'),
+
 'display-task-summary':()=> import('../work/task/displayTaskSummary.js'),
 
 
@@ -147,6 +150,12 @@ export const registry = { // this registry is for loading a new page to the righ
 //"display-surveys"  : () => import('../work/survey/displaySurvey.js'), //changed to remove Qwen 22:29 dec 24
 "display-survey"  : () => import('../work/survey/displaySurvey.js'),
  "display-surveys"  : () => import('../work/survey/displaySurveyCards.js'),
+
+'view-completed-surveys':()=> import('../work/survey/displayCompletedSurveys.js'),
+'view-abandoned-surveys':()=> import('../work/survey/displayAbandonedSurveys.js'),
+
+
+
 
 "my-role" : () => import('../work/approfiles/myRole.js'),
 

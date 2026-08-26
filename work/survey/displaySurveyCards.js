@@ -15,8 +15,22 @@ console.log('displaySurveyCards.js loaded');
 
 let itemOnDisplay = null; // to be able to close the item when the button has a 2nd click
 
+let itemCounts = {};
 
-export async function render(panel, petition = {}) {
+
+
+export async function renderCompletedAbandonedSurveys(panel, petition = {}, renderType) {
+console.log('displayCompletedSurveyCards.render()'); // petition is empty
+
+console.log('renderType:',renderType);
+render(panel, petition, renderType);
+//need to set the param  'completed' and adjust the render to be able to handle type of render
+//but error no user id - not in petition?
+}
+
+
+
+export async function render(panel, petition = {}, renderType='active') {
    // console.log('displaySurveyCards.render(', panel, petition, ')');
   console.log('displaySurveyCards.render()');
     const userId = petition.student;
@@ -33,6 +47,9 @@ export async function render(panel, petition = {}) {
     try {
 // changing to use the same function that loadMyDashWithData uses. That seems to work when substituted in the displayTaskCards 
 
+
+
+
 const subject = await resolveSubject();       
 
 const tasksAndSurveys = await executeIfPermitted(
@@ -41,30 +58,51 @@ const tasksAndSurveys = await executeIfPermitted(
                 { student_id: subject.approUserId, type: subject.type } //if send type 'app-human' the registry will not look for assignments !! 22:36 March 13  WHY?
             );    
 
-/*
-        assignments = await executeIfPermitted(
-            userId,
-            'readAssignmentsSurveys',
-            { student_id: userId }
-        );
-*/
+
+
 //console.log('tasksAndSurveys',tasksAndSurveys);
         assignments = tasksAndSurveys.surveyData; //because readStudentAssignments returns both tasks and surveys, we need to specify which one we want. 22:36 March 13    
-
-
     } catch (err) {
         console.error('Error reading survey assignments:', err);
         panel.innerHTML = `<div class="text-red-600 p-4">Error loading surveys.</div>`;
         return;
     }
+console.log('assignments', assignments); // 
 
 
+  let activeColors = 'bg-yellow-50 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer '; 
 
-   // console.log('assignments', assignments); // 
+let displayNumberEl = null;
+  switch(renderType)
+{
+  case 'completed':
+    // code block  // if there is a completed_at 
+    assignments = assignments.filter(item => item.completed_at !== null);
+    activeColors = 'bg-green-200 border border-green-400 rounded-lg p-3 cursor-pointer ';
+    itemCounts.completed = assignments.length;
+    displayNumberEl = document.querySelector('[data-value="completed-surveys"]');
+    displayNumberEl.textContent = itemCounts.completed;
+    break;
+  case 'abandoned':
+    // code block //if there is an abandoned_at
+    assignments = assignments.filter(item => item.abandoned_at !== null);
+    itemCounts.abandoned = assignments.length;
+    activeColors = 'bg-red-100 border border-red-400 rounded-lg p-3 cursor-pointer ';    
+    displayNumberEl = document.querySelector('[data-value="abandoned-surveys"]');
+    displayNumberEl.textContent = itemCounts.completed; 
+    
+    break;
+  default:
+    // active code block
+    assignments = assignments.filter(item => item.completed_at === null && item.abandoned_at === null);}
+     //keep default values for active colors 
+
+console.log('assignments.filtered',assignments);
+
     if (!assignments || assignments.length === 0) {
         panel.innerHTML = `
             <div class="text-gray-500 text-center py-8">
-                No survey assignments found.
+                No ${renderType} survey assignments found.
             </div>`;
         return;
     }
@@ -79,13 +117,13 @@ const tasksAndSurveys = await executeIfPermitted(
     assignments.forEach(survey => {
 //need to exclude those with completed_at, abandoned_at, deleted_at,  is_deleted = true
             //    console.log('survey', survey, 'survey.assignment',survey.assignment, 'survey.assignment.survey_header',survey.assignment.survey_header);
-
-                if(!survey.completed_at && !survey.is_deleted) { //new 19:13 March 13 + closing } below
+//removed !survey.completed.  Need to display these when requested 
+                if(!survey.is_deleted) { //new 19:13 March 13 + closing } below
 
                 const card = document.createElement('div');
-
+        // removed             'bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-pointer ' +
         card.className =
-            'bg-orange-50 border border-orange-200 rounded-lg p-3 cursor-pointer ' +
+        activeColors +
             'hover:shadow-md flex justify-between items-center';
 
         // Petition metadata

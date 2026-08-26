@@ -39,7 +39,7 @@ class AssignSurveyDialog extends AssignmentBase { // ✅ Extend base class
     
     // Render the template with survey-specific instructions
     panel.innerHTML = this.getTemplateHTML(
-      'Assign survey 👨‍🔧    21:30 Oct 30 - new system',
+      'Assign survey 🎆📜',
       [
         'Select a survey from your clipboard to assign.',
         'Choose a respondent to assign the survey to.',

@@ -163,6 +163,9 @@ import { executeIfPermitted } from './registry/executeIfPermitted.js';
 import { showToast } from './ui/showToast.js';
 import { appState } from './state/appState.js';
 
+const fadeTime = 700; //ms delay for fading from login to dashboard used in 2 places
+
+
 function escapeHtml(text) {
 if (!text || typeof text !== 'string') return '';
   return text
@@ -253,7 +256,7 @@ console.log('email',email,' password ', password);
     // Wait for animation to complete, then redirect
     setTimeout(() => {
      window.location.href = '/organise.html'; //for tests comment out this line & the signup redirect (lines 369 & 326) so can see error messages on console
-    }, 1000); // Match this delay to your CSS transition duration
+    }, fadeTime); // Match this delay to your CSS transition duration
   
       }
     });
@@ -559,7 +562,7 @@ console.log('Failed to assign: ' + error.message);
             setTimeout(() => {
               console.log('Redirecting to app...');
               window.location.href = '/organise.html'; 
-            }, 1000); // 1 second delay for smooth UI transition
+            }, fadeTime); // 1 second delay for smooth UI transition
           }
         }
       }

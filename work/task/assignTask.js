@@ -43,7 +43,7 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     
     // Render the template with task-specific instructions
     panel.innerHTML = this.getTemplateHTML(
-      'Assign Task 👨‍🔧    21:30 Oct 30 - new system',
+      'Assign Task 👨‍🔧 ',
       [
         'Select a task from your clipboard to assign.',
         'Choose a student to assign the task to.',
@@ -74,6 +74,8 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     this.attachTaskListeners(panel);
     }
 
+
+
   attachTaskListeners(panel) {
     console.log('attachTaskListeners()');
     
@@ -93,6 +95,8 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     });
   }
 
+
+
   populateTaskDropdown(panel) { // NO!
     console.log('populateTaskDropdown()');
     
@@ -102,6 +106,7 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     dropdown001.innerHTML = '<option value="">Select a task</option>';
 
   }
+
 
   populateUserDropdowns(panel) { //NO!
     console.log('populateUserDropdowns()');
@@ -130,6 +135,7 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     });
   }
 
+
   updateSubmitButtonState(panel) {
     const dropdown001 = panel.querySelector('#dropdown001');//01?  001?
     const dropdown002 = panel.querySelector('#dropdown002');
@@ -156,23 +162,31 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
 decideNavButtonsToDisplay(){
 console.log('decideNavButtonsToDisplay()');
 //let defaultMoveBy = this.readTaskDefaultMoveBy();
-
 if (currentStep <3) return; // where get currentStep ??
+}
+
+
+
+async decideDefaultMoveBy(taskHeaderId){ // this default value needs to be read from the task_header table. Not yet implemented 25 March
+//read the task_headers table for current task to read move_by
+try{ 
+  //The chosen value inside assignment is first choice. The original value placed in task_headers is 2nd choice. If neither exists use 'manager' which is restrictive.
+  // That is the restrictive default. Could default to permissive 'student'
+
+  const taskHeaderDefault = await executeIfPermitted(userId, 'readTaskHeaderMoveBy', taskHeaderId );
+  console.log('decideDefaultMoveBy() taskHeaderDefault', taskHeaderDefault, 'this.AssignmentDefaultMoveBy', this.AssignmentDefaultMoveBy);
+  if (this.AssignmentDefaultMoveBy) return this.AssignmentDefaultMoveBy;
+  else  if(!taskHeaderDefault) return taskHeaderDefault;
+  else return 'manager';  // This is the restrictive default. Could default to permissive 'student'
+} catch (error) {
+      console.error('Read of task_header default moveBy failed:', error);
+      throw error;
+    }
 
 
 }
 
-decideDefaultMoveBy(taskHeaderDefault){ // this default value needs to be read from the task_header table. Not yet implemented 25 March
-  if(!taskHeaderDefault)
-if (this.AssignmentDefaultMoveBy) return this.AssignmentDefaultMoveBy;
-  else if (taskHeaderDefault) return taskHeaderDefault;
-  else return 'manager';
-
-  //The chosen value inside assignment is first choice. The value placed in task_headers is 2nd choice. If neither exists use 'manager'
-
-}
-
-
+/* removed 11:07 Aug 19 2026
 async  readTaskDefaultMoveBy(){
   let defaultMoveBy = 'manager'; // is this needed or can we just use the value from the base ?
 console.log('readTaskDefaultMoveBy()');
@@ -181,7 +195,7 @@ if(this.taskDefaultMoveBy) defaultMoveBy = this.taskDefaultMoveBy; //if the user
 // if the is no such set value (true for older tasks) let the local default take preferenc
 return defaultMoveBy;
 }
-
+*/
 
   async processAssignment(panel) { // ✅ Override parent method
    // console.log('processAssignment() args of subject, item, but not used?', subjectId, itemId);
@@ -217,8 +231,14 @@ console.log('studentName',this.studentName);
 //to keep track of navigation buttons we need the total number of steps and the default moveBy from the task header
       totalSteps=taskSteps.length; //new 16:00 feb 23
      
-this.defaultMoveBy = this.decideDefaultMoveBy(taskSteps.move_by);  //has the user clicked the radio buttons or do we use the task_header or just 'manager' ?
-
+this.defaultMoveBy = await this.decideDefaultMoveBy(taskHeaderId);  
+console.log('ProcessAssignment()  this.defaultMoveBy',this.defaultMoveBy);
+//this was using steps but taskSteps don't have 'move_by'
+// and the user couldn not have clicked the radio buttons as they didn't exist 
+// The task_header table has a move_by column. TaskSteps do not. Default cannot be determined at this line
+//move_by should default to the value in task_headers or if null default to 'manager' or possibly 'student'
+//but the assignment form should have radio buttons to choice who moves the student through the task 'move_by'
+//need to code this 10:33 Aug 2026
 
        // Find step 3 (initial step)
       let stepId = null;
@@ -231,8 +251,10 @@ this.defaultMoveBy = this.decideDefaultMoveBy(taskSteps.move_by);  //has the use
       }
   
       subject = await resolveSubject();
+      console.log('subject:',subject);
       this.userId=subject.id; 
-      console.log('this.userId:',this.userId);
+      //subject.id is probably a clipbaod appro id. Probably that would be the student 
+      //userIds has to be the logged in user's auth id. This is person doing the assigning. But the auth id was written to appState.query.userAuthId
 
 console.log('registry createAssignment:',
     'student_id:', studentId,
@@ -245,7 +267,7 @@ console.log('registry createAssignment:',
     'step_id:', stepId,'}',
     'current_step:',3,
     'totalSteps:',totalSteps,
-    'assigned_by:',this.userId);
+    'assigned_by:',appState.query.userAuthId);
 
       // Save task assignment to database
       const result = await executeIfPermitted(userId, 'createAssignment', { //what about current_step int?
@@ -255,7 +277,7 @@ console.log('registry createAssignment:',
         student_id: studentId,
         student_name: this.studentName,
         manager_id: this.managerId,
-        assigned_by: this.userId, // Current user doing the assignment
+        assigned_by: appState.query.userAuthId, // Current user doing the assignment
         move_by: this.defaultMoveBy
       });
       

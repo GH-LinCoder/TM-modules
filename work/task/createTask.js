@@ -174,7 +174,35 @@ function populateFromClipboard(panel) {
     console.log('Added', items.length, 'clipboard items to', type, 'dropdown');
   }
 
+function getMoveByRadioHTML(){
+return`<div class="mb-4">
+  <label class="block text-sm font-medium text-gray-700 mb-2">Who decides when to move from step to step:</label>
+  
+  <div class="flex gap-4">
+    <label class="flex items-center cursor-pointer group">
+      <input type="radio" name="move_by" value="student" checked class="w-4 h-4 text-blue-600">
+      <span class="ml-2 text-sm text-gray-700" title="The person on the task can move from step to step via navigation buttons">
+        Student
+      </span>
+    </label>
+    
+    <label class="flex items-center cursor-pointer group">
+      <input type="radio" name="move_by" value="manager" class="w-4 h-4 text-blue-600">
+      <span class="ml-2 text-sm text-gray-700" title="Moving from step to step is decided by the manager">
+        Manager
+      </span>
+    </label>
+    
+    <label class="flex items-center cursor-pointer group">
+      <input type="radio" name="move_by" value="auto" class="w-4 h-4 text-blue-600">
+      <span class="ml-2 text-sm text-gray-700" title="Movement between steps is controlled by software">
+        Auto
+      </span>
+    </label>
+  </div>
+</div> `
 
+}
 
 // In createTaskForm.js, modify the getTemplateHTML function to include automation cards:
 function getTemplateHTML() {
@@ -281,6 +309,8 @@ function getTemplateHTML() {
                 <input id="taskUrl" type="url" placeholder="https://example.com  " class="w-full p-2 border rounded border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               </div>
   
+${getMoveByRadioHTML()}
+
               <button id="saveTaskBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">
                 Save Task
               </button>
@@ -458,7 +488,7 @@ function getTemplateHTML() {
         </div>
       </div>
        ${petitionBreadcrumbs()} 
-      `;
+      `
   }
 
 function attachListeners(panel) {   //managerAutomationSelect  
@@ -548,8 +578,6 @@ console.log('ratingSelected:',ratingSelected)
   panel.querySelector('#saveSurveyAutomationBtn')?.addEventListener('click', (e) => handleSurveyAutomationSubmit(e, panel));
   panel.querySelector('#saveRelationshipAutomationBtn')?.addEventListener('click', (e) => handleRelationshipAutomationSubmit(e, panel));
 
-
-
 }
 
 async function handleTaskSubmit(e, panel) {
@@ -577,12 +605,20 @@ async function handleTaskSubmit(e, panel) {
   saveBtn.disabled = true;
   saveBtn.textContent = 'Saving Task...';
 
+// ✅ READ THE VALUE DIRECTLY AT SUBMIT TIME
+
+
+
+  const moveByInput = panel.querySelector('input[name="move_by"]:checked')?.value || 'student';
+
   try {
+
     const newTask = await executeIfPermitted(userAuthId, 'createTask', {
       taskName: taskName,
       taskDescription: taskDescription,
       taskUrl: taskUrl,
-      defaultManagerId: managerData.managerId
+      defaultManagerId: managerData.managerId,
+      move_by:moveByInput
     });
 
     taskId = newTask.id;

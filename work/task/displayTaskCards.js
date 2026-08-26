@@ -15,14 +15,25 @@ console.log('displayTasksCards.js loaded');
 
 let itemOnDisplay = null; // to be able to close the item when the button has a 2nd click
 
+let itemCounts = {};
 
 function clearContainer(container){//trying to empty the display area when subject changes. Failed
 container.innerHTML='';
 }
 
+export async function renderCompletedAbandonedTasks(panel, petition = {}, renderType) {
+console.log('displayCompletedTaskCards.render()'); // petition is empty
 
-export async function render(panel, petition = {}) {
- //   console.log('displayTasksCards.render(', panel, petition, ')');
+console.log('renderType:',renderType);
+render(panel, petition, renderType);
+//need to set the param  'completed' and adjust the render to be able to handle type of render
+//but error no user id - not in petition?
+}
+
+
+
+export async function render(panel, petition = {} , renderType='active') {
+    console.log('displayTasksCards.render(', panel, petition, ')');
 console.log('displayTasksCards.render()');
     const userId = petition.student;
     if (!userId) {
@@ -31,6 +42,9 @@ console.log('displayTasksCards.render()');
     }
 
     // Read assignments   In loadMyDashWithData readStudentAssignments finds all the assignments and delivers them in two arrays
+
+
+
     let assignments = [];
     try {//console.log('render() readAssignmentTasks with student_id:',userId);
      
@@ -49,18 +63,48 @@ const tasksAndSurveys = await executeIfPermitted(
  
 
 //console.log('tasksAndSurveys',tasksAndSurveys);
-        assignments = tasksAndSurveys.taskData; //because readStudentAssignments returns both tasks and surveys, we need to specify which one we want. 22:36 March 13    
-    
+        assignments = tasksAndSurveys.taskData; //because readStudentAssignments returns both tasks and surveys, we need to specify which one we want. 22:36 March 13        
     } catch (err) {
         console.error('Error reading assignments:', err);
         panel.innerHTML = `<div class="text-red-600 p-4">Error loading tasks.</div>`;
         return;
     }
-//console.log('assignments', assignments, 'assignments.length',assignments.length); // okay - we have assignment_id at this line
+console.log('assignments',assignments);
+//need to filter active completed abandonded onlyshow relevant group
+//assignments.forEach(task => {
+  let activeColors = 'bg-blue-50 border border-blue-200 rounded-l-2xl p-3 cursor-pointer '; 
+  let displayNumberEl = null;
+switch(renderType)
+{
+  case 'completed':
+    // code block  // if there is a completed_at 
+    assignments = assignments.filter(item => item.completed_at !== null);
+    itemCounts.completed = assignments.length;
+    activeColors = 'bg-green-200 border border-green-400 rounded-lg p-3 cursor-pointer ';
+    displayNumberEl = document.querySelector('[data-value="completed-tasks"]');
+    displayNumberEl.textContent = itemCounts.completed; 
+    break;
+  case 'abandoned':
+    // code block //if there is an abandoned_at
+    assignments = assignments.filter(item => item.abandoned_at !== null);
+    itemCounts.abandoned = assignments.length;
+    activeColors = 'bg-red-100 border border-red-400 rounded-lg p-3 cursor-pointer '; 
+    displayNumberEl = document.querySelector('[data-value="abandoned-tasks"]');
+    displayNumberEl.textContent = itemCounts.abandoned; 
+   
+    break;
+  default:
+    // active code block
+    assignments = assignments.filter(item => item.completed_at === null && item.abandoned_at === null);}
+    itemCounts.active = assignments.length;
+     //keep default values for active colors 
+//}); // end of forEach
+
+    //console.log('assignments', assignments, 'assignments.length',assignments.length); // okay - we have assignment_id at this line
     if (!assignments || assignments.length === 0) {
         panel.innerHTML = `
             <div class="text-gray-500 text-center py-8">
-                No task assignments found.
+                No ${renderType} task assignments found
             </div>`;
         return;
     }
@@ -78,8 +122,9 @@ assignments.forEach(task => {
     //    console.log('task', task, 'task.assignment_id',task.assignment_id);//task.assignment_id 
          const card = document.createElement('div');
 
-  card.className =
-    'bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-pointer ' +
+         // removed // 'bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-pointer ' +
+  card.className =   
+    activeColors +
     'hover:shadow-md flex justify-between items-center';
 
   card.dataset.action = 'display-one-task'; //this needs to be listed in the registryLoadModule.
