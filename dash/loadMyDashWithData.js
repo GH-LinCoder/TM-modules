@@ -83,10 +83,10 @@ console.log('resolveSubject', subject,
             }
             
             // Count different assignment types
-            const activeTasks = assignments.taskData.filter(a => !a.completed_at && !a.abandonded_at && !a.is_deleted).length;
+            const activeTasks = assignments.taskData.filter(a => !a.completed_at && !a.abandoned_at && !a.is_deleted).length;
             const completedTasks = assignments.taskData.filter(a => a.completed_at).length;
             const abandonedTasks = assignments.taskData.filter(a => a.abandoned_at).length;
-            console.log('active,completed,abandonded', activeTasks, completedTasks, abandonedTasks);
+           // console.log('active,completed,abandonded', activeTasks, completedTasks, abandonedTasks);
             //these values are not being displayed.  19>54  Aug 21 2026. Psassing 8,0,0  should be 3,3,2
             //problem is that assignments have been marked as completed or abandonded in date column without step changing
            

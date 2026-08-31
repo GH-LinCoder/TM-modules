@@ -68,18 +68,73 @@ import { loadMyDashWithData } from './dash/loadMyDashWithData.js';
 
 // === UTILITY: Get main display area ===
 function getDisplayArea() {
+  console.log('GetDisplayArea()');
+  const destination = appState.query.petitioner.Destination;
+
+  if (destination === 'new-panel') {
+    const primaryPanel = document.querySelector('#primary-panel');
+    
+    // Check if the dashboard is already loaded by seeing if the panel has children
+    const isDashboardAlreadyLoaded = primaryPanel && primaryPanel.children.length > 0;
+
+    // 1. INITIAL LOAD: If the panel is empty, this is the first render (the dashboard)
+    if (!isDashboardAlreadyLoaded) {
+      console.log('✅ INITIAL DASHBOARD: Injecting into #primary-panel');
+      return primaryPanel;
+    }
+
+    // 2. SUBSEQUENT MENU CLICKS: The dashboard is already there. Check screen size.
+    const isMobile = window.innerWidth < 768;
+    
+    if (isMobile) {
+      const mobilePanel = document.querySelector('[data-panel="mobile-inject-here"]');
+      mobilePanel.classList.remove('hidden', 'md:hidden'); // Ensure it's visible
+      console.log('✅ MOBILE MENU: Injecting into #mobile-panel (Top)');
+      return mobilePanel;
+    } else {
+      console.log('✅ DESKTOP MENU: Injecting into #primary-panel (Side-by-side)');
+      return primaryPanel; // Or document.querySelector('[data-panel="inject-here"]')
+    }
+
+  } else {
+    // Handle specific section destinations (e.g., expanding a section in place)
+    const displayArea = document.querySelector(`[data-section="${destination}"]`);
+    return displayArea;
+  }
+}
+/*
+function getDisplayArea() {
 console.log('GetDisplayArea()');
 
-const destination=appState.query.petitioner.Destination;
-//console.log('destination:',destination);
-if(destination==='new-panel') return document.querySelector('[data-panel="inject-here"]');
-else {const displayArea = document.querySelector(`[data-section="${destination}"]`);
-//  console.log('displayArea:',displayArea );
-  return  displayArea;
+const destination = appState.query.petitioner.Destination;
+
+if (destination === 'new-panel') {
+console.log('✅ panelsOnDisplay.length:',panelsOnDisplay.length);
+      // idea is that this is 0 when only the dashboard is on display. BUT the log shows 4 or 5
+  if (panelsOnDisplay.length === 0) {
+    console.log(' DASHBOARD: Injecting into #primary-panel');
+    return document.querySelector('#primary-panel');
+  }
+
+  const isMobile = window.innerWidth < 768; // Tailwind's 'md' breakpoint
+  
+  if (isMobile) {
+    const mobilePanel = document.querySelector('[data-panel="mobile-inject-here"]');
+    // Make the mobile panel visible when we're about to inject into it
+    mobilePanel.classList.remove('hidden');
+     console.log(' Mobile: Injecting into mobile-panel');
+    return mobilePanel;
+  } else {
+    console.log(' Desktop: Injecting into primary-panel');
+    return document.querySelector('[data-panel="inject-here"]');
+  }
+} else {
+  const displayArea = document.querySelector(`[data-section="${destination}"]`);
+  return displayArea;
 }
 
 }
-
+*/
 function getFrameAroundThePages() {
     return document.getElementById('main-container');
 }
@@ -308,8 +363,14 @@ const selectedModule = await registryEntry(); // Use the pointer to get the func
 //console.log('Loaded module functions:', selectedModule);
 
 //if(true) 
-  renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); //was a test but never changed the if??
-    }
+  await renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); //was a test but never changed the if??
+   
+// ✅ FORCE layout recalculation after panel is added. Without this delay the render to the side is erratic. Sometimes 50% width sometimes tiny width
+setTimeout(() => {
+  updatePanelLayout();
+}, 10);
+
+}
 
 }
 
@@ -347,6 +408,36 @@ function updatePanelLayout() {
   }
 }
 
+
+// new 22:25 Aug 27 need remove the version in menu listeners
+
+function updateMenuHighlights() {
+  console.log('🎨 updateMenuHighlights() running...');
+ // console.log('📦 Current panelsOnDisplay:', panelsOnDisplay.map(p => p.stubName));
+
+  // 1. Strip highlights from ALL menu buttons (both desktop and mobile)
+  const allBtns = document.querySelectorAll('.nav-btn');
+ // console.log('🔍 Found .nav-btn elements:', allBtns.length);
+  
+  allBtns.forEach(btn => {
+    btn.classList.remove('ring-4', 'ring-blue-500', 'bg-blue-100', 'active');
+  });
+
+  // 2. Apply highlights to ALL buttons for currently open panels
+  panelsOnDisplay.forEach(panel => {
+    const pageName = panel.stubName.replace('.html', '');
+    
+    // ✅ Use querySelectorAll to find ALL matching buttons (desktop + mobile)
+    const buttons = document.querySelectorAll(`.nav-btn[data-page="${pageName}"]`);
+    
+   // console.log(`🎯 Looking for buttons with data-page="${pageName}"`, `Found: ${buttons.length}`);
+    
+    buttons.forEach(btn => {
+    //  console.log(`✅ Adding highlight to button:`, btn);
+      btn.classList.add('ring-4', 'ring-blue-500', 'bg-blue-100', 'active');
+    });
+  });
+}
 
 // === OPEN/CLOSE PANELS BY RULE ===
 export async function openClosePanelsByRule(stubName, fromButtonClick = false) {//but only called from eventListener  openClosePanelsByRule(payload.petitioner.Action)
@@ -414,6 +505,7 @@ if(destination==='background') await backgroundProcess(); else
           if (activeBtn) activeBtn.classList.add('active');
         }
       }
+      updateMenuHighlights();
     }
 
 // === CLOSE ALL PANELS ===

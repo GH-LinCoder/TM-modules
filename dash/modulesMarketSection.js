@@ -28,6 +28,146 @@ function getTemplateHTML() {
                     <p class="text-[9px] text-gray-500 uppercase">Return to Settings</p>
                 </div>
 
+                <section>
+  <h3 class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-4 border-b pb-1">
+    Internal upgrades
+  </h3>
+  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+
+    <!-- Trust Security -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-ts">
+      <h3 class="text-sm font-bold text-teal-900">
+        Trust/Security System
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">rating participants & resources</p>
+      <p class="text-xs text-teal-700">
+        Every resource is to be alloted a security rating. Every participant is to be alloted a trust rating. Any permission is also subject to trust>= security
+      </p>
+    </div>
+
+        <!-- version control -->
+    <div class="bg-teal-100 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-versions">
+      <h3 class="text-sm font-bold text-teal-900">
+        Version Control 
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Audit ability & more</p>
+      <p class="text-xs text-teal-700">
+Before any change to the resources database rows the old content is copied into a versions table. IMPLEMENTED August 2026
+      </p>
+    </div>
+
+            <!-- Modules write to clipboard -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="clipbaord">
+      <h3 class="text-sm font-bold text-teal-900">
+        Create -> put on clipboard -> announce
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Clipboard</p>
+      <p class="text-xs text-teal-700">
+      When any item is created it should be also loaded on the clipboard so can be used<br> 
+      Also when in displaying relations, click any item -> load on clipboard in case want to act on it
+      </p>
+    </div>
+
+
+    <!-- Bulk selection -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
+      <h3 class="text-sm font-bold text-teal-900">
+        Bulk Selection
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Select module. Selecting >1 item</p>
+      <p class="text-xs text-teal-700">
+        Use standard shift click or control/command click to select more than 1 item from a list. This needs an array and the modules all need to be upgraded to handle arrays and the registry functions probably to use array databse capability
+      </p>
+    </div>
+
+    <!-- Refacter Selector -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
+      <h3 class="text-sm font-bold text-teal-900">
+        Refacter Selector
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Selector module, needs tabs or search</p>
+      <p class="text-xs text-teal-700">
+The Selector module has checkboxes a dropdown & can only select one item. This will not scale. Also the output offers chouces of how to classify the output. Many of these are not valid. The design needs to be reworked 
+      </p>
+    </div>
+
+    <!-- Surveys -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
+      <h3 class="text-sm font-bold text-teal-900">
+        Surveys
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Refactor design</p>
+      <p class="text-xs text-teal-700">
+Automation display needs to respond to whether the auto should or should not be shown. The questions should probably appear one at a time. Add video capability. Auto adjust video size to screen size. The design needs a rethink.
+      </p>
+    </div>
+
+        <!-- Tasks -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
+      <h3 class="text-sm font-bold text-teal-900">
+        Tasks
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Adjust design</p>
+      <p class="text-xs text-teal-700">
+ Only display 1 step at a time. ✅ Reduce size of 'abandon' button. ✅ 
+ 
+ Auto adjust video size to screen size.     
+      </p>
+    </div>
+
+
+    <!-- Admin Dash -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
+      <h3 class="text-sm font-bold text-teal-900">
+        Admin Dash ✅
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Redesign</p>
+      <p class="text-xs text-teal-700">
+The current design was a prediction of what would be needed. Updated to matrix of modules. Review again. 
+      </p>
+    </div>
+
+
+    <!-- Surveys -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
+      <h3 class="text-sm font-bold text-teal-900">
+        Display survey cards ✅
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Choose more surveys</p>
+      <p class="text-xs text-teal-700">
+Display task cards has code to allow the user to see and self-assign tasks. Copy paste and adapt that code from display task cards and apply it to display survey cards so that the user can see and self assign surveys.
+      </p>
+    </div>
+
+    <!-- Bug Fix -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
+      <h3 class="text-sm font-bold text-teal-900">
+        Bug fix
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Read the bug reports and choose some to fix</p>
+      <p class="text-xs text-teal-700">
+The Notes system has bug reports. However one bug report is that you can't read bug reports. This is because notes are filtered based on whether they are addressed to you or from you. (You don't see other notes that don't connect to you) This makes it impossible to see bug reports that aren't addressed to you. A way around this is for the owner to do an sql search.
+      </p>
+    </div>
+
+
+    <!-- Notes -->
+    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
+      <h3 class="text-sm font-bold text-teal-900">
+        Bug fix - Notes
+      </h3>
+      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Read the bug reports and choose some to fix</p>
+      <p class="text-xs text-teal-700">
+You can't read bug reports. This is because notes are filtered based on whether they are addressed to you or from you. (You don't see other notes that don't connect to you) This makes it impossible to see bug reports that aren't addressed to you. A way around this is for the owner to do an sql search.
+This is a bigger problem that senior admin cannot access all of the notes because they are also limited by the filtering rules. This needs to be considered and solved.
+</p>
+    </div>
+
+
+
+
+  </div>
+</section>
 
         <section>
             <h3 class="text-xs font-bold uppercase tracking-widest text-green-400 mb-4 border-b pb-1">Content & Collaboration</h3>
@@ -273,111 +413,6 @@ function getTemplateHTML() {
     </div>
 </div>
 </section>
-
-<section>
-  <h3 class="text-xs font-bold uppercase tracking-widest text-orange-400 mb-4 border-b pb-1">
-    Internal upgrades
-  </h3>
-  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-    <!-- Bulk selection -->
-    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
-      <h3 class="text-sm font-bold text-teal-900">
-        Bulk Selection
-      </h3>
-      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Select module. Selecting >1 item</p>
-      <p class="text-xs text-teal-700">
-        Use standard shift click or control/command click to select more than 1 item from a list. This needs an array and the modules all need to be upgraded to handle arrays and the registry functions probably to use array databse capability
-      </p>
-    </div>
-
-    <!-- Refacter Selector -->
-    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
-      <h3 class="text-sm font-bold text-teal-900">
-        Refacter Selector
-      </h3>
-      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Selector module, needs tabs or search</p>
-      <p class="text-xs text-teal-700">
-The Selector module has checkboxes a dropdown & can only select one item. This will not scale. Also the output offers chouces of how to classify the output. Many of these are not valid. The design needs to be reworked 
-      </p>
-    </div>
-
-    <!-- Surveys -->
-    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
-      <h3 class="text-sm font-bold text-teal-900">
-        Surveys
-      </h3>
-      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Refactor design</p>
-      <p class="text-xs text-teal-700">
-Automation display needs to respond to whether the auto should or should not be shown. The questions should probably appear one at a time. Add video capability. Auto adjust video size to screen size. The design needs a rethink.
-      </p>
-    </div>
-
-        <!-- Tasks -->
-    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
-      <h3 class="text-sm font-bold text-teal-900">
-        Tasks
-      </h3>
-      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Adjust design</p>
-      <p class="text-xs text-teal-700">
- Only display 1 step at a time. Reduce size of 'abandon' button. Auto adjust video size to screen size.     
-      </p>
-    </div>
-
-
-    <!-- Admin Dash -->
-    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
-      <h3 class="text-sm font-bold text-teal-900">
-        Admin Dash
-      </h3>
-      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Redesign</p>
-      <p class="text-xs text-teal-700">
-The current design was a prediction of what would be needed. Update it to what we actually need. 
-      </p>
-    </div>
-
-
-    <!-- myDash -->
-    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
-      <h3 class="text-sm font-bold text-teal-900">
-        Display survey cards
-      </h3>
-      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Choose more surveys</p>
-      <p class="text-xs text-teal-700">
-Display task cards has code to allow the user to see and self-assign tasks. Copy paste and adapt that code from display task cards and apply it to display survey cards so that the user can see and self assign surveys.
-      </p>
-    </div>
-
-    <!-- Bug Fix -->
-    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
-      <h3 class="text-sm font-bold text-teal-900">
-        Bug fix
-      </h3>
-      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Read the bug reports and choose some to fix</p>
-      <p class="text-xs text-teal-700">
-The Notes system has bug reports. However one bug report is that you can't read bug reports. This is because notes are filtered based on whether they are addressed to you or from you. (You don't see other notes that don't connect to you) This makes it impossible to see bug reports that aren't addressed to you. A way around this is for the owner to do an sql search.
-      </p>
-    </div>
-
-
-    <!-- Notes -->
-    <div class="bg-teal-50 border border-teal-200 rounded-lg p-4 hover:shadow-md transition-shadow" data-action="upgrade-brevo">
-      <h3 class="text-sm font-bold text-teal-900">
-        Bug fix - Notes
-      </h3>
-      <p class="text-[9px] bg-teal-200 text-teal-800 px-1 rounded w-max mb-2 uppercase">Read the bug reports and choose some to fix</p>
-      <p class="text-xs text-teal-700">
-You can't read bug reports. This is because notes are filtered based on whether they are addressed to you or from you. (You don't see other notes that don't connect to you) This makes it impossible to see bug reports that aren't addressed to you. A way around this is for the owner to do an sql search.
-This is a bigger problem that senior admin cannot access all of the notes because they are also limited by the filtering rules. This needs to be considered and solved.
-</p>
-    </div>
-
-
-
-
-  </div>
-</section>
-
 
         </div>
 ${petitionBreadcrumbs()}

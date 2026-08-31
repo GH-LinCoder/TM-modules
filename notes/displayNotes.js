@@ -26,7 +26,10 @@ userChoices = { //amended 12:22 March 16 2026
     threadsActive: false
  */ 
 
-const userId = userChoices.userId;
+let userId = null; //removed 17:24 Aug 30
+let displayLoggedInUsersNotes = true; // this can be toggled to switch between the logged in user and the latest item on the clipbaord
+let subject = null;
+
 let pageOfNotes = [];
 
 let totalCount = 0;
@@ -109,14 +112,14 @@ function filterByAddress(notes) { //anomolies in test March 18 FROM gives zero n
  console.log('filterByAddress()' );  // to + respondent is giving everyone. Should just be respondent
 
 
-const userId = userChoices.userId;
+const userId = userChoices.userId; //this is from the clipboard may not be what user wants
 const address = userChoices.address;
 const respondent = userChoices.respondent || null; 
 //the dropdown gives the 'respondent' this is a way to filter and to address
 
 
  console.log('🔍 filterByAddress userId check:', {
-    localUserId: userId,              // ← The captured variable (still null)
+    localUserId: userId,              // ← 
     objectUserId: userChoices.userId, // ← The live object property (should be set)
     areTheySame: userId === userChoices.userId
   });
@@ -305,15 +308,32 @@ function getHTMLofUserChoices(){ // turn the object into text to show the user w
 }
 
 
+function displayIds(subject) {
+console.log('displayIds');
+const loginApproId = appState.query.userId;
+const loginAuthId = appState.query.userAuthId;
+console.log('log-in appro id',loginApproId, 'loginAuthUserId:',loginAuthId);
+console.log('subject',subject, 'auth id',subject.id, 'appro Id:',subject.approUserId ); //subject has approUserId 
+}
+
+
+
 export async function displayNotes(page = 1) { //first call is without being passed a page number
   console.log('displayNotes()', { page, totalCount });  //object page =1 totalCount =0
   //this can be called by the listener with an impossible page number but we don't have totalCount here?
   //
 
 
-const subject = await resolveSubject(); //This has been returning the value in the clipboard from the select module.
-console.log('subject',subject, 'auth id',subject.id, 'appro Id:',subject.approUserId ); //subject has approUserId 
-    userChoices.userId = subject.approUserId; //what should user id be???
+subject = await resolveSubject(); //This has been returning the value in the clipboard from the select module.
+displayIds(subject);
+
+
+//    userChoices.userId = subject.approUserId; //approUserId is from the clipboard. The logged in appro id is appState.query.userId
+userChoices.userId = appState.query.userId; //default to the logged-in user appro id (but can toggle to the selected id from the clipboard
+
+if(displayLoggedInUsersNotes) userChoices.userId = appState.query.userId; 
+ else userChoices.userId = subject.approUserId;
+
 console.log('userChoices.userId',userChoices.userId); // this is auth id. 
 
 if(page < 1) page = 1; 
@@ -351,6 +371,17 @@ else
       `;
     }
   }
+// ✅ Attach the toggle listener
+const output = document.getElementById('output');
+const toggleBtn = output.querySelector('[data-action="toggle-note-context"]');
+if (toggleBtn) {
+    toggleBtn.addEventListener('click', async () => {
+        displayLoggedInUsersNotes = !displayLoggedInUsersNotes; // Flip the flag
+
+        await displayNotes(1);            // Reset to page 1 and re-fetch
+    });
+}
+
 }
 
 
@@ -428,6 +459,9 @@ export function reRenderNotes() {
     // ✅ Call renderNotes - it will filter internally using global userChoices
     renderNotes(notes, pageOfNotes.totalCount, currentPage, pageSize);
 }
+
+
+
 
 export async function renderNotes(notes, totalCount, page, pageSize) {
         console.log('renderNotes()', page );
@@ -592,9 +626,11 @@ if(filteredNotes.length === 0 && userChoices?.mode === 'more-clicks-more-notes')
 else if(filteredNotes.length === 0 && userChoices?.mode != 'more-clicks-more-notes') advice = `<p class="text-gray-600">In this mode you need to remove some tags to find notes OR change mode by clicking the More notes button.</p>`
 output.innerHTML = `
   <div class="mt-6">
+  <button data-action="toggle-note-context" class="bg-yellow-50 cursor-pointer"> ${displayLoggedInUsersNotes ? '🔄 Change to display clipboard item' : '📋 Change to display my notes'}</button>
     <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
       <span class="mr-2">📝</span>
-      Notes displaying ${filteredNotes.length} of ${totalCount} total
+      Notes displaying ${filteredNotes.length} of ${totalCount}
+       total for ${displayLoggedInUsersNotes ? appState.query.userName : (subject.name || 'Clipboard Subject')};
     </h3>
     ${
       filteredNotes.length === 0 
@@ -606,4 +642,5 @@ output.innerHTML = `
     }  ${controls}
   </div>
 `;
-      }
+}
+

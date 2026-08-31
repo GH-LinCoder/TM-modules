@@ -46,15 +46,16 @@ console.log('howToContext:',howToContext);
 })
 }
 
+//removed 22:05 Aug27 trying to do this in openClosePanelsByRules()
 export function markMenuButton(pageName, btn){
 //  console.log('markMenuButton()', pageName, btn);
- console.log('markMenuButton()');
+ /*console.log('markMenuButton()');
   document.querySelectorAll('.nav-btn').forEach(el => {
    // console.log('el.dataset.page',el.dataset.page, 'currentpage',pageName);
     el.classList.toggle('ring-4', el.dataset.page === pageName);
     el.classList.toggle('ring-blue-500', el.dataset.page === pageName);
     el.classList.toggle('bg-blue-100', el.dataset.page === pageName);
   });
-
+*/
 
 } 

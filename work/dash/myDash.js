@@ -6,7 +6,7 @@ import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 //import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 //import { icons } from '../../registry/iconList.js';
 
-console.log('myDash.js loaded version March 2026 - layout refactor');
+console.log('myDash.js loaded version August 2026 - count  active tasks & surveys');
 
 function getTemplateHTML() {
     return `

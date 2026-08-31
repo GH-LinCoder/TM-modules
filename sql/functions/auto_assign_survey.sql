@@ -53,7 +53,7 @@ BEGIN
   FROM assignments
   WHERE student_id = v_student_id
     AND assignment_type = 'survey'
-    AND assignment->>'survey_header' = v_survey_header_id::TEXT
+    AND assignment->>'survey_header_id' = v_survey_header_id::TEXT
     AND NOT COALESCE(is_deleted, false)
   LIMIT 1;
 
@@ -78,7 +78,7 @@ BEGIN
     v_student_name,
     'survey',
     jsonb_build_object(
-      'survey_header', v_survey_header_id
+      'survey_header_id', v_survey_header_id
     ),
     v_automation_id
   )

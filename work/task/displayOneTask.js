@@ -48,7 +48,7 @@ try { //the registry function needs: const { assignment_id} = payload;
             return;
         }
         assignment = assignmentData[0]; //how does taking [0] work? what's in [n]?
-console.log(' From readThisAssignmnet() assignmentData', assignmentData, 'assignment', assignment);
+//console.log(' From readThisAssignmnet() assignmentData', assignmentData, 'assignment', assignment);
 
 
         // Store as global source of truth
@@ -67,9 +67,9 @@ console.log(' From readThisAssignmnet() assignmentData', assignmentData, 'assign
 async function ensureTaskStepsCached(userId) {
     if (assignment && assignment._taskSteps) return assignment._taskSteps;
 
-    console.log('Fetching and caching task steps from DB...');
+    console.log('Fetching and caching task steps from DB... with assignment.task_header');
     const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', {
-        task_header_id: assignment.assignment.task_header
+        task_header_id: assignment.assignment.task_header_id
     });
     
     assignment._taskSteps = taskSteps;
@@ -89,13 +89,13 @@ console.log('renderTask');
 
 //STEPS  Changed 15:18 Aug 23. stepBeingDisplayed had been set to step_order which is whatever step is listed first in the view
 // Initialize stepBeingDisplayed if not already set.  assignment is [0] of the steps??? so is always number 3 But we want to display current_step
-console.log('step_order', assignment.step_order); // Changed to use .current_step. Now reacts to the changes made by bookmark
+//console.log('step_order', assignment.step_order); // Changed to use .current_step. Now reacts to the changes made by bookmark
         if (assignment.stepBeingDisplayed === undefined) {
             assignment.stepBeingDisplayed = assignment.current_step; //step_order is the number of a step. Each step's number 'step_order' 
         }        //this is just storing the the number of whatever step is being handled right now
       //so how does the code know which step?
       
-        console.log('calling readTaskWithSteps');
+       // console.log('calling readTaskWithSteps');
         const taskSteps = await ensureTaskStepsCached(userId);
        
        
@@ -104,7 +104,12 @@ console.log('step_order', assignment.step_order); // Changed to use .current_ste
         assignment._taskSteps = taskSteps;
 
 
-              console.log('stepBeingDisplayed',assignment.stepBeingDisplayed); 
+           //   console.log('stepBeingDisplayed',assignment.stepBeingDisplayed); 
+
+if(!assignment.stepBeingDisplayed) {assignment.stepBeingDisplayed =3;
+
+ };//should assume step 3 and find step 3 - this works for step 3 but breaks if user clicks next button
+
 const stepBeingDisplayedData = taskSteps.find(s => s.step_order === assignment.stepBeingDisplayed);
 
 
@@ -242,18 +247,22 @@ let bgColor='bg-blue-400'; if(assignment.current_step === 1) bgColor = 'bg-red-4
 
 
  const displayArea = document.querySelector(`[data-section="display-area"]`); 
- console.log('displayArea', displayArea),
+// console.log('displayArea', displayArea),
 
  displayArea.appendChild(card); //need to append it to the destination which is 'display-area'    
  addEventListenerToButtons(panel);
 }
 
-function decideButtonsToDisplay(assignment, taskSteps) {
+function decideButtonsToDisplay(assignment) {
     const currentStep = assignment.stepBeingDisplayed;
-    const numberOfSteps = taskSteps.length;
+  //  const numberOfSteps = taskSteps.length; //wrong because array can have the same step > once if it has > 1 automations
+
+ const numberOfSteps = Math.max(...assignment._taskSteps.map(step => Number(step.step_order) || 0));
+        
+    
     let moveBy = assignment.move_by;
     if(!moveBy) moveBy = 'student'; //Missing value assume permissive behaviour of allowing the student to navigate
-    console.log('moveBy',moveBy);
+   // console.log('moveBy',moveBy, 'numberOfSteps:',numberOfSteps);
     const studentName = assignment.student_name;
     const managerName = assignment.manager_name;
    // const taskId = assignment.assignment.task_header;
@@ -304,14 +313,14 @@ function decideButtonsToDisplay(assignment, taskSteps) {
         </button>` : '';
     
 
-  console.log('Conside bookmark button:'); //need to know card title not assignment.  Only display the button 
+ // console.log('Conside bookmark button:'); //need to know card title not assignment.  Only display the button 
      
-  console.log('currentStep:', currentStep, ' assignment.step_order',assignment.step_order);
+ // console.log('currentStep:', currentStep, ' assignment.step_order',assignment.step_order);
   let bookmarkText = 'Bookmark:'+currentStep.toString()
 if(currentStep === 2) bookmarkText = 'Mark as completed';
-console.log('bookmarkText',bookmarkText);
+//console.log('bookmarkText',bookmarkText);
   if (currentStep > 1 && currentStep!=assignment.step_order ) { 
-    console.log('The step being displayed is>1 & not the db currenstep of',assignment.step_order);
+   // console.log('The step being displayed is>1 & not the db currenstep of',assignment.step_order);
 //added hidden md:block  16:26 Aug 14 // not showing on phone
     bookmarkStepButton = `
       <div class=" md:block">
@@ -339,7 +348,7 @@ function addEventListenerToButtons(panel) {
             if (!button) return;
             const action = button.dataset.button;
             const assignmentId = button.dataset.assignmentId;
-            console.log('button action', action);
+         //   console.log('button action', action);
             switch(action) {
                 case 'abandoned':
                     handleAbandonTask(button, assignmentId);
@@ -425,7 +434,7 @@ function handleNextStep(assignmentId) {
 }
 
 function handleBookmarkStep(button, assignmentId) {
-  //  console.log('handleBookmarkStep()', assignment); // not initialized???
+   console.log('handleBookmarkStep()'); // not initialized???
 //    const assignmentLocal = assignment.find(a => a.assignment_id === assignmentId);
     
     if (assignment.stepBeingDisplayed === 2) handleCompleteTask(button, assignmentId); //need to do 2nd confirm that wants to 'complete'
@@ -463,7 +472,7 @@ function reRenderAssignmentCard(assignmentId) {
     const card = document.querySelector(`[data-assignment-id="${assignmentId}"]`);
     
     if (card && assignment) {
-        const buttonHTML = decideButtonsToDisplay(assignment, assignment._taskSteps);
+        const buttonHTML = decideButtonsToDisplay(assignment);
         const buttonContainer = card.querySelector('#taskActionButtons');
         if (buttonContainer) {
             buttonContainer.innerHTML = buttonHTML;
@@ -497,9 +506,9 @@ function renderStepCard(title, step, color, studentName = null, showCheckmark = 
             }
         }
 
-console.log('renderStepCard() title:',title, 'Length:',title.length);
+//console.log('renderStepCard() title:',title, 'Length:',title.length);
   if (title ==='Current Step') console.log('The title is Current Step');
-  console.log('stepNumber:', stepNumber, ' assignment.step_order',assignment.step_order);
+ // console.log('stepNumber:', stepNumber, ' assignment.step_order',assignment.step_order);
 
   /*
   if (title ==='Current Step' && stepNumber > 1 && stepNumber!=assignment.step_order ) { 

@@ -191,7 +191,7 @@ function populateFromClipboard(panel) {
   //moved 10:00 dec 4 from below
   if (tasks.length === 1 && !taskSelect.value) { 
     taskSelect.value = tasks[0].entity.id;
-    const infoSection = document.querySelector('#informationSection');
+    const infoSection = document.querySelector('#informationSectionTasks');
     infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled task: ${tasks[0].entity.name}</div>`;
   }
   
@@ -667,7 +667,7 @@ ${getMoveByRadioHTML()}
 
 <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
                             <p class="text-lg font-bold">Information:</p>
-                            <div id="informationSection" class="w-full">
+                            <div id="informationSectionTasks" class="w-full">
                                 <!-- Information cards will be added here -->
                             </div>
                         </div>
@@ -970,6 +970,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTa
        manager_id: managerData.managerId, // needs to be from the dropdown    
        target_task_header_id: selectedTaskId,
             task_step_id: state.initialStepId, // 
+            current_step:3,
             name: taskCleanName || 'Unknown Task', // 
             automation_number: automationsNumber
         });
@@ -1092,7 +1093,7 @@ async function handlePaymentAttachmentSubmit(e, panel) {
 
 function addInformationCard(stepData) { 
   console.log('addInformationCard()');
-  const infoSection = document.querySelector('#informationSection');
+  const infoSection = document.querySelector('#informationSectionTasks');
   const card = document.createElement('div');
  // card.className = 'bg-white p-2 rounded border mb-1 text-sm';
  const style = styleCardByType(stepData.type);

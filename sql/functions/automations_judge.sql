@@ -40,7 +40,7 @@ BEGIN
     ----------------------------------------------------------------------
     -- Extract task/survey identity from assignment JSON
     ----------------------------------------------------------------------
-    v_task_header_id := (v_assignment.assignment ->> 'task_header')::UUID;
+    v_task_header_id := (v_assignment.assignment ->> 'task_header_id')::UUID;
     v_step_id        := (v_assignment.assignment ->> 'step_id')::UUID;
     v_survey_header_id := (v_assignment.assignment ->> 'survey_header_id')::UUID;
 
@@ -96,7 +96,7 @@ BEGIN
                 'result','failed',
                 'reason','judge: wrong task or step for automation',
                 'v_automation_id',v_automation_id,
-                'task_header', v_task_header_id,
+                'task_header_id', v_task_header_id,
                 'step_id', v_step_id
             );
         END IF;
@@ -105,7 +105,7 @@ BEGIN
             RETURN jsonb_build_object('result','failed','reason','judge: automation deleted');
         END IF;
 
-    ELSE IF v_survey_header_id IS NOT NULL THEN
+    ELSIF v_survey_header_id IS NOT NULL THEN
         ------------------------------------------------------------------
         -- SURVEY-BASED AUTOMATION
         ------------------------------------------------------------------

@@ -645,7 +645,7 @@ if (task_header_id) {
     .from('assignments_task_view')
     .select('assignment_id')
     .eq('student_id', student_id)
-.eq('assignment->>task_header', task_header_id)
+.eq('assignment->>task_header_id', task_header_id)
 
 //    .eq('task_header_id', task_header_id)
     .limit (1);
@@ -671,7 +671,7 @@ if (existing && existing.data.length > 0) { //console.log (existing);
     student_name:student_name,
     manager_id: manager_id || null,
     assignment_type:'task',
-    assignment: {"task_header": task_header_id, 
+    assignment: {"task_header_id": task_header_id, 
     "step_id": step_id},
     current_step:current_step,
     assigned_by:assigned_by,
@@ -759,7 +759,7 @@ readTaskSteps: {
     const { data, error } = await supabase
       .from('task_steps')
       .select('id, name, description, step_order, external_url')
-      .eq('task_header_id', encodeURIComponent(taskId)) // encodeURIComponent(value) for .eq() & .like()
+      .eq('task_header_id', taskId) // encodeURIComponent(value) for .eq() & .like()
       .order('step_order');
     if (error) throw error;
     return data;
@@ -1585,7 +1585,7 @@ console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   //.eq('task_header_id', encodeURIComponent(task_header_id))
   .select() //Return the entire row ?
   //.single(); //Return single object
-console.log('data',data);
+//console.log('data',data);
   if (error) throw error;
   //console.log('readThisAssignment{} data:',data);
     return data; //
@@ -1714,11 +1714,7 @@ readStudentAssignments: {
     if (type || type === 'task') {  // why was this expecting !type ???  I have changed to type.  Probably breaks something 
       const { data, error } = await supabase
         .from('assignments_task_view')
-        .select(`
-          assignment_id, task_name, task_description, student_id, student_name, manager_id, manager_name, current_step,  
-          assignment_type, step_name, step_description, step_order, assignment, created_at, completed_at, abandoned_at, 
-          deleted_at, deleted_by,is_deleted
-        `)
+        .select(`*`)
         .eq('student_id', student_id)
         .order('task_name', { ascending: true });
 
@@ -2796,7 +2792,7 @@ createAutomationAddTaskByTask: {
     requiredArgs: ['source_task_step_id', 'task_header_id', 'task_step_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number } = payload;
+    const { source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, current_step, name, automation_number } = payload;
 const autoRegistryId = '5473de51-a0d7-466f-8cea-ac342bf16d90';//the place to find what kind of function this is
 console.log('auto task by task',source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number);
     const { data, error } = await supabase
@@ -2805,6 +2801,7 @@ console.log('auto task by task',source_task_step_id, source_task_header_id,targe
         source_task_step_id,
         source_task_header_id,
         task_step_id:source_task_step_id,
+        current_step:current_step,
         name: name || 'Assign Task Automation',
               //  source_data: { source_task_step_id }, 
               //  target_data: { task_header_id, task_step_id },
@@ -3006,7 +3003,7 @@ createAutomationAddTaskBySurvey: {
     requiredArgs: ['survey_answer_id', 'task_header_id', 'task_step_id']
   },
   handler: async (supabase, userId, payload) => {
-    const { source_survey_header_id, source_survey_answer_id, target_task_header_id, target_task_step_id, name, automation_number } = payload;
+    const { source_survey_header_id, source_survey_answer_id, target_task_header_id, target_task_step_id, current_step, name, automation_number } = payload;
    const autoRegistryId = '5473de51-a0d7-466f-8cea-ac342bf16d90';//the place to find what kind of function this is
 
    const { data, error } = await supabase
@@ -3016,6 +3013,7 @@ createAutomationAddTaskBySurvey: {
         survey_answer_id:source_survey_answer_id,//ok
         task_header_id:target_task_header_id,//ok
         task_step_id:target_task_step_id,//ok
+        current_step:current_step,
         name: name || 'Assign Task by Survey Automation',//ok
         automation_number: automation_number || null,  //ok
         auto_registry_id:autoRegistryId,

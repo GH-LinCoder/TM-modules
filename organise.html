@@ -81,8 +81,14 @@
 
 
     <!-- Main Content Area   removing overflow-hidden in hope this is source of bug of unresponsive dropdowns WRECKED THE APP-->
-    <main id="main-container" class="flex-1 overflow-hidden" data-panel="the-frame-around-the-pages">
+    <main id="main-container" class="flex-1 overflow-y-auto md:overflow-hidden" data-panel="the-frame-around-the-pages">
     
+<!-- Mobile-only injection point: appears at the top, above the dashboard   added 20:20 Aug 27-->
+<section id="mobile-panel" 
+  class="hidden md:hidden w-full p-2 bg-gray-50 border-b border-gray-300" 
+  data-panel="mobile-inject-here">
+</section>
+
       <!--section id="primary-panel" class="flex flex-row flex-1 overflow-x-auto p-2 md:p-4 bg-gray-50" data-panel="inject-here"-->
       <section id="primary-panel"
   class="flex flex-row flex-1 w-full min-w-0 overflow-x-auto p-0 md:p-4 bg-gray-50"

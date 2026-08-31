@@ -55,7 +55,7 @@ BEGIN
   FROM assignments
   WHERE student_id = v_student_id
     AND assignment_type = 'task'
-    AND assignment->>'task_header' = v_task_header_id::TEXT
+    AND assignment->>'task_header_id' = v_task_header_id::TEXT
     AND NOT COALESCE(is_deleted, false)
   LIMIT 1;
 
@@ -81,7 +81,7 @@ BEGIN
     v_student_name,
     'task',
     jsonb_build_object(
-      'task_header', v_task_header_id,
+      'task_header_id', v_task_header_id,
       'step_id', v_step_id
     ),
     v_manager_id,
