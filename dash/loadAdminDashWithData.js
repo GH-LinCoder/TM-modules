@@ -65,11 +65,11 @@ readRecentLogs();
 const subject = await resolveSubject();
   let data;
 
-data ='User:'+ appState.query.userName + ' Appro🆔:' + appState.query.userId;
+data ='User: '+ appState.query.userName + ' Auth 🆔: ' + appState.query.userId;
 console.log('data',data);
 updateAll('[data-value="user-details"]', data); //user name and appro id of the logged in user
 
-data = 'Data:'+ subject.name + ' Appro🆔:' + subject.approUserId;  // subjet.id is auth id
+data = 'Data: '+ subject.name + ' Appro 🆔: ' + subject.approUserId;  // subjet.id is auth id
 console.log('data',data);
 updateAll('[data-value="data-details"]', data); //name and appro id of the selected item (from clipboard or default) 
 

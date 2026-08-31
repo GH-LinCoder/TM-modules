@@ -3,7 +3,7 @@
 import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 //import { showToast } from '../../ui/showToast.js';
-import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
+//import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 import { AssignmentBase } from '../../utils/assignmentBase.js'; // base also used by assign survey
 //import { AssignmentBase } from './assignmentBase.js'; //
 import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
@@ -80,17 +80,17 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     console.log('attachTaskListeners()');
     
     // Task select change
-    panel.querySelector('#dropdown001')?.addEventListener('change', (e) => {
+    panel.querySelector('#dropdown001')?.addEventListener('change', () => {
       this.updateSubmitButtonState(panel);
     });
 
     // Student select change
-    panel.querySelector('#dropdown002')?.addEventListener('change', (e) => {
+    panel.querySelector('#dropdown002')?.addEventListener('change', () => {
       this.updateSubmitButtonState(panel);
     });
 
     // Manager select change
-    panel.querySelector('#dropdown003')?.addEventListener('change', (e) => {
+    panel.querySelector('#dropdown003')?.addEventListener('change', () => {
       this.updateSubmitButtonState(panel);
     });
   }
@@ -146,7 +146,7 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
     
     const dropdown001ed = dropdown001.value !== '';
     const dropdown002ed = dropdown002.value !== '';
-    const dropdown003ed = dropdown003.value !== '';
+   // const dropdown003ed = dropdown003.value !== '';
 
     assignBtn.disabled = !(dropdown001ed && dropdown002ed);
     assignBtn.textContent = dropdown001ed && dropdown002ed
@@ -159,7 +159,7 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
 //need display this default as 'checked'
 
 
-decideNavButtonsToDisplay(){
+decideNavButtonsToDisplay(){//not called
 console.log('decideNavButtonsToDisplay()');
 //let defaultMoveBy = this.readTaskDefaultMoveBy();
 if (currentStep <3) return; // where get currentStep ??

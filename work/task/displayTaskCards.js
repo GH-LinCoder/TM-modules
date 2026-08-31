@@ -24,7 +24,7 @@ container.innerHTML='';
 export async function renderCompletedAbandonedTasks(panel, petition = {}, renderType) {
 console.log('displayCompletedTaskCards.render()'); // petition is empty
 
-console.log('renderType:',renderType);
+//console.log('renderType:',renderType);
 render(panel, petition, renderType);
 //need to set the param  'completed' and adjust the render to be able to handle type of render
 //but error no user id - not in petition?
@@ -33,7 +33,7 @@ render(panel, petition, renderType);
 
 
 export async function render(panel, petition = {} , renderType='active') {
-    console.log('displayTasksCards.render(', panel, petition, ')');
+    //console.log('displayTasksCards.render(', panel, petition, ')');
 console.log('displayTasksCards.render()');
     const userId = petition.student;
     if (!userId) {
@@ -69,7 +69,7 @@ const tasksAndSurveys = await executeIfPermitted(
         panel.innerHTML = `<div class="text-red-600 p-4">Error loading tasks.</div>`;
         return;
     }
-console.log('assignments',assignments);
+//console.log('assignments',assignments);
 //need to filter active completed abandonded onlyshow relevant group
 //assignments.forEach(task => {
   let activeColors = 'bg-blue-50 border border-blue-200 rounded-l-2xl p-3 cursor-pointer '; 
@@ -95,7 +95,7 @@ switch(renderType)
     break;
   default:
     // active code block
-    assignments = assignments.filter(item => item.completed_at === null && item.abandoned_at === null);}
+    assignments = assignments.filter(item => item.completed_at === null && item.abandoned_at === null && item.is_deleted ===null);}
     itemCounts.active = assignments.length;
      //keep default values for active colors 
 //}); // end of forEach
@@ -163,7 +163,7 @@ card.addEventListener('click', (e) => { // why are we using a bespoke method ins
     e.stopPropagation(); // prevents bubbling duplication
     
     const assignmentId = e.currentTarget.dataset.assignmentId;
-    console.log('🖱️ Card clicked, loading directly:', assignmentId, 'full data',e.currentTarget.dataset);
+   // console.log('🖱️ Card clicked, loading directly:', assignmentId, 'full data',e.currentTarget.dataset);
   
 //data-anchor="detail-placeholder"
 

@@ -923,6 +923,7 @@ async updateSurveyAnswer({
                 survey_answer_id: this.answerId,
                 task_header_id: selectedTaskId,
                 task_step_id : stepId, // changed to match db in automations Table. BUT registry function being called didn't use task_step_id at all. Changed that 19:14 oct 13
+                 current_step:3, //needs current_step =3
                 name: cleanName,
                 automation_number: this.automationsNumber
             });

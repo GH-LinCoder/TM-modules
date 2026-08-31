@@ -214,7 +214,7 @@ function renderAutoCard(summary, row, type) {
 
 //  console.log('XXX targetData', targetData);
 
-  const targetType = targetData?.target?.type || 'unknown';
+  const targetType = targetData?.target?.type || 'unknown type';
   const header = targetData?.target?.header || '-';
 
   const safeName = escapeHtml(autoName);
@@ -553,7 +553,7 @@ const safeSurveyName = escapeHtml(surveys[0].entity.name);
 
   if (surveys.length === 1 && !surveySelect.value) { 
     surveySelect.value = surveys[0].entity.id;
-    const infoSection = document.querySelector('#informationSection');
+    const infoSection = document.querySelector('#informationSectionSurveys');
     if(infoSection) infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled Survey: ${safeSurveyName}</div>`;
   //  console.log('surveySelect.value',surveySelect.value);//uuid
     state.currentSurveyHeaderId = surveySelect.value;
@@ -1035,7 +1035,7 @@ addInformationCard({
 
 function addInformationCard(itemData) { //16:00 Dec 11   This function does not work
   console.log('addInformationCard()');
-  const infoSection = document.querySelector('#informationSection');
+  const infoSection = document.querySelector('#informationSectionSurveys');
   const card = document.createElement('div');
  // card.className = 'bg-white p-2 rounded border mb-1 text-sm';
  const style = styleCardByType(itemData.type);
@@ -1175,13 +1175,13 @@ let nextAutoNumber = findNumberInSurvey('auto_number');
         // Add information card - ADAPTED FOR TASKS
          addInformationCard({
             'name': `${result.name?.substring(0, 60) || cleanName?.substring(0, 60) || 'Unknown'}...`,
-            'relationship': `${result.relationship?.substring(0, 8) || selectedRelationship?.substring(0, 8) || 'unknown'}...`,
+            'relationship': `${result.relationship?.substring(0, 8) || selectedRelationship?.substring(0, 8) || 'unknown rel'}...`,
             'type': 'automation_appro', 
             'number':  nextAutoNumber, 
            'answerNumber?':  '?',  // 
-          'state.currentAnswerId': state.currentAnswerId?.substring(0,8) || 'unknown',
-            'result.id': `${result.id?.substring(0, 8) || 'unknown'}...`,
-          'of_aapro_id':  selectedApproId?.substring(0, 8) || 'unknown'  //
+          'state.currentAnswerId': state.currentAnswerId?.substring(0,8) || 'unknown answer',
+            'result.id': `${result.id?.substring(0, 8) || 'unknown result'}...`,
+          'of_aapro_id':  selectedApproId?.substring(0, 8) || 'unknown of'  //
         });            
         
         showToast('Relationship automation saved successfully!');
@@ -1823,7 +1823,7 @@ function getTemplateHTML() {console.log('getTemplateHTML');
 
 <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
                             <p class="text-lg font-bold">Information:</p>
-                            <div id="informationSection" class="w-full">
+                            <div id="informationSectionSurveys" class="w-full">
                                 <!-- Information cards will be added here -->
                             </div>
                         </div>
@@ -2021,8 +2021,8 @@ console.log('🚨 calling to create button-1815 with answerId state.currentItemI
       'name': `${planName?.substring(0, 60) || 'Unknown Plan'}...`,
       'type': 'payment_button',
       'step': state.currentSurveyHeaderId || 'header',
-      'planId': `${selectedPlanId?.substring(0, 8) || 'unknown'}...`,
-      'id': `${result.id?.substring(0, 8) || 'unknown'}...`
+      'planId': `${selectedPlanId?.substring(0, 8) || 'unknown planId'}...`,
+      'id': `${result.id?.substring(0, 8) || 'unknown id'}...`
     });
     
     showToast('Payment attachment saved successfully!');

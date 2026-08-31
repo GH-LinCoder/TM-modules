@@ -91,15 +91,14 @@ console.log(
 export async function render(panel, query = {}) {
     console.log('displayOneSurvey.render()', { panel, query });
     panelEl = panel;
-    console.log('render() query',query);
+   // console.log('render() query',query);
 // card sends  renderOneSurvey(detailPanel, {assignmentId: assignmentId,entityType: 'survey',surveyId:surveyId,currentStep:currentStep
 currentStep = 1;
     const { assignmentId, entityType, surveyId, student} = query;  //student??
     //where is currentStep set?? probably not sent & shold not be a constant
 //deleted currenStep from arguments 12:57 Aug 24  added as a variable global = 1
 
-console.log('assignmentId',assignmentId,'entityType',entityType,
-     'surveyId',surveyId,'student',student,'currentStep',currentStep); //correct 22:23 March 14 - but undefined aug 23. Global fixed
+//console.log('assignmentId',assignmentId,'entityType',entityType,'surveyId',surveyId,'student',student,'currentStep',currentStep); //correct 22:23 March 14 - but undefined aug 23. Global fixed
 
     subject = await resolveSubject();
     
@@ -595,7 +594,7 @@ function handleAnswerClick(assignmentId,spanElement, answerId, answerName, radio
 async function handleAutomations(automations, answerName){
     console.log('handleAutomations');
         const infoSection = document.getElementById('informationSection');
-console.log('autorPetition.assignmen_id',autoPetition.assignment_id);
+//console.log('autorPetition.assignmen_id',autoPetition.assignment_id);
 /* moved to line 124 and made global
 const assignmentRow = await executeIfPermitted(subject.id, 'readThisSurveyOrTaskAssignment',{ assignment_id: autoPetition.assignment_id }
 );
@@ -606,7 +605,7 @@ if (assignmentRow.completed_at) { endedOrActive = 'completed';
 } else if (assignmentRow.abandoned_at) { endedOrActive = 'abandoned';
 } else { endedOrActive = 'active';
 }
-console.log('assignmentRow',assignmentRow,'endOrActive',endedOrActive);
+//console.log('assignmentRow',assignmentRow,'endOrActive',endedOrActive);
 if(endedOrActive==='active'){
 
 
@@ -619,18 +618,21 @@ if(endedOrActive==='active'){
         `;
     }
 
-    try {console.log('calling executeAutomations()');
+    try {//console.log('calling executeAutomations()');
         // const assignmentRow =  await executeIfPermitted(subject.id,readThisAssignment){assignmentId:autoPetition.assignment_id}
         // const active = (!assignmentRow.completed_at && !assignmentRw.abandoned_at)
         //if(assignmentRow.completed_at) endedOrActive ='completed'; else if(assignmentRw.abandoned_at) endedOrActive='abandoned' else endedOrActive ='active' 
         //if(endedOrActive === 'active') 
         const autoResponse = await executeAutomations(automations, subject, autoPetition);
-        console.log('autoResponse:', autoResponse);
+      //  console.log('autoResponse:', autoResponse);
         
         // Show automation results (with names + messages)
         displayAutoResults(autoResponse, automations);
         
-      
+        // Detect RPC-level failure (judge failure, permission denied, wrong linkage, etc.) added 17:04 Aug 28
+    if (autoResponse.data?.status === 'error') {
+        throw new Error(autoResponse.data.message || 'Automation failed');
+    }
         
     } catch (error) {
         console.error('Failed to run automations:', error);
@@ -656,7 +658,7 @@ function moveToNextQuestion(assignmentId,progress) {
 
   //what should we do? increment the currentQuestion number for display.
   //at some point write to db the assignment currentStep??   I don't understand the following code.
-console.log('currentIndex', progress.currentIndex, 'of total', progress.totalQuestions );
+//console.log('currentIndex', progress.currentIndex, 'of total', progress.totalQuestions );
 //const bookmark = progress.currentIndex +1; 
         if (progress.currentIndex +1 < progress.totalQuestions) {
            // const nextQuestionNumber = progress.questions.find(q => q.id === progress.nextQuestionId)?.number;
@@ -707,7 +709,7 @@ async function handleAnswerSubmit(assignmentId, answerId, answerName, radioEleme
         automations = await executeIfPermitted(subject.id, 'readSurveyAutomations', {
             answer_id: answerId
         });
-        console.log('🤖 Number of Automations loaded :', automations.length);
+       // console.log('🤖 Number of Automations loaded :', automations.length);
     } catch (error) {
         console.error('Failed to load automations:', error);
     }
@@ -959,7 +961,7 @@ async function XupdateAssignmentProgress(assignmentId, nextQuestion) {
 //  Helper: Mark assignment as completed
 async function markAssignmentComplete(assignmentId) {  //not coded this db function 21:00 March 13
    console.log('markAssignmentComplete()'); //this calls the bookmark function. Mark as complete by bookmark=2
-   console.log('assignmentId',assignmentId);
+ //  console.log('assignmentId',assignmentId);
     try {// registry needs const {assignmentId, p_bookmark} = payload;
       await executeIfPermitted(subject.approUserId, 'updateAssignmentSystem', {
             assignmentId: assignmentId,

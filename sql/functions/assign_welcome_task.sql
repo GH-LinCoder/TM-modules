@@ -30,7 +30,7 @@ BEGIN
   SELECT COUNT(*) INTO v_existing_count
   FROM assignments
   WHERE student_id = v_appro_id
-    AND assignment->>'task_header' = v_task_header_id::TEXT
+    AND assignment->>'task_header_id' = v_task_header_id::TEXT
     AND assignment->>'step_id' = v_step_id::TEXT;
 
   IF v_existing_count > 0 THEN
@@ -51,7 +51,7 @@ BEGIN
     'task',
     jsonb_build_object(
       'step_id', v_step_id,
-      'task_header', v_task_header_id
+      'task_header_id', v_task_header_id
     ),
     v_appro_id,
     v_appro_name, -- ← Use the extracted name
