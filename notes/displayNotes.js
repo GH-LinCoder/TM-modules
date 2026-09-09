@@ -339,6 +339,8 @@ console.log('userChoices.userId',userChoices.userId); // this is auth id.
 if(page < 1) page = 1; 
 else 
   if (page && totalPages) if (page>totalPages) page = totalPages; //totalPages is initially undefined
+const output1 = document.getElementById('output'); //this spinner doesn't work
+        output1.innerHTML = `<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading notes...</div>`;
 
   try {
     pageOfNotes = await executeIfPermitted(userId, 'fetchNotes', { page, pageSize});  
@@ -465,13 +467,16 @@ export function reRenderNotes() {
 
 export async function renderNotes(notes, totalCount, page, pageSize) {
         console.log('renderNotes()', page );
+const output = document.getElementById('output'); //this spinner doesn't work
+//        output.innerHTML = `<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading notes...</div>`;
+
 if(page >totalPages) page = totalPages; //safety check
 else if(page < 1) page = 1;
 
 
         const filteredNotes = filterNotesAccordingToUserChoices(notes);
 //could do something if no notes - could explain and allow removal of filters or just explain and return-
-        const output = document.getElementById('output');        
+        //const output = document.getElementById('output');        
         let previousInt = null;
 
         const notesHtml = filteredNotes

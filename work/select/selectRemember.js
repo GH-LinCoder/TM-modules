@@ -89,7 +89,17 @@ class DevDataSelector {
     return `
       <div class="dev-selector bg-white rounded-lg shadow p-6">
        <h3 class="text-lg font-semibold text-gray-900">Select & Remember 20:40 1 Nov 📝</h3>
-        <!-- INSTRUCTIONS -->
+        
+       <button data-action="selector-dialogue"  data-section="menu"  class="text-gray-500 hover:text-gray-700" aria-label="Close">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+  </button>
+
+       
+       
+       
+       <!-- INSTRUCTIONS -->
         <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
           <p class="text-sm text-blue-800">
             <strong> How to use:</strong><br>

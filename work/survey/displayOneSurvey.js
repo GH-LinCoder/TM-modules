@@ -4,7 +4,7 @@ import { showToast } from '../../ui/showToast.js';
 //import { appState } from '../../state/appState.js';
 import { detectMyDash, resolveSubject } from '../../utils/contextSubjectHideModules.js';
 import { executeAutomations } from '../../utils/executeAutomations.js';
-import { renderSurveyHeader, renderSurveyQuestion, getInfoFeedbackHTML } from '../../utils/surveySummaryRenderer.js';
+import { getSurveyHeaderHTML, renderSurveyQuestion, getInfoFeedbackHTML } from '../../utils/surveySummaryRenderer.js';
 //import { icons } from '../../registry/iconList.js';
 
 console.log('displayOneSurvey.js loaded');
@@ -91,22 +91,35 @@ console.log(
 export async function render(panel, query = {}) {
     console.log('displayOneSurvey.render()', { panel, query });
     panelEl = panel;
-   // console.log('render() query',query);
-// card sends  renderOneSurvey(detailPanel, {assignmentId: assignmentId,entityType: 'survey',surveyId:surveyId,currentStep:currentStep
-currentStep = 1;
-    const { assignmentId, entityType, surveyId, student} = query;  //student??
-    //where is currentStep set?? probably not sent & shold not be a constant
-//deleted currenStep from arguments 12:57 Aug 24  added as a variable global = 1
 
-//console.log('assignmentId',assignmentId,'entityType',entityType,'surveyId',surveyId,'student',student,'currentStep',currentStep); //correct 22:23 March 14 - but undefined aug 23. Global fixed
+    // ✅ 1. SAFELY EXTRACT DATA (fallback to appState if query is missing it)
+    // This handles both the direct call method and the new flexmain petition method
+    const petitioner = query || appState.query.petitioner || {};
+    
+    const assignmentId = petitioner.assignmentId;
+    const surveyId = petitioner.surveyId || petitioner.surveyHeader; // ✅ Fixes the naming mismatch!
+    const currentStep = petitioner.currentStep || 1; // ✅ Fixes your "where is currentStep set?" comment
+    const entityType = petitioner.entityType;
+    
+    console.log('displayOneSurvey extracted:', { assignmentId, surveyId, currentStep });
 
+    if (!assignmentId || !surveyId) {
+        panel.innerHTML = `<div class="text-red-600 p-4">Missing assignment ID or survey ID.</div>`;
+        return;
+    }
+
+    // 2. Resolve Subject & Setup autoPetition
     subject = await resolveSubject();
     
     autoPetition.auth_id = subject.id;
     autoPetition.appro_id = subject.approUserId;
     autoPetition.assignment_id = assignmentId;
-    
-    try { //the registry func needs:  const { survey_id } = payload;
+    autoPetition.survey_header_id = surveyId; // Using the safely extracted surveyId
+
+//spinner but the survey isn't going into panel?
+   panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
+
+    try { 
          assignedSurveyAsArray = await executeIfPermitted(subject.approUserId, 'readSurveyView', {
             survey_id: surveyId
         });
@@ -116,19 +129,10 @@ currentStep = 1;
             return;
         }
         
-      //  assignment = assignedSurveyAsArray; //why put  assignedSurveyAsArray into global assignment? Made global 'assignedSurveyAsArray' 13:30 Aug 24
-        autoPetition.survey_header_id = surveyId; //using 'assignment' is confusing with the table assignment and assignmentId
+        assignmentRow = await executeIfPermitted(subject.id, 'readThisSurveyOrTaskAssignment', { assignment_id: assignmentId });
 
-//could read assignment here to determine if active/completed/abandoned. Hold in global ?
-assignmentRow = await executeIfPermitted(subject.id, 'readThisSurveyOrTaskAssignment',{ assignment_id: autoPetition.assignment_id }
-);
-// 12:18 Aug 24 - Not rendering the header - fixed
-//panelEl, progress.nextQuestionId, currentStep, assignmentId
-
-
-      //  renderLargeCards(panel,null,currentStep, assignmentId);//currentStep was set at 1, but should be
- renderHeaderQuestionInfo(panel,null,currentStep, assignmentId); //experiment 16:45 August 25
-        
+        // ✅ 3. Pass the dynamic currentStep instead of the hardcoded 1
+        renderHeaderQuestionInfo(panel, null, currentStep, assignmentId); 
 
     } catch (error) {
         console.error('Error loading survey assignment:', error);
@@ -187,7 +191,7 @@ function renderHeaderQuestionInfo(panel, nextQuestionId, currentStep = 1, assign
         <div id="survey-question-container"></div>
         <div id="survey-info-container"></div>
     `;
-    
+    panel.innerHTML =''; //delete the spinner
     panel.appendChild(card);
 
     // 3. Call sub-functions, passing the 'card' so they can find their specific containers
@@ -202,7 +206,7 @@ function renderHeader(card) {
     if (!headerContainer) return;
 
     const isMyDash = detectMyDash(card); 
-    const headerHTML = renderSurveyHeader(assignedSurveyAsArray, isMyDash);
+    const headerHTML = getSurveyHeaderHTML(assignedSurveyAsArray, isMyDash);
     headerContainer.innerHTML = headerHTML;
 }
 
@@ -331,7 +335,7 @@ if(!card) return;
 
 const isMyDash = detectMyDash(panel); // changed 10:20 March 14
     
-const headerHTML =  renderSurveyHeader(assignedSurveyAsArray, isMyDash);
+const headerHTML =  getSurveyHeaderHTML(assignedSurveyAsArray, isMyDash);
 
 card.innerHTML += headerHTML  + 'renderHeader';
 
@@ -482,7 +486,7 @@ if(assignmentRow.abandoned_at) bgColor = 'bg-red-400'; else if(assignmentRow.com
     //const isMyDash = true; // Wrong. There is a function to detect this.  
     const isMyDash = detectMyDash(panel); // changed 10:20 March 14
     
-    const headerHTML =  renderSurveyHeader(assignedSurveyAsArray, isMyDash);
+    const headerHTML =  getSurveyHeaderHTML(assignedSurveyAsArray, isMyDash);
 
     // Use renderSurveyQuestion (single-question mode)
     const questionHTML = renderSurveyQuestion(assignedSurveyAsArray, assignedSurveyAsArray.assignment_id, currentQuestionId, isMyDash);

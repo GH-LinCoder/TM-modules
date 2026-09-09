@@ -436,10 +436,15 @@ The bundle has a name and a list of underlying permissions and a scope<br>
 </div>
 
 
+
+
  <div class="bg-gray-100 rounded-lg shadow p-6">
     <h2 class="text-lg font-semibold mb-2 text-red-500">All the currently useful sections are above</h2>
     <p class="text-sm text-red-500 mb-4">Below are placeholder sections for future development</p>
  </div>
+
+
+
 
 
 
@@ -715,8 +720,33 @@ The bundle has a name and a list of underlying permissions and a scope<br>
 
 
 
+<!--   >
+<div class="taskStep bg-gray-100">
+  <h2>Task Header</h2>
+  <ul class="students">
+    <li class="student" draggable="true" id="sA">Student A</li>
+  </ul>
+</div>
 
+<div class="taskStep bg-green-100">
+  <h2>Step 3</h2>
+  <ul class="students">
+    <li class="student" draggable="true" id="sB">Student B</li>
+  </ul>
+</div>
 
+<div class="taskStep bg-blue-100">
+  <h2>Step 4</h2>
+  <ul class="students">
+    <li class="student" draggable="true" id="sC">Student C</li>
+  </ul>
+</div-->
+
+<!--div class="bg-blue-50 border border-blue-200 rounded-lg p-4 cursor-pointer hover:shadow-md" 
+     data-action="task-management">
+  <h3 class="text-sm font-medium text-blue-700 mb-1">Manage students on tasks</h3>
+  <p class="text-xs text-blue-600">View and manage the students progress through task steps where you are the task manager</p>
+</div-->
 
 
 
@@ -724,30 +754,96 @@ The bundle has a name and a list of underlying permissions and a scope<br>
 
 <!-- deleted old hidden forms.  15:52 Sept 9 2025 -->
 
-   
-</section>
+  </section>
    ${petitionBreadcrumbs()} 
 `}
+
+
+
+function renderMoveStudentManager(data) {
+  const stepsHTML = data.steps.map(step => {
+    const studentsHTML = step.students.map(student => {
+      // Color coding by move_by
+      const moveByColors = {
+        'auto': 'bg-gray-100 border-gray-50',
+        'student': 'bg-blue-100 border-blue-50',
+        'manager': 'bg-green-200 border-green-400'
+      };
+      const colorClass = moveByColors[student.move_by] || 'bg-white border-gray-300';
+      
+      return `
+        <div 
+          class="student-card ${colorClass} border rounded-full px-4 py-1 text-sm cursor-pointer hover:shadow-md transition-shadow"
+          data-student-id="${student.student_id}"
+          data-assignment-id="${student.assignment_id}"
+          data-move-by="${student.move_by}"
+          title="${student.student_name}${student.manager_name ? ' (Manager: ' + student.manager_name + ')' : ''}"
+        >
+          ${student.student_name}
+        </div>
+      `;
+    }).join('');
+
+    return `
+      <div class="step-row flex items-start gap-4 p-4 border-b border-gray-200 hover:bg-gray-50" data-step-order="${step.step_order}">
+        <div class="step-info flex-shrink-0 w-64">
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="text-lg font-semibold text-gray-800">Step ${step.step_order}</h3>
+            <div class="text-lg font-bold text-blue-600 bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center">
+              ${step.student_count}
+            </div>
+          </div>
+          <h4 class="text-sm font-medium text-gray-700 mb-1">${step.step_name}</h4>
+          <p class="text-xs text-gray-600">${step.step_description || ''}</p>
+        </div>
+        
+        <div class="students-container flex flex-wrap gap-2 flex-1 items-start">
+          ${studentsHTML || '<p class="text-xs text-gray-400 italic">No students</p>'}
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  return `
+<div class="p-6">
+      <div class="mb-2">
+        <h2 class="text-2xl bg-gray-100 text-green-400 font-bold mb-2">Moving students through a task</h2>
+      </div>
+      
+      <div class="step-row flex items-start gap-4 p-4 border-b border-gray-200 hover:bg-gray-50">
+        <div class="step-info flex-shrink-0 w-64">
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="text-lg font-semibold text-gray-800">Task students total:</h3>
+            <div class="text-lg font-bold text-blue-600 bg-blue-100 rounded-full w-8 h-8 flex items-center justify-center">
+              ${data.total_students}
+            </div>
+          </div>
+          <h4 class="text-sm font-medium text-gray-700 mb-1">${data.task_name}</h4>
+          <p class="text-xs text-gray-600">${data.task_description || ''}</p>
+        </div>
+        
+        <!--div class="students-container flex flex-wrap gap-2 flex-1 items-start">
+          <p class="text-xs text-gray-400 italic">Task overview</p>
+        </div-->
+      </div>
+      <div class="task-steps-list">
+        ${stepsHTML}
+      </div>
+      
+      <div class="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded">
+        <p class="text-sm text-yellow-800">
+          <strong>Note:</strong> This is a read-only view. Drag-and-drop functionality to move students between steps will be added in Stage 3.
+        </p>
+      </div>
+    </div>
+  `;
+}
+
+// the hover information ould include when assigned & when asked to move.
+
 
 export function render(panel, petition = {}) {
     console.log('adminDash Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
 
-     //? query.petitioner : 'unknown';
- //   console.log('Petition:', petition);
-  //  panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;
-   // panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
-  }
-//petitioner
-
-// is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
-//it has to be called prior to passing it in the query{} object when we call this module
-//in adminListeners.js, when we call appState.setQuery(), we need to have added petitioner: petition
-//then we can access it here in the render() function
-//we can also add a default value of 'unknown' if it is not passed
-//so we can see where we are when we open the a new page
-
-//the call here isn't from adminListeners it is from the menu button in the dashboard
-//so we need to also assign petitioner: {Module:'dashboard', Section:'menu', Action:'howTo'} when we call this module from the menu button
-//we can do this in the dashboardListeners.js file
-//we can also add a default value of 'unknown' if it is not passed
+}

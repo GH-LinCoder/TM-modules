@@ -6,6 +6,8 @@ import {appState} from '../../state/appState.js';
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `<div class="bg-white p-6 rounded-lg shadow">
   <h2 class="text-xl font-bold text-gray-800 mb-4">How To Use</h2>
+
+
   <p class="text-gray-600">Clicking the <em>How?</em> button brings up information.</p>
   <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
     <li>The admin or member dashboard is always open on the left, next to the menu.</li>
@@ -25,6 +27,14 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 function getContextHTML(petition) { console.log('getContextHTML()');
   return `<div bg-blue-100 class="bg-white p-6 rounded-lg shadow">
   <h2 class="text-xl font-bold text-gray-800 mb-4">Context how to</h2>
+
+  <button data-action="howTo"  data-section="menu"  class="text-gray-500 hover:text-gray-700" aria-label="Close">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+  </button>
+
+
   <p class="text-gray-600">The information <em>changes</em> when doing different things </p>
   <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
     <li>You want context specific help related to</li>

@@ -1564,7 +1564,33 @@ handler: async (supabase, userId, payload) =>{
 //
 
 
+readAssignmentsForTask: {//needs to be in _required table   20:00 Sept 2 2026
+  metadata: {
+    tables: ['assignments_task_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['taskId'],
+  },
+  handler: async (supabase, userId, payload) => {
+    const { taskId } = payload;
+    
+    console.log('🔍 Registry: Fetching assignments for task:', taskId);
 
+    // ✅ Use ->> to extract the string value from the JSON column
+    const { data, error } = await supabase
+      .from('assignments_task_view')
+      .select('*')
+      .eq('assignment->>task_header_id', taskId);
+
+    if (error) {
+      console.error('❌ Registry error:', error);
+      throw error;
+    }
+    
+    console.log('✅ Registry: Found', data?.length || 0, 'assignments');
+    return data;
+  }
+},
 
 
 //TASK_ASSIGMENT  readAssignmentById   TASKS only  TASKS
@@ -1656,7 +1682,7 @@ handler: async (supabase, userId, payload) => {
 console.log('readAllAssignment{}','id:',assignment_id,'payload:', payload);
   const { data, error } = await supabase
   .from('assignments_task_view')
-  .select('assignment_id, task_header_id, task_name, task_description, student_id, student_name, manager_id, manager_name, step_id, step_order, step_name, step_description, assigned_at,abandoned_at,completed_at')
+  .select('*')
   
   .select() //Return the inserted row
   
@@ -1818,6 +1844,129 @@ readManagerAssignments: {
     return data;
   }
 },
+
+readPendingManagerTasks: {
+  metadata: {
+    tables: ['assignments_task_view', 'task_headers'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['user_id']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { user_id } = payload;
+    console.log('🔍 readPendingManagerTasks called with user_id:', user_id);
+
+    // DIAGNOSTIC: Check if move_me_at column exists in the view
+    const { data: sampleRow, error: sampleError } = await supabase
+      .from('assignments_task_view')
+      .select('*')
+      .limit(1);
+    
+    if (sampleError) {
+      console.error('❌ Sample query error:', sampleError);
+    } else if (sampleRow && sampleRow.length > 0) {
+      console.log('🔍 Sample row keys:', Object.keys(sampleRow[0]));
+      console.log('🔍 Sample row move_me_at:', sampleRow[0].move_me_at);
+    }
+
+    // DIAGNOSTIC: Check if ANY assignments have manager_id = user_id
+    const { data: allMyAssignments, error: errMyAssign } = await supabase
+      .from('assignments_task_view')
+      .select('assignment_id, student_name, manager_id, move_me_at, is_deleted task_header_id:assignment->>task_header_id')
+      .eq('manager_id', user_id)
+      .limit(10);
+    
+    if (errMyAssign) {
+      console.error('❌ My assignments query error:', errMyAssign);
+    } else {
+      console.log('🔍 All my assignments (limit 10):', allMyAssignments?.length || 0, allMyAssignments);
+    }
+
+    // DIAGNOSTIC: Check if ANY assignments have move_me_at set
+    const { data: allPending, error: errAllPending } = await supabase
+      .from('assignments_task_view')
+      .select('assignment_id, student_name, manager_id, move_me_at, is_deleted, task_header_id:assignment->>task_header_id')
+      .not('move_me_at', 'is', null)
+      .limit(10);
+    
+    if (errAllPending) {
+      console.error('❌ All pending query error:', errAllPending);
+    } else {
+      console.log('🔍 All pending assignments (limit 10):', allPending?.length || 0, allPending); // found the 4 rows
+    }
+
+    // 1. Get fallback tasks
+    const { data: fallbackTasks, error: taskError } = await supabase
+      .from('task_headers')
+      .select('id, default_manager_id, author_id')
+      .or(`default_manager_id.eq.${user_id},author_id.eq.${user_id}`)
+      .or('is_deleted.is.null,is_deleted.eq.false') ;
+
+    if (taskError) throw taskError;
+    console.log('🔍 Fallback tasks found:', fallbackTasks?.length || 0);
+
+    const fallbackTaskIds = fallbackTasks.map(t => t.id);
+    const fallbackTaskMap = new Map(fallbackTasks.map(t => [t.id, t]));
+
+    // 2. Query A: Assigned manager
+    const { data: assignedData, error: errA } = await supabase
+      .from('assignments_task_view')
+      .select('*')
+      .eq('manager_id', user_id)
+      .not('move_me_at', 'is', null)
+      .or('is_deleted.is.null,is_deleted.eq.false') ;
+
+    if (errA) throw errA;
+    console.log('🔍 Assigned manager pending:', assignedData?.length || 0, assignedData);
+
+    // 3. Query B: Fallback manager
+    let fallbackData = [];
+    if (fallbackTaskIds.length > 0) {
+      const { data: fbData, error: errB } = await supabase
+        .from('assignments_task_view')
+        .select('*')
+        .in('assignment->>task_header_id', fallbackTaskIds)
+        .not('move_me_at', 'is', null)
+        .or('is_deleted.is.null,is_deleted.eq.false') ;
+      
+      if (errB) throw errB;
+      fallbackData = fbData || [];
+      console.log('🔍 Fallback manager pending:', fallbackData.length, fallbackData);
+    }
+
+    // 4. Combine and deduplicate
+    const allPendingCombined = [...(assignedData || []), ...fallbackData];
+    const uniquePending = Array.from(new Map(allPendingCombined.map(item => [item.assignment_id, item])).values());
+    console.log('🔍 Combined unique pending:', uniquePending.length);
+
+    // 5. Filter truly pending
+    const enriched = uniquePending.filter(row => {
+      if (!row.moved_at) return true;
+      const isPending = new Date(row.moved_at) < new Date(row.move_me_at);
+      if (!isPending) console.log('🔍 Filtered out (already moved):', row.student_name);
+      return isPending;
+    }).map(row => {
+      let role = 'assigned';
+      if (row.manager_id !== user_id) {
+        const taskId = row.assignment?.task_header_id;
+        const task = fallbackTaskMap.get(taskId);
+        if (task?.default_manager_id === user_id) role = 'default';
+        else if (task?.author_id === user_id) role = 'author';
+      }
+      return { ...row, manager_role: role };
+    });
+
+    console.log('🔍 Final enriched result:', enriched.length, enriched.map(r => ({ student: r.student_name, role: r.manager_role, move_me_at: r.move_me_at })));
+
+    const roleWeight = { 'assigned': 1, 'default': 2, 'author': 3 };
+    enriched.sort((a, b) => roleWeight[a.manager_role] - roleWeight[b.manager_role]);
+
+    return enriched;
+  }
+},
+
+
+
 
 //RELATIONSHIPS PERMISSIONS
 readPermissionRelationships: {//HIGH SECURITY ISSUE -- doesn't supply an iconMap the way Xread did
@@ -2801,7 +2950,7 @@ console.log('auto task by task',source_task_step_id, source_task_header_id,targe
         source_task_step_id,
         source_task_header_id,
         task_step_id:source_task_step_id,
-        current_step:current_step,
+       // current_step:current_step, //no such column-deleted 19:30 sep 1 Now writing to table
         name: name || 'Assign Task Automation',
               //  source_data: { source_task_step_id }, 
               //  target_data: { task_header_id, task_step_id },

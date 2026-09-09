@@ -20,6 +20,14 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
             <!-- Message Buttons -->
             <div class="mb-6" id="TagSection001">
               <h4 class="text-md font-semibold mb-3 text-gray-700">🌐 Main click the word</h4> <i>The address buttons affect both the sending and the displaying of notes.</i>
+             <button data-section="menu", data-action="bug-report" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+
+              
+              
               <div class="flex flex-wrap gap-2 mb-3">
 
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center " id="TagSection047" title="SEND to yourself. DISPLAY notes that are to you or from you (can make it explicit to a respondent with the dropdown)">

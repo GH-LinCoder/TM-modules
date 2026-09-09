@@ -5,6 +5,7 @@ import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import {icons} from '../../registry/iconList.js';
+import { getMoveByRadioHTML } from '../../utils/moveByRadio.js';
 
 /**
  * refactor April 19 - Only have 1 dropdown. What it displays is determined by a new tab setting
@@ -93,8 +94,80 @@ function styleCardByType(type){
       default:return 'bg-gray-100 p-2 rounded border mb-1 text-sm';
   }   
 }
+function initClipboardIntegration(panel) {
+  console.log('initClipboardIntegration()');
+  
+  // ✅ 1. Do the heavy lifting: build dropdown AND force a valid selection
+  populateTaskSelect(panel);
+  
+populateFromClipboard(panel);//19:06 Sep 1
 
+  // ✅ 2. Populate independent selects
+  populateRatingSelect(panel);
+  
+  // ✅ 3. Listen for future changes
+  onClipboardUpdate(() => {
+    populateTaskSelect(panel);
+    populateFromClipboard(panel);//19:06 Sep 1
+    populateRatingSelect(panel);
+    populateFromClipboardAuto(panel);//added 19:27 Spe 1 2026
+    
+  });
+}
 
+function populateTaskSelect(panel) {
+  const tasks = getClipboardItems({ as: 'task', type: 'tasks' });
+  const select = panel.querySelector('#taskSelect');
+  
+  if (!select) return;
+
+  // 1. Save current selection BEFORE we wipe the dropdown
+  const currentSelection = select.value;
+
+  // 2. Rebuild options from scratch
+  select.innerHTML = '<option value="">Select a task from clipboard...</option>';
+  
+  tasks.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.entity.item.id;
+    option.textContent = item.entity.item.name;
+    select.appendChild(option);
+  });
+
+  // 3. Restore selection if it's still valid in the new list
+  if (currentSelection && tasks.some(t => String(t.entity.item.id) === String(currentSelection))) {
+    select.value = currentSelection;
+  } 
+  // 4. FALLBACK: Auto-select if only one option exists
+  else if (tasks.length === 1) {
+    select.value = tasks[0].entity.item.id;
+  }
+  // 5. FALLBACK: If multiple tasks but no prior selection (fresh open), default to the first one so it's never blank
+  else if (tasks.length > 1 && !currentSelection) {
+    select.value = tasks[0].entity.item.id;
+  }
+
+  // 6. NOW that the dropdown has a guaranteed valid value, update the radio buttons
+  updateMoveByRadio(panel, select.value, tasks);
+}
+
+function updateMoveByRadio(panel, selectedTaskId, tasks) {
+  if (!selectedTaskId) return;
+
+  // Find the task data matching the selected dropdown value
+  const selectedTaskItem = tasks.find(t => String(t.entity.item.id) === String(selectedTaskId));
+  if (!selectedTaskItem) return;
+
+  const currentMoveBy = selectedTaskItem.entity.item.move_by || 'student'; //local value.  How wrte it to db?
+  console.log('🎯 Target move_by value:', currentMoveBy);
+
+  const moveByRadio = panel.querySelector(`input[name="move_by"][value="${currentMoveBy}"]`);
+  if (moveByRadio) {
+    moveByRadio.checked = true;
+    console.log('✅ Radio button successfully checked');
+  }
+}
+/*
 function initClipboardIntegration(panel) {
     console.log('initClipboardIntegration()');
   // Check clipboard immediately
@@ -108,7 +181,7 @@ function initClipboardIntegration(panel) {
     populateRatingSelect(panel);
   });
 }
-
+*/
 async function populateRatingSelect(panel)
 {
 // 1. Fetch definitions via registry
@@ -414,7 +487,7 @@ async function populatePaymentPlansDropdown(panel) {
     dropdown.innerHTML = '<option value="">Error loading plans</option>';
   }
 }
-
+/*
 function getMoveByRadioHTML(){
 return`<div class="mb-4">
   <label class="block text-sm font-medium text-gray-700 mb-2">Who decides when to move from step to step:</label>
@@ -443,7 +516,7 @@ return`<div class="mb-4">
   </div>
 </div> `
 
-}
+} */
 
 
 function getTemplateHTML() {
@@ -452,12 +525,7 @@ function getTemplateHTML() {
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 class="text-xl font-semibold text-gray-900">Edit Task  </h3>
-            <div class="space-y-2">
-              <!--label for="taskSelect" class="block text-sm font-medium text-gray-700">Use [Select] menu to choose tasks then this dropdown to load a Task</label-->
-              <select id="taskSelect" data-form="taskSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
-                <option value="">Use the menu [Select] button then this dropdown to select Task</option>
-              </select>
-            </div>
+            
 
 
           <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
@@ -470,25 +538,12 @@ function getTemplateHTML() {
 
 
         <div class="p-6">
-          <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200" data-action="selector-dialogue">
-            <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
+          
+          <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200 >
+            <h4 class="font-medium text-gray-800 mb-2">Instructions:</h4>
+              <div class="cursor-pointer hover:underline" data-action="selector-dialogue">📋 Open the [Select] module to choose a task. The form auto-fills from clipboard</div>
            
-            <ul class="text-blue-700 text-sm mt-2 space-y-1">
-              <li>📋 Auto-fill from clipboard. Click the [Select] menu button </li>  
-              <li>• You can modify the name, description, and URL</li>
-              <li>• The name must be unique across all existing tasks</li>
-              <li>• Click "Update Task" to save your changes</li>
-              <li>• Create a new step with the dropdown</li>
-              <li>• Edit existing steps by clicking the summary or use the dropdown</li>
-              <li>• Click "Save step" to save your changes to steps</li>
-              <li>• Automations are added in the section below the summary</li>
-              <li>• Click "Save" Automation to add it to the displayed step</li>  
-                      <div class="p-6">
-          <div class="mb-6 bg-blue-50 p-4 rounded-lg border border-blue-200" data-action="selector-dialogue">
-            <h4 class="font-medium text-blue-800 mb-2">Instructions:</h4>
-           
-            <ul class="text-blue-700 text-sm mt-2 space-y-1">
-              <li>📋 Auto-fill from clipboard after you click the [Select] menu button </li>
+            <ul class="text-gray-700 text-sm mt-2 space-y-1">
               <li>You choose an existing survey fro, the Select module</li>  
               <li>• You can modify the name, description, and URL of the header, any existing question or answer</li>
               <li>• The main name must be unique & will be auto checked across all existing surveys</li>
@@ -507,6 +562,12 @@ function getTemplateHTML() {
             </ul>
           </div>
 
+          <div class="space-y-2">
+              <!--label for="taskSelect" class="block text-sm font-medium text-gray-700">Use [Select] menu to choose tasks then this dropdown to load a Task</label-->
+              <select id="taskSelect" data-form="taskSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm">
+                <option value="">Use the menu [Select] button then this dropdown to select Task</option>
+              </select>
+            </div>
 
           <div id="editTaskForm" class="space-y-6 bg-gray-50 p-6 rounded-lg">
             <div>
@@ -1343,12 +1404,16 @@ async function handleTaskUpdate(e, panel) {
 
     
       saveBtn.textContent = 'Updating Task...';
+      console.log('selectedMoveBy raw:', selectedMoveBy);
+
+      console.log('update task moveby:', moveBy);
+
       const updatedTask = await executeIfPermitted(state.user, 'updateTask', {
         id: state.currentTaskId,
         name,
         description,
         external_url: url,
-        move_by:moveBy
+        move_by:moveBy //where is assigned- read from input above
       });
   
       showToast('Task updated successfully!');

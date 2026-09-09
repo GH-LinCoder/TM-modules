@@ -11,7 +11,7 @@ import { icons } from '../registry/iconList.js';
  * @returns {string} HTML string
  */
 
-export function renderSurveyHeader(assignedSurveyAsArray, assignmentId, isMyDash){
+export function getSurveyHeaderHTML(assignedSurveyAsArray, assignmentId, isMyDash){
  if (!assignedSurveyAsArray?.length) return '';
  const firstRow = assignedSurveyAsArray[0];
 
@@ -19,6 +19,14 @@ export function renderSurveyHeader(assignedSurveyAsArray, assignmentId, isMyDash
     <div class="bg-white rounded-lg shadow-md p-6 mb-6 border border-gray-200" data-assignment="${assignmentId}">
         <div class="text-center mb-4">
             <h2 class="text-xl font-bold text-gray-900">${escapeHtml(firstRow.survey_name)}</h2>
+
+<button data-action="display-one-survey" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+
+
             <p class="text-sm text-gray-600">${new Date(firstRow.survey_created_at).toLocaleDateString()}</p>
             <p class="text-xs text-gray-500">${firstRow.survey_id}</p>
         </div>

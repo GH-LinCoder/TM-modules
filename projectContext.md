@@ -1,7 +1,7 @@
-486 words - this has been entered into the app as a task "CODE The project - a technical brief"
-Technical Brief: [Project myOrg]
+747 words - the older version was entered into the app as a task "CODE The project - a technical brief"
+Technical Brief: [Project myOrg]. Updated 15:30 Sept 6 2026
 
-1. The Human Philosophy (The "Why")
+0. The Human Philosophy (The "Why")
 
 Purpose: A web app that is "An Operating System for an organization." 
 A platform to encourage and facilitate the building & management of new organizations from volunteers who share in the management. 
@@ -13,7 +13,7 @@ It isn't Discord or X or Facebook or Trello or Monday.com or click-up. It isn't 
 
 Engagement Engine: The app provides "The Next Interesting Action." and a reason to recruit others. It encourages participation, learning how the system works and taking on the management of the organisation.
 
-Goal: To eliminate volunteer isolation, fragmentation and desertion. To allow humans who have a shared interest, but no means of action, to turn into an organised group that self manages.
+Goal: To allow humans who have a shared interest, but no means of action, to turn into an organised group that self manages.
 
 
 1. The Core Architecture
@@ -22,7 +22,7 @@ Goal: To eliminate volunteer isolation, fragmentation and desertion. To allow hu
 
     Scale: 50k LOC, 3k hours. High complexity, generic engine-based design.
 
-    State & Navigation: Single-page app driven by a "Petition" system.
+    State & Navigation: Single-page app driven by a "Petition" system. This is a short set of data attributes that indicate what Module & which Section of that module is sending the request, what Action it wants to have happen, and where the Destination is for the html to be injected.
 
         Listener: Intercepts clicks, reads data-** attributes.
 
@@ -30,9 +30,12 @@ Goal: To eliminate volunteer isolation, fragmentation and desertion. To allow hu
 
         Module Injection: Standardized export functions for UI/logic injection.
 
+        Click → Petition → appState → state-change → flexmain → registryLoadModule → module.render()
+
+
 2. The Data Model: "Appros"
 
-    Definition: Every entity (Human, Task, Survey, Group, Abstract Concept) has an Appro (Profile).
+    Definition: Every entity (Human, Task, Survey, Group, Abstract Concept) has an Appro (Profile). An Appro is a universal identity object representing any entity in the system — human, task, survey, group, or abstract concept.
 
     Relations: A node-edge map connecting Appros to define the organization's structure.
 
@@ -40,17 +43,17 @@ Goal: To eliminate volunteer isolation, fragmentation and desertion. To allow hu
 
         Noun: Identity relations (John is a member of Team X).
 
-        Verb: Active assignments (Team X is assigned to Task Y).
+        Verb: Active assignments (Mary is assigned to Task Y).
 
         Rule: Permissions/Bundles (John has bundled Permissions Z).
 
-        Work: Automation logic (Task A spawns Survey B).
+        Work: Automation logic (Task A spawns Survey B). - not yet implemented
 
 3. Automation & Logic Engine
 
-    Components: Tasks: Multi-step workflows that can trigger code and can spawn surveys
+    Components: Tasks: Multi-step workflows that can trigger predetermined code such as spawning another task or survey
 
-    Surveys: Data collection points that can trigger code and can interact with tasks.
+    Surveys: Data collection points that can trigger predetermined code such as spawning another task or survey
 
     Execution: Actions are triggered by user interaction (answering a survey/completing a step).
 
@@ -74,19 +77,31 @@ Goal: To eliminate volunteer isolation, fragmentation and desertion. To allow hu
 
 6. Development Status & Current Focus
 
-    Status: MVP reached. App deployed. No external users. 
+    Status: MVP reached. App deployed. One external user. 
 
-    Current Milestone: Building bundled Permission system.(March 31 2026)
+    Current Milestone: Built bundled Permission system. Connected to payment processors. Built task & survey display and ability to self assign from all available tasks & surveys. Created referral system for users to recruit others and to track marketing effectiveness.   
 
     Next Tasks: 
 
+STUDENT MANAGEMENT
+Complete the `move student` system using request buttons on displayOneTask and the kanban style display of `moveStudentManager`
+
+NEW SYSTEMS
+Trust-security rating all participants on 'trust' and all resources on 'security'
+Revert system that allows rollback to earlier state for all important tables
+4 eyes workflow where every action by anyone is subject to review and possible rollback by someone else
+
+
 BUNDLES
- Installing RLS rules on remaining unrestricted tables. DONE
  Testing the bundles actually grant the needed permissions and no more than needed. 
  Classifying all work tasks as bundles of permissions.
+ Simplifying the grant and management of permissions
 
 SUPERSTRUCTURE
 Build more 'superstructure' the tasks and surveys that funnel site visitors into automated categories and subsequent automated tasks and further surveys.
 
 CUSTOMERS
 Attract potential customers to experience the app. They see how it automates onboarding and how the customer could benefit from having their own instance of the app.  
+
+
+Detailed ai instructions are available in `copilot-instructions.md`

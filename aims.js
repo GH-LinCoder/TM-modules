@@ -6,6 +6,11 @@ console.log('plans.js loaded');
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `<h2 class="text-xl font-bold text-gray-800 mb-4">The aims of our organisation</h2>`
+  + ` <button data-action="aims" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>`
 }
 
 // plans appro id fab5776c-d7e9-4d2a-b52e-85b19ba9ae53
@@ -18,8 +23,9 @@ const aimsAppro = await executeIfPermitted(null, 'readApprofileById',{approfileI
 console.log('aimsAppro',aimsAppro);
 
 
-panel.innerHTML = getTemplateHTML() + `<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"> ${aimsAppro.description}</div>
+panel.innerHTML = getTemplateHTML()  + `<div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"> ${aimsAppro.description}</div>
 <div class="rounded-lg p-6 shadow-md border relative  whitespace-pre-line"><i>If you were using the app to create and manage your own organisation. You would edit this aim by editing the appro that stores this description: "Aims of the Organisation" with id: ada3685a-7f9d-4cfd-b96f-8272e12e468e</i></div>`
+
 
 //panel.innerHTML = aimsAppro.description;
 

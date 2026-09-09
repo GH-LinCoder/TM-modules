@@ -23,13 +23,14 @@ const autoPetition = {
 
 
 
-export async function render(panel, query = {}) {
+export async function render(panel, query = {} , controller) {
     console.log('displayOneTask.js render() panel',panel);
     panelEl = panel;
 
 subject = await resolveSubject();
    const assignmentId = query.assignmentId || appState.query.petitioner?.assignmentId;
-
+console.log('assignment',assignment);
+   //subject.approUserId
     // Set up autoPetition
     autoPetition.auth_id = subject.id;
     autoPetition.appro_id = subject.approUserId;
@@ -39,6 +40,10 @@ subject = await resolveSubject();
 try { //the registry function needs: const { assignment_id} = payload; 
 // reads: assignments_task_view
 //delivers: 'task_name,student_name,manager_id,step_id,step_name,assigned_at,abandoned_at,completed_at
+
+//spinner here?
+   panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
+
         const assignmentData = await executeIfPermitted(subject.approUserId, 'readThisAssignment', {
             assignment_id: assignmentId
         });
@@ -59,7 +64,7 @@ try { //the registry function needs: const { assignment_id} = payload;
     } catch (error) {
         console.error('Error loading task assignment:', error);
         panel.innerHTML = `<div class="text-red-500 text-center py-8">Failed to load task assignment for: ${subject.name} - ${assignmentId}.</div>`;
-        showToast(`No task assignments found for: ${subject.name}`, 'error');
+        showToast(`No task assignments found for: ${subject.name} with appro ${subject.approUserId}`, 'error');
     }
 
 }
@@ -233,6 +238,12 @@ let bgColor='bg-blue-400'; if(assignment.current_step === 1) bgColor = 'bg-red-4
         const headerHtml =`
             <div class="flex justify-between items-center mb-4">
                 <h3 class="text-xl font-semibold text-gray-900">${taskName}</h3>
+
+  <button data-action="display-one-task" data-section="" data-destination="tasks-section" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+    </svg>
+  </button>
                 <div class="text-sm text-gray-500"> Manager: ${assignment.manager_name || 'Unknown Manager'}</div>
                 <div class="text-sm text-gray-500 hidden md:block">${assignment.assignment.task_header}</div>
                 <div class="text-sm text-gray-500"> Student: ${assignment.student_name || 'Unknown Student'}</div>
@@ -246,10 +257,10 @@ let bgColor='bg-blue-400'; if(assignment.current_step === 1) bgColor = 'bg-red-4
  card.innerHTML = headerHtml+stepsHtml;
 
 
- const displayArea = document.querySelector(`[data-section="display-area"]`); 
+// const displayArea = document.querySelector(`[data-section="display-area"]`); 
 // console.log('displayArea', displayArea),
 
- displayArea.appendChild(card); //need to append it to the destination which is 'display-area'    
+ panel.appendChild(card); //need to append it to the destination which is 'display-area'    
  addEventListenerToButtons(panel);
 }
 
@@ -343,7 +354,7 @@ function addEventListenerToButtons(panel) {
     const buttonContainers = panel.querySelectorAll('#taskActionButtons');
     
     buttonContainers.forEach(container => {
-        container.addEventListener('click', (e) => {
+        panel.addEventListener('click', (e) => {
             const button = e.target.closest('[data-button]');
             if (!button) return;
             const action = button.dataset.button;
