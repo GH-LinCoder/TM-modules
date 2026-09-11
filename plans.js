@@ -29,7 +29,15 @@ export function render(panel, petition = {}) {
 
 async function readAppro(panel)
 { const aimsApproId = 'fab5776c-d7e9-4d2a-b52e-85b19ba9ae53';
-const plansAppro = await executeIfPermitted(null, 'readApprofileById',{approfileId: aimsApproId});
+panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
+let plansAppro;
+try {
+  plansAppro = await executeIfPermitted(null, 'readApprofileById',{approfileId: aimsApproId});
+} catch (error) {
+  console.error('Failed to load plans:', error);
+  panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load plans.</div>';
+  return;
+}
 console.log('plansAppro',plansAppro);
 
 

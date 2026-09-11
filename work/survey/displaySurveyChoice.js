@@ -59,6 +59,7 @@ export async function render(panel) {
     const cardsContainer = panel.querySelector('#cards-container');
 
     // 2. Load the data
+    cardsContainer.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     await loadsurveyList(); 
 
     // 3. Initial Paint

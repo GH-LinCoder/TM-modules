@@ -168,11 +168,13 @@ console.log('ratingSelected:',ratingSelected)
 
 async function populateRatingSelect(panel)
 { console.log('populateRatingSelect()');
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect) ratingSelect.insertAdjacentHTML('beforebegin', '<div data-rating-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
 // 1. Fetch definitions via registry
 const ratingDefinitions = await executeIfPermitted(userId, 'readTrustSecurityDefinitions');
+ratingSelect?.parentElement.querySelector('[data-rating-loading]')?.remove();
 
 //2. load into dropdown
-const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
 if (ratingSelect && Array.isArray(ratingDefinitions)) {
   ratingDefinitions.forEach(item => {
     const option = document.createElement('option');

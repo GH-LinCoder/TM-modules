@@ -108,6 +108,7 @@ if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 
             return;} 
             else 
     try {//console.log('try readManagerAss..',managerId);
+        panel.querySelector('#managerTaskCards').innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
         const assignments = await executeIfPermitted(userId, 'readManagerAssignments', {
             manager_id: managerId
         });
@@ -121,9 +122,11 @@ if(manager.type ==='relations')  {panel.innerHTML += `<div class="text-gray-500 
         
         for (const assignment of assignments) {
             //console.log('task header:',assignment.task_header);
+            cardContainer.insertAdjacentHTML('beforeend', '<div data-task-steps-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
             const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', {
                 task_header_id: assignment.assignment.task_header
             });
+            cardContainer.querySelector('[data-task-steps-loading]')?.remove();
 
  const taskExternalURL = assignment.task_external_url;
                 // console.log('assignment.',assignment,'   ',assignment.assignment);

@@ -656,11 +656,8 @@ function emptyMessage(name) {
 }
 
 function showLoading(container) {
-  container.innerHTML = `
-    <div class="text-center py-8 text-gray-500 italic">
-      Loading…
-    </div>
-  `;
+//spinner here?
+   container.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
 }
 
 function showError(container, error) {

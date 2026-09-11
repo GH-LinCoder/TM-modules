@@ -57,6 +57,8 @@ export function render(panel, query = {}) {
 async function readSurveyView(surveyId){
   console.log('readSurveyView');
     const userId = appState.query.userId;  // this is what ? it is huyie. Why use this?
+const summary = document.querySelector('#surveySummary');
+if (summary) summary.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
 const rows = await executeIfPermitted(userId, 'readSurveyView', { survey_id: surveyId});
 state.currentSurveyView = rows; //turn the survey into a global for this module 
 //console.log('readSurveyView', state.currentSurveyView);
@@ -68,11 +70,13 @@ return rows;
 async function populateRatingSelect(panel)
 { console.log('populateRatingSelect()');
       const userId = appState.query.userId;
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect) ratingSelect.insertAdjacentHTML('beforebegin', '<div data-rating-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
 // 1. Fetch definitions via registry
 const ratingDefinitions = await executeIfPermitted(userId, 'readTrustSecurityDefinitions');
+ratingSelect?.parentElement.querySelector('[data-rating-loading]')?.remove();
 
 //2. load into dropdown
-const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
 if (ratingSelect && Array.isArray(ratingDefinitions)) {
   ratingDefinitions.forEach(item => {
     const option = document.createElement('option');
@@ -404,6 +408,7 @@ async function renderSurveyStructure(panel) { //should this put more data in dis
   summary.innerHTML = '<h3>The survey is summarised below. To edit, click on a part and then scroll up to edit the text. :</h3><br>';
 
 const surveyId = state.currentSurveyHeaderId;
+summary.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
 const rows = await readSurveyView(surveyId); //this is not finding any attached payment buttons, but it finds attached tasks & surveys
 //console.log('rows',rows);
 
@@ -2069,10 +2074,12 @@ async function populateRelationshipsDropdown(panel) {
   
   dropdown.innerHTML = '<option value="">Loading relationships...</option>';
   dropdown.disabled = true;
+  dropdown.insertAdjacentHTML('beforebegin', '<div id="survey-relationship-loading" class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
   
   try {
     // ✅ Use existing registry function:
     const relationships = await executeIfPermitted(state.user, 'readRelationships', {});
+    dropdown.parentElement.querySelector('#survey-relationship-loading')?.remove();
     
     if (relationships?.length) {
       dropdown.innerHTML = '<option value="">Select relationship...</option>';
@@ -2091,6 +2098,7 @@ async function populateRelationshipsDropdown(panel) {
     }
   } catch (error) {
     console.error('Failed to load relationships:', error);
+    dropdown.parentElement.querySelector('#survey-relationship-loading')?.remove();
     dropdown.innerHTML = '<option value="">Error loading relationships</option>';
   }
 }

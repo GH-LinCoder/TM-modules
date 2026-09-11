@@ -24,7 +24,8 @@ export async function render(panel, petition = {}, renderType = 'active') {
 
   let assignments = [];
   try {
-    const subject = await resolveSubject();       
+    const subject = await resolveSubject();
+    panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     const tasksAndSurveys = await executeIfPermitted(
       subject.id, 
       'readStudentAssignments', 

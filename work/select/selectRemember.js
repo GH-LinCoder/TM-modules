@@ -2,36 +2,57 @@
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
-//import { canAccessFeature } from '../../registry/permissions.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 
 
-console.log('devDataSelector.js loaded');
+console.log('selectRemeber.js loaded');
 
-// PERMISSION CHECK FUNCTION. Is this user allowed to use the Selector
+/**
+Need to add the ability to select a relationship or a permission in order to break it
+The following two functions were removed in the refactor of Sept 11 2026:
+
+    async loadAssignmentsnew() {
+    try {
+      this.loadedData.assignmentsnew = await executeIfPermitted(appState.query.userId, 'readAllAssignmentsNew', {});
+      console.log('AssignmentsNew:',this.loadedData.assignmentsnew);
+    } catch (error) {
+      console.error('Error loading assignementsNew:', error);
+      showToast('Failed to load', 'error', 5000);
+    }
+  }
+
+    async loadRelations() {
+    try {// reads array
+      this.loadedData.relations = await executeIfPermitted(appState.query.userId, 'readApprofile_relations_view', {});
+      console.log('Relations:',this.loadedData.relations);
+    } catch (error) {
+      console.error('Error loading relations:', error);
+      showToast('Failed to load', 'error', 5000);
+    }
+  }
+ */
+
+
+
+// OLD PERMISSION CHECK FUNCTION. Is this user allowed to use the Selector.
+//This restriction may be legacy. The tools should not be restricted, but the data is under
+//permissions
 function canUseSelector() {
   // In DEV mode, always allow access
   if (appState.isDevMode) {
     return true;
   }
   
-  // In production, only admins can use this
-  // TODO: Implement real permission check when auth is ready
-  return false;  //I could set to true so can use DEVmode to control other things like console logs
+  // Is there any reason to still have this restriction? The data is what is restricted not the tool.
+  return false;  
 }
 
-//14:20  Nov 27 - the visual layout is complicated. Hard to decide what to click for relating a task or survey
-//Idea: separate by work aims, but what are those aims?
-// Relate: appro for task, appro for survey, human appros, abstract appro
-// Assign task, survey
-//edit task, survey, 
-// edit appros: appro for task, appro for survey, human appros, abstract appro, 
 
 export function render(panel, query = {}) {
   console.log('devDataSelector.render()');
 
      
-
+/*
   if (!canUseSelector()) {
     panel.innerHTML = `
       <div class="bg-white rounded-lg shadow-xl w-full max-w-2xl p-8 text-center">
@@ -55,13 +76,12 @@ export function render(panel, query = {}) {
     `;
     return;
   }
-
+*/
 
   const selector = new DevDataSelector();
   selector.render(panel, query);
-  //panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
-
 }
+
 
 class DevDataSelector {
   constructor() {
@@ -70,17 +90,16 @@ class DevDataSelector {
       abstractApprofiles: null,
       taskApprofiles: null,
       surveyApprofiles: null, //added 9:26 Nov 1 2025
-      tasks: null,
-      assignments:null, //need to display more info to be able to edit assignments
-      assignmentsnew:null,
-      relations:null  // new 20:29 dec 11  need to list these to be able to delete
+      tasks: null
     };
     this.selectedItem = null;
-    this.selectedAs = 'other';
     this.currentView = null;
+    this.currentItems = [];
+    this.currentMode = null;
+    this.savedSelections = new Map();
   }
 
-  render(panel, query = {}) {
+  render(panel) {
     panel.innerHTML = this.getTemplateHTML();
     this.init(panel);
   }
@@ -88,7 +107,7 @@ class DevDataSelector {
   getTemplateHTML() {
     return `
       <div class="dev-selector bg-white rounded-lg shadow p-6">
-       <h3 class="text-lg font-semibold text-gray-900">Select & Remember 20:40 1 Nov 📝</h3>
+       <h3 class="text-lg font-semibold text-gray-900">Select & Remember (15:30:11:09:2026) 📝</h3>
         
        <button data-action="selector-dialogue"  data-section="menu"  class="text-gray-500 hover:text-gray-700" aria-label="Close">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -99,132 +118,29 @@ class DevDataSelector {
        
        
        
-       <!-- INSTRUCTIONS -->
-        <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
-          <p class="text-sm text-blue-800">
-            <strong> How to use:</strong><br>
-            1. Click a checkbox below to load a list.<br>
-            2. Click a name from the list to select it.<br>
-            3. Choose how to remember it (Student, Manager, Other) or accept the automated suggestion.<br>
-            4. Click to confirm & store it in the semantic clipboard for use in forms.<br>
-            5. You can store any number of items <br>
-            6. Assigning a task requires saving an appro AS student <br>
-            7. Assigning a survey requires saving a person AS respondent <br>
-            8. Relating requires at least 2 appros (Appros are different to tasks and surveys)<br>
-            </p>
-          </div>
-            <div class="mb-4 p-3 bg-blue-50 border border-blue-200 rounded">
-            <p class="text-sm text-blue-400">
-            <strong> What happens next:</strong><br>
-            A. The stored items will be visible below in the Information section. They can be removed individually.<br>
-            B. Other modules of the App will check the clipboard automatically and load any data they need.
-           
-          </p>
-
-        </div>
-
-        <!-- DATA TYPE SELECTION -->
+        <!-- ACTION TABS -->
         <div class="mb-4">
-          <h4 class="font-medium mb-2">1. Click to load a list of:</h4>
-          <div class="space-y-1">
-             <div title= "This is a link to the actual task. It needs an appro assigned as a student to the task, it also needs a manager">
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="view" value="tasks"> 🔧 Tasks to assign or edit</label>
-            </div>  
-
-            <div class="border-t my-2" ></div>
-            <div title="This is for selecting a survey to edit it or read it or assign it to someone. When assigned the survey will show-up on that person's myDash">            
-              <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer">
-              <input type="radio" name="view" value="surveys" > 📜 Surveys to assign or edit</label>
-            </div>
-            <div class="border-t my-2"><i>Appros to relate or edit:</i></div>
-            <div title= "Can assign to a task as student or manager, or a survey as respondent, or relate to another appro. It represents the authenicated users of the app. It is like their name tag. ">           
-              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer" >
-              <input type="radio" name="view" value="app-human" > 🪪👥 Human APPRO  👨‍🔧,🎆📜,🖇️</label>  
-            </div>
-            <div title= "Can relate to other appros. This shows up on myDash ralations map. It is an appro that represents ideas or groups or outside things. Can be assigned as a student to a task, but not as a manager. Cannot be respondent to survey.">
-              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer">
-              <input type="radio" name="view" value="app-abstract" >🪪🎭 Abstract APPRO 👨‍🔧, 🖇️</label>
-            </div>
-            
-                        <div title= "Can relate to other appros. This shows up on myDash ralations map. This is like an index card for the task, or a name sticker, it isn't the actual task">
-            <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="view" value="app-task"> 🪪🔧 APPRO of a task 👨‍🔧,🖇️</label>
-            </div>
-            
-            <div title="This is for putting the survey in a group or category. It will show-up on the relations map. This is an 'appro' (a name sticker) that is used to represent the survey in relations.">
-              <label class="flex items-center space-x-2 p-2 bg-gray-200 border rounded hover:bg-gray-100 cursor-pointer" >
-              <input type="radio" name="view" value="app-survey" > 🪪📜 APPRO of a survey👨‍🔧,🖇️</label> <!--NEW Nov 1 2025 -->
-            </div>
-
-
-
-            <div class="border-t my-2"><i>Extras</i></div>
-            <div title="See what tasks and surveys have already been assigned.">     
-              <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer" >
-              <input type="radio" name="view" value="assignments"> 👨‍🔧 Existing Assignments</label>
-            </div>
-
-
-            <div title="See what tasks and surveys have already been assigned.">     
-              <label class="flex items-center space-x-2 p-2 bg-green-200 border rounded hover:bg-gray-100 cursor-pointer" >
-              <input type="radio" name="view" value="assignmentsnew"> !NEW 👨‍🔧 Existing Assignments</label>
-            </div>
-
-            <div title="See what relations exist.">     
-              <label class="flex items-center space-x-2 p-2 bg-indigo-50 border rounded hover:bg-gray-100 cursor-pointer" >
-              <input type="radio" name="view" value="relations"> 🖇️ Existing Relations</label>
-            </div>
-
-
+          <h4 class="font-medium mb-2">1. Choose an action and item type:</h4>
+          <div class="grid grid-cols-5 gap-1 text-sm">
+            <div></div><div class="font-medium p-2">Task</div><div class="font-medium p-2">Survey</div><div class="font-medium p-2">Human</div><div class="font-medium p-2">Abstract</div>
+            ${[
+              ['Assign', [['tasks', '🔧'], ['surveys', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]],
+              ['Edit', [['tasks', '🔧'], ['surveys', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]],
+              ['Relate', [['app-task', '🔧'], ['app-survey', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]]
+            ].map(([action, choices]) => `
+              <div class="font-medium p-2 bg-gray-100">${action}</div>
+              ${choices.map(([view, icon]) => `<button type="button" data-view="${view}" data-mode="${action.toLowerCase()}" class="p-2 border bg-white hover:bg-blue-50 text-left">${icon} ${action}</button>`).join('')}
+            `).join('')}
+          </div>
         </div>
-      </div>
 
         <!-- DATA LIST -->
-                  <h4 class="font-medium mb-2">2. Click to choose an item from the list:</h4>
+        <h4 class="font-medium mb-2">2. Choose the item, then choose a description:</h4>
         <div id="listContainer" class="border rounded  overflow-y-auto bg-gray-50 p-3 mb-4">
           <div class="text-gray-500 text-center py-4">
-            Click a checkbox above to load a list, then select an item.
+            Choose an action above to load a list.
           </div>
         </div>
-
-        <!-- "AS" CATEGORY -->
-        <div class="mb-4">
-          <h4 class="font-medium mb-2">3 Click to remember the item AS...:</h4>
-          <div class="space-y-1"  title='The code will automatically set the 'AS' value if it is obvious such as when a task or survey is recognised, but you need to choose when assigning things to something not obvious such as 'student'>
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="as" value="task"> 🔧 Task</label>
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="as" value="student"> 🧑‍🎓 Student - for a task</label>
-            <label class="flex items-center space-x-2 p-2 bg-blue-100 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="as" value="manager"> 💼 Manager - for a task</label>
-            <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="as" value="survey"> 📜 Survey</label>                                
-            <label class="flex items-center space-x-2 p-2 bg-yellow-100 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="as" value="respondent" checked> 🤔 Respondent for a survey</label>
-            <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 bg-gray-100 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="as" value="other" checked> ❔ Other - no specific meaning</label>
-            <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 bg-green-100 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="as" value="assignment"> 👨‍🔧 Assignment</label>
-            <div class="border-t my-2"></div>
-            <label class="flex items-center space-x-2 p-2 bg-indigo-50 border rounded hover:bg-gray-100 cursor-pointer">
-            <input type="radio" name="as" value="realtion"> 🖇️ Relations</label>
-
-
-            </div>
-        </div>
-
-        <!-- CONFIRM BUTTON -->
-        <button 
-          id="confirmBtn"
-          disabled
-          class="w-full bg-blue-600 text-white py-3 px-4 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
-        >
-          Select item and category first
-        </button>
 
         <!-- INFORMATION FEEDBACK -->
         <div class="bg-green-100 flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200 mt-6">
@@ -239,52 +155,55 @@ class DevDataSelector {
   init(panel) {
     this.panel = panel;
     this.listContainer = panel.querySelector('#listContainer');
-    this.confirmBtn = panel.querySelector('#confirmBtn');
     this.informationFeedback = panel.querySelector('#informationFeedback');
 
-    // View radios
-    panel.querySelectorAll('input[name="view"]').forEach(radio => {
-      radio.addEventListener('change', (e) => this.onViewChange(e));
+    panel.querySelectorAll('[data-view]').forEach(button => {
+      button.addEventListener('click', (event) => this.onViewChange(event.currentTarget.dataset.view, event.currentTarget.dataset.mode));
     });
 
-    // "As" radios
-    panel.querySelectorAll('input[name="as"]').forEach(radio => {
-      radio.addEventListener('change', (e) => this.onAsChange(e));
+    this.listContainer.addEventListener('click', (event) => {
+      const option = event.target.closest('[data-tag]');
+      if (option) {
+        event.stopPropagation();
+        this.saveSelection(Number(option.dataset.itemIndex), option.dataset.tag);
+        return;
+      }
+
+      if (event.target.closest('[data-cancel-selection]')) {
+        this.selectedItem = null;
+        this.populateList(this.currentView);
+        return;
+      }
+
+      const card = event.target.closest('[data-item-index]');
+      if (card) this.onItemClick(Number(card.dataset.itemIndex));
     });
 
-    // Confirm button
-    this.confirmBtn.addEventListener('click', () => this.confirmSelection());
+    this.clipboardUpdatedHandler = () => this.refreshFeedbackDisplay();
+    document.addEventListener('clipboard:updated', this.clipboardUpdatedHandler);
 
-    // Initialize feedback display
     this.refreshFeedbackDisplay();
   }
 
-  async onViewChange(e) {
-    const view = e.target.value;
+  async onViewChange(view, mode) {
     this.currentView = view;
-console.log('ViewChange:',view);
-    // Load data if not already loaded
-    if (view.startsWith('app-') && !this.loadedData.humanApprofiles) { //they mostly are not human. What does this do?
+    this.currentMode = mode;
+    this.selectedItem = null;
+
+    if (view.startsWith('app-') && !this.loadedData.humanApprofiles) {
       await this.loadApprofiles();
     } else if (view === 'tasks' && !this.loadedData.tasks) {
       await this.loadTasks();
     } else if (view === 'surveys' && !this.loadedData.surveys)  {
       await this.loadSurveys();
-    } else if (view === 'assignments' && !this.loadedData.assignments)  {
-      await this.loadAssignments();
-          } else if (view === 'assignmentsnew' && !this.loadedData.assignmentsnew)  {
-      await this.loadAssignmentsnew();
-    } else if (view === 'relations' && !this.loadedData.relations)  {
-      await this.loadRelations();
     }
 
-    // Populate list
     this.populateList(view);
-    this.updateConfirmButton();
   }
 
   async loadApprofiles() {
     try {
+      this.listContainer.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
       const result = await executeIfPermitted(appState.query.userId, 'readApprofiles', {});
 //that function returns:  humanApprofiles,taskApprofiles,surveyApprofiles, abstractApprofiles //added surveys 9:22 Nov 1 2025
       
@@ -301,6 +220,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
 
   async loadTasks() {
     try {
+      this.listContainer.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
       this.loadedData.tasks = await executeIfPermitted(appState.query.userId, 'readTaskHeaders', {});
     } catch (error) { // if access is forbidden by RLS there is no error
       console.error('Error loading tasks:', error);
@@ -310,6 +230,7 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
 
   async loadSurveys() {
     try {
+      this.listContainer.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
       this.loadedData.surveys = await executeIfPermitted(appState.query.userId, 'readSurveyHeaders', {});
       console.log('Surveys:',this.loadedData.surveys);//works  20:30 Oct 10th 2025
     } catch (error) {
@@ -317,37 +238,6 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       showToast('Failed to load', 'error', 5000);
     }
   }
-
-  async loadAssignments() {
-    try {
-      this.loadedData.assignments = await executeIfPermitted(appState.query.userId, 'readAllAssignments', {});
-      console.log('Assignments:',this.loadedData.assignments);
-    } catch (error) {
-      console.error('Error loading assignements:', error);
-      showToast('Failed to load', 'error', 5000);
-    }
-  }
-
-    async loadAssignmentsnew() {
-    try {
-      this.loadedData.assignmentsnew = await executeIfPermitted(appState.query.userId, 'readAllAssignmentsNew', {});
-      console.log('AssignmentsNew:',this.loadedData.assignmentsnew);
-    } catch (error) {
-      console.error('Error loading assignementsNew:', error);
-      showToast('Failed to load', 'error', 5000);
-    }
-  }
-
-    async loadRelations() {
-    try {// reads array
-      this.loadedData.relations = await executeIfPermitted(appState.query.userId, 'readApprofile_relations_view', {});
-      console.log('Relations:',this.loadedData.relations);
-    } catch (error) {
-      console.error('Error loading relations:', error);
-      showToast('Failed to load', 'error', 5000);
-    }
-  }
-
 
     populateList(view) {
     // Set container background based on view
@@ -357,9 +247,6 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       'app-task': 'bg-green-50',
       'app-survey':'bg-yellow-50',
       'tasks': 'bg-red-50',
-      'assignments':'bg-yellow-50',
-      'assignmentsnew':'bg-yellow-100',
-      'relations':'bg-indigo-50'
     }[view] || 'bg-gray-50';
 
     this.listContainer.className = `border rounded min-h-60 max-h-120 overflow-y-auto p-3 mb-4 ${bgColor}`;
@@ -384,21 +271,11 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       case 'surveys':
         items = this.loadedData.surveys || [];
       break;
-      case 'assignments':
-        items = this.loadedData.assignments || []; // PROBLEM  this view has task_name not name.
-      break;
-      case 'assignmentsnew':
-        items = this.loadedData.assignmentsnew || []; //
-      break;
-
-      case 'relations':
-        items = this.loadedData.relations || []; //
-      break;
-
       default:
         this.listContainer.innerHTML = '<div class="text-gray-500 text-center py-4">Select a type above</div>';
         return;
     }
+    this.currentItems = items;
 
     // Add header
     const header = document.createElement('div');
@@ -409,9 +286,6 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       'app-task': '📋 Task Approfiles',
       'tasks': '🔧 Tasks',
       'surveys' : '📜 Surveys',
-      'assignments':'👨‍🔧 assignments',
-      'assignmentsnew':'👨‍🔧 assignmentsnew',
-      'realtions':'🖇️ relations',
     }[view] || 'Select a type above';
 
     this.listContainer.innerHTML = '';
@@ -422,18 +296,26 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
       return;
     }
 
-    let displayData = null;
-    items.forEach(item => {
-      if (item.name) displayData = item.name; else displayData = this.assembleData(item);
-            if(item.is_deleted){console.log(displayData, 'is_deleted', item.is_deleted);return};
-      
-      const div = document.createElement('div');
-      div.className = 'p-2 hover:bg-gray-200 cursor-pointer border-b border-gray-200 last:border-b-0';  
-      //div.textContent = item.name || item.task_name; //assignment view has differentiated names, This isn't going to work 
-      div.textContent = displayData; //assignment view has differentiated names, This isn't going to work 
-      div.dataset.json = JSON.stringify(item);
-      div.addEventListener('click', () => this.onItemClick(item));
-      this.listContainer.appendChild(div);
+    items.forEach((item, index) => {
+      if (item.is_deleted) return;
+
+      const card = document.createElement('div');
+      const isExpanded = this.selectedItem === item;
+      const savedAs = this.savedSelections?.get(this.selectionKey(item));
+      card.dataset.itemIndex = index;
+      card.className = `p-3 border-b border-gray-200 last:border-b-0 cursor-pointer ${savedAs ? 'bg-green-100' : 'hover:bg-gray-100'}`;
+
+      const name = item.name || this.assembleData(item) || 'Unnamed item';
+      card.innerHTML = `<div class="font-medium">${name}</div>${savedAs ? `<div class="text-xs text-green-700" title="Saved as ${savedAs}">Saved as ${savedAs}</div>` : ''}`;
+      if (isExpanded) {
+        const options = this.getTagOptions();
+        card.innerHTML += `
+          <div class="mt-3 flex flex-wrap gap-2" data-selection-options>
+            ${options.map(option => `<button type="button" data-item-index="${index}" data-tag="${option.value}" class="px-3 py-2 border rounded bg-white hover:bg-blue-50">${option.label}</button>`).join('')}
+            <button type="button" data-cancel-selection class="px-3 py-2 border rounded text-gray-600 hover:bg-gray-100">Cancel</button>
+          </div>`;
+      }
+      this.listContainer.appendChild(card);
     });
   }
 
@@ -446,101 +328,42 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
     return displayData;
   }
 
-  onItemClick(item) {  // set the 'AS' value to defaults that match the type of thing being selected, but user can over ride.
-    this.selectedItem = item;
-    console.log('onItemClick() this.currentView ===',this.currentView); // recognises assignments view 
-
-    if (this.currentView === 'tasks') {
-      this.selectedAs = 'task';
-      // Check the radio button
-      const taskRadio = this.panel.querySelector('input[name="as"][value="task"]');
-      if (taskRadio) {
-          taskRadio.checked = true;
-      } 
-    }else if (this.currentView.startsWith('app-')) {
-      this.selectedAs = 'other';
-      // Check the radio button
-      const taskOther = this.panel.querySelector('input[name="as"][value="other"]');
-      if (taskOther) {
-          taskOther.checked = true;
-      } 
-    }else if (this.currentView === 'surveys') {
-        this.selectedAs = 'survey';
-        // Check the radio button
-        const surveyRadio = this.panel.querySelector('input[name="as"][value="survey"]');
-        if (surveyRadio) {
-            surveyRadio.checked = true;
-        }
-      } else if (this.currentView === 'assignments') { // no log 
-          console.log('assignment view recognised');
-          this.selectedAs = 'assignment';
-          // Check the radio button
-          const assignmentRadio = this.panel.querySelector('input[name="as"][value="assignment"]');
-         console.log('assignmentRadio:',assignmentRadio); // but not recognised here
-          if (assignmentRadio) {
-              assignmentRadio.checked = true;
-          }
-        }
-          else if (this.currentView === 'assignmentsnew') { // no log 
-          console.log('assignmentnew view recognised');
-          this.selectedAs = 'assignmentnew';
-          // Check the radio button
-          const assignmentRadio = this.panel.querySelector('input[name="as"][value="assignmentnew"]');
-         console.log('assignmentRadio:',assignmentRadio); // but not recognised here
-          if (assignmentRadio) {
-              assignmentRadio.checked = true;
-          }
-                } else if (this.currentView === 'relations') { // no log 
-          console.log('relations view recognised');
-          this.selectedAs = 'relation';
-          // Check the radio button
-          const relationRadio = this.panel.querySelector('input[name="as"][value="relation"]');
-         console.log('relationRadio:',relationRadio); 
-          if (relationRadio) {
-              relationRadio.checked = true;
-          }
-
-          
-      } else console.log('currenView', this.currentView);
-
-      this.updateConfirmButton();  
-}
-
-
-  onAsChange(e) {
-    console.log('asChange:',e.target);  //detects selection of some kind of AS .
-    this.selectedAs = e.target.value;
-    this.updateConfirmButton();
+  onItemClick(index) {
+    this.selectedItem = this.currentItems[index];
+    this.populateList(this.currentView);
   }
 
-  updateConfirmButton() {
-    this.displayName = null;
-    if (this.selectedItem && this.currentView) {
-      // Truncate long names for button
-      const textContent = this.selectedItem.name || this.assembleData(this.selectedItem); // the latter is assignments
-       this.displayName = textContent.length > 30 
-        ? textContent.substring(0, 30) + '...' 
-        : textContent;
-
-      this.confirmBtn.disabled = false;
-      this.confirmBtn.textContent = `Click to store: "${this.displayName}" ---- AS ---- "${this.selectedAs}"`;
-    } else {
-      this.confirmBtn.disabled = true;
-      this.confirmBtn.textContent = 'Select item and category first';
-    }
+  getTagOptions() {
+    if (this.currentMode === 'relate') return [{ value: 'relation', label: '🖇️ Relation' }];
+    if (this.currentView === 'tasks') return [{ value: 'task', label: '🔧 Task' }];
+    if (this.currentView === 'surveys') return [{ value: 'survey', label: '📜 Survey' }];
+    if (this.currentMode === 'edit') return [{ value: 'other', label: '❔ Other' }];
+    if (this.currentView === 'app-human') return [
+      { value: 'student', label: '🧑‍🎓 Student' },
+      { value: 'manager', label: '💼 Manager' },
+      { value: 'respondent', label: '🤔 Respondent' }
+    ];
+    return [{ value: 'student', label: '🧑‍🎓 Student' }];
   }
 
-  confirmSelection() {
-    if (!this.selectedItem || !this.currentView) return;
+  selectionKey(item) {
+    return `${this.currentView}:${item.id}`;
+  }
+
+  saveSelection(index, selectedAs) {
+    const item = this.currentItems[index];
+    if (!item || !this.currentView) return;
+
+    const displayName = item.name || this.assembleData(item) || 'Unnamed item';
 
         const clipboardItem = {
       entity: {
-        id: this.selectedItem.id,
-        name: this.selectedItem.name || this.displayName,
+        id: item.id,
+        name: displayName,
         type: this.currentView,
-        item: this.selectedItem
+        item
       },
-      as: this.selectedAs,
+      as: selectedAs,
       meta: {
         timestamp: Date.now(),
         source: 'dev-data-selector',
@@ -577,15 +400,20 @@ updated_at: null
     // Store
     if (!appState.clipboard) appState.clipboard = [];
     appState.clipboard.push(clipboardItem);
+    this.savedSelections.set(this.selectionKey(item), selectedAs);
+    this.selectedItem = null;
 
-    // Refresh feedback display
     this.refreshFeedbackDisplay();
 
     // Notify
     if (document) {
       document.dispatchEvent(new CustomEvent('clipboard:item-added', { detail: clipboardItem }));
+      document.dispatchEvent(new CustomEvent('clipboard:updated', {
+        detail: { clipboard: appState.clipboard }
+      }));
     }
 
+    this.populateList(this.currentView);
     showToast(`Stored: ${clipboardItem.entity.name} as ${clipboardItem.as}`, 'success', 2000);
   }
 
@@ -609,7 +437,6 @@ updated_at: null
           class="text-red-500 hover:text-red-700 ml-4 p-1 rounded hover:bg-red-50"
           title="Remove from clipboard"
           aria-label="Remove item from clipboard"
-           onclick="removeClipboardItem(${index})"
         >
           ×
         </button>
@@ -623,12 +450,6 @@ updated_at: null
         this.removeClipboardItem(index);
       });
     });
-//16:38 sept 23rd addition:
-
-// After updating the display
-document.dispatchEvent(new CustomEvent('clipboard:updated', {
-  detail: { clipboard: appState.clipboard }
-}));
   }
 
   removeClipboardItem(index) {
@@ -636,6 +457,11 @@ document.dispatchEvent(new CustomEvent('clipboard:updated', {
 
     const removedItem = appState.clipboard.splice(index, 1)[0];
     this.refreshFeedbackDisplay();
+    if (document) {
+      document.dispatchEvent(new CustomEvent('clipboard:updated', {
+        detail: { clipboard: appState.clipboard }
+      }));
+    }
     showToast(`Removed: ${removedItem.entity.name}`, 'info', 2000);
   }
 }

@@ -61,8 +61,19 @@ export function renderPermissions(panel,query={}){
   relationType='permission';
   console.log('renderPermissions(relationType)', relationType);
 //over write the default title 
-  if (ApproIsType === 'bundle')  title = 'Put permissions in the Bundle';
-  else title = 'Grant Permission';
+  if (ApproIsType === 'bundle')  title = 'Put permissions in the Bundle' +`  <button data-action="open-bundle-permissions-dialogue" class="text-gray-500 hover:text-gray-700" aria-label="Close">HERE
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>`;
+  //the close button needs to call the correct module to close it
+  //open-bundle-permissions-dialogue
+  //open-permissions-dialogue
+  else title = 'Grant Permission'         +`  <button data-action=" open-permissions-dialogue" class="text-gray-500 hover:text-gray-700" aria-label="Close">HERE
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>`;
 
 
 
@@ -448,6 +459,7 @@ if (category != 'bundle' || !id) {console.log("category or id error"); return; }
  //console.log('relationType',relationType);
 //read the permission_relations db to find any entries for this bundle by appro_is id
 try {     //registry needs: const { approfileId } = payload;
+  if (informationFeedback) informationFeedback.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
       permissionsFromBundle = await executeIfPermitted(userId, 'readPermissionRelationsById', {approfileId:id}); // 
 console.log('permissionsFromBundle', permissionsFromBundle, 'for bundle_id:',id);// that function returns an object
 //{is: isRels.data || [], of: ofRels.data || [], iconMap:profileMap }; // empty arrays 15:40 April 1 because appro_is id not id of the relation
@@ -466,6 +478,7 @@ informationFeedback.innerHTML += `<div class="p-1 text-sm bg-purple-50 border bo
 
     } catch (error) {
   console.error('Failed to load permissions:', error);
+  if (informationFeedback) informationFeedback.innerHTML = '<div class="text-red-500 text-center py-4">Failed to load permissions.</div>';
 //  console.log('');
 } 
 }
@@ -478,6 +491,7 @@ async function populateRelationshipsDropdown(relationshipSelect, relationType) {
       console.log('populateRelationshipsDropdown relationType:', relationType);//permission
 
     try { let relationships = []
+    relationshipSelect.insertAdjacentHTML('beforebegin', '<div id="relationship-loading" class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
     
     if(relationType === 'ordinary') relationships = await executeIfPermitted(userId, 'readRelationships');
     else if(relationType === 'permission') relationships = await executeIfPermitted(userId, 'readPermissionRelationships');
@@ -485,6 +499,7 @@ async function populateRelationshipsDropdown(relationshipSelect, relationType) {
       console.log('relationType unknown', relationType);
       throw new Error('Unknown relation type: ' + relationType);
     }
+    relationshipSelect.parentElement.querySelector('#relationship-loading')?.remove();
     if (!relationships || relationships.length === 0) {
       throw new Error('No relationships found');
     }
@@ -504,6 +519,7 @@ console.log('relationshipsArray.', relationships);  // bundle_id null or uuid  c
     
   } catch (error) {
     console.error('Error populating relationships dropdown:', error);
+    relationshipSelect.parentElement.querySelector('#relationship-loading')?.remove();
     showToast('Failed to load relationships', 'error');
   }
 /*

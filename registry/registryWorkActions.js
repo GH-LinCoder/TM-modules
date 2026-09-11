@@ -13,6 +13,7 @@
 
 export const registryWorkActions = {
 
+  //AUTH
 getAuthenticatedUser: {
   metadata: { type: 'AUTH', requiredArgs: [] },
   handler: async (supabase, userId, payload) => {
@@ -57,7 +58,7 @@ XcreateOrUpdateApprofile: {//this should be separate functions I don't think it 
       return data; } 
 },
 
-
+//AUTO
 // For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
 autoAssignTask: { //how does this get passed the permission system? (It is called on first login by a new user) - after being granted myDash permissions
   metadata: {
@@ -103,7 +104,7 @@ if (existing && existing.data.length > 0) { //console.log (existing);
   }
 },
 
-
+//AUTO
 // For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
 autoAssignSurvey: {
   metadata: {
@@ -150,7 +151,7 @@ if (existing && existing.data.length > 0) { //console.log (existing);
 
 
 
-
+//AUTO
 // For auto-relate-appro
 autoRelateAppro: {
   metadata: {
@@ -193,6 +194,7 @@ if (existing && existing.data.length > 0) { //console.log (existing);
   }
 },
 
+//RELATE
 //RELATIONS  APPRO RELATIONSHIP  DELETE
 softDeleteRelation:{
   metadata: {
@@ -222,7 +224,7 @@ softDeleteRelation:{
 
 
 /////////////////////////////////////   COUNT   ///////////////////////
-//APPRO
+//COUNT
 approfilesCount:{
   metadata: {
     tables: ['app_profiles'],
@@ -245,7 +247,7 @@ approfilesCount:{
   }
 },
 
-//APPRO
+//COUNT
 relationsCount:{
   metadata: {
     tables: ['approfile_relations'],
@@ -269,7 +271,7 @@ relationsCount:{
 },
 
 
-//ASSIGNMENT
+//COUNT
 assignmentsCount:{
   // Metadata for the permissions system
   metadata: {
@@ -294,7 +296,8 @@ handler: async  (supabase, userId) =>{
   return count// if use {count} it would be in form  {count: 23}
 }
 },
-//ASSIGNMENT
+
+//COUNT
 authorsCount:{
   // Metadata for the permissions system
   metadata: {
@@ -319,7 +322,8 @@ handler: async  (supabase, userId) =>{
   return count// if use {count} it would be in form  {count: 23}
 }
 },
-//ASSIGNMENT
+
+//COUNT
 managersCount:{
   // Metadata for the permissions system
   metadata: {
@@ -354,7 +358,7 @@ handler: async (supabase, userId) => {
 }
 },
 
-//PROFILES
+//COUNT
   membersCount:{
     // Metadata for the permissions system
     metadata: {
@@ -381,7 +385,7 @@ handler: async (supabase, userId) => {
 },
 
 
-//STUDENTS
+//COUNT
 studentsCount:{
   // Metadata for the permissions system
   metadata: {
@@ -414,7 +418,8 @@ handler: async (supabase, userId) => {
   return count;
 }
 },
-//TASKS
+
+//COUNT
 tasksCount:{
   // Metadata for the permissions system
   metadata: {
@@ -440,6 +445,7 @@ handler: async  (supabase, userId) =>{
 }
 },
 
+//COUNT
 tempSignupCount:{ //new 13:46 Jan 13 2026
   metadata: {
     tables: ['temp_signups'],
@@ -462,6 +468,7 @@ tempSignupCount:{ //new 13:46 Jan 13 2026
   }
 },
 
+//COUNT
 signupCount:{ //new 13:46 Jan 13 2026
   metadata: {
     tables: ['temp_signups'],
@@ -486,6 +493,7 @@ const { data, count, error } = await supabase //this was showing bizarre behavio
   }
 },
 
+//SIGNUP
 readTempSignup:{ //new 13:46 Jan 13 2026
   metadata: {
     tables: ['temp_signups'],
@@ -508,7 +516,7 @@ readTempSignup:{ //new 13:46 Jan 13 2026
   }
 },
 
-
+//COUNT
 surveysCount:{
   // Metadata for the permissions system
   metadata: {
@@ -534,6 +542,7 @@ handler: async  (supabase, userId) =>{
 }
 },
 
+//COUNT
 respondentsCount:{
   // Metadata for the permissions system
   metadata: {
@@ -594,6 +603,7 @@ handler: async (supabase, userId) => {
   }
  },
 
+ //APPRO
  createApproFromNewAuthUser: {// This calls the rpc, but signup in index,html calls the rpc function direct. Is this regsistry func redeudent ? 
   metadata: {
     type: 'RPC',
@@ -845,7 +855,27 @@ createPermissionRelation:{
   }
 },
 
+//APPRO PERMISSIONS
+readPermissionRelationsById: {//
+  metadata: {
+    tables: ['permissions_relations_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
+handler: async (supabase, userId, payload) => {
+  const { approfileId } = payload;
+  
+  const { data, error } = await supabase.rpc('safe_read_permissions_with_icons', {
+    p_target_id: approfileId
+  });
 
+  if (error) throw error;
+  
+  // 'data' already has the 'is', 'of', and 'iconMap' keys ready to go!
+  return data; 
+}
+},
 
 ///////////////////////////////////// UPDATE   /////////////////////
 // edit task is sending:  14:00 Oct 25 2025
@@ -884,7 +914,7 @@ console.log('updtaeTaskStep:', stepDescription);
   }
 },
 
-
+//ASSIGNMENT
 assignmentUpdateStep: {
   // Metadata for the permissions system
   metadata: {
@@ -1018,6 +1048,8 @@ updateTask: {
     return data;
   }
 },
+
+
 //duplicate function????
 updateTaskAssignmentStep: {//does this do any good?  Is this column read for display?
   metadata: {//moves student to new step
@@ -1140,8 +1172,8 @@ readApprofileById:{
     return data;
   }
 },
-//APPRO
 
+//APPRO
 readApprofileByAuthUserId: { //By authUserId because approId may != authId. This function looks at the auth_user_id column
   metadata: { 
     tables: ['app_profiles'], 
@@ -1225,28 +1257,8 @@ readApprofileRelationships: {
   }
 },
 
-//APPRO PERMISSIONS
-readPermissionRelationsById: {//
-  metadata: {
-    tables: ['permissions_relations_view'],
-    columns: ['*'],
-    type: 'SELECT',
-    requiredArgs: ['approfileId']
-  },
-handler: async (supabase, userId, payload) => {
-  const { approfileId } = payload;
-  
-  const { data, error } = await supabase.rpc('safe_read_permissions_with_icons', {
-    p_target_id: approfileId
-  });
 
-  if (error) throw error;
-  
-  // 'data' already has the 'is', 'of', and 'iconMap' keys ready to go!
-  return data; 
-}
-},
-
+//TRUST-SECURITY
 readTrustSecurityDefinitions: { //added 21:15 Aug 13 2026
   metadata: {
     tables: ['trust_security_definitions'],
@@ -1271,7 +1283,7 @@ readTrustSecurityDefinitions: { //added 21:15 Aug 13 2026
 },
 
 
-
+//WORK-RELATIONS
 readWorkRelationsById: {
   metadata: {
     type: 'SELECT',
@@ -1538,7 +1550,7 @@ console.log('student:',student, 'activity',activity);
 },
 
 
-
+/*
 // GENERIC  NOT USED because breaks permission basis
 readThisColumnIdFromThatTable:{
 metadata:{
@@ -1560,10 +1572,10 @@ handler: async (supabase, userId, payload) =>{
   }
   return data || [];
  }
-},
+}, */
 //
 
-
+//ASSIGNMENTS
 readAssignmentsForTask: {//needs to be in _required table   20:00 Sept 2 2026
   metadata: {
     tables: ['assignments_task_view'],
@@ -1618,6 +1630,7 @@ console.log('readThisAssignment{}','id:',assignment_id,'payload:', payload);
   } 
 },
 
+//ASSIGNMENTS
 readThisSurveyOrTaskAssignment:{//requires the assignment_id (not the task_header_id. Returns a single row )
   metadata: {
   tables: ['assignment'],  //table
@@ -1645,7 +1658,7 @@ console.log('data',data);
 
 
 
-//ASSIGMENTS (NEW) 17:10 Jan 19 2026
+//ASSIGMENTS
 readAllAssignmentsNew:{// VIEW  not a table returns all rows )
   metadata: {
   tables: ['task_assignment_view2'],  //VIEW not a table
@@ -1669,7 +1682,7 @@ console.log('readAllAssignmentNEW{}');
 
 
 
-//TASK_ASSIGMENT
+//ASSIGMENT-TASKS
 readAllAssignments:{// VIEW  not a table returns all rows )
   metadata: {
   tables: [],  //VIEW not a table
@@ -1694,7 +1707,7 @@ console.log('readAllAssignment{}','id:',assignment_id,'payload:', payload);
 },
 
 
-//TASK_ASSIGMENT
+//ASSIGMENTS-TASK
 readAssignmentExists:{ //requires the task_header_id could return ZERO rows ONE row or MANY rows
   metadata: {
   tables: ['task_assignments_view'],  //VIEW not a table
@@ -1719,6 +1732,7 @@ console.log('readAssignmentExists()');
   } 
 },
 
+//ASSIGNMENTS-STUDENTS
 readStudentAssignments: {
   metadata: {
     tables: ['assignments_task_view, assignments_survey_view'],
@@ -1769,7 +1783,50 @@ readStudentAssignments: {
   }
 },
 
+//ASSIGNMENTS-STUDENTS
+// ASSIGNMENTS-STUDENTS
+updateAssignmentStep: {
+  metadata: {
+    tables: ['assignments'],
+    columns: ['current_step', 'moved_at', 'move_me_at', 'student_id'],
+    type: 'UPDATE',
+    requiredArgs: ['payload']
+  },
+  handler: async (supabase, userId, payload) => {
+    // 1. Destructure and validate (studentId added)
+    const { studentId, assignmentId, currentStep, targetStep, managerRole, task_header_id } = payload;
 
+    if (!studentId || !assignmentId || !currentStep || !targetStep || !managerRole || !task_header_id) {
+      throw new Error('Missing required arguments for updateAssignmentStep');
+    }
+
+    // 2. Defense in depth: Enforce the manager rule at the registry level
+    if (managerRole && targetStep !== currentStep + 1) {
+      throw new Error('Security violation: Managers can only move students to the immediate next step');
+    }
+
+    // 3. Call the secure RPC (studentId added as p_student_id)
+    const { data, error } = await supabase.rpc('update_assignment_step', {
+      p_student_id: studentId,
+      p_assignment_id: assignmentId,
+      p_current_step: currentStep,
+      p_target_step: targetStep,
+      p_manager_role: managerRole,
+      p_task_header_id: task_header_id,
+      p_user_id: userId // The ID of the user making the request
+    });
+
+    if (error) {
+      console.error('❌ RPC Error:', error);
+      throw new Error(error.message || 'Failed to update assignment in registry');
+    }
+
+    return data;
+  }
+},
+
+
+//ASSIGNMENTS-TASKS
 readAssignmentsTasks: {
   metadata: {
     tables: ['assignments_task_view'],
@@ -1792,7 +1849,7 @@ console.log('readAssignmentsTasks()');
     }
   },
 
-
+//ASSIGNMENTS-SURVEYS
 readAssignmentsSurveys: {
   metadata: {
     tables: ['assignments_survey_view'],
@@ -1819,7 +1876,7 @@ console.log('readAssignmentsSurveys()');
 
 
 
-
+//ASSIGNMENTS-MANAGERS
 readManagerAssignments: {
   metadata: {
     tables: ['assignments_task_view'],
@@ -1845,6 +1902,7 @@ readManagerAssignments: {
   }
 },
 
+//TASKS-MANAGERS
 readPendingManagerTasks: {
   metadata: {
     tables: ['assignments_task_view', 'task_headers'],
@@ -1966,7 +2024,7 @@ readPendingManagerTasks: {
 },
 
 
-
+///////////////////////   PERMISSIONS 
 
 //RELATIONSHIPS PERMISSIONS
 readPermissionRelationships: {//HIGH SECURITY ISSUE -- doesn't supply an iconMap the way Xread did
@@ -2011,7 +2069,7 @@ writePermissionRelationships: {//HIGH SECURITY ISSUE -- used for creating bundle
   }
 },
 
-
+//PERMISSIONS-BUNDLES
 grantBundlePermissions: {
   metadata: {
     tables: [],
@@ -2086,7 +2144,7 @@ readRelationshipExists:{
     } 
   },
 
-//APPRO
+//RELATIONS
 readApprofile_relations_view:{
   metadata: {
     tables: ['approfile_relations'],  //VIEW not a table
@@ -2110,6 +2168,7 @@ readApprofile_relations_view:{
 
 
 //////////    NOTES BUG REPORT MESSAGES   /////////
+//NOTES
 saveNoteStatus: {
   metadata: {
     tables: ['notes'],  
@@ -2137,6 +2196,7 @@ saveNoteStatus: {
 
 
  //MOVED TO REGISTRY from The Lab 4 Nov 2025
+ //NOTES
 insertNote:{
   metadata: {
     tables: ['notes'],  
@@ -2267,6 +2327,7 @@ const fta = ftaRows[0]; //
 
 },
 
+//NOTES
 fetchNotes: {  // changing to read view3 (was view2)  11:43 March 15
 metadata: {
       tables: [''],  
@@ -2298,6 +2359,7 @@ metadata: {
     
 },
 
+//NOTES
 readCategoryMap:{
 metadata: {
   tables: ['notes_categories'],
@@ -2317,6 +2379,7 @@ return data;
           }
 },
 
+//NOTES
 linkNoteToCategories:{
 metadata: {
   tables:['notes_categorised'],
@@ -2339,6 +2402,7 @@ return null; // success
 }
 },
 
+//NOTES
 readNoteCategorised:{
 metadata: {
   tables:['notes_categorised'],
@@ -2358,7 +2422,7 @@ return data; // success
 }
 },
 
-
+//NOTES
 reactToNoteClick: {
   metadata: {
     tables: ['notes'],
@@ -2389,7 +2453,6 @@ reactToNoteClick: {
 
 
 //TASKS
-
 readTaskHeaders: {
   metadata: {
     tables: ['task_headers'],
@@ -2418,6 +2481,7 @@ readTaskHeaders: {
   }
 },
 
+//TASKS
 readTaskHeaderMoveBy: {
   metadata: {
     tables: ['task_headers'],
@@ -2463,7 +2527,7 @@ handler: async (supabase, userId, payload) => {
 },    
 
 
-  //TASKS
+//TASKS
   readTaskWithSteps: {
     metadata: {
       tables: [], // VIEW not a table
@@ -2511,7 +2575,7 @@ handler: async (supabase, userId, payload) => {
 
 // the below don't call the db
 //  
-//TASK_ASSIGNMENTS
+//TASK-STUDENTS
 readAllStudent:{
   metadata:{
     tables:[], //
@@ -2533,7 +2597,8 @@ handler: async(supabase, userId) => {
     return count;
  }
 },
-//TASK_ASSIGNMENTS
+
+//TASK-MANAGERS
 readAllManager:{
   metadata:{
     tables:['task_assignments'], //
@@ -2555,7 +2620,7 @@ handler: async(supabase, userId) => {
     return count;
  }
 },
-//TASK_ASSIGNMENTS
+//TASK-AUTHORS
 readAllAuthor:{//this is the same as a count of tasks because every task has an author
   metadata:{
     tables:['task_headers'], //
@@ -2585,8 +2650,7 @@ handler: async(supabase, userId) => {
 
 /////////////////////////////////////   SURVEYS   //////////////////////
 
-//SURVEYS
-
+//ASSIGNMENTS
 readAssignmentSurveyById:{//requires the assignment_id (not the task_header_id. Returns a single row )
   metadata: {
   tables: ['assignment_survey_view'],  //VIEW not a table
@@ -2613,7 +2677,7 @@ console.log('readAssignmentSurveyById{}','id:',assignment_id,'payload:', payload
 // missing a function? readPermissionsRelations|SELECT|permission_relations March 22 2026
 
 
-//SURVEYS new 20:23 Oct 6
+//SURVEYS new 20:23 Oct 6 2025
 createSurvey: {
   metadata: {
     tables: ['survey_headers'],
@@ -2754,7 +2818,7 @@ updateSurveyQuestion: {
   }
 },
 
-
+//SURVEYS
 updateSurveyQuestionSoftDelete: {
   metadata: {
     tables: ['survey_questions'],
@@ -2901,7 +2965,7 @@ console.log('readTaskAutomations;',data);// empty  23:46 Jan 22
   }
 },
 
-
+//AUTOMATIONS
 readSurveyAutomations: {
   metadata: {
     tables: ['automations'],
@@ -2932,7 +2996,7 @@ console.log('registryReadAutomations-answerId:',answer_id);
 
 //Newer version with corrected arg check (not using "this.") File 001 has previous versions
 
-
+//AUTOMATIONS
 createAutomationAddTaskByTask: {
   metadata: {
     tables: ['automations'],
@@ -2979,6 +3043,7 @@ console.log('auto task by task',source_task_step_id, source_task_header_id,targe
   }
 },
 
+//AUTOMATIONS
 createAutomationAddSurveyByTask: {
   metadata: {
     tables: ['automations'],
@@ -3028,6 +3093,7 @@ const  autoRegistryId ='5cacda57-e77e-4356-a2d6-ea881ce56f0a';//the place to fin
   }
 },
 
+//AUTOMATIONS
 createAutomationRelateByTask: {
   metadata: {
     tables: ['automations'],
@@ -3083,6 +3149,7 @@ createAutomationRelateByTask: {
   }
 },
 
+//AUTOMATIONS
 createAutomationDeleteRelationByTask: {
   metadata: {
     tables: ['automations'],
@@ -3113,6 +3180,7 @@ target_data: {appro_is_id, relationship,of_appro_id}
   }
 },
 
+//AUTOMATIONS
 createAutomationSendMessageByTask: {
   metadata: {
     tables: ['automations'],
@@ -3144,6 +3212,7 @@ createAutomationSendMessageByTask: {
   }
 },
 
+//AUTOMATIONS
 createAutomationAddTaskBySurvey: {
   metadata: {
     tables: ['automations'],
@@ -3189,6 +3258,7 @@ createAutomationAddTaskBySurvey: {
   }
 },
 
+//AUTOMATIONS
 createAutomationAddSurveyBySurvey: {
   metadata: {
     tables: ['automations'],
@@ -3233,6 +3303,7 @@ console.log('..SurveyBySurvey, source_survey_header_id',source_survey_header_id)
   }
 },
 
+//AUTOMATIONS
 createAutomationRelateBySurvey: {
   metadata: {
     tables: ['automations'],
@@ -3298,6 +3369,7 @@ console.log('Payload being inserted:', {
   }
 },
 
+//AUTOMATIONS
 createAutomationDeleteRelationBySurvey: {
   metadata: {
     tables: ['automations'],
@@ -3329,6 +3401,7 @@ createAutomationDeleteRelationBySurvey: {
   }
 },
 
+//AUTOMATIONS
 createAutomationSendMessageBySurvey: {
   metadata: {
     tables: ['automations'],
@@ -3416,7 +3489,7 @@ console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id)
 },
 
 
-
+//AUTOMATIONS
 softDeleteAutomation:{
   metadata: {
     tables: ['automations'],
@@ -3591,7 +3664,7 @@ const { data, error } = await supabase
 
 
 //SYSTEM FUNCTIONS - not automations and not user actions.  These call rpc functions and will need to go through high security, but March 14 2026 may be low security
-
+//ASSIGNMENTS
 updateAssignmentSystem:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 
   metadata: {
   tables: ['assignments'],
@@ -3616,7 +3689,6 @@ const { data, error } = await supabase.rpc('update_assignment_step', {
 },
 
 //PAYMENT PLANS
-
 readActivePaymentPlans:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 
   metadata: {
   tables: ['payment_user_active_view'],
@@ -3650,6 +3722,7 @@ const {data: relations, error } = await supabase
 } 
 },
 
+//PAYMENT-PLANS
 readAllActivePaymentPlans:{ 
   metadata: {
   tables: ['payment_plans'],
@@ -3675,6 +3748,7 @@ const {data: plans, error } = await supabase
 } 
 },
 
+//PAYMENT-PLANS
 createAttachmentPaymentButton: { //THIS IS TRASH. May 15. This is hard coded for tasks only. Can't use it for surveys
   metadata: {
     tables: ['automations'],

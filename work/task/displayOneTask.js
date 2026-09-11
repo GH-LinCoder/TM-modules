@@ -59,7 +59,7 @@ try { //the registry function needs: const { assignment_id} = payload;
         // Store as global source of truth
 //        assignment = assignmentData;
         
-        renderTask(panel);
+        await renderTask(panel);
         
     } catch (error) {
         console.error('Error loading task assignment:', error);
@@ -73,6 +73,7 @@ async function ensureTaskStepsCached(userId) {
     if (assignment && assignment._taskSteps) return assignment._taskSteps;
 
     console.log('Fetching and caching task steps from DB... with assignment.task_header');
+    panelEl.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', {
         task_header_id: assignment.assignment.task_header_id
     });

@@ -52,7 +52,8 @@ console.log('displayTasksCards.render()');
 //the new one works within the other file loadMyDashWithData even with the new user
 //so trying it here to see if it works. But return is different.
 //needs subject
-const subject = await resolveSubject();      
+const subject = await resolveSubject();
+panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
 console.log('subject',subject);
 //21:10 Sept 3: This is for userRole = 'student'  There will also be userRole = 'manager' which needs a different search of db - see the file moveStudentManager.js
 const tasksAndSurveys = await executeIfPermitted(

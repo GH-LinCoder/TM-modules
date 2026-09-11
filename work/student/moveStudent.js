@@ -266,7 +266,7 @@ return assignmentObject;
 
 
   async findTaskSteps(userId, task_header_id){
-    
+    this.informationFeedback.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', {
          //  manager_id: manager_id || null,
       task_header_id: task_header_id   
@@ -422,6 +422,7 @@ if(this.assignment_id === 'cc807827-ff24-4418-bbaa-ffe04e868988') {
 
 
     // Load the assignment data
+    this.informationFeedback.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     const assignmentArray = await executeIfPermitted(this.userId, 'readThisAssignment', {
       assignment_id: assignment_id
     });

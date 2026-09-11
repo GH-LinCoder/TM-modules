@@ -6,6 +6,12 @@ console.log('plans.js loaded');
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `<h2 class="text-xl font-bold text-gray-800 mb-4">Every one in the organisation has a role</h2>`
+  + ` <button data-action="my-role" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>`
+
 }
 
 // plans appro id fab5776c-d7e9-4d2a-b52e-85b19ba9ae53

@@ -65,14 +65,16 @@ export const registry = { // this registry is for loading a new page to the righ
 'editTask': () => import('../work/task/editTask.js'), //legacy?
 //'-management-section': ()=> import('../work/dash/ManagementSection.js'),
 
+
+
+//STUDENTS
 'display-students':()=> import('../work/task/displayTasksManager.js'),//display the tasks that the current student manages
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),
-
-'move-student-manager': () => import('../work/task/moveStudentManager.js'),//this is the new module for moving students between steps. It is a manager function, not a student function
-
-'display-pending-manager-tasks': () => import('../work/task/displayPendingManagerTasks.js'),//this is the new module for displaying pending tasks for managers. It is a manager function, not a student function
-
+'move-student-manager': () => import('../work/student/moveStudentManager.js'),//this is the new module for moving students between steps. It is a manager function, not a student function
+'display-students-on-tasks': () => import('../work/student/displayStudentsOnTasks.js'),//this is the new module for displaying pending tasks for managers. It is a manager function, not a student function
 'moveStudent': () => import('../work/student/moveStudent.js'),//legacy?
+
+
 
 'display-one-task': () => import('../work/task/displayOneTask.js'),
 'display-one-survey' : () => import('../work/survey/displayOneSurvey.js'),

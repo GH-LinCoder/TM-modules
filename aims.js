@@ -19,7 +19,15 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 async function readAppro(panel)
 { const aimsApproId = 'ada3685a-7f9d-4cfd-b96f-8272e12e468e';
-const aimsAppro = await executeIfPermitted(null, 'readApprofileById',{approfileId: aimsApproId});
+panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
+let aimsAppro;
+try {
+  aimsAppro = await executeIfPermitted(null, 'readApprofileById',{approfileId: aimsApproId});
+} catch (error) {
+  console.error('Failed to load aims:', error);
+  panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load aims.</div>';
+  return;
+}
 console.log('aimsAppro',aimsAppro);
 
 

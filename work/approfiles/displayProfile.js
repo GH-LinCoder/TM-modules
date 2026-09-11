@@ -76,6 +76,8 @@ console.log('profiles -resolveSubject', subject,
     // function needs userApproId
 const approUserId = subject.approUserId;
 //console.log('approUserId', approUserId);
+  const badgesEl = document.querySelector('[data-user="badges"]');
+  if (badgesEl) badgesEl.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
 const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans',{approUserId});
 
 /** the registry returns
@@ -102,8 +104,7 @@ const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans'
             
             const createdAtEl = document.querySelector('[data-user="created-at"]');
 
-            const badgesEl = document.querySelector('[data-user="badges"]'); 
-
+            
                         const typeEl = document.querySelector('[data-user="type"]');
             const sourceEl = document.querySelector('[data-user="source"]');
 

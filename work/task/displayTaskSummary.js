@@ -51,7 +51,7 @@ array[2] is step 3
 }
 
 async function loadAndDisplay(panel, taskId){
-state.currentTask = await readTaskFromDb(taskId);
+state.currentTask = await readTaskFromDb(taskId, panel);
 console.log ('taskId', taskId,'task',state.currentTask);  //array equal to number of steps maybe?
 
   renderTaskStructure(panel); 
@@ -130,10 +130,12 @@ function addClipboardItemsToDropdown(items, selectElement) {
 /// eof clipboard
 
 
-async function readTaskFromDb(taskId){
+async function readTaskFromDb(taskId, panel){
      try {console.log('readTaskFromDb', taskId);
       //func needs: const { task_header_id } = payload;
 
+    const summaryEl = panel?.querySelector('#taskSummary');
+    if (summaryEl) summaryEl.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     const task = await executeIfPermitted(state.user, 'readTaskWithSteps', {
      task_header_id :  taskId
     });
@@ -388,12 +390,14 @@ const stepCard = document.createElement('p');
 
 async function loadStepAutomations(container, stepId) {
   try {console.log('loadStepAutomations for stepId',stepId);
+    container.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     const automations = await executeIfPermitted(state.user, 'readTaskAutomations', {
       source_task_step_id: stepId
     });
     renderAutomationCards(container, automations);
   } catch (error) {
     console.error('Failed to load automations:', error);
+    container.innerHTML = '<div class="text-red-500 text-center py-4">Failed to load automations.</div>';
     showToast('Could not load automations', 'error');
   }
 }
