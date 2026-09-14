@@ -395,8 +395,9 @@ async function loadTaskSteps(panel, taskId) { //readTaskSteps 'id, name, descrip
     console.log('loadTaskSteps()',taskId);
     try {
   const stepsSection = panel.querySelector('#stepsSection');
-  if (stepsSection) stepsSection.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
-      const steps = await executeIfPermitted(state.user, 'readTaskSteps', { taskId });
+  //if (stepsSection) stepsSection.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
+ // that spinner deletes the entire dispaly after 'change rating' That's what GH-copilot did
+  const steps = await executeIfPermitted(state.user, 'readTaskSteps', { taskId });
       state.steps = steps || [];
       
     //  console.log('Loaded steps:', state.steps);
@@ -799,7 +800,7 @@ console.log('ratingSelected:',ratingSelected)
   // In attachListeners, update the stepSelect change handler:
 stepSelect?.addEventListener('change', (e) => {
     const stepOrder = parseInt(e.target.value); // stepOrder is read from the summary (wheras in edit survey finds questionId)
-    
+console.log('L803 stepOrder from stepSelect:',stepOrder);    
     if (!stepOrder) return;
 
    // console.log('Selected step order:', stepOrder);
@@ -823,7 +824,7 @@ stepSelect?.addEventListener('change', (e) => {
       panel.querySelector('#stepDescription').value = '';
       panel.querySelector('#stepUrl').value = '';
       panel.querySelector('#stepOrder').value = stepOrder;
-  //    console.log('Form cleared for new step');
+  // console.log('Form cleared for new step');
     }
   });
 
@@ -1450,6 +1451,8 @@ async function handleTaskUpdate(e, panel) {
       return;
     }    
     const order = parseInt(panel.querySelector('#stepOrder')?.value);//but if clicked summary?
+console.log('order', order);
+
     const stepName = panel.querySelector('#stepName')?.value.trim();
     const stepDescription = panel.querySelector('#stepDescription')?.value.trim();
     const stepUrl = panel.querySelector('#stepUrl')?.value.trim();

@@ -106,39 +106,7 @@ function getDisplayArea() {
     return displayArea;
   }
 }
-/*
-function getDisplayArea() {
-console.log('GetDisplayArea()');
 
-const destination = appState.query.petitioner.Destination;
-
-if (destination === 'new-panel') {
-console.log('✅ panelsOnDisplay.length:',panelsOnDisplay.length);
-      // idea is that this is 0 when only the dashboard is on display. BUT the log shows 4 or 5
-  if (panelsOnDisplay.length === 0) {
-    console.log(' DASHBOARD: Injecting into #primary-panel');
-    return document.querySelector('#primary-panel');
-  }
-
-  const isMobile = window.innerWidth < 768; // Tailwind's 'md' breakpoint
-  
-  if (isMobile) {
-    const mobilePanel = document.querySelector('[data-panel="mobile-inject-here"]');
-    // Make the mobile panel visible when we're about to inject into it
-    mobilePanel.classList.remove('hidden');
-     console.log(' Mobile: Injecting into mobile-panel');
-    return mobilePanel;
-  } else {
-    console.log(' Desktop: Injecting into primary-panel');
-    return document.querySelector('[data-panel="inject-here"]');
-  }
-} else {
-  const displayArea = document.querySelector(`[data-section="${destination}"]`);
-  return displayArea;
-}
-
-}
-*/
 function getFrameAroundThePages() {
   console.log('getFrameAroundThePage');
     return document.getElementById('main-container');
@@ -300,6 +268,8 @@ async function renderNewPanel(stubName, query, registryEntry, selectedModule, di
  // flexmain creates the controller
   const controller = new AbortController();
 
+  
+
   panelsOnDisplay.push({ 
     stubName, 
     panel, 
@@ -308,7 +278,7 @@ async function renderNewPanel(stubName, query, registryEntry, selectedModule, di
   });
 
     try {
-      selectedModule.render(panel, query); 
+      selectedModule.render(panel, query, controller); 
     } catch (error) {
       console.error('Failed to load module:', error);
     }

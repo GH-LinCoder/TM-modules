@@ -1,7 +1,7 @@
 // reactToSaveButton.js
 console.log('reactToSaveButton.js  loaded');
 import { appState } from '../state/appState.js';
-import { collectUserChoices, messageAddress,audience, userChoices } from './collectUserChoices.js';
+import { collectUserChoices } from './collectUserChoices.js';
 import { saveNoteWithTags } from './saveNoteWithTags.js';
 import { showToast } from '../ui/showToast.js';
 //this was all working jan 3 and now jan 5 it has errors & couldn't possibly work.
@@ -21,23 +21,23 @@ const user = await executeIfPermitted( null,'getAuthenticatedUser', {approfileId
   console.log("content found");
   
 //const userChoices = collectUserChoices();  //This is the old flat array. Out of date
-  collectUserChoices(); // this sets the global userChoices
+  const choices = collectUserChoices();
   
 // Convert Set → Array → Integers
-const categoryIds = Array.from(userChoices.categories)
+const categoryIds = choices.categories
   .map(Number)
   .filter(n => Number.isInteger(n));
 
-  console.log('reactToSaveButton()', { noteContent: noteContent, userChoices:userChoices });
-console.log(userChoices.categories.length, " tags found", 'userId:', user.id);//this userId is authUser
+  console.log('reactToSaveButton()', { noteContent, choices });
+console.log(choices.categories.length, " tags found", 'userId:', user.id);//this userId is authUser
 
-const authorId = userChoices.userId; //added this 16:51 April 7 to be different to 'userId'
+const authorId = appState.query.userId;
 //////////////////////////////////////////////this happens even if not appropriate 21:19 Jan 9
   const result = await saveNoteWithTags(user.id, {
     content: noteContent,
     tags: categoryIds,
     author_id: authorId,
-    audience_id:audience
+    audience_id: choices.toApproId
   });
 
   if (result) {

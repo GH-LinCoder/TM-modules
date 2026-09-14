@@ -94,7 +94,7 @@ function attachDropdownListener(panel) {
     const name = e.target.options[e.target.selectedIndex].textContent;
   //  const type = 'need to read from dataset'; //???????????????????????????????????????????????
     if (id) {
-      state.subjectId = id;
+      state.subjectId = id;  //appro of clicked item
       state.subjectName = name;
 //      state.subjectType = type;  ///??????????????????????????
       displayByMode(panel);
@@ -129,7 +129,7 @@ async function populateApprofileSelect(panel) {
     // Auto-select if only one option
     const only = approfiles[0];
     select.value = only.entity.id;
-    state.subjectId = only.entity.id;
+    state.subjectId = only.entity.id; //appro
     state.subjectName = only.entity.name;
     //state.subjectType =   ?????????????????????????????????????????
     displayByMode(panel);
@@ -151,7 +151,7 @@ function attachClickItemListener(panel) {
     const clickType = clickTarget.dataset.clicked;
 
     if (clickType === 'name') {
-      state.subjectId = flowBox.dataset.contentId;
+      state.subjectId = flowBox.dataset.contentId;  //appro
       state.subjectName = flowBox.dataset.contentName;
       state.subjectType = flowBox.dataset.contentType;  //this has been wrong when clicking task - says app-human
 
@@ -299,7 +299,7 @@ async function renderWork(panel) {
     result = await executeIfPermitted(
       state.userId,
       'readWorkRelationsById',
-      { approfileId: state.subjectId }
+      { approfileId: state.subjectId }  //appro
     );
   } catch (err) {
     console.error('renderWork failed:', err);

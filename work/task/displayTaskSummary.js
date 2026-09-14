@@ -134,8 +134,7 @@ async function readTaskFromDb(taskId, panel){
      try {console.log('readTaskFromDb', taskId);
       //func needs: const { task_header_id } = payload;
 
-    const summaryEl = panel?.querySelector('#taskSummary');
-    if (summaryEl) summaryEl.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
+   
     const task = await executeIfPermitted(state.user, 'readTaskWithSteps', {
      task_header_id :  taskId
     });
@@ -390,10 +389,12 @@ const stepCard = document.createElement('p');
 
 async function loadStepAutomations(container, stepId) {
   try {console.log('loadStepAutomations for stepId',stepId);
+    //this spinner showed on evey step and never went away. I added the ='' line to remove it
     container.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     const automations = await executeIfPermitted(state.user, 'readTaskAutomations', {
       source_task_step_id: stepId
     });
+    container.innerHTML=''; //added to remove the spinner
     renderAutomationCards(container, automations);
   } catch (error) {
     console.error('Failed to load automations:', error);

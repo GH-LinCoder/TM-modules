@@ -19,6 +19,23 @@ export async function reactToSaveButton() {
   console.log("content found");
 
   const userChoices = collectUserChoices();
+console.log('userChoices', userChoices);
+/* returned from collectUserChoices.js
+  userChoices = {
+    ...userChoices,
+    toApproId,
+    fromApproId,
+    respondent: toApproId,
+    categories,
+    categoryNames,
+    importance,  // 18,21,22,23,25
+    mode,
+    address: 'self'
+  };
+This is the current filter setting not the db.
+*/
+
+
   console.log('reactToSaveButton()', { noteContent: noteContent, tags: userChoices });
 
   // --- SYNTAX FIX: Use 'userChoices' instead of 'tags' ---

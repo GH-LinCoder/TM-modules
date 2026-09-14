@@ -2,8 +2,8 @@
 console.log('Imported appState.js');
 export const appState = {
     // the query object structure (attached to appState) passed to functions & interigated & used at databaseCnetral
-
-isDevMode:true,
+//many modules break the rules by directly assinging values to appState. They should do so vuia a method such that we always know the structure of appState
+isDevMode:true,//what happens when false??? It should be false now. Sept 2026
 
 paymentProvider:{
   platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4',

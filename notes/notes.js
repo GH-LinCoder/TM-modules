@@ -4,6 +4,7 @@ import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { setupNotesListeners } from './noteListeners.js';
 import { displayNotes } from './displayNotes.js';
 import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
+import { appState } from '../state/appState.js';
 //import { showToast } from '../ui/showToast.js';
 
 
@@ -15,52 +16,24 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   return `  <div id="notes-panel" data-module="notes-panel" >         
   
    <!-- added 13:10 Jan 9  Ends on line 234--> <div id="inputs"> 
-  <div class="flex w-full" >           
+  <div class="flex flex-col w-full" >
      
-            <!-- Message Buttons -->
-            <div class="mb-6" id="TagSection001">
-              <h4 class="text-md font-semibold mb-3 text-gray-700">🌐 Main click the word</h4> <i>The address buttons affect both the sending and the displaying of notes.</i>
-             <button data-section="menu", data-action="bug-report" class="text-gray-500 hover:text-gray-700" aria-label="Close">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <!-- Message controls -->
+            <div class="mb-6" id="message-controls">
+          <div class="flex flex-row items-center justify-between">
+           <h4 class="text-md font-semibold mb-3 text-gray-700">Message</h4>
+             <button data-section="menu" data-action="bug-report" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-            </svg>
-          </button>
+              </svg>
+             </button>
+         </div>
 
-              
-              
-              <div class="flex flex-wrap gap-2 mb-3">
-
-              <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center " id="TagSection047" title="SEND to yourself. DISPLAY notes that are to you or from you (can make it explicit to a respondent with the dropdown)">
-                  <input type="radio" id="message-self" name="message-mode" data-value="47" value="self" class="mr-2 text-blue-600" checked>
-                  <label for="message-self">self (default)</label>
-                </div>
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection037" title="SEND to an existing note. Click-on the note to reply to it. DISPLAY notes that are replies (can make it explicit to a respondent with the [Select] button)">
-                  <input type="radio" id="message-reply" name="message-mode" data-value="37" value="reply" class="mr-2 text-blue-600">
-                  <label for="message-reply">reply: (can click note)</label>
-                </div>
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection044"  title="SEND to the respondent you choose from [Select] menu button. DISPLAY notes you sent to anyone other than yourself OR use [Select] menu button to specify.">
-                  <input type="radio" id="message-to" name="message-mode" data-value="44" value="to" class="mr-2 text-blue-600">
-                  <label for="message-to">to: (can use dropdown)</label>
-                </div>
-                <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center hover:scale-105 transition-transform bg-yellow-50" id="TagSection046" title="DISPLAY notes sent to you by anyone other than yourself. OR use [Select] menu button to specify the person or group">
-                  <input type="radio" id="message-from" name="message-mode" data-value="46" value="from" class="mr-2 text-blue-600">
-                  <label for="message-from">from: (can use dropdown)</label>
-                </div>
-                
-              </div>
-  📝<i>If there aren't any notes displayed below: login again</i>
-            
-              </div>
-          </div><!--closes flex-->
-
-
-          <!-- Audience/Author Dropdown -->
-            <div class="space-y-2">
-              <label for="respondentSelect" class="block text-sm font-medium text-gray-700">
-              Use [Select] menu to choose a name & the buttons to choose to: or from:</label>
-              <select id="respondentSelect" type="dropdown" data-form="relationSelect" class="flex-1 p-2 border border-gray-300 rounded text-sm "  >
-                <option value="">Use the menu [Select] button then this dropdown to select author/audience</option>
+              <label for="toSelect" class="block text-sm font-medium text-gray-700">Send to</label>
+              <select id="toSelect" data-form="approSelect" class="w-full p-2 border border-gray-300 rounded text-sm">
+                <option value="">Choose an appro</option>
               </select>
+              <p class="text-xs text-gray-500">The recipient can be a person, group, task, or concept.</p>
             </div>
 
       
@@ -69,6 +42,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
             <textarea   id="note-content" 
                       placeholder="Enter your notes here & press [Save/send]... (Use the checkboxes to tag your note for later search & retrieval ) The saved notes can be seen by scrolling down. When you look at saved notes you can click them to mark them as pending, completed or abandonded." 
                       class="w-full h-32 p-3 border border-gray-300 rounded-lg resize:both; focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
+          </div>
+
+          <div class="mb-6 space-y-2">
+            <label for="fromSelect" class="block text-sm font-medium text-gray-700">Show messages from</label>
+            <select id="fromSelect" data-form="approSelect" class="w-full p-2 border border-gray-300 rounded text-sm">
+              <option value="">Choose an appro</option>
+            </select>
           </div>
 
 
@@ -276,52 +256,45 @@ function initClipboardIntegration(panel) {
   });
 }
 
-function ifOnlyOneItemInDropdownloadAndRenderSurvey(panel, respondents, respondentSelect){
-console.log('ifonlyOneItem...');
-  if (respondents.length === 1 && !respondentSelect.value) {
-    const respondentId =  respondents[0].entity.id;
-    respondentSelect.value = respondentId;
-    const infoSection = document.querySelector('#informationSection');
-    if(infoSection) infoSection.innerHTML += `<div class="p-1 text-sm bg-blue-50 border border-blue-200 rounded">Auto-filled Survey: ${respondents[0].entity.name}</div>`;
-  //  console.log('surveySelect.value',surveySelect.value);//uuid
-    //state.currentrespondentHeaderId = respondentSelect.value;
-console.log('there is an info section');
-   // loadAndDisplay(panel, respondentId)// this displays summary if/when there is a single item in the dropdown
-    //but no display of new respondent 13:19 Dec 14 - it is displaying it appending to previous summary.
-    //need to reset to ''
-    }
-}
-
-
 function populateFromClipboard(panel) {
-  // Get items from clipboard (adjust type/as as needed)
-  let items = getClipboardItems({ as: 'other', type: 'app-human' });
-       // items += getClipboardItems({ as: 'other', type: 'app-abstract' }); //fails
+  const items = getClipboardItems({ as: 'other' });
+  const toSelect = panel.querySelector('#toSelect');
+  const fromSelect = panel.querySelector('#fromSelect');
+  if (!toSelect || !fromSelect) return;
 
-
-    if (items.length === 0) return;
-  
-  const respondentSelect = panel.querySelector('#respondentSelect');
-  if(!respondentSelect) return;
-  addClipboardItemsToDropdown(items, respondentSelect);
-
-  ifOnlyOneItemInDropdownloadAndRenderSurvey(panel, items, respondentSelect)
+  const loggedInId = appState.query.userId;
+  const loggedInItem = loggedInId ? [{
+    entity: {
+      id: loggedInId,
+      name: appState.query.userName || 'My appro',
+      type: 'app-human'
+    }
+  }] : [];
+  const approItems = [...loggedInItem, ...items];
+  addClipboardItemsToDropdown(approItems, toSelect, loggedInId);
+  addClipboardItemsToDropdown(approItems, fromSelect, loggedInId);
 }
 
-function addClipboardItemsToDropdown(items, selectElement) {
+function addClipboardItemsToDropdown(items, selectElement, defaultId = null) {
     console.log('addClipboardItemsToDropdown()');
   if (!items || items.length === 0) return;
-  
+
+  const selectedValue = selectElement.value || defaultId || '';
   items.forEach(item => {
+    if (!item.entity?.id) return;
     const existingOption = Array.from(selectElement.options).find(opt => opt.value === item.entity.id);
     if (!existingOption) {
       const option = document.createElement('option');
       option.value = item.entity.id;
-      option.textContent = `${item.entity.name}`;
+      option.textContent = `${item.entity.name || item.entity.id}`;
       option.dataset.source = 'clipboard';
+      option.dataset.approType = item.entity.type || '';
       selectElement.appendChild(option);
     }
   });
+  if (selectedValue && Array.from(selectElement.options).some(option => option.value === selectedValue)) {
+    selectElement.value = selectedValue;
+  }
 }
 
 

@@ -1291,7 +1291,7 @@ readWorkRelationsById: {
   },
 
   handler: async (supabase, userId, payload) => {
-    const subjectUuid = payload.approfileId;
+    const subjectUuid = payload.approfileId; //this is an appro Id
 
     //
     // ───────────────────────────────────────────────
@@ -1299,14 +1299,14 @@ readWorkRelationsById: {
     // ───────────────────────────────────────────────
     //
 
-    async function resolveAppro(uuid) {
+    async function resolveAppro(uuid) { //checking if the id is for an appro, task or survey
       // Try approfile.id
       let { data } = await supabase
         .from('app_profiles')
         .select('*')
         .eq('id', uuid)
         .limit(1);
-      if (data?.[0]) return data[0];
+      if (data?.[0]) return data[0]; 
 
       // Try task_header_id
       ({ data } = await supabase
@@ -1326,7 +1326,7 @@ readWorkRelationsById: {
 
       return null;
     }
-
+// what is the id for? an appro a task or a survey?
     const subject = await resolveAppro(subjectUuid);
     if (!subject) {
       return { subject: null, assignments: [], iconMap: {} };
@@ -1337,7 +1337,7 @@ console.log('subject',subject);
 
     const subjectHeaderId = //subject.header_id || null;
      subject.task_header_id || subject.survey_header_id || null;
-console.log('subject after',subject);
+console.log('subject after',subject);//any change???
 
     const subjectType =
       subject.auth_user_id ? 'app-human'
@@ -1352,11 +1352,11 @@ console.log('Resolved subject:', {
   type: subjectType,
   name: subject.name
 });
-// Test if assignments exist for this header
+// Test if assignments exist for this taskheader  WHAT? 
 const testQuery = await supabase
   .from('assignments')
   .select('assignment')
-  .eq('assignment->>task_header', subjectHeaderId);
+  .eq('assignment->>task_header_id', subjectHeaderId);
 console.log('Test query result:', testQuery.data);
 ////test
 
@@ -1374,14 +1374,14 @@ console.log('Test query result:', testQuery.data);
     const { data: surveyAsStudent = [] } = await supabase
       .from('assignments_survey_view')
       .select('*')
-      .eq('student_id', subjectApproId);
+      .eq('student_id', subjectApproId);//looks okay
 
     //
     // ───────────────────────────────────────────────
     // 3. LOAD ASSIGNMENTS WHERE SUBJECT IS ACTIVITY
     // ───────────────────────────────────────────────
     //
-
+console.log('subjectType',subjectType, 'surveyAsStudent', surveyAsStudent);//app-human
     let taskAsActivity = [];
     let surveyAsActivity = [];
 
@@ -1389,7 +1389,7 @@ if (subjectType === 'app-task' && subjectHeaderId) {
   const { data = [] } = await supabase
     .from('assignments_task_view')
     .select('*')
-    .eq('assignment->>task_header', subjectHeaderId);
+    .eq('assignment->>task_header_id', subjectHeaderId);
   taskAsActivity = data;
 }
 
@@ -1397,7 +1397,7 @@ if (subjectType === 'app-survey' && subjectHeaderId) {
   const { data = [] } = await supabase
     .from('assignments_survey_view')
     .select('*')
-    .eq('assignment->>survey_header', subjectHeaderId);
+    .eq('assignment->>survey_header_id', subjectHeaderId);
   surveyAsActivity = data;
 }
 
@@ -1411,11 +1411,11 @@ if (subjectType === 'app-survey' && subjectHeaderId) {
     const surveyHeaders = new Set();
 
     [...taskAsStudent, ...taskAsActivity].forEach(r => {
-      if (r.assignment?.task_header) taskHeaders.add(r.assignment.task_header);
+      if (r.assignment?.task_header_id) taskHeaders.add(r.assignment.task_header_id);
     });
 
     [...surveyAsStudent, ...surveyAsActivity].forEach(r => {
-      if (r.assignment?.survey_header) surveyHeaders.add(r.assignment.survey_header);
+      if (r.assignment?.survey_header_id) surveyHeaders.add(r.assignment.survey_header_id);
     });
 
     //
@@ -1479,11 +1479,11 @@ if (subjectType === 'app-survey' && subjectHeaderId) {
     //
 
     function resolveActivityProfile(row) {
-      if (row.assignment?.task_header) {
-        return taskProfiles.find(ap => ap.task_header_id === row.assignment.task_header);
+      if (row.assignment?.task_header_id) {
+        return taskProfiles.find(ap => ap.task_header_id === row.assignment.task_header_id);
       }
-      if (row.assignment?.survey_header) {
-        return surveyProfiles.find(ap => ap.survey_header_id === row.assignment.survey_header);
+      if (row.assignment?.survey_header_id) {
+        return surveyProfiles.find(ap => ap.survey_header_id === row.assignment.survey_header_id);
       }
       return null;
     }
@@ -1491,7 +1491,7 @@ if (subjectType === 'app-survey' && subjectHeaderId) {
     function makeDuplet(row) {
       const student = approById[row.student_id];
       const activity = resolveActivityProfile(row);
-console.log('student:',student, 'activity',activity);
+//console.log('student:',student, 'activity',activity);
       if (!student || !activity) return null;
 
       return {
@@ -1785,7 +1785,7 @@ readStudentAssignments: {
 
 //ASSIGNMENTS-STUDENTS
 // ASSIGNMENTS-STUDENTS
-updateAssignmentStep: {
+managerMoveStudentInAssignment: {
   metadata: {
     tables: ['assignments'],
     columns: ['current_step', 'moved_at', 'move_me_at', 'student_id'],
@@ -1806,7 +1806,7 @@ updateAssignmentStep: {
     }
 
     // 3. Call the secure RPC (studentId added as p_student_id)
-    const { data, error } = await supabase.rpc('update_assignment_step', {
+    const { data, error } = await supabase.rpc('manager_move_student_in_assignment', {
       p_student_id: studentId,
       p_assignment_id: assignmentId,
       p_current_step: currentStep,
@@ -3665,7 +3665,7 @@ const { data, error } = await supabase
 
 //SYSTEM FUNCTIONS - not automations and not user actions.  These call rpc functions and will need to go through high security, but March 14 2026 may be low security
 //ASSIGNMENTS
-updateAssignmentSystem:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 
+studentBookmarkStep:{  
   metadata: {
   tables: ['assignments'],
   columns: [],
@@ -3677,16 +3677,42 @@ updateAssignmentSystem:{    // VIEW   Read only   // surveys show-up in this vie
 handler: async (supabase, userId, payload) => { // if p_bookmark =1 the rpc marks abandoned. if 2 completed (for tasks & surveys?)
 const {assignmentId, bookmark} = payload; //bookmark is a step number
 console.log('updateAssignment id:',assignmentId, 'bookmark:', bookmark);
-const { data, error } = await supabase.rpc('update_assignment_step', {
+const { data, error } = await supabase.rpc('student_bookmark_step', {
     p_assignment_id: assignmentId,    
-    p_bookmark: bookmark
+    p_current_step: bookmark
   });
-  console.log('data',data);
+  console.log('registry data',data);//seems to display twice 17:08 Sept 12 //also no button if go to earlier step
 
   if (error) throw error;
   return data;
 }
 },
+
+
+studentRequestMoveMe:{  
+  metadata: {
+  tables: ['assignments'],
+  columns: [],
+  type: 'UPDATE',
+  requiredArgs: [] // could be either completed::boolean or step::int
+  // rpc needs: p_assignment_id uuid,p_step int default null, p_completed boolean default null
+},  
+
+handler: async (supabase, userId, payload) => { // if p_bookmark =1 the rpc marks abandoned. if 2 completed (for tasks & surveys?)
+const {assignmentId, bookmark} = payload; //bookmark is a step number
+console.log('updateAssignment id:',assignmentId, 'bookmark:', bookmark);
+const { data, error } = await supabase.rpc('student_request_move_me', {
+    p_assignment_id: assignmentId,    
+    p_current_step: bookmark
+  });
+  console.log('registry data',data);
+
+  if (error) throw error;
+  return data;
+}
+},
+
+
 
 //PAYMENT PLANS
 readActivePaymentPlans:{    // VIEW   Read only   // surveys show-up in this view if they have 1+ question & 1+ answers 

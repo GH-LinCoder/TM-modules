@@ -9,6 +9,9 @@ console.log('selectRemeber.js loaded');
 
 /**
 Need to add the ability to select a relationship or a permission in order to break it
+
+)R IS THIS BETTER DONE INSIDE displayRealtions ? ????
+
 The following two functions were removed in the refactor of Sept 11 2026:
 
     async loadAssignmentsnew() {
@@ -37,6 +40,7 @@ The following two functions were removed in the refactor of Sept 11 2026:
 // OLD PERMISSION CHECK FUNCTION. Is this user allowed to use the Selector.
 //This restriction may be legacy. The tools should not be restricted, but the data is under
 //permissions
+/*
 function canUseSelector() {
   // In DEV mode, always allow access
   if (appState.isDevMode) {
@@ -46,7 +50,7 @@ function canUseSelector() {
   // Is there any reason to still have this restriction? The data is what is restricted not the tool.
   return false;  
 }
-
+*/
 
 export function render(panel, query = {}) {
   console.log('devDataSelector.render()');
@@ -120,16 +124,18 @@ class DevDataSelector {
        
         <!-- ACTION TABS -->
         <div class="mb-4">
-          <h4 class="font-medium mb-2">1. Choose an action and item type:</h4>
+          <h4 class="font-medium mb-2">1. First column is what you want to do. Other columns are what you want to do it to:</h4>
           <div class="grid grid-cols-5 gap-1 text-sm">
-            <div></div><div class="font-medium p-2">Task</div><div class="font-medium p-2">Survey</div><div class="font-medium p-2">Human</div><div class="font-medium p-2">Abstract</div>
+            <div></div>
+            <div class="font-medium p-2">🔧 Task</div> <div class="font-medium p-2">📜 Survey</div> <div class="font-medium p-2">👥 User</div> <div class="font-medium p-2">🎭 Other</div>
             ${[
-              ['Assign', [['tasks', '🔧'], ['surveys', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]],
-              ['Edit', [['tasks', '🔧'], ['surveys', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]],
-              ['Relate', [['app-task', '🔧'], ['app-survey', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]]
+              ['Assign a', [['tasks', '🔧'], ['surveys', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]],
+              ['Edit a', [['tasks', '🔧'], ['surveys', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]],
+              ['Relate a', [['app-task', '🔧'], ['app-survey', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]],
+              ['Message a', [['app-task', '🔧'], ['app-survey', '📜'], ['app-human', '👥'], ['app-abstract', '🎭']]]              
             ].map(([action, choices]) => `
               <div class="font-medium p-2 bg-gray-100">${action}</div>
-              ${choices.map(([view, icon]) => `<button type="button" data-view="${view}" data-mode="${action.toLowerCase()}" class="p-2 border bg-white hover:bg-blue-50 text-left">${icon} ${action}</button>`).join('')}
+              ${choices.map(([view, icon]) => `<button type="button" data-view="${view}" data-mode="${action.toLowerCase()}" class="p-2 border bg-white hover:bg-blue-50 text-left"> ${action} ${icon} </button>`).join('')}
             `).join('')}
           </div>
         </div>
@@ -341,9 +347,10 @@ console.log('appros for surveys',this.loadedData.surveyApprofiles);
     if (this.currentView === 'app-human') return [
       { value: 'student', label: '🧑‍🎓 Student' },
       { value: 'manager', label: '💼 Manager' },
-      { value: 'respondent', label: '🤔 Respondent' }
+      { value: 'respondent', label: '🤔 Respondent' },
+      { value: 'other', label: '❔ Other' }
     ];
-    return [{ value: 'student', label: '🧑‍🎓 Student' }];
+    return [{ value: 'other', label: 'other' }];
   }
 
   selectionKey(item) {

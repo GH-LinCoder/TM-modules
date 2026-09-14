@@ -89,7 +89,7 @@ console.log('📥 [save] tags:', tags);
       title,
      content: enhancedContent,
       status
-    });
+    }); // doesn't handle tags
 
 
     console.log(`Note inserted with ID: ${noteId}`);
@@ -146,6 +146,7 @@ export async function readCategoryMap() {
  */
 export async function linkNoteToCategories(noteId, categoryIds) {
   //tests 17:00 19 Aug
+  console.log('categoryIds',categoryIds);
   if (!noteId) console.log('No noteId'); 
    console.log('categoryId.length:', categoryIds.length);
   
