@@ -25,16 +25,41 @@ export let userChoices = { //amended 12:22 March 16 2026
 
 export function collectUserChoices() {
   console.log('collectUserChoices()');
+
+ // const importance = document.querySelector('#notes-panel input[name="importance"]:checked')?.value || null;
+// failing?? The name is probably wrong for the 5 radio buttons.
+
+const importanceElement = document.querySelector('input[name="importance"]:checked');
+  // ✅ FIX 2: Add debug logs to prove exactly what the browser sees
+  console.log('🔍 Importance Element Found:', importanceElement);
+  
+  // ✅ FIX 3: Parse as Number to match the categories array format
+  const importance = importanceElement ? Number(importanceElement.value) : null;
+  console.log('🔍 Importance Value:', importance);
+
+
+
   const selected = [...document.querySelectorAll('#notes-panel input[type="checkbox"]:checked')];
-  const toApproId = document.querySelector('#toSelect')?.value || null;
+  const selectedImportance = document.querySelector('#notes-panel input[name="importance"]:checked');
+  const toApproId = document.querySelector('#toSelect, #respondentSelect')?.value || null;
   const fromApproId = document.querySelector('#fromSelect')?.value || null;
   const categories = selected
     .map(element => Number(element.value))
     .filter(Number.isInteger);
+
   const categoryNames = selected.map(element => element.dataset.value).filter(Boolean);
+  if (selectedImportance) {
+    const importanceId = Number(selectedImportance.value);
+    if (Number.isInteger(importanceId)) categories.push(importanceId);
+    if (selectedImportance.dataset.value) categoryNames.push(selectedImportance.dataset.value);
+  }
   const mode = document.querySelector('#notes-panel input[name="clickLogic"]:checked')?.value
     || 'more-clicks-more-notes';
-  const importance = document.querySelector('#notes-panel input[name="importance"]:checked')?.value || null;
+
+
+
+
+
 
   userChoices = {
     ...userChoices,
