@@ -237,9 +237,11 @@ Therefore use this anchor div instead -->
 
                 <!-- 3. ROLE / AIMS / PLANS CARD ROW (clickable cards using normal petitioner method) -->
 
- <div class="mb-3 bg-indigo-50 p-3 rounded border  border-indigo-200 text-sm text-grey-700">
- Click a card once to open the module. <i>Click the card again to close the module</i></div>
-                <div class="flex flex-col md:flex-row p-2 md:p-4" data-section="role-aims-plans" data-destination="display-area">
+ <div class="mb-3 bg-indigo-50 p-3 rounded border  border-indigo-200 text-sm text-grey-700" data-section="rap-display">
+  Click a card once to open the module. <i>Click the card again to close the module</i>
+ </div>
+
+                <div class="flex flex-col md:flex-row p-2 md:p-4" data-section="role-aims-plans" data-destination="rap-display">
 
                     <div class="flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-purple-400" data-action="my-role">
                         <h3 class="text-lg font-semibold text-purple-700 mb-2">My Role 👤</h3>

@@ -55,6 +55,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'student-management-section': ()=> import('../dash/studentManagementSection.js'),
 'manager-management-section': ()=> import('../dash/managerManagementSection.js'),
 'task&member-management-section': ()=> import('../dash/task&memberManagementSection.js'),
+'permission-management-section' : ()=> import('../dash/permissionManagementSection.js'),
 
 'assign-task-dialogue': () => import('../work/task/assignTask.js'),
 'assignTaskForm': () => import('../work/task/assignTask.js'), //legacy?
@@ -94,7 +95,7 @@ export const registry = { // this registry is for loading a new page to the righ
 //////////          APPRO MANAGEMENT    AdminDash       /////////                 
 'approfile-management-section': ()=> import('../dash/approfileManagementSection.js'),// from button has .html
 
-"create-approfile-dialogue":()=> import('../work/approfiles/createApprofile.js'),
+"create-approfile-dialogue":()=> import('../work/approfiles/createAppro.js'),
 //'createApprofile': () => import('./createApprofile.js'), // legacy?
 'edit-approfile-dialogue':()=> import('../work/approfiles/editApprofile.js'),
 'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),

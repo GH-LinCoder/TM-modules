@@ -33,7 +33,7 @@ Create Approfile:
     If the new approfile were "The Art Collector's Club" then the relationship would probably be 'member'
     approfile_is 'member' of_approfile 
 
-
+// actionType = 'create normal appro'
         */
 
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
@@ -44,22 +44,34 @@ console.log('createApprofileForm.js loaded');
 
 const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
 
-let typeOfAppro = null;
+let defineApproAs = null;
 let prefix='';  //using globals in case there are future other values for prefix and suffix
 let suffix='';
 let ratingSelected = null; //global to hold the selected rating value from the dropdown. Could be set to 7
+let actionType = null;
 
-export function createBundleAppro(panel){
-  console.log('createBundleAppro', panel);
-  typeOfAppro = 'bundle'; // an appro that reprsents a bundle of permissions uses a special syntax in names. This is forced and cannot be user edited
- prefix = '(]BUNDLE:'; // prefix and suffix will encase the user input name of the bundle
- suffix ='[)';
-  render(panel);
+export function createNormalAppro(panel, query={}) {
+  console.log('createNormalAppro');
+  actionType = 'create normal appro';
+  defineApproAs = ''; // an appro that reprsents a bundle of permissions uses a special syntax in names. This is forced and cannot be user edited
+ prefix = ''; // prefix and suffix will encase the user input name of the bundle
+ suffix ='';
+  render(panel, query, actionType);
 }
 
+export function createBundleAppro(panel, query={}, actionType='null'){ 
+  console.log('createBundleAppro', panel);
+  actionType = "create bundle appro"; 
+ defineApproAs = 'bundle'; // an appro that reprsents a bundle of permissions uses a special syntax in names. This is forced and cannot be user edited
+ prefix = '(]BUNDLE:'; // prefix and suffix will encase the user input name of the bundle
+ suffix ='[)';
+  render(panel, query, actionType);
+}
 
-export function render(panel, query = {}) {
-  console.log('Render Approfile Form:', panel, query);
+//BUG 21:57   if another module set ApproType = bundle that value leaked into here & turns any appro into a bundle. Changed name here to defineApproAs
+// bug still exists?
+export function render(panel, query = {}, actionType) {
+  console.log('Type of appro:', actionType);
   panel.innerHTML = getTemplateHTML();
   attachListeners(panel);
   populateRatingSelect(panel)
@@ -72,7 +84,7 @@ function getTemplateHTML() {
       <div class="bg-white rounded-lg shadow-lg w-full max-w-2xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 class="text-xl font-semibold text-gray-900">Create Approfile 🪪</h3>
-          <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+          <button data-action="create-approfile-dialogue" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -216,12 +228,12 @@ async function handleApprofileSubmit(e) {
       return;
     }
 let nameToUse = name;
-if(typeOfAppro === 'bundle') nameToUse = prefix + name + suffix; //add the prefix and suffix to the name to create the full approfile name that is stored in the database
+if(defineApproAs === 'bundle') nameToUse = prefix + name + suffix; //add the prefix and suffix to the name to create the full approfile name that is stored in the database
     const newApprofile = await executeIfPermitted(userId, 'createApprofile', {
       name: nameToUse,
       description
     });
-if (typeOfAppro === 'bundle') {console.log('New bundle appro id:', newApprofile.id);//logged 22:13 March 30
+if (defineApproAs === 'bundle') {console.log('New bundle appro id:', newApprofile.id);//logged 22:13 March 30
 // regsitry needs const { id, name, description, bundleId=null } = payload;
 // place the appro id into the column 'permission_bundle' as a way to identify this row as a bundle
 const approUpdate = await executeIfPermitted(userId, 'updateApprofile', {
@@ -233,7 +245,7 @@ id: newApprofile.id,
         if(approUpdate) showToast('Bundle appro created successfully!');      
 
 }
-if (typeOfAppro === 'bundle') { //it is a bundle that needs to be registered in the permission_relationships table
+if (defineApproAs === 'bundle') { //it is a bundle that needs to be registered in the permission_relationships table
 //write the new bundle name and id into the permission_relationships table. Once there it can have permissions related to it.
 //relation permissions to it makes it the source of truth of what permissions to grant when using the bundle
 const category ='bundle'; //this would be be best used to indicate the general scope of the bundle, but not sure how to do that now.

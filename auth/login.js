@@ -9,6 +9,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <div class="w-full max-w-md bg-white rounded-lg shadow-md p-8">
     <h1 class="text-2xl font-bold text-center text-gray-900 mb-6">Log in to existing Account</h1>
     
+
     <form id="loginForm" class="space-y-4">
       <!-- User Name -->
       <div>

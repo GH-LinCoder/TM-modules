@@ -1,4 +1,4 @@
-// ./work/auth/auth.js
+// ./work/auth/login-signup.js
 import { createSupabaseClient } from '../db/supabase.js';
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../ui/showToast.js';
@@ -28,6 +28,14 @@ function getTemplateHTML() {
       <!-- Login Form -->
         <div id="loginForm" class="auth-form bg-white p-6 rounded-lg shadow">
           <h2 class="text-xl font-bold text-center mb-4">Log In</h2>
+
+<button data-action="login-signup" data-section="menu" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+
+
           <div id="login-error" class="text-red-500 text-lg hidden"></div>
           <form class="space-y-3">
 
