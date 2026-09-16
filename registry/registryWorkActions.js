@@ -582,7 +582,7 @@ handler: async (supabase, userId) => {
 
 /////////////////////////////////////   CREATE  INSERT    ///////////////////
 //APPRO
- createApprofile:{
+ createApprofile:{ //simple approfile not suitbale for permissions
   metadata: {
     tables: ['app_profiles'],
     columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
@@ -602,6 +602,8 @@ handler: async (supabase, userId) => {
     return data; // ✅ Return the array of task headers
   }
  },
+
+
 
  //APPRO
  createApproFromNewAuthUser: {// This calls the rpc, but signup in index,html calls the rpc function direct. Is this regsistry func redeudent ? 
@@ -2070,27 +2072,58 @@ writePermissionRelationships: {//HIGH SECURITY ISSUE -- used for creating bundle
 },
 
 //PERMISSIONS-BUNDLES
-grantBundlePermissions: {
+
+readBundlesOfPermissions:{ //new 21:22 Sept 16 - possibly need to filter for '(]BUNDLE'  )
   metadata: {
     tables: [],
     columns: [],
     type: 'SELECT',
     requiredArgs: []
   },
+  handler: async (supabase) => {    
+    console.log('readBundleOfPermissions()');
+    const { data, error } = await //supabase.rpc('safe_read_bundle_permissions');
+    supabase
+    .from('bundles_view')
+    .select('*')
+    .order('name');
+  //console.log('approfile_relations_view:',data);
+    if (error) throw error;
+    
+    console.log('Bundle data', data);
+    if (error) throw error;
+    return data;
+  }
+},
+
+
+
+
+grantBundlePermissions: {
+  metadata: {
+    tables: ['permission_relations'],
+    columns: ['approfile_is', 'relationship', 'of_approfile', 'assigned_from_bundle'],
+    type: 'INSERT',
+    requiredArgs: ['permissionsToGrant']
+  },
   handler: async (supabase, userId, payload) => {
     const { permissionsToGrant } = payload;  // Already mapped array
     
-    // Insert with onConflict to skip duplicates
-    const {  error } = await supabase.rpc('safe_grant_bundle_permissions', {
+    const { data, error } = await supabase.rpc('safe_grant_bundle_permissions', {
         p_permissions: permissionsToGrant});
 
     
     if (error) {
       console.error('❌ Grant failed:', error);
-      return { success: false, error: error.message };
+      throw error;
+    }
+
+    if (!data?.success) {
+      const failedCount = Array.isArray(data?.failed) ? data.failed.length : 'unknown';
+      throw new Error(`Bundle grant failed for ${failedCount} permission row(s)`);
     }
     
-    return { success: true,};
+    return data;
   }
 },
 

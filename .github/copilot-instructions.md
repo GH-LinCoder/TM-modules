@@ -16,12 +16,12 @@ An organizational OS focused on tasks, surveys and relationship management. A pl
 3. **Relations & Hierarchy** — Every person, task & survey is represented by a unqique identifier called an 'appro'. Admin can also create any number of appros to represent anything of importance to the organisation. Admin can relate any appro with any other appro to create structure that can be visualised. Thus creating organizational hierarchies and structures.
 
 ## 003 Key features
-Key features include task creation/assignment (with code branching), survey-driven workflows, relationship/hierarchy visualization, and member subscriptions.
+Key features include task creation/assignment (with code branching), survey-driven workflows, relationship/hierarchy visualization, and member subscriptions. All access to the database is subject to two permission systems.
 
 ### 004 Three Core Domain Workflows details
-1. **Tasks & Steps** — Create tasks with multiple steps. Each step can branch execution based on decisions (manually or via surveys). Tasks can be educational courses, to-do lists where each step represents what to do next, or progress registers where eachstep is a passive record of how far something has progressed. Each step can trigger any number of predetermined code executions. As at Sept 6th 2026 there are only 3 predetermined code 'automations': Assign a task to the user, assign a survey to the user, relate the user to a specific appro. Other are to bedeveloped.
+1. **Tasks & Steps** — Create tasks with multiple steps. Each step can branch execution based on decisions (manually or via surveys). Tasks can be educational courses, to-do lists where each step represents what to do next, or progress registers where eachstep is a passive record of how far something has progressed. Each step can trigger any number of predetermined code executions. As at Sept 16th 2026 there are only 3 predetermined code 'automations': Assign a task to the user, assign a survey to the user, relate the user to a specific appro. Other are to bedeveloped.
 2. **Surveys** — Survey responses can also trigger code execution dependent on which answer the user clicks. This enables surveys to be used to create funnels or decision points. A user can be related to another appro that represents that decision such as an appro that represents a group. Also spawning tasks or surveys allow for the creation of funnels, driving conditional workflows
-3. **Relations & Hierarchy** — Define and visualize relationships between persons, creating organizational hierarchies and structures. Appros can represent anything of importance to the organization, and relationships can be established between any appro, enabling complex organizational structures to be built and visualized.
+3. **Relations & Hierarchy** — Define and visualize relationships between persons, creating organizational hierarchies and structures. Appros can represent anything of importance to the organization, and relationships can be established between any appro, enabling complex organizational structures to be recorded and visualized.
 
 ## 005 Architecture Overview
 
@@ -69,18 +69,20 @@ Any visitor can see both dashboards, but to see data or touch the database the v
 - **All modules are lazy-imported from registryLoadModule.js**: `() => import('../path/to/module.js')`
 - **Rendering destination**: Determined by `appState.query.petitioner.Destination`:
   - A section name (e.g., 'task-management') → renders into `[data-section="task-management"]`
-  - 'new-panel' → renders into `[data-panel="inject-here"]` (Small screens always load into the current dashboard area, larger screens sometimes load to the right of the dashboard with flex of widths)
+  - 'new-panel' → renders into `[data-panel="inject-here"]` (Small screens should always load into the current dashboard area, larger screens sometimes load to the right of the dashboard with flex of widths)
 
 ### 009 **Database Access & permissions**
-- **No direct SQL or API queries from client**: All database access routes for a user go through a single js function`executeIfPermitted(userId, action, payload)` which calls the API. (RLS then calls the rpc is_permitted that determines if the user-table-operation tuplet is permitted)
-- **Permission infrastructure exists but needs to be stress tested with multiple users**:
+- **No direct SQL or API queries from client**: All database access routes for a user go through a single js function`executeIfPermitted(userId, action, payload)` which calls the API. (RLS then calls the rpc is_permitted that determines if the user-table-operation tuplet is permitted).
+Most tables are in 'public', but some are in _internal which limits access.
+- **Permission infrastructure exists but needs to be stress tested with multiple users**
 
 ### 010 **Tasks and surveys direct access**
 When user clicks an answer to a survey question or moves to a step in a task there may be an automation that executes code. That code probably does something for which the user does not have permission to do. Therefore the `isPermitted` function is not appropriate. Instead the `permission_judge` decides. The automation collects data about the current user and the details of what is to be done and sends that to the `permission_judge` which looks in the `assignments table` for a match to all the sent data. If there is an exact match the judge assumes the request is genuine and returns 'true'. 
 
 
 ### 011  **Permission Tables** 
-  - `permission_molecule_required`,  Table stores details of every function that touches the database (requires human intevention to load all newly programmed registry functions - point of failure by ommission if devs forget to regsiter new functions. KNOWN TECH DEBT) 
+Located in _internal.
+  - `permission_molecule_required`,  Table stores details of every function that touches the database  
   - `permission_relationships` Table of every possible permission. For API this is read only. Loading it is done via SQL generated from a javascript script run in a browser which reads a new registry function and determines what actions the function does on which tables. The generator produces sql output with a standard syntax to represent a permission. This sql has to be manually run to store it in the `permission_relationships` table and in the `./auth/permissionsMoleculeGenerator.html` 
 
 -`permissionsMoleculeGenerator` in `./auth/`. Dev copy paste in the input field the new function to be registered. The generator outputs two pieces of SQL. One to write into the `permission_molecule_required` table the special syntax of the permissions that are required for this new function. The other is to write this new function definition into `permission_relationships`
@@ -105,7 +107,7 @@ Modules do NOT communicate directly with each other. All data transfer happens t
 
 ### 014. **Listener Pattern**
 - `listeners/adminListeners.js`: Reads petition from clicked elements
-- All elements that are to launch a module have `data-action`, `data-section`, `data-module`, `data-destination` attributes
+- Elements that launch a module have some or all of the following attributes: `data-action`, `data-section`, `data-module`, `data-destination`
 - Click event → `readPetition()` → `appState.setPetitioner()` → state-change event
 
 ## 015 File Organization
@@ -212,6 +214,7 @@ vite.config.js
 
 4. **Register permission requirement** in database `permission_molecule_required` table
 
+
 5. **Add HTML elements** in parent component with correct `data-*` attributes:
    ```html
    <div data-module="adminDash" data-section="your-section" data-destination="your-section">
@@ -235,6 +238,7 @@ window.addEventListener('state-change', (event) => {
   }
 });
 ```
+If there is only 1 relevant item from the clipboard this item should be loaded. If >1 relevant items the choice is to be made by the user from a dropdown into which the choices are entered.
 
 ### Calling Database Operations
 Always use `executeIfPermitted()` to access the database:
@@ -246,24 +250,24 @@ const result = await executeIfPermitted(userId, 'yourDataAction', {
   param1: value1,
   param2: value2
 });
-```
+``` 
+When searching within files for database access use 'executedIfPermitted' (or even 'ifp')
 
-Never access Supabase directly from UI modules. Always route through the registry.
+Never access Supabase directly from UI modules. Always route through executeIfPermitted which routes via the registry.
 
 ### Modifying Database Access
 1. **Never bypass `executeIfPermitted()`** — all DB operations must route through it
 2. **Update action handler** in `registryWorkActions.js` (add columns, change table access, etc.)
 3. **Update metadata** — ensure `tables` and `columns` arrays accurately reflect what the query accesses
 4. **Document function permissions** — add entry to `permission_molecule_required` table and the `permission_relationships` table.by using the `./auth/permissionsMoleculeGenerator.html` 
-(Or refactor to be a node.js script that directly accesses the `permission_relations` table
-and the `permission_relationships` table.)
+(Or refactor to be a node.js script that directly accesses the `permission_relations` table and the `permission_relationships` table. See `auth/permissionsMoleculeGenerator.html`)
 5. **Test**: Verify operation completes and returns expected data
 
 ### Debugging State Flow
-1. **Check console logs** from `flexmain.js`, `appState.js`, `adminListeners.js` for petition & petitioner values
+1. **Check console logs** from `flexmain.js`, `appState.js`, `adminListeners.js` for petition & petitioner values & for which panels are on display
 2. **Inspect `appState.query`** in browser DevTools for current state snapshot
 3. **Trace `panelsOnDisplay` array** in `flexmain.js` to see which panels are rendered
-4. **Check browser Network tab** for Supabase RPC calls (each registered action becomes an RPC call)
+4. **Check browser Network tab** for Supabase RPC calls
 
 ### Understanding Petition Flow
 Trace how a click becomes a module load:
@@ -275,7 +279,7 @@ Trace how a click becomes a module load:
 6. Lazy import loads module, calls `module.render(panel, appState.query)` 
 7. Module renders into DOM at `appState.query.petitioner.Destination`
 8. NOTE [Modules often add listeners. Many current modules are closed without removing listeners. This is a problem. Even with listener removal added there is a problem with the way modules are closed. The following may help. 
-Modules are injected and removed from the DOM without page reloads, adding event listeners directly to panel or window without cleanup causes memory leaks and duplicate event firing. Sept 8 2026 we are strating to convert to a controller.abort system. The controller ic created by flexmain when a module is loaded and flexmain is to use it before closing the module. 
+Modules are injected and removed from the DOM without page reloads, adding event listeners directly to panel or window without cleanup causes memory leaks and duplicate event firing. Sept 8 2026 we are starting to convert to a controller.abort system. The controller is created by flexmain when a module is loaded and flexmain is to use it before closing the module. 
 9. All modules need to
 `import { createListenerController, addManagedListener, removeListenersFromModule } from '../../utils/listenerManagement.js';`
  have as an argument  
@@ -289,39 +293,43 @@ Modules are injected and removed from the DOM without page reloads, adding event
 ```javascript
 import { appState } from '../state/appState.js';
 
-The appState contains information about the logged user. It is loaded by a call to ResolveSubject(). 
+The appState contains information about the logged user. It is loaded by a call to `utils/contextSubjectHideModules.ResolveSubject()` 
   1. The logged user
   2. Whatever appro has most recently been selected by the Selection module (if any) 
 
-logged user:
+1. logged user:
 const userId = appState.query.userId;
 const userName = appState.query.userName;
 const userType = appState.query.userType;
 const defaultManagerId = appState.query.defaultManagerId;
 selected user 
 ```
+2. Selected item:
+```javascript
+ return {
+        id: entity.item.auth_user_id,
+        approUserId:entity.id,
+        name: entity.item.name,
+        email:entity.item.email,
+        created_at:entity.item.created_at,
 
-DevMode defaults to hardcoded test users for development. Change in `state/appState.js` if needed. 
-## Important Caveats
+        type: entity.type,
+        source:'clipboard'
+      };
+```
 
-**devMode default**
-could be causing unseen problems. Probably needs to be set to false. We need to examine where it is used. There may be other hard coded or defaulted items for development that still linger and may need hunting down and removal.
 
-- **Legacy HTML stubs** (`htmlStubs/`) have been phased out in favor of `.js` module imports
- `executeIfPermitted()`
+DevMode defaults to hardcoded test users for development. Change in `state/appState.js` if needed.  This is legacy. Needs to be carefully removed.
 
-- **DevMode default**: `appState.isDevMode = true` and defaults to hardcoded user IDs for testing
 
+## Conventions to Follow
 - **Tailwind CSS**: Used for styling; utility classes from CDN
 
 - **No build step**: Pure ES6 modules, imports via `https://cdn.jsdelivr.net/` for external libraries
 
 - **Supabase credentials** are in `.env`
- implementation
 
 - **No inter-module communication**: Modules are isolated; use `appState.clipboard` for data sharing
-
-## Conventions to Follow
 
 - **Naming**: Use kebab-case for action names (`task-management-section`), camelCase for functions
 - **Console logs**: Every file logs its loading: `console.log('moduleName.js loaded')`
@@ -354,7 +362,113 @@ The app has integrated connetions to two Merchant of Record payment processors
 Others are listed as potential payment processors, but have not been integrated.
 (Integrated means that the app has tables listing those payment processors with columns and methods to store the activity returned by the processor via webhooks)
 
-## 019 Glossary
+
+## 019 Known Issues & bugs
+
+- **Delete & re-order steps or questions or answers**
+The edit task and edit survey modules currently cannot delete items or change their order. We need to refactor to include both those capabilities.
+
+
+
+**devMode default**
+could be causing unseen problems. Probably needs to be set to false. We need to examine where it is used. There may be other hard coded or defaulted items for development that still linger and may need hunting down and removal.
+
+- **Legacy HTML stubs** (`htmlStubs/`) have been phased out in favor of `.js` module imports
+ `executeIfPermitted()`
+
+- **DevMode default**: `appState.isDevMode = true` and defaults to hardcoded user IDs for testing
+
+- **eventListeners**
+should be added and removed via an abort controller instead of legacy added locally and often not removed.
+
+- **Functions in the registry**
+ should be listed in the database table _internal.permissions.molecule_required, but several have not been added. requires human intevention to load all newly programmed registry functions - point of failure by ommission if devs forget to regsiter new functions. KNOWN TECH DEBT. New functions in `registryWorksActions` need to be added to the table `permission_molecule_required`. There are two scripts in auth/ to do this manually. This needs to be automated.
+
+- **Structural appros**
+ need to be protected from deletion or editing. These 'structural' appros including ones representing groups such as 'all tasks' or data that is editable by admin but essential to prevent being deleted such as 'Organisation aims'. There is a system of marking appros as being high security, but not yet implemented in permissions.
+
+- **Redundency**
+There are redundent files.
+There are redundant functions in registryWorkActions.js
+There are redundant lines in registryLoadModules.js
+
+- **executeIfPermitted.sql trust - security** 
+needs to be edited to include checking the 'trust-security' ratings of the user trying to touch a table and the rating of the row being touched. Permit if user rating >= resource rating.
+
+- **Conext help**
+The `How` module reads the appState petition history to determine what the user was most recently looking at. The module should offer context specific help. The store and retrieval of that help has not yet been implemented. The module does ot differentiate between the user who has recently opened a module and a user who has recently closed a module. `How` should read the panl open data to know the difference. 
+
+- **Bundles of permissions** 
+the display of permissions needs to be refactored to read the bundle column of the table & to display the bundle appro instead of all the constituent permissions.
+
+- **Click proagation**
+Many modules handle local clicks this but don't prevent propagation of their local clicks. They need to stop propagation of their locally handled clicks.
+
+
+- **metadata**
+ in registry functions have become unreliable. This should be corrected. However no current coding makes use of that metadata
+
+- **appSate** is defined in state/appSatet.js but many modules directly manipulate it. All changes chould be via stated methods such as `setPetitioner(petition)`. Direct manipulation is unpredictable and hard to audit. All parts of the object need to be defined in the file, and changes only allowed via stated methods.
+
+- **JS Docs**
+All files should have JS Docs for VSC to understand what a function or an object is. This makes it easier for VSC to highlight errors across modules, and complete lines
+
+- **Back button**
+Sometimes users click the browser back button. They expect this to take them back to the previously displayed HTML, but instead it takes them to the login page.
+The app needs to intecept the back button click. It could issue a toast: "Please use the menu or displayed cards to go back"  It could also read the petition.history to work back through that ?
+
+
+## 020 Future additions
+
+- **400 char indicator**
+When a user creates a task or survey it would be useuful to be reminded of the amount of text that can be easily displayed on a small screen. A 4oo character marker could be added to the task & survey editor for guide to size for mobile reading.
+
+
+- **admin version of kanban**
+Moving a student by one step through a task is currently handled by managers of the assignment using a Kanban style display. We need to devlop an admin version with more power over movement.
+
+- **Create a test user**
+ and give specific permission and test access on mobile (separate from being logged in on workstation) Human task.
+
+- **Trust_security** 
+implement this by adding code to use this within the `is_permitted`  rpc
+
+- **The revert system**
+There is an existing `versions` table into which many database changes are stored. This can already be used for audit, but the revert system is to allow admin to see diffs and to choose to revert the row to its previous condition prior to changes.
+
+- **The 4 eyes system**
+This is a supervisory system where everything that happens is flagged to someone other than the user who made the change. A person with the role of supervisor can then use the revert system to view diffs and decide to allow or revert the system.
+
+- **Publish - Review - Revert?**
+This is how the system is to work. Anyone with permission can make changes. All changes are subject to the `4 eyes` system of review. The default is permission. The intervention can remove and rollabck to the previous satete (revert).
+
+- **Organisation templates**
+The app has no hard coded restrictions or guidance as to the style of organisation a founder may want to build. What the app needs is a set of parameters that define types of organisation and some mechanisms to help create the kind of organisation that different organisations require. 
+
+This is a concept that needs to be developed & planned.
+
+The current stage is just a number of parameters/choices to be considered and tested for validity:
+--------------------------------
+managing: autonomy - regulation [is day to day management up to each person or a boss?]
+decisions: independent - organised [Are important decisions at lowest level or highest?]
+information sharing: horizontal - vertical [Does everyone know almost eveything or does a boss control who know what?]
+Vertical access: strict - bypass [Can anyone contact the boss or need to go via chain of command?]
+Horizontal access: strict - bypass [Can anyone contact anyone or go up and down a chain of command?]
+Choices made: Voters - Boss [Does everyone get to vote or are choices by boss?]
+formal rules: up to you - read the manual [How controled are methods?]
+systems: ad hoc - formally enforced [Can anyone set things up or is it by strict rules?]
+Ownership:  Everyone - Founders [Is it a coop/partnership or does it belog to one or more specific elite?]
+-----------------------------------
+If regarded as valie parameters then the unknown is how to implement them suh that the app can steer the founders into creating the revelvant parst that work according to those parameters.
+
+- **Cloning**
+The app is available to customers as a single tenant semi-independent instance. The customer would have a copy of the database run within Supbase under ownership of the customer. The website would be hosted by Netlify in an account under customer ownership. Netlify would deploy automatically when the HQ repo main is updated. The customer would have the option of a copy of the source code held in their own repo if they prefer.
+
+We need to devlop scripts to automate this process of generating a 'clone' 
+
+
+
+## 021 Glossary
 
 **Appro**: - a row in a table app_profiles used to represent each participant, task ,survey plus anything else that admin wish to represent. AuthUsers, tasks & surveys are automatically represented by their own appro. Some structural features and important attributes are built-in the system by default. In addition admin can create any number of additional appros to represent anything such as local branches, special interest groups, a committee, a YouTube channel...
 

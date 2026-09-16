@@ -12,12 +12,12 @@ import { appState } from '../state/appState.js'; // for checking if in DEVMode
 
 
 //new 20:37 Sept 24 2025
-
-export function checkIfUserIsAdmin(userId) {
+/*
+export function XcheckIfUserIsAdmin(userId) { //Legacy  not used? sept 16 2026 
   // PLACEHOLDER: Implement real permission logic when auth is ready
   // For now, return false in production, true in DEV
   return appState.isDevMode;
-}
+} */
 
 export function canAccessFeature(featureName, userId) {
   if (appState.isDevMode) {

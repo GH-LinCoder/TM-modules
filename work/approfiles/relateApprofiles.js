@@ -9,6 +9,12 @@ import { makeSelectList } from '../../ui/selectList.js';
 
 
 const userId = appState.query.userId;
+const ACTIONS = Object.freeze({
+  ORDINARY_RELATION: 'ordinary-relation',
+  SINGLE_PERMISSION: 'single-permission',
+  PUT_PERMISSION_IN_BUNDLE: 'put-permission-in-bundle',
+  GRANT_PERMISSION_BUNDLE: 'grant-permission-bundle'
+});
 let relationType ='ordinary';//could be permission
 //let ApproIsType = 'ordinary'; //could be a bundle (ordinary ={human, task, survey, abstract}) Not sure if this matters
 let title = null;
@@ -21,6 +27,7 @@ approIsId:null,
 approIsName: null,
 relationshipName: null,
 relationshipType:null,
+bundleId: null,
 ofApproId:null,
 ofApproName: null
 }
@@ -39,14 +46,17 @@ export function grantBundlePermissions(panel){
   console.log('grantBundlePermission()')
 relationType='permission';
 category = '';
-actionRequired = "grant a bundle of permissions";
-renderPermissions(panel,{}, 'rubbish', actionRequired);
+actionRequired = ACTIONS.GRANT_PERMISSION_BUNDLE;
+resetPermissionSelection();
+renderPermissions(panel, {}, actionRequired);
 }
 
 export function grantASinglePermission(panel){
 console.log('grantASinglePermission');
-actionRequired = 'grant a single permission';
-renderPermissions(panel,{}, null, actionRequired);
+relationType='permission';
+actionRequired = ACTIONS.SINGLE_PERMISSION;
+resetPermissionSelection();
+renderPermissions(panel, {}, actionRequired);
 }
 
 
@@ -63,24 +73,26 @@ export function relateBundleToPermissions(panel, Data){
   relationType='permission';
   //prefix = '(]BUNDLE:'; // prefix and suffix will encase the user input name of the bundle
  //suffix ='[)';
-actionRequired = 'put permissions in the bundle';
+actionRequired = ACTIONS.PUT_PERMISSION_IN_BUNDLE;
+resetPermissionSelection();
  //console.log('relationType',relationType);
-  renderPermissions(panel,{}, 'permission', actionRequired);
+  renderPermissions(panel, {}, actionRequired);
 }
 
 //PERMISSIONS
-export function renderPermissions(panel,query={}, junk, actionRequired){
+export function renderPermissions(panel, query = {}, operation = actionRequired){
   relationType='permission';
+  actionRequired = operation;
   console.log('renderPermissions():', actionRequired);
 //over write the default title 
-if(actionRequired ==='grant a bundle of permissions') title='Grant a bundle of permissions' +`<button data-action="open-bundle-permissions-dialogue" class="text-gray-500 hover:text-gray-700" aria-label="Close">HERE
+if(actionRequired === ACTIONS.GRANT_PERMISSION_BUNDLE) title='Grant a bundle of permissions' +`<button data-action="open-bundle-permissions-dialogue" class="text-gray-500 hover:text-gray-700" aria-label="Close">HERE
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>`
 
 else 
-  if (actionRequired === 'put permissions in the bundle')  title = 'Put permissions in the Bundle' +`
+  if (actionRequired === ACTIONS.PUT_PERMISSION_IN_BUNDLE)  title = 'Put permissions in the Bundle' +`
            <button data-action="open-bundle-permissions-dialogue" class="text-gray-500 hover:text-gray-700" aria-label="Close">HERE
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -90,7 +102,7 @@ else
   //open-bundle-permissions-dialogue
   //open-permissions-dialogue
   else
-    if(actionRequired === 'grant a single permission') title = 'Grant Permission'         +`  <button data-action="open-permissions-dialogue" class="text-gray-500 hover:text-gray-700" aria-label="Close">HERE
+    if(actionRequired === ACTIONS.SINGLE_PERMISSION) title = 'Grant Permission'         +`  <button data-action="open-permissions-dialogue" class="text-gray-500 hover:text-gray-700" aria-label="Close">HERE
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
@@ -126,13 +138,31 @@ console.log('titleEl',titleEl);
     relationshipSelect,
     relateBtn,
     informationFeedback,
-    relationType
+    relationType,
+    actionRequired
   });  
+}
+
+function resetPermissionSelection() {
+  category = null;
+  permissionTuplet = {
+    approIsId: null,
+    approIsName: null,
+    relationshipName: null,
+    relationshipType: null,
+    bundleId: null,
+    ofApproId: null,
+    ofApproName: null
+  };
+  permissionsFromBundle = null;
+  numberOfPermissions = null;
 }
 
 //ALL other appro relations
 export function render(panel, query = {}) {
    //console.log('relationType',relationType);
+  actionRequired = ACTIONS.ORDINARY_RELATION;
+  resetPermissionSelection();
   console.log('document', document);
   console.log('relateApprofiles.js render() called');
   panel.innerHTML = getTemplateHTML();
@@ -159,7 +189,8 @@ if(!informationFeedback) informationFeedback = panel.querySelector('[data-task="
     relationshipSelect,
     relateBtn,
     informationFeedback,
-    relationType
+    relationType,
+    actionRequired
   });
      //     panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
 }
@@ -236,7 +267,7 @@ function getTemplateHTML() {
 }
 
 function init(panel, elements) {
-  const { dialog, form, approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback, relationType } = elements;
+  const { dialog, form, approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback, relationType, actionRequired } = elements;
 
   // Setup the ropdowns as scrollable lists instead of native dropdowns. This was the hack to avoid the strange bug of dropdowns that do not respond to clicks.
   //Many hours of tests and hypotheses failed to discoiver the reason for that bug. Changing to scrollabel lists seems to avoid it. (I hope)
@@ -307,7 +338,8 @@ makeSelectList(approfile2Select, 3);
     relationshipSelect,
     relateBtn,
     informationFeedback,
-    relationType
+    relationType,
+    actionRequired
   }));  // relationType determines if permissions or ordinary. removed ,relationType. I don't think this is ever set in the button. It's a global
 
 
@@ -328,7 +360,7 @@ makeSelectList(approfile2Select, 3);
   });
 
   // Load and clipboard logic...
-  populateRelationshipsDropdown(relationshipSelect, relationType);
+  populateRelationshipsDropdown(relationshipSelect, actionRequired);
   populateFromClipboard({ approfile1Select, approfile2Select, informationFeedback });
 }
 
@@ -363,9 +395,9 @@ console.log('tuplet:',permissionTuplet);
 
 
 async function checkHandleRelationshipBundle(selected,relateBtn, panel){//this is the selection.option
- //console.log('relationType',relationType); //ordinary !!
- category = selected.dataset.category;
-const id = selected.dataset.id;
+const isBundleSelection = actionRequired === ACTIONS.GRANT_PERMISSION_BUNDLE;
+category = selected.dataset.category || (isBundleSelection ? 'bundle' : null);
+const id = selected.dataset.id || null;
 const relationshipName = selected.value;
 console.log('handleBundle()',selected, 'relationshipName',relationshipName, 'category', category, 'id', id);
 //what is that id??? f8ccb6ca-22bb-4ee7-b3dc-a17cb2d6d2e5 . What table is this from ??
@@ -376,7 +408,13 @@ console.log('handleBundle()',selected, 'relationshipName',relationshipName, 'cat
       informationFeedback.innerHTML += `<div class="p-1 text-sm bg-purple-50 border border-purple-200 rounded">
       Selected permission or relationship:${relationshipName} Recognised as category: [ ${category} ]</div>`;
     }
-if(category==='bundle') {await extractBundleContents(category, relationshipName, id, panel); permissionTuplet.relationshipType = category}
+permissionTuplet.relationshipType = category;
+permissionTuplet.bundleId = category === 'bundle' ? id : null;
+permissionsFromBundle = null;
+numberOfPermissions = null;
+if(category === 'bundle') {
+  await extractBundleContents(category, relationshipName, id, panel);
+}
 
 permissionTuplet.relationshipName = relationshipName;
 
@@ -437,14 +475,15 @@ informationFeedback.innerHTML += `<div class="p-1 text-sm bg-purple-50 border bo
 
 
 
-async function populateRelationshipsDropdown(relationshipSelect, relationType) {
-      console.log('populateRelationshipsDropdown relationType:', relationType);//permission
+async function populateRelationshipsDropdown(relationshipSelect, operation) {
+  console.log('populateRelationshipsDropdown operation:', operation);
 
     try { let relationships = []
     relationshipSelect.insertAdjacentHTML('beforebegin', '<div id="relationship-loading" class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
     
-    if(relationType === 'ordinary') relationships = await executeIfPermitted(userId, 'readRelationships');
-    else if(relationType === 'permission') relationships = await executeIfPermitted(userId, 'readPermissionRelationships');
+    if(operation === ACTIONS.ORDINARY_RELATION) relationships = await executeIfPermitted(userId, 'readRelationships');
+else if(operation === ACTIONS.GRANT_PERMISSION_BUNDLE) relationships = await executeIfPermitted(userId, 'readBundlesOfPermissions');
+    else if(operation === ACTIONS.SINGLE_PERMISSION || operation === ACTIONS.PUT_PERMISSION_IN_BUNDLE) relationships = await executeIfPermitted(userId, 'readPermissionRelationships');
     else {
       console.log('relationType unknown', relationType);
       throw new Error('Unknown relation type: ' + relationType);
@@ -461,8 +500,8 @@ console.log('relationshipsArray.', relationships);  // bundle_id null or uuid  c
       const option = document.createElement('option');
       option.value = rel.name;
       option.textContent = rel.name;
-      option.dataset.category =rel.category; // added 14:48 April 1
-      option.dataset.id = rel.bundle_id; // added 14:48 April 1 but that is the id of the row in relationships. Not the bundle appro id
+      option.dataset.category = rel.category || (operation === ACTIONS.GRANT_PERMISSION_BUNDLE ? 'bundle' : 'permission');
+      option.dataset.id = rel.bundle_id || rel.id || '';
       relationshipSelect.appendChild(option);
       //console.log('dataset.category',option.dataset.category ); //correct
     });
@@ -580,6 +619,8 @@ console.log(`[addClipboard] Options in DOM after: ${selectElement[0].length} ${s
    makeSelectList(selectElement);
 }
 
+
+
 function updateSubmitButtonState({ approfile1Select, approfile2Select, relationshipSelect, relateBtn }) {
   console.log('updateSubmitButtonState()');
   
@@ -626,7 +667,7 @@ else if (relationType === 'permission')
   } //       relateBtn.textContent = 'Create: ' + permissionTuplet.approIsName + ' permitted: ' + permissionTuplet.relationshipName + ' with scope: '+ permissionTuplet.ofApproName;
 }
 
-async function handleRelate(e, { approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback, relationType }) {
+async function handleRelate(e, { approfile1Select, approfile2Select, relationshipSelect, relateBtn, informationFeedback, actionRequired }) {
   e.preventDefault();
   console.log('handleRelate()');
  //console.log('relationType',relationType);
@@ -645,7 +686,7 @@ ofApproName: null
  try {
     relateBtn.textContent = 'Creating relationship...'; //needs different for different types
     
-if(relationType ==='ordinary'){
+ if(actionRequired === ACTIONS.ORDINARY_RELATION){
 
     const newRelation = await executeIfPermitted(userId, 'createApprofileRelation', {
       approfile_is:permissionTuplet.approIsId,
@@ -654,25 +695,31 @@ if(relationType ==='ordinary'){
 
     });
 }
- else if(relationType ==='permission' && permissionTuplet.relationshipType != 'bundle'){
+ else if(actionRequired === ACTIONS.SINGLE_PERMISSION || actionRequired === ACTIONS.PUT_PERMISSION_IN_BUNDLE){
       const newRelation = await executeIfPermitted(userId, 'createPermissionRelation', {
       approfile_is:permissionTuplet.approIsId,
       relationship:permissionTuplet.relationshipName,
       of_approfile:permissionTuplet.ofApproId
 
     }); }
-else if (relationType ==='permission' && permissionTuplet.relationshipType === 'bundle'){
+else if (actionRequired === ACTIONS.GRANT_PERMISSION_BUNDLE){
+    if (permissionTuplet.relationshipType !== 'bundle' || !permissionTuplet.bundleId) {
+      throw new Error('Select a permission bundle before submitting');
+    }
+    if (!permissionsFromBundle?.is?.length) {
+      throw new Error('The selected permission bundle contains no permissions');
+    }
     //need to map the bundle array substituting the user id in place of the bundle id
 // and if permissionTuplet.ofApproId !=null then also map the ofAppro (scope) into the array
 //then write that array to the permission_relations table by calling executeIfPermitted 
 // with the name of a new registry function that handles array write
 console.log('bundle permissionsFromBundle',permissionsFromBundle);
-    // 3. Transform to user-grant format
+    // 3. Transform to user-grant format. what is permBund????
  let  permissionsToGrant = permissionsFromBundle.is.map(permBund => ({
       approfile_is: permissionTuplet.approIsId,              // ← User receiving permission
       relationship: permBund.relationship,   // e.g., '(]insertNote_INSERT[)'
       of_approfile: permissionTuplet.ofApproId || permBund.of_approfile,          // ← Scope from grant screen (override)
-    assigned_from_bundle: permBund.approfile_is
+    assigned_from_bundle: permissionTuplet.bundleId
     }));
 console.log('permissionsToGrant', permissionsToGrant); //looks okay 14:03 Apr 2
 
