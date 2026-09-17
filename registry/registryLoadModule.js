@@ -15,8 +15,20 @@ export const registry = { // this registry is for loading a new page to the righ
 'howTo': () => import('../work/how/howTo.js'),
 'bug-report' :()=> import('../notes/notes.js'),
 'selector-dialogue' :()=> import('../work/select/selectRemember.js'),
+
+
+/*
+"my-role" : () => import('../work/approfiles/myRole.js'),
 'aims' :() => import('../aims.js'),
 'plans' :() => import('../plans.js'),
+*/
+
+"my-role" : () => import('../work/approfiles/displayRoleAimsPlans.js'),
+'aims' :() => import('../work/approfiles/displayRoleAimsPlans.js'),
+'plans' :() => import('../work/approfiles/displayRoleAimsPlans.js'),
+
+
+
 'login-signup':()=>import('../auth/login-signup.js'),
 'login':()=>import('../auth/login.js'),
 'privacy':()=>import('../legal/privacy.js'),
@@ -164,9 +176,6 @@ export const registry = { // this registry is for loading a new page to the righ
 'view-abandoned-surveys':()=> import('../work/survey/displayAbandonedSurveys.js'),
 
 
-
-
-"my-role" : () => import('../work/approfiles/myRole.js'),
 
 // "display-tasks"  : () => import('../work/tasks/displayTaskStudent.js'),
 // "display-relations"  : () => import('../work/approfiles/displayRelations.js'),
