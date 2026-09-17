@@ -42,14 +42,19 @@ login uses rpc to award myDash permissions, notes permissions & assign initial t
 
 -->
 
-<body class="bg-black min-h-screen flex items-center justify-center p-4">
+<body class="bg-black min-h-screen flex  items-center justify-center p-4">
 
     <!-- Splash Screen Modal (Initially invisible) -->
-    <div id="splash-modal" class="absolute transition-opacity duration-2000 ease-in-out opacity-0">
-        <div class="bg-grey p-8 rounded-xl border border-slate-200 shadow-xl flex items-center justify-center w-60 h-60">
-            <span class="text-5xl font-bold text-sky-800 tracking-widest">T&M</span>
-        </div>
+<div id="splash-modal" class="absolute transition-opacity duration-2000 ease-in-out opacity-0">
+    <div class="bg-grey p-8 rounded-xl border border-slate-200 shadow-xl 
+                flex flex-col items-center justify-center w-60 h-60">
+        <span class="text-5xl font-bold text-sky-800 tracking-widest">T&M</span>
+        <span class="text-s text-gray-400 mt-2 text-center">
+            <i>powering organisation</i>
+        </span>
     </div>
+</div>
+
 
       <!-- update Password input form -->
 <div id="newPasswordForm" class="auth-form  bg-white p-6 rounded-lg shadow hidden border border-slate-200">

@@ -51,6 +51,7 @@ export async function render(panel, query = {}) {
     }
     
     try {
+        panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
         const assignmentsData = await executeIfPermitted(subject.approUserId, 'readAssignmentsTasks', {
             student_id: subject.approUserId
         });
@@ -82,9 +83,11 @@ async function renderLargeCards(userId, assignments, panel) {
         }
         
         console.log('calling readTaskWithSteps');
+        panel.insertAdjacentHTML('beforeend', '<div data-task-steps-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
         const taskSteps = await executeIfPermitted(userId, 'readTaskWithSteps', {
             task_header_id: assignment.assignment.task_header
         });
+        panel.querySelector('[data-task-steps-loading]')?.remove();
         
         // Cache task steps for later use
         assignment._taskSteps = taskSteps;

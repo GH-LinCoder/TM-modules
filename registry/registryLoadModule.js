@@ -55,6 +55,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'student-management-section': ()=> import('../dash/studentManagementSection.js'),
 'manager-management-section': ()=> import('../dash/managerManagementSection.js'),
 'task&member-management-section': ()=> import('../dash/task&memberManagementSection.js'),
+'permission-management-section' : ()=> import('../dash/permissionManagementSection.js'),
 
 'assign-task-dialogue': () => import('../work/task/assignTask.js'),
 'assignTaskForm': () => import('../work/task/assignTask.js'), //legacy?
@@ -65,11 +66,19 @@ export const registry = { // this registry is for loading a new page to the righ
 'editTask': () => import('../work/task/editTask.js'), //legacy?
 //'-management-section': ()=> import('../work/dash/ManagementSection.js'),
 
+
+
+//STUDENTS
 'display-students':()=> import('../work/task/displayTasksManager.js'),//display the tasks that the current student manages
 'move-student-dialogue': () => import('../work/student/moveStudent.js'),
+'move-student-manager': () => import('../work/student/moveStudentManager.js'),//this is the new module for moving students between steps. It is a manager function, not a student function
+'display-students-on-tasks': () => import('../work/student/displayStudentsOnTasks.js'),//this is the new module for displaying pending tasks for managers. It is a manager function, not a student function
 'moveStudent': () => import('../work/student/moveStudent.js'),//legacy?
 
+
+
 'display-one-task': () => import('../work/task/displayOneTask.js'),
+'display-one-survey' : () => import('../work/survey/displayOneSurvey.js'),
 
 //'display-tasks' :()=> import('../work/task/displayTasks.js'), // changed 20:29 Oct 21
 
@@ -86,7 +95,7 @@ export const registry = { // this registry is for loading a new page to the righ
 //////////          APPRO MANAGEMENT    AdminDash       /////////                 
 'approfile-management-section': ()=> import('../dash/approfileManagementSection.js'),// from button has .html
 
-"create-approfile-dialogue":()=> import('../work/approfiles/createApprofile.js'),
+"create-approfile-dialogue":()=> import('../work/approfiles/createAppro.js'),
 //'createApprofile': () => import('./createApprofile.js'), // legacy?
 'edit-approfile-dialogue':()=> import('../work/approfiles/editApprofile.js'),
 'relate-approfiles-dialogue': () => import('../work/approfiles/relateApprofiles.js'),

@@ -51,7 +51,7 @@ array[2] is step 3
 }
 
 async function loadAndDisplay(panel, taskId){
-state.currentTask = await readTaskFromDb(taskId);
+state.currentTask = await readTaskFromDb(taskId, panel);
 console.log ('taskId', taskId,'task',state.currentTask);  //array equal to number of steps maybe?
 
   renderTaskStructure(panel); 
@@ -130,10 +130,11 @@ function addClipboardItemsToDropdown(items, selectElement) {
 /// eof clipboard
 
 
-async function readTaskFromDb(taskId){
+async function readTaskFromDb(taskId, panel){
      try {console.log('readTaskFromDb', taskId);
       //func needs: const { task_header_id } = payload;
 
+   
     const task = await executeIfPermitted(state.user, 'readTaskWithSteps', {
      task_header_id :  taskId
     });
@@ -388,12 +389,16 @@ const stepCard = document.createElement('p');
 
 async function loadStepAutomations(container, stepId) {
   try {console.log('loadStepAutomations for stepId',stepId);
+    //this spinner showed on evey step and never went away. I added the ='' line to remove it
+    container.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     const automations = await executeIfPermitted(state.user, 'readTaskAutomations', {
       source_task_step_id: stepId
     });
+    container.innerHTML=''; //added to remove the spinner
     renderAutomationCards(container, automations);
   } catch (error) {
     console.error('Failed to load automations:', error);
+    container.innerHTML = '<div class="text-red-500 text-center py-4">Failed to load automations.</div>';
     showToast('Could not load automations', 'error');
   }
 }
@@ -462,7 +467,7 @@ function getTemplateHTML() {console.log('getTemplateHTML()');
              </div>
 
 
-          <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+          <button data-action="display-task-summary" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>

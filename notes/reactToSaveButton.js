@@ -1,43 +1,66 @@
 // reactToSaveButton.js
 console.log('reactToSaveButton.js  loaded');
 import { appState } from '../state/appState.js';
-import { collectUserChoices, messageAddress,audience, userChoices } from './collectUserChoices.js';
+import { collectUserChoices } from './collectUserChoices.js';
 import { saveNoteWithTags } from './saveNoteWithTags.js';
-import { showToast } from '../ui/showToast.js';
-//this was all working jan 3 and now jan 5 it has errors & couldn't possibly work.
-//how is this possible?
-import { executeIfPermitted } from '../registry/executeIfPermitted.js';
+//import { createSupabaseClient } from '../db/client.js';
 
-
-
+// Get a single instance of the Supabase client.
+//const supabase = createSupabaseClient();
+const userId = appState.query.userId;
 export async function reactToSaveButton() {
   console.log('reactToSaveButton()');
-const user = await executeIfPermitted( null,'getAuthenticatedUser', {approfileId: null });
+
   const noteContent = document.getElementById('note-content')?.value.trim();
   if (!noteContent) {
     console.log('✗ Note content is empty');
     return;
   }
   console.log("content found");
-  
-//const userChoices = collectUserChoices();  //This is the old flat array. Out of date
-  collectUserChoices(); // this sets the global userChoices
-  
-// Convert Set → Array → Integers
-const categoryIds = Array.from(userChoices.categories)
-  .map(Number)
-  .filter(n => Number.isInteger(n));
 
-  console.log('reactToSaveButton()', { noteContent: noteContent, userChoices:userChoices });
-console.log(userChoices.categories.length, " tags found", 'userId:', user.id);//this userId is authUser
+  const userChoices = collectUserChoices();
+console.log('userChoices', userChoices);
+/* returned from collectUserChoices.js
+  userChoices = {
+    ...userChoices,
+    toApproId,
+    fromApproId,
+    respondent: toApproId,
+    categories,
+    categoryNames,
+    importance,  // 18,21,22,23,25
+    mode,
+    address: 'self'
+  };
+This is the current filter setting not the db.
+*/
 
-const authorId = userChoices.userId; //added this 16:51 April 7 to be different to 'userId'
-//////////////////////////////////////////////this happens even if not appropriate 21:19 Jan 9
-  const result = await saveNoteWithTags(user.id, {
+
+  console.log('reactToSaveButton()', { noteContent: noteContent, tags: userChoices });
+//why doesn't this contain 'importance' ???  21:08 Sept 14
+/*
+tags: Object { userId: "9066554d-1476-4655-9305-f997bff43cbb", toApproId: "9066554d-1476-4655-9305-f997bff43cbb", fromApproId: "9066554d-1476-4655-9305-f997bff43cbb", … 
+address: "self
+addressFilterActive: tru
+categories: Array(3) [ 34, 39, 9 ]
+0: 34
+1: 39
+2: 9
+length: 3 */
+  // --- SYNTAX FIX: Use 'userChoices' instead of 'tags' ---
+  // The 'userChoices' variable holds the tags.
+  // We can check the size of the set directly.
+  if (userChoices.categories.length === 0) {
+    console.log('✗ No tags');
+    return;
+  }
+  console.log(userChoices.categories.length, " tags found", 'userId:', userId);
+
+  const result = await saveNoteWithTags(null, {
     content: noteContent,
-    tags: categoryIds,
-    author_id: authorId,
-    audience_id:audience
+    tags: userChoices.categories,
+    author_id: userId,
+    audience_id: userChoices.toApproId
   });
 
   if (result) {
@@ -46,8 +69,6 @@ const authorId = userChoices.userId; //added this 16:51 April 7 to be different 
   } else {
     console.log('❌ Note save failed');
   }
-/////////////////////////////////////////////////
-
 }
 
 function cleanupPage() {

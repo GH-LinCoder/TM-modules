@@ -295,8 +295,9 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- User Management -->
  <div class="bg-orange-100 rounded-lg  shadow p-6" data-section='user-management' data-destination='user-management'>
-   <h2 class="text-lg font-semibold mb-2">User Management </h2>
+   <h2 class="text-lg font-semibold mb-2">Management </h2>
    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
+  
    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
         <!-- Signup-confirmed -->
@@ -315,93 +316,38 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     </div>
 </div>
 
-  </div>
-</div>
 
-
-<!-- new section March 30 -->
 
 <!-- permision management section -->
-<div class="bg-red-100 rounded-lg shadow p-6" data-section="permission-management" data-destination='permission-management'>
-  <h2 class="text-lg font-semibold mb-2">Permission Management</h2>
-  <p class="text-sm text-gray-500 mb-4">Click to carry-out the action, it opens below (you may need to scroll down) </p>
-<div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="permission-cards">
-  
- 
-      <!-- Create -->
-  <div class="bg-blue-50 border border-blue-200 rounded-lg p-4  cursor-pointer" data-action="open-create-bundle-appro">
-    <h3 class="text-sm font-medium text-blue-700 mb-1">Create a new permission bundle 🎆📦🔐</h3>
-    <p class="text-xs text-blue-600"> Admin can put permissions together in bundles and later assign all those permissions to someone in one go.</p>
+<div class="bg-red-100 border border-gray-200 rounded-lg  p-4 cursor-pointer"" data-section="permission-management-section" data-action="permission-management-section" data-destination='user-management' 
+title="Grant & remove permissions. Create bundles.">
+  <h3 class="text-sm font-medium text-gray-800">Permission Management</h3>
+  <p class="text-xs text-gray-500">
+  🔐 Grant permissions<br> 
+  🔒 Remove permissions<br>
+  📦 Create bundles of permissions</p>
+</div>
   </div>
-  
+</div>
 
-
-      <!-- Grant bundle of permissions -->
-  <div class="bg-yellow-100 border border-red-200 rounded-lg p-4 cursor-pointer" data-action="open-bundle-permissions-dialogue">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Grant a BUNDLE of permissions to someone 📦🔐</h3>
-    <p class="text-xs text-red-600">
-    Usually permissions are granted in preset bundles.
-The bundle has a name and a list of underlying permissions and a scope<br>
-(]BUNDLE:name[) - (]permission name[) - [scope]. <br>
-    </p>
-    <p class="text-xs text-red-600">
-    When a bundle of permissions is granted to someone the details can be seen in the display function 
-    </p>
-  </div>
-
-  <!-- Grant single permission -->
-  <div class="bg-green-50 border border-red-200 rounded-lg p-4 cursor-pointer" data-action='open-permissions-dialogue'>
-    <h3 class="text-sm font-medium text-red-700 mb-1">Grant a permission to someone 🔐</h3>
-    <p class="text-xs text-red-600">This is for bespoke permissions where you need to select specific permissions to grant to someone. 
-    Sometimes you need to grant a specific permission that is not in a bundle.
-    Both kinds end up as individual permissions stored as a colection of three things<br>
-    [the person] - [the permission name] - [ the scope of the permission ]<br> 
-    </p>
-  </div>
-
-  <!-- Revoke permission or bundle of permissions -->
-    <div class="bg-yellow-50 border border-red-200 rounded-lg p-4 cursor-pointer" data-action='open-permissions-revoke-dialogue'>
-    <h3 class="text-sm font-medium text-red-700 mb-1">Revoke a permission someone has 🗑️ 🔐</h3>
-    <p class="text-xs text-red-600">Removing a permission or bundle of permissions effects the individual's ability to see or change data in the database. 
-    <br>
-    All bundle permissions are stored as individual permissions:<br>
-    [the person] - [the permission name] - [ the scope of the permission ]<br>
-    </p>
-  </div>
-
-      <!-- Display -->
-  <div class="bg-blue-100 border border-red-200 rounded-lg p-4 cursor-pointer" data-action="display-related-approfiles-dialogue">
-    <h3 class="text-sm font-medium text-red-700 mb-1">Display permissions 👁️🔐</h3>
-     <p class="text-xs text-blue-600">See who has which permisions. The permissions are under the 'Rules' tab.</p>
-    </div>
-
-
- <!-- Search -->
-  <div class="bg-gray-50 border border-blue-200 rounded-lg p-4 cursor-pointer" data-action="permission-search">
-    <h3 class="text-sm font-medium text-gray-300 mb-1">Search permissions</h3>
-    <p class="text-xs text-gray-300">This searches the permissions. If you want to search approfiles, try the other section. </p>
-  </div>
-
-
+    <!-- section removed sep 15 2026 -->
+    <!--div class="grid md:grid-cols-3 lg:grid-cols-4 gap-6" id="permission-cards"-->
+    <!-- Create -->
+    <!-- Grant bundle of permissions -->
+    <!-- Grant single permission -->
+    <!-- Revoke permission or bundle of permissions -->
+    <!-- Display -->
+    <!-- Search -->
     <!-- Edit -->
-  <div class="bg-gray-50 border border-blue-200 rounded-lg p-4" data-action="edit-permission-bundle">
-    <h3 class="text-sm font-medium text-gray-300 mb-1">Edit an existing permission Bundle</h3>
-    <p class="text-xs text-gray-300">Editing a bundle means removing or adding permissions.</p>
-  </div>
+    <!-- Delete --> 
+    <!--/div-->
 
-      <!-- Delete -->
-  <div class="bg-gray-50 border border-blue-200 rounded-lg p-4" data-action="delete-permission_bundle">
-    <h3 class="text-sm font-medium text-gray-300 mb-1">Delete an existing permission bundle</h3>
-    <p class="text-xs text-gray-300">Deletion of a bundle means that you can't grant that bundle of permissions to anyone in future, but deleting it does not effect anyone who had been granted this bundle. They continue to have the permissions. When you display permissions for such a person you will no longer know that they were granted this bundle if you delete the bundle.</p>
-  </div>
-
-</div>
-</div>
 
 <!-- Settings -->
 <div class="bg-gray-100 rounded-lg shadow p-6" data-section='settings' data-destination='settings'>
   <h2 class="text-lg font-semibold mb-2">Settings  ⚙️  ⚙️</h2>
   <p class="text-sm text-gray-500 mb-4">System configuration and administrative settings</p>
+
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
 
@@ -436,318 +382,21 @@ The bundle has a name and a list of underlying permissions and a scope<br>
 </div>
 
 
- <div class="bg-gray-100 rounded-lg shadow p-6">
-    <h2 class="text-lg font-semibold mb-2 text-red-500">All the currently useful sections are above</h2>
-    <p class="text-sm text-red-500 mb-4">Below are placeholder sections for future development</p>
- </div>
-
-
-
-  <!-- Quick Acts OLD-->
-  <div class="bg-red-100 rounded-lg shadow p-6" data-section="placeholder" data-destination='placeholder'>
-    <h2 class="text-lg font-semibold mb-2">Placeholder actions 🌀</h2>
-    <p class="text-sm text-gray-500 mb-4">Move student is under development, selector is a trial of opening below instead of at right</p>
- 
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4" >
-
-<!-- MOVE STUDENT -->    
-    <div class="bg-red-50 border border-green-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='move-student-dialogue'>
-      <h3 class="text-sm font-medium text-green-700">Move Student 🧑‍🎓</h3>
-      <p class="text-xs text-gray-500">Every task starts with a third step...  You can move the student to the next step, and maybe even complete the task, (or give-up)</p>
-    </div>
-
-
-<!-- SELECTOR -->
-    <div class="bg-green-50 border border-indigo-200 rounded-lg p-4 cursor-pointer hover:shadow-md" data-action='selector-dialogue'>
-      <h3 class="text-sm font-medium text-indigo-700">Select to remember 📝</h3>
-      <p class="text-xs text-gray-500">List things & click to remember them. Can use to automatically fill-in forms. (Opens in new panel)</p>
-    </div>    
+  
 
   </div>
 </div>
-
-
-
-
-
-
-
-    <!-- Task Management -->
-<div class="bg-green-100 rounded-lg shadow p-6" data-section='task-management' data-destination='task-management'>
-  <h2 class="text-lg font-semibold mb-2">Task Management 🔧</h2>
-  <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
-  <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-<!-- TASK -->    
-    <div class="bg-yellow-100 border border-orange-200 rounded-lg p-4 cursor-pointer" data-action='task-management-section'>
-      <p class="text-3xl font-bold text-yellow-900" data-value="tasks-count">?</p>
-      <h3 class="text-sm font-medium text-yellow-700">Tasks 🔧</h3>
-      <p class="text-xs text-gray-600">Create, edit, and organize tasks</p>
-    </div>
-
-<!-- ASSIGNMENT -->
-    <div class="bg-red-50 border border-red-200 rounded-lg p-4 cursor-pointer" data-action='assignment-management-section'>
-      <p class="text-3xl font-bold text-red-900" data-value="assignments-count">?</p>
-      <h3 class="text-sm font-medium text-red-700">Assignment of tasks 👨‍🔧</h3>
-      <p class="text-xs text-gray-500">Track and manage task assignments</p>
-    </div>
-
-
-<!-- AUTHORS -->    
-    <div class="bg-yellow-50 border border-purple-200 rounded-lg p-4" data-action='author-management-section'>
-      <p class="text-3xl font-bold text-purple-900" data-value="authors-count-unique">?</p>
-      <h3 class="text-sm font-medium text-purple-700">Authors of tasks</h3>
-      <p class="text-xs text-purple-500">View and manage task authors</p>
-    </div>    
-
-<!-- STUDENT -->
-    <div class="bg-red-50 border border-green-200 rounded-lg p-4" data-action='student-management-section'>
-      <p class="text-3xl font-bold text-green-900" data-value="students-count-unique">?</p>
-      <h3 class="text-sm font-medium text-green-700">Students of tasks</h3>
-      <p class="text-xs text-green-500">View and manage students assigned to tasks</p>
-    </div>
-
-<!-- MANAGERS -->    
-    <div class="bg-red-50 border border-indigo-200 rounded-lg p-4" data-action='manager-management-section'>
-      <p class="text-3xl font-bold text-indigo-900" data-value="managers-count-unique">?</p>
-      <h3 class="text-sm font-medium text-indigo-700">Managers of tasks</h3>
-      <p class="text-xs text-indigo-500">View and manage task managers</p>
-    </div>
-
-  </div>
-</div>
-
-
+<!-- Task Management -->
 <!-- KNOWLEDGE MANAGEMENT -->
-  <div class="bg-indigo-200 rounded-lg shadow p-6" data-section='knowledge-management' data-destination='knowledge-management'>
-    <h2 class="text-lg font-semibold mb-2">Knowledge Management 📚</h2>
-    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-    <!-- Surveys & Quiz-->         
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 cursor-pointer" data-section="knowledge" data-action="survey-management-section">
-      <p class="text-3xl font-bold text-blue-900" data-value="surveys-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Surveys & Quiz 📜</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage any survey or quiz including automations</p>
-    </div>
-
-
-<!-- ALL HOWTOS-->         
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="knowledge">
-      <p class="text-3xl font-bold text-blue-900" data-value="howto-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">All how to knowledge</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage any of the training or instructional knowledge</p>
-    </div>
-
-<!-- TASK KNOWLEDGE-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="task-apknowledge">
-      <p class="text-3xl font-bold text-indigo-900" data-value="task-knowledge-count">?</p>
-      <h3 class="text-sm font-medium text-indigo-700">Task knowledge</h3>
-      <p class="text-xs text-gray-500">View and manage the knowledge for tasks</p>
-    </div>
-
-<!-- MEMBER KNOWLEDGE-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="member_approfiles">
-      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-purple-700">Member knowledge</h3>
-      <p class="text-xs text-gray-500">View and manage the knowledge for members</p>
-    </div>
-
-<!-- GROUP KNOWLEDGE-->    
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="group_approfiles">
-      <p class="text-3xl font-bold text-blue-900" data-value="profiles-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Group knowledge</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage  the knowledge for groups</p>
-    </div>
-
-<!-- ABSTRACT KNOWLEDGE-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="abstract_approfiles">
-      <p class="text-3xl font-bold text-pink-900" data-value="abstract-approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-pink-700">Abstract knowledge</h3>
-      <p class="text-xs text-gray-500">View and manage abstract knowledge</p>
-    </div>
-
-<!-- RELATE KNOWLEDGE-->    
-    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="relationships">
-      <p class="text-3xl font-bold text-yellow-900" data-value="relationships-count">?</p>
-      <h3 class="text-sm font-medium text-yellow-700">Relationship knowledge</h3>
-      <p class="text-xs text-gray-500">Assign and organize knowledge about relationships between approfiles</p>
-    </div>
-
-<!-- RELATIONSHIPS KNOWLEDGE-->    
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="relations">
-      <p class="text-3xl font-bold text-red-900" data-value="relations-count">?</p>
-      <h3 class="text-sm font-medium text-red-700">Relations</h3>
-      <p class="text-xs text-gray-500">Create and edit the knowledge on the concept of a relationship that can be applied to any two approfiles</p>
-    </div>
-
-  </div>
-</div>
-
 <!-- Relations & hierarchy Management -->
-  <div class="bg-orange-100 rounded-lg shadow p-6" data-section='r&h-management' data-destination='r&h-management'>
-    <h2 class="text-lg font-semibold mb-2">Relations & hierarchy Management 🏯</h2>
-    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-
-
-<!-- Approfiles -->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 cursor-pointer" data-action='approfile-management-section'>
-      <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Appros 🪪</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage any kind of approfiles: personal, task based or abstract, approfiles</p>
-    </div>
-
-
-<!-- HUMAN APPROFILES-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="member_approfiles">
-      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-purple-700">Human approfiles</h3>
-      <p class="text-xs text-gray-500">View and manage the approfiles for members</p>
-    </div>
-
-
-    <!-- TASK APPROFILES-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="task-approfiles">
-      <p class="text-3xl font-bold text-indigo-900" data-value="task-profiles-count">?</p>
-      <h3 class="text-sm font-medium text-indigo-700">Task approfiles</h3>
-      <p class="text-xs text-gray-500">View and manage the approfiles for tasks</p>
-    </div>
-
-<!-- GROUP APPROFILES-->    
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="group_approfiles">
-      <p class="text-3xl font-bold text-blue-900" data-value="approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Group Profiles</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage  the approfiles fo groups</p>
-    </div>
-
-<!-- ABSTRACT APPROFILES-->
-    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="abstract_approfiles">
-      <p class="text-3xl font-bold text-pink-900" data-value="abstract-app-profiles-count">?</p>
-      <h3 class="text-sm font-medium text-pink-700">Abstract approfiles</h3>
-      <p class="text-xs text-gray-500">View and manage abstract approfiles</p>
-    </div>
-
-<!-- RELATE APPROFILES-->    
-    <div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="relationships">
-      <p class="text-3xl font-bold text-yellow-900" data-value="relationships-count">?</p>
-      <h3 class="text-sm font-medium text-yellow-700">Relationships</h3>
-      <p class="text-xs text-gray-500">Assign and organize relationships between approfiles</p>
-    </div>
-
-<!-- RELATIONSHIPS-->    
-    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="relations">
-      <p class="text-3xl font-bold text-red-900" data-value="relations-count">?</p>
-      <h3 class="text-sm font-medium text-red-700">Relations</h3>
-      <p class="text-xs text-gray-500">Create and edit the concept of a relationship that can be applied to any two approfiles</p>
-    </div>
-
-  </div>
-</div>
-
-
 <!-- AUTOMATION MANAGEMENT -->
-  <!--div class="bg-yellow-50 rounded-lg shadow p-6" data-section='automation-management' data-destination='automation-management'>
-    <h2 class="text-lg font-semibold mb-2">Automation Management 🚂</h2>
-    <p class="text-sm text-gray-500 mb-4">Clicking any card expands that section below. Everything you can do, you probably do it in the expanded section.</p>
-    <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4"-->
 
-    <!-- Surveys & Quiz-->         
-    <!--div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation" data-action="automation-survey">
-      <p class="text-3xl font-bold text-blue-900" data-value="surveys-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Surveys & Quiz automations </h3>
-      <p class="text-xs text-gray-500">View, edit, and manage any survey or quiz including automations</p>
-    </div-->
-
-    <!-- TASK automation-->
-    <!--div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-task">
-      <p class="text-3xl font-bold text-indigo-900" data-value="task-automation-count">?</p>
-      <h3 class="text-sm font-medium text-indigo-700">Task automations</h3>
-      <p class="text-xs text-gray-500">View and manage the automation for tasks</p>
-    </div-->
-
-    <!-- HOWTOS-->         
-    <!-- div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-knowledge">
-      <p class="text-3xl font-bold text-blue-900" data-value="howto-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">How to automation</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage any of the training or instructional automation</p>
-    </div -->
-
-
-
-<!-- MEMBER automation-->
-    <!-- div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-member">
-      <p class="text-3xl font-bold text-purple-900" data-value="member-approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-purple-700">Member automation</h3>
-      <p class="text-xs text-gray-500">View and manage the automation for members</p>
-    </div -->
-
-<!-- GROUP automation-->    
-    <!-- div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-group">
-      <p class="text-3xl font-bold text-blue-900" data-value="profiles-count">?</p>
-      <h3 class="text-sm font-medium text-blue-700">Group automation</h3>
-      <p class="text-xs text-gray-500">View, edit, and manage  the automation for groups</p>
-    </div -->
-
-<!-- ABSTRACT automation-->
-    <!-- div class="bg-blue-50 border border-blue-200 rounded-lg p-4" data-section="automation-abstract">
-      <p class="text-3xl font-bold text-pink-900" data-value="abstract-approfiles-count">?</p>
-      <h3 class="text-sm font-medium text-pink-700">Abstract automation</h3>
-      <p class="text-xs text-gray-500">View and manage abstract automation</p>
-    </div -->
-
-<!-- RELATE automation-->    
-    <!-- div class="bg-red-50 border border-red-200 rounded-lg p-4" data-section="automation-relations">
-      <p class="text-3xl font-bold text-yellow-900" data-value="relationships-count">?</p>
-      <h3 class="text-sm font-medium text-yellow-700">Relationship automation</h3>
-      <p class="text-xs text-gray-500">Assign and organize automation about relationships between approfiles</p>
-    </div -->
-
-<!-- RELATIONSHIPS automation-->    
-    <!-- div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4" data-section="automation-relationships">
-      <p class="text-3xl font-bold text-red-900" data-value="relations-count">?</p>
-      <h3 class="text-sm font-medium text-red-700">Relations</h3>
-      <p class="text-xs text-gray-500">Create and edit the automation on the concept of a relationship that can be applied to any two approfiles</p>
-    </div -->
-
-  <!-- /div>
-</div-->
-
-
-
-
-
-
-
-
-<!-- end of new section -->
-
-<!-- deleted old hidden forms.  15:52 Sept 9 2025 -->
-
-   
-</section>
    ${petitionBreadcrumbs()} 
 `}
+
 
 export function render(panel, petition = {}) {
     console.log('adminDash Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
 
-     //? query.petitioner : 'unknown';
- //   console.log('Petition:', petition);
-  //  panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}- ${petition.Destination}</p>`;
-   // panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
-  }
-//petitioner
-
-// is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
-//it has to be called prior to passing it in the query{} object when we call this module
-//in adminListeners.js, when we call appState.setQuery(), we need to have added petitioner: petition
-//then we can access it here in the render() function
-//we can also add a default value of 'unknown' if it is not passed
-//so we can see where we are when we open the a new page
-
-//the call here isn't from adminListeners it is from the menu button in the dashboard
-//so we need to also assign petitioner: {Module:'dashboard', Section:'menu', Action:'howTo'} when we call this module from the menu button
-//we can do this in the dashboardListeners.js file
-//we can also add a default value of 'unknown' if it is not passed
+}

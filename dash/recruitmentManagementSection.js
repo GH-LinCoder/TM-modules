@@ -85,6 +85,12 @@ function getTemplateHTML() {
 <!-- Recruitment Management Section -->
 <div class="bg-green-50 rounded-lg shadow p-6" data-section="recruitment-management">
     <h2 class="text-lg font-semibold text-gray-800 mb-4">Invite Others to Join 👥</h2>
+
+       <button data-action="recruitment-management-section" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
     
     <!-- Explanation -->
     <div class="mb-6 bg-white rounded-lg p-4 border border-green-200">

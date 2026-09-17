@@ -59,7 +59,8 @@ console.log('displaySurvey().render()) panel', panel);
     autoPetition.auth_id = subject.id; // prepare all the params to be sent to the rpc function permissions_judge
     autoPetition.appro_id = subject.approUserId;
     console.log('autoPetition',autoPetition);
-    
+
+    panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     const assignments = await executeIfPermitted(
       appState.query.userId,
       'readAssignmentsSurveys',
@@ -81,11 +82,13 @@ console.log('assignments',assignments);
      //autoPetition.survey_answer_id = //where get this? 
      console.log('autoPetition',autoPetition);
      
+      panel.insertAdjacentHTML('beforeend', '<div data-survey-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
       const surveyRows = await executeIfPermitted(
         appState.query.userId,
         'readSurveyView',
         { survey_id: assignment.assignment.survey_header }
       );
+      panel.querySelector('[data-survey-loading]')?.remove();
 console.log('surveyRows',surveyRows, 'assignment', assignment);
       if (!surveyRows?.length) continue;
 

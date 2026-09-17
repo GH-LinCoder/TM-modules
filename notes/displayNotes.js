@@ -5,7 +5,7 @@ console.log('displayNotes.js');
 //import { renderNotes } from "./labNotesToInclude.js";  
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { appState } from '../state/appState.js';
-import { collectUserChoices, messageAddress, clickLogic, userChoices } from './collectUserChoices.js';
+import { collectUserChoices, userChoices } from './collectUserChoices.js';
 import { resolveSubject} from '../utils/contextSubjectHideModules.js'
 /**
 userChoices = { //amended 12:22 March 16 2026
@@ -49,7 +49,7 @@ function escapeHtml(text) {
 
 
 export function xfilter() {//not called
-    const { address, categories, importance, mode } = userChoices;
+  const { categories, mode } = userChoices;
 
     return pageOfNotes.filter(note => { // for each note include or dsicard
 
@@ -79,7 +79,7 @@ export function xfilter() {//not called
  * @param {Array} notes - Raw notes array from DB
  * @returns {Array} Filtered notes
  */
- function filterNotesAccordingToUserChoices(xnotes) {
+ function filterNotesAccordingToUserChoices() {
     //const notes = pageOfNotes;
     collectUserChoices();//places the values in a global userCoices
     console.log('🔍 Filtering pageOfNotes with userChoices:', userChoices, 'length',pageOfNotes.notes.length, 'userChoices',userChoices);
@@ -109,119 +109,23 @@ console.log('No tags + need tags to display');
 //new filterByAddress 20:03 March 16
 
 function filterByAddress(notes) { //anomolies in test March 18 FROM gives zero notes when it should give all
- console.log('filterByAddress()' );  // to + respondent is giving everyone. Should just be respondent
+  const viewerId = userChoices.userId;
+  const fromApproId = userChoices.fromApproId;
+  if (!viewerId) return notes;
 
-
-const userId = userChoices.userId; //this is from the clipboard may not be what user wants
-const address = userChoices.address;
-const respondent = userChoices.respondent || null; 
-//the dropdown gives the 'respondent' this is a way to filter and to address
-
-
- console.log('🔍 filterByAddress userId check:', {
-    localUserId: userId,              // ← 
-    objectUserId: userChoices.userId, // ← The live object property (should be set)
-    areTheySame: userId === userChoices.userId
-  });
-
-
-
-
-console.log('filter by address: these notes',notes,'with userId',userId, 'address',address, 'respondent',respondent);
-
-  const uid = String(userId); // isn't it already a string?
-  const respondentId = respondent ? String(respondent) : null; //Why are we using 'respondent' ?
-
-  // Helper: dedupe by note.id
-  const dedupe = (a, b) => {
-    const seen = new Set(a.map(n => n.note_id));
-    return [
-      ...a,
-      ...b.filter(n => {
-        if (seen.has(n.note_id)) return false;
-        seen.add(n.note_id);
-        return true;
-      })
-    ];
-  };
-
-  // -------------------------
-  // MODE: TO
-  // -------------------------
-  if (address === 'to') {
-    if (respondentId) {
-      return notes.filter(n =>
-        String(n.audience_id) ===respondentId && //r id is respondent id (from the drop-down) audeince Id is from the note -who it is addressed to
-        String(n.author_id) === uid //uid is user id
-      );
-    }
-    return notes.filter(n =>
-      String(n.audience_id) !== uid &&
-      String(n.author_id) === uid
+  // With the logged-in appro selected, show both sides of the user's own
+  // conversation. A different sender is restricted to messages addressed to the viewer.
+  if (!fromApproId || String(fromApproId) === String(viewerId)) {
+    return notes.filter(note =>
+      String(note.author_id) === String(viewerId) ||
+      String(note.audience_id) === String(viewerId)
     );
   }
 
-  // -------------------------
-  // MODE: FROM
-  // -------------------------
-  if (address === 'from') {
-    if (respondentId) {
-      return notes.filter(n =>
-        String(n.author_id) ===respondentId &&
-        String(n.audience_id) === uid
-      );
-    }
-    return notes.filter(n =>
-      String(n.author_id) !== uid &&
-      String(n.audience_id) === uid
-    );
-  }
-
-  // -------------------------
-  // MODE: SELF
-  // ------------------------- //this was coded to use 'respondent' but the UI supplies 'audience'
-  if (address === 'self') {
-    let store1 = notes.filter(n => String(n.author_id) === uid);
-    let store2 = notes.filter(n => String(n.audience_id) === uid);
-console.log('store1', store1,'used author_id===',uid, 'store2', store2, 'used audience_id===',uid);    
- 
-
-if (respondentId && respondentId.length > 0) { //respondent id was made into a string and so always exists?
-      store1 = store1.filter(n => String(n.audience_id) ===respondentId);
-      store2 = store2.filter(n => String(n.author_id) ===respondentId);
-  //If there is a vlue in the dropdown do extra filtereing for message ebtween us 
- 
-     }
-
-    return dedupe(store1, store2);
-  }
-
-  // -------------------------
-  // MODE: REPLY
-  // -------------------------
-  if (address === 'reply') {
-    let store1 = notes.filter(n =>
-      n.reply_to_id &&
-      String(n.author_id) === uid
-    );
-
-    let store2 = notes.filter(n =>
-      n.reply_to_id &&
-      String(n.audience_id) === uid
-    );
-
-    if (respondentId) {
-      store1 = store1.filter(n => String(n.audience_id) === respondentId);
-      store2 = store2.filter(n => String(n.author_id) === respondentId);
-    }
-
-    return dedupe(store1, store2);
-  }
-
-  // -------------------------
-  // DEFAULT: no address filter
-  // -------------------------
-  return notes;
+  return notes.filter(note =>
+    String(note.author_id) === String(fromApproId) &&
+    String(note.audience_id) === String(viewerId)
+  );
 }
 
 // Sub-filter: Category logic (reads from global userChoices)
@@ -235,16 +139,6 @@ function filterByCategories(notes) {
         mode,
         noteCount: notes.length,
     });
-/*
-  // ✅ Log first note's category_ids
-    if (notes[0]) {
-        console.log('📊 First note category_ids:', {
-            value: notes[0].category_ids,
-            types: notes[0].category_ids?.map(c => typeof c),
-            length: notes[0].category_ids?.length
-        });
-    }
-*/
 
     // Determine match function based on mode
     // 'more-clicks-fewer-notes' = AND (all selected categories must match)
@@ -265,42 +159,44 @@ return notes.filter(note => {
         return result;
     });    
 
-/*
-    return notes.filter(note => { //create a new array, go through notes and add to new array of items returned 
-        // Exclude notes with no categories when filtering by category (strict mode)
-        if (!note.category_ids?.length) return false;
-        
-        // Check if note's category_ids match selected categories
-        //note.category_ids  Array of integers: [34, 9]
-        //[matchFn] Dynamically calls either .every() or .some()
-        //id => categories.includes(id) For each id in the note, check if it's in the user's selected categories
-        return note.category_ids[matchFn](id => categories.includes(id));
-    });
-*/
-    }
 
+    }
+/* returned from collectUserChoices.js
+  userChoices = {
+    ...userChoices,
+    toApproId,
+    fromApproId,
+    respondent: toApproId,
+    categories,
+    categoryNames,
+    importance,
+    mode,
+    address: 'self'
+  };
+This is the current filter setting not the db.
+*/
 
 function getHTMLofUserChoices(){ // turn the object into text to show the user what filters are to be applied
     const { address, categories, importance, mode } = userChoices;
     return`
-        <div><strong> Filters:</strong> 
- <span class="text-orange-600 w-20">
+        <div  class="font-light text-xs"><strong> Filters:</strong> 
+ <span class="text-orange-600 w-20 text-xs">
      ADDRESS  [ ${address} ]</span> : 
-        <span class="font-medium w-20"></span>
- <span class="text-blue-600 w-20">
+        <span class="font-light w-20"></span>
+ <span class="text-blue-600 w-20 text-xs">
      TAGS  (  ${categories.length ? categories.join(', ') : 'none'} 
  </span>
- <span class="font-medium w-5">=</span>
- <span class="text-blue-600 w-20">
+ <span class="font-light w-5">=</span>
+ <span class="text-blue-600 text-xs w-20">
          ${userChoices.categoryNames.length ? userChoices.categoryNames.join(', ')
     : 'none'
 } ) </span>
 <span class="font-medium w-20"></span>
-<span class="text-red-600 w-20">
+<span class="text-red-600 text-xs w-20">
   : importance ${importance || 'none'}
   </span>   
-  <span class="font-medium w-20"></span>
-<span class="text-green-600 w-20">
+  <span class="font-light w-20"></span>
+<span class="text-green-600 text-xs w-20">
   MODE ${mode}
   </span>   
   </div>
@@ -339,6 +235,8 @@ console.log('userChoices.userId',userChoices.userId); // this is auth id.
 if(page < 1) page = 1; 
 else 
   if (page && totalPages) if (page>totalPages) page = totalPages; //totalPages is initially undefined
+const output1 = document.getElementById('output'); //this spinner doesn't work
+        output1.innerHTML = `<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading notes...</div>`;
 
   try {
     pageOfNotes = await executeIfPermitted(userId, 'fetchNotes', { page, pageSize});  
@@ -401,53 +299,6 @@ if (toggleBtn) {
         }
       }
 
-//There is some code in saveNoteWithTags to add metadata but it isn't fully worked to only add when relevant
-// const enhancedContent = content + `{{{metadata:\n${formattedMetadata}`;
-//that would add the content of petitionHistory 
-function splitContentFromMetadata(note) {  //idea not called because render can't handle the return
-  console.log('splitContentFromMeta()');
-  const container = document.createElement('div');
-  container.className = 'note-block';
-
-  const hasMetadata = note.content.includes('{{{metadata:');
-
-  let mainContent = note.content;
-  let metadataBlock = null;
-
-  if (hasMetadata) {
-    const [rawMain, rawMeta] = note.content.split('{{{metadata:');
-    mainContent = rawMain.trim();
-
-    try {
-      const parsedMetadata = JSON.parse(rawMeta.trim());
-
-      metadataBlock = document.createElement('pre');
-      metadataBlock.className = 'note-metadata';
-      metadataBlock.textContent = JSON.stringify(parsedMetadata, null, 2);
-      metadataBlock.style.display = 'none'; // hidden by default
-
-      const toggleButton = document.createElement('button');
-      toggleButton.textContent = 'Meta';
-      toggleButton.className = 'meta-toggle';
-      toggleButton.onclick = () => {
-        metadataBlock.style.display =
-          metadataBlock.style.display === 'none' ? 'block' : 'none';
-      };
-
-      container.appendChild(toggleButton);
-      container.appendChild(metadataBlock);
-    } catch (err) {
-      console.warn('Failed to parse metadata:', err);
-    }
-  }
-
-  const contentBlock = document.createElement('p');
-  contentBlock.textContent = mainContent;
-  container.appendChild(contentBlock);
-
-  return container;  // but the calling function can't handle a container.
-}
-
 // In displayNotes.js - replace the broken reRenderNotes:
 
 export function reRenderNotes() {
@@ -465,13 +316,16 @@ export function reRenderNotes() {
 
 export async function renderNotes(notes, totalCount, page, pageSize) {
         console.log('renderNotes()', page );
+const output = document.getElementById('output'); //this spinner doesn't work
+//        output.innerHTML = `<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading notes...</div>`;
+
 if(page >totalPages) page = totalPages; //safety check
 else if(page < 1) page = 1;
 
 
         const filteredNotes = filterNotesAccordingToUserChoices(notes);
 //could do something if no notes - could explain and allow removal of filters or just explain and return-
-        const output = document.getElementById('output');        
+        //const output = document.getElementById('output');        
         let previousInt = null;
 
         const notesHtml = filteredNotes
@@ -485,10 +339,6 @@ else if(page < 1) page = 1;
             previousInt = note.sort_int;
         
             const content = escapeHtml(note.content || '');
-        
-            const shortContent = content.length > 2000
-              ? `${content.slice(0, 2000)}<span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [more]</span><span class="hidden extra-content">${content.slice(2000)} <span class="text-blue-600 cursor-pointer hover:text-blue-800 toggle-content"> [less]</span></span>`
-              : content;
         
             const iconHTML = getIconHTML(note.status);
             const statusAttr = note.status ?? '';
@@ -524,13 +374,15 @@ else if(page < 1) page = 1;
   */    
          
           return  getHTMLofUserChoices() + `
-              <div class="mb-3"  ">
-          <div   class="bg-white p-4 rounded-lg border  hover:shadow-sm transition-all cursor-pointer group"
+              <div class="mb-3"  >
+          <div   class="bg-gray-50 p-4 rounded-lg border  hover:shadow-sm transition-all cursor-pointer group"
                >
             
             <!-- Status bar - top center -->
 
-            <div data-action="change-status" data-note-id="${note.note_id}" ${statusClass} class=" flex items-center justify-center mb-3 py-1 bg-gray-50 rounded text-xs font-medium text-gray-600" >
+            <div data-action="change-status" data-note-id="${note.note_id}" ${statusClass} 
+            class=" flex items-center justify-center mb-3 py-1 bg-gray-100 rounded text-xs 
+            font-light text-gray-600 hover:drop-shadow" title="Click to change the status.">
               
             <div class="status-bar"  >
             <span>Status: ${statusText}</span>
@@ -541,45 +393,63 @@ else if(page < 1) page = 1;
               
            </div>
                 
-                <!-- Note content -->
-                <div data-note-id="${note.note_id}-body" 
-                
-                data-note-content= "${content}" 
-                data-note-name="${note.author_name}" 
-                data-note-int="${note.sort_int}"  
+                <!-- Note meta & content -->
+<div 
+                data-note-int="${note.sort_int}"
+                data-note-id="${note.note_id}-body"
+
+                data-note-name="${note.author_name}"   
                 data-note-author-id="${note.author_id}"
                 data-note-audience-id="${note.audience_id}" 
-            
-            "class="space-y-2 text-sm text-gray-800">
+                data-note-content= "${content}" 
+
+class="flex mb-5 bg-white border rounded-lg p-2 drop-shadow-xl hover:drop-shadow" title="Click to copy the text & details into a new message.">
+                    <span class="bg-white font-light text-gray-600  text-sm w-20">Content:</span>
+                   <span class="bg-white text-gray-800 font-medium flex-1  whitespace-pre-line">${content}</span>
+                  </div>
+
+
+                <div 
+                data-note-int="${note.sort_int}"
+                data-note-id="${note.note_id}-body"
+
+                data-note-name="${note.author_name}"   
+                data-note-author-id="${note.author_id}"
+                data-note-audience-id="${note.audience_id}" 
+                data-note-content= "${content}" 
+
+            class="space-y-2 bg-gray-100 hover:drop-shadow" title="Click to copy the text & details into a new message.">
                   <p class="flex items-center">
-                    <span class="font-medium w-20">Number:</span>
-                    <span class="text-gray-600">${note.sort_int} </span>
-                    <span class="font-medium w-40"></span>
-                    <span class="font-medium w-20">Id:</span>
-                    <span class="text-gray-600">${note.note_id}<span>
+                    <span class="bg-gray-100 text-xs font-light text-gray-600 w-15">Number:</span>
+                    <span class="bg-gray-100 text-xs font-light text-gray-600">${note.sort_int} </span>
+                    <span class="bg-gray-100 text-xs font-light text-gray-600 w-10"></span>
+                    <span class="bg-gray-100 text-xs font-light text-gray-600">Id:</span>
+                    <span class="bg-gray-100 text-xs font-light text-gray-600">${note.note_id}<span>
+                  <!--/p-->
+                  <p class="flex items-center text-xs font-light">
+                    <!--span class="font-light w-20">Created:</span-->
+                    <span class="text-gray-600">Created: ${new Date(note.created_at).toLocaleString()}</span>
                   </p>
-                  <p class="flex items-center">
-                    <span class="font-medium w-20">Tags:</span>
-                    <span class="text-blue-600"> ${note.category_ids} </span>
-                    <span class="font-medium w-5"> </span>
-                    <span class="font-medium w-5">=</span>
-                    <span class="font-medium w-5"> </span>
-                    <span class="text-blue-600"> ${note.category_names} </span>
+
+                  <!--span class="flex items-center  bg-gray-100 text-xs font-light text-gray-600"-->
+                    <span class="text-blue-600 text-xs font-light w-10">Tags:</span>
+                    <span class="text-blue-600 text-xs font-light"> ${note.category_ids} </span>
+                    <!--span class=" w-1"> </span-->
+                    <span class=" w-1">=</span>
+                    <span class=" w-1"> </span>
+                    <span class="text-blue-600 text-xs font-light"> ${note.category_names} </span>
                   </p>
 
 
-                  <p class="flex items-center">
-                    <span class="font-medium w-20">Author:</span>
-                    <span class="text-gray-600">${note.author_name} => Audience: ${note.audience_name}</span>
+                  <p class="text-sm font-light">
+                    <span class="font-light text-xs text-gray-800 w-10">From:</span>
+                    <span class="text-green-600 text-sm w-10"> ${note.author_name} </span>
+                    <span class="font-light text-gray-800 text-xs w-10"> => To:</span>
+                    <span class="text-green-600 text-sm w-10"> ${note.audience_name}</span>
                   </p>
-                  <p class="flex items-center">
-                    <span class="font-medium w-20">Created:</span>
-                    <span class="text-gray-600">${new Date(note.created_at).toLocaleString()}</span>
-                  </p>
-                  <p class="flex">
-                    <span class="font-medium w-20 pt-1">Content:</span>
-                   <span class="text-gray-700 flex-1  whitespace-pre-line">${content}</span>
-                  </p>
+
+
+                  
                 </div>
               </div>
             </div>

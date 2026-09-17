@@ -10,7 +10,7 @@ import { appState } from '../state/appState.js';
 //import {tagNoteByNames} from './tags.js';
 import { displayNotes } from './displayNotes.js';
 import {cleanupNoteInput} from './cleanupNoteInput.js';
-import { collectUserChoices, messageAddress, clickLogic, userChoices } from './collectUserChoices.js';
+//import { collectUserChoices, messageAddress, clickLogic, userChoices } from './collectUserChoices.js';
 
 
 /**
@@ -42,12 +42,9 @@ console.log("getUserInputWriteToDb()");
 //out of date as based on html value=text  and tags array that used text names.
 
 
-//called from reactToSaveButton It shouldn't be here - breaks rule of executeIfPermitted
+//called from reactToSaveButton 
 export async function saveNoteWithTags(supabase, params = {}) {
-  
-//out of date
-  
-  
+   
   const {  
     author_id = userId,
     audience_id = null,
@@ -89,7 +86,7 @@ console.log('📥 [save] tags:', tags);
       title,
      content: enhancedContent,
       status
-    });
+    }); // doesn't handle tags
 
 
     console.log(`Note inserted with ID: ${noteId}`);
@@ -146,6 +143,7 @@ export async function readCategoryMap() {
  */
 export async function linkNoteToCategories(noteId, categoryIds) {
   //tests 17:00 19 Aug
+  console.log('categoryIds',categoryIds);
   if (!noteId) console.log('No noteId'); 
    console.log('categoryId.length:', categoryIds.length);
   

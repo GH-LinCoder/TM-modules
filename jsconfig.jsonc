@@ -1,0 +1,77 @@
+{
+  // ------------------------------------------------------------
+  // JS Project Configuration for VS Code
+  // ------------------------------------------------------------
+  // This file tells VS Code how to interpret the JavaScript in
+  // this project: module resolution, IntelliSense behaviour,
+  // path aliases, and which files belong to the workspace.
+  // ------------------------------------------------------------
+
+  "compilerOptions": {
+
+    // ----------------------------------------------------------
+    // JavaScript Checking
+    // ----------------------------------------------------------
+    // allowJs: true  → Include .js files in the project.
+    // checkJs: false → Do NOT type-check JS (keeps flexibility).
+    //
+    // If set to true, VS Code will treat JS like lightly typed TS
+    // and produce warnings for dynamic patterns used throughout
+    // the app (clipboard mutations, flexible render signatures,
+    // dynamic imports, etc.).
+    // ----------------------------------------------------------
+    "allowJs": true,
+    "checkJs": false,
+
+    // ----------------------------------------------------------
+    // Language Level
+    // ----------------------------------------------------------
+    // target: ES2021 → Enables modern JS features (optional chaining,
+    // nullish coalescing, Promise.any, etc.).
+    //
+    // module: ESNext → Use modern ES modules. Required because the
+    // project uses dynamic import() and native browser modules.
+    // ----------------------------------------------------------
+    "target": "ES2021",
+    "module": "ESNext",
+
+    // ----------------------------------------------------------
+    // Module Resolution Root (Deprecated)
+    // ----------------------------------------------------------
+    // baseUrl: "." is deprecated in modern JS tooling. It still works
+    // in VS Code, but browsers and bundlers prefer IMPORT MAPS.
+    //
+    // This project currently uses baseUrl + paths for IntelliSense.
+    // Future migration: move to import maps in index.html.
+    // ----------------------------------------------------------
+    "baseUrl": ".",
+
+    // ----------------------------------------------------------
+    // Path Aliases
+    // ----------------------------------------------------------
+    // "@/*" → "./js/*"
+    //
+    // This allows imports like:
+    //    import { x } from "@/utils/listenerManagement.js";
+    //
+    // instead of fragile deep relative paths like:
+    //    import { x } from "../../utils/listenerManagement.js";
+    //
+    // Works in VS Code for IntelliSense. For browser support,
+    // import maps will eventually replace this.
+    // ----------------------------------------------------------
+    "paths": {
+      "@/*": ["./js/*"]
+    }
+  },
+
+  // ------------------------------------------------------------
+  // Included Files
+  // ------------------------------------------------------------
+  // Only include JS files inside /js. This keeps IntelliSense fast
+  // and prevents VS Code from indexing unrelated folders.
+  // ------------------------------------------------------------
+  "include": [
+    "js/**/*.js"
+  ]
+}

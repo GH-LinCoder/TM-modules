@@ -63,9 +63,6 @@ function getTemplateHTML() {
 
                         <!-- Preserved data-list for existing task loader -->
                     <div class="bg-indigo-100 space-y-1" data-list="my-tasks" data-section="tasks-section">
-
-                       
-
                         <!--div class="mt-3 flex gap-2 "  data-action="display-task-choice" data-destination ="tasks-section" title='Shows a list of all available tasks. You can take on any task by clicking it.' >
                         <p class="text-sm font-sm text-blue-700 mb-2">If you want more tasks click here to add tasks 🔧</p>
                         
@@ -102,6 +99,33 @@ function getTemplateHTML() {
         </div>
 
         </div>
+
+
+
+
+
+<!-- temp Manage Students section -->
+<!--div class="bg-blue-50 border border-blue-200 rounded-lg p-1 md:p-4 cursor-pointer" 
+data-section="move-student-manager"  
+data-action="move-student-manager" 
+data-destination="show-task-here" title="Click to open the student movement manager">
+  <h3 class="text-sm font-medium text-gray-700 mb-1">This is where I manage my students through their tasks. 🔧🛼🧑‍🎓</h3>
+  <p class="text-xs text-gray-600">Click to open the Kanban-style student movement manager. Are you a manager yet? If so this is your place</p>
+</div>
+<div data-section="show-task-here" data-destination="show-task-here"></div-->
+
+
+<div class="bg-red-50 border border-red-200 rounded-lg p-4 cursor-pointer" 
+     data-section="pending-manager-tasks"  
+     data-action="display-students-on-tasks" 
+     data-destination="display-area" 
+     title="View students waiting for your approval to move to the next step">
+  <h3 class="text-sm font-medium text-red-700 mb-1">This is where I manage my students through their tasks. 🔧🛼🧑‍🎓</h3>
+  <p class="text-xs text-red-600">Click to see tasks where students are waiting for me to approve their next step.</p>
+</div>
+<div data-section="display-area" data-destination="display-area"></div>
+
+
 
 
        <!-- the surveys are in their own bordered section. Very similar to tasks --> 
@@ -213,9 +237,11 @@ Therefore use this anchor div instead -->
 
                 <!-- 3. ROLE / AIMS / PLANS CARD ROW (clickable cards using normal petitioner method) -->
 
- <div class="mb-3 bg-indigo-50 p-3 rounded border  border-indigo-200 text-sm text-grey-700">
- Click a card once to open the module. <i>Click the card again to close the module</i></div>
-                <div class="flex flex-col md:flex-row p-2 md:p-4" data-section="role-aims-plans" data-destination="display-area">
+ <div class="mb-3 bg-indigo-50 p-3 rounded border  border-indigo-200 text-sm text-grey-700" data-section="rap-display">
+  Click a card once to open the module. <i>Click the card again to close the module</i>
+ </div>
+
+                <div class="flex flex-col md:flex-row p-2 md:p-4" data-section="role-aims-plans" data-destination="rap-display">
 
                     <div class="flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-purple-400" data-action="my-role">
                         <h3 class="text-lg font-semibold text-purple-700 mb-2">My Role 👤</h3>

@@ -1,0 +1,32 @@
+
+DECLARE
+  v_new permission_relations;
+BEGIN
+  -- Permission check
+  IF NOT is_permitted(
+    'permission_relations',
+    p_approfile_is,
+    'INSERT',
+    jsonb_build_object(
+      'approfile_is', p_approfile_is,
+      'relationship', p_relationship,
+      'of_approfile', p_of_approfile
+    )
+  ) THEN
+    RAISE EXCEPTION 'Not permitted to INSERT permission_relations';
+  END IF;
+
+  INSERT INTO permission_relations (
+    approfile_is,
+    relationship,
+    of_approfile
+  )
+  VALUES (
+    p_approfile_is,
+    p_relationship,
+    p_of_approfile
+  )
+  RETURNING * INTO v_new;
+
+  RETURN v_new;
+END;

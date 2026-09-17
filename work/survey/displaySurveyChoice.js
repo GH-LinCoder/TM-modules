@@ -25,6 +25,14 @@ return `
 <!--            TITLE          --> 
   <h2 class="text-2xl font-bold mb-4">Choose extra surveys</h2>
 
+<!-- Close X button-->
+ <button data-action="display-survey-choice" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+          </button>
+
+
   <!--      INSTRUCTIONS       -->
   <div class="bg-white rounded-lg shadow p-6 flex-col ">
         <div class="mb-3 bg-blue-50 p-3 rounded border border-blue-200 text-sm text-blue-700">    
@@ -59,6 +67,7 @@ export async function render(panel) {
     const cardsContainer = panel.querySelector('#cards-container');
 
     // 2. Load the data
+    cardsContainer.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
     await loadsurveyList(); 
 
     // 3. Initial Paint

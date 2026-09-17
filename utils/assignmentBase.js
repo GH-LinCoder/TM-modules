@@ -7,6 +7,7 @@ import { showToast } from '../ui/showToast.js';
 import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from './clipboardUtils.js';
 import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
+import { getMoveByRadioHTML, updateMoveByRadio  } from './moveByRadio.js';
 
 console.log('assignmentBase.js loaded');
 // need to accept a parameter for type:  'task' || 'survey'
@@ -92,7 +93,7 @@ export class AssignmentBase {
                 </select>
               </div>
 
-
+${getMoveByRadioHTML()} 
 
               <!-- ASSIGN BUTTON -->
               <button id="assignBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed" disabled>

@@ -76,6 +76,8 @@ console.log('profiles -resolveSubject', subject,
     // function needs userApproId
 const approUserId = subject.approUserId;
 //console.log('approUserId', approUserId);
+  const badgesEl = document.querySelector('[data-user="badges"]');
+  if (badgesEl) badgesEl.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
 const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans',{approUserId});
 
 /** the registry returns
@@ -102,9 +104,8 @@ const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans'
             
             const createdAtEl = document.querySelector('[data-user="created-at"]');
 
-            const badgesEl = document.querySelector('[data-user="badges"]'); 
-
-                        const typeEl = document.querySelector('[data-user="type"]');
+            
+            const typeEl = document.querySelector('[data-user="type"]');
             const sourceEl = document.querySelector('[data-user="source"]');
 
             //email and authId should be toggled. Normally concealed, but click to reveal. This is so won't be exposed if we do a screen video or if used in a public place
@@ -147,7 +148,7 @@ badgesEl.innerHTML = text;
     // Add subtle hint (insert after auth-id)
     const hintEl = document.createElement('span');
     hintEl.className = 'text-xs text-gray-400 group-hover:text-gray-600 transition ml-1';
-    hintEl.textContent = '[ show 👁️ ]';
+    hintEl.textContent = '[ show 👁️ ] 📧 ';
     hintEl.title = 'Click to reveal';
      emailEl.parentNode?.insertBefore(hintEl, emailEl);
     // Change hint classes: This hides the 'show' message. Fades in on hover. Probably not good.
@@ -164,7 +165,7 @@ badgesEl.innerHTML = text;
       if (isRevealed) {
         emailEl.textContent = fullEmail;
         authIdEl.textContent = fullAuthId;
-        hintEl.textContent = '[ hide ❎  ]';
+        hintEl.textContent = '[ hide ❎  ] 📧';
         hintEl.title = 'Click to hide';
         container.classList.add('bg-yellow-50', 'px-1', 'rounded');
       } else {
@@ -219,7 +220,7 @@ function renderActivePlans(plans) {
   
   // Build HTML for each plan (view columns: plan_name, current_period_end, status, amount, currency, provider_name)
   const planHTML = plans.map(plan => {
-    // ✅ Use view column names (snake_case)
+    // Use view column names (snake_case)
     const planName = plan.plan_name || 'Unknown Plan';
     const periodEnd = plan.current_period_end;  // ← Was: plan.endDate
     const status = plan.status;
@@ -345,7 +346,7 @@ function getTemplateHTML() {
 <div data-user='placeholder'> Are you logged in? Perhaps new here & haven't confirmed email? Or perhaps have no permissions?</div>                  
   <!-- Tagline -->
   <div data-user="tagline" class="text-sm text-gray-600">
-    Organising, having my say, doing my bit
+    <i>Organising, having my say, doing my bit</i>
   </div>                    
 <div class="flex-1 space-y-2 mt-2">
   <div class="space-y-4 text-sm text-gray-600">
@@ -361,7 +362,7 @@ function getTemplateHTML() {
 
 <div>
   <span class="flex items-center gap-1">
-    📧 <span data-user="email"></span>
+  <span data-user="email"></span>
   </span>
 
   <span class="flex items-center gap-1">

@@ -77,10 +77,12 @@ else  currentSelection = select.value;
 async function populateRatingSelect(panel)
 {
 // 1. Fetch definitions via registry
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect) ratingSelect.insertAdjacentHTML('beforebegin', '<div data-rating-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
 const ratingDefinitions = await executeIfPermitted(state.user, 'readTrustSecurityDefinitions');
+ratingSelect?.parentElement.querySelector('[data-rating-loading]')?.remove();
 
 //2. load into dropdown
-const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
 if (ratingSelect && Array.isArray(ratingDefinitions)) {
   ratingDefinitions.forEach(item => {
     const option = document.createElement('option');
@@ -190,7 +192,7 @@ function getTemplateHTML() {
       <div class="bg-white rounded-lg shadow-lg w-full max-w-4xl mx-4 z-10 max-h-[90vh] overflow-y-auto">
         <div class="p-6 border-b border-gray-200 flex justify-between items-center">
           <h3 class="text-xl font-semibold text-gray-900">Edit Appro (application profile)</h3>
-          <button data-action="close-dialog" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+          <button data-action="edit-approfile-dialogue" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>

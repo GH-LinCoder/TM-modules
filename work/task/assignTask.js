@@ -62,6 +62,11 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
   }
 
   init(panel, query = {}) {
+//set a default radio button for moveBy
+const defaultRadio = panel.querySelector('input[name="move_by"][value="manager"]');
+if (defaultRadio) defaultRadio.checked = true;
+
+
     console.log('AssignTaskDialog.init()');
     
     // Initialize clipboard integration (inherited)
@@ -158,13 +163,13 @@ class AssignTaskDialog extends AssignmentBase { // ✅ Extend base class
 //Need to dislay radio choices for moveBy, with the read default checked
 //need display this default as 'checked'
 
-
+/*
 decideNavButtonsToDisplay(){//not called
 console.log('decideNavButtonsToDisplay()');
 //let defaultMoveBy = this.readTaskDefaultMoveBy();
 if (currentStep <3) return; // where get currentStep ??
 }
-
+*/
 
 
 async decideDefaultMoveBy(taskHeaderId){ // this default value needs to be read from the task_header table. Not yet implemented 25 March
@@ -176,14 +181,12 @@ try{
   const taskHeaderDefault = await executeIfPermitted(userId, 'readTaskHeaderMoveBy', taskHeaderId );
   console.log('decideDefaultMoveBy() taskHeaderDefault', taskHeaderDefault, 'this.AssignmentDefaultMoveBy', this.AssignmentDefaultMoveBy);
   if (this.AssignmentDefaultMoveBy) return this.AssignmentDefaultMoveBy;
-  else  if(!taskHeaderDefault) return taskHeaderDefault;
+//  else  if(!taskHeaderDefault) return taskHeaderDefault;//what? this is null so bad idea
   else return 'manager';  // This is the restrictive default. Could default to permissive 'student'
 } catch (error) {
       console.error('Read of task_header default moveBy failed:', error);
       throw error;
     }
-
-
 }
 
 /* removed 11:07 Aug 19 2026
@@ -198,7 +201,7 @@ return defaultMoveBy;
 */
 
   async processAssignment(panel) { // ✅ Override parent method
-   // console.log('processAssignment() args of subject, item, but not used?', subjectId, itemId);
+   console.log('processAssignment()');
     
     const dropdown001 = panel.querySelector('#dropdown001');
     const dropdown002 = panel.querySelector('#dropdown002');
@@ -212,12 +215,12 @@ else this.managerId=appState.query.defaultManagerId;
 
  this.studentName = dropdown002.options[dropdown002.selectedIndex].text;//this includes: (clipboard)
  this.studentName = this.studentName.replace(' (clipboard)', '');
-console.log('studentName',this.studentName);
+//console.log('studentName',this.studentName);
 
 
 
 
-    console.log('from dropdowns','task:',taskHeaderId, 'student:', studentId, 'manager:', this.managerId); // all undefined 23:18 Oct 30
+  //  console.log('from dropdowns','task:',taskHeaderId, 'student:', studentId, 'manager:', this.managerId); // all undefined 23:18 Oct 30
     if (!taskHeaderId|| !studentId) {
       throw new Error('Task and student are required', dropdown001, dropdown002, dropdown003);
     }
@@ -231,8 +234,25 @@ console.log('studentName',this.studentName);
 //to keep track of navigation buttons we need the total number of steps and the default moveBy from the task header
       totalSteps=taskSteps.length; //new 16:00 feb 23
      
-this.defaultMoveBy = await this.decideDefaultMoveBy(taskHeaderId);  
-console.log('ProcessAssignment()  this.defaultMoveBy',this.defaultMoveBy);
+      // READ radio button of move_by
+      const selectedMoveBy = panel.querySelector('input[name="move_by"]:checked')
+     // console.log('selectedMoveBy',selectedMoveBy.value);// correct
+      let moveBy = selectedMoveBy ? selectedMoveBy.value : null;
+console.log('🔍 moveBy from DOM:', moveBy);
+
+if (!moveBy) {
+  console.log('⚠️ No radio checked. Falling back to decideDefaultMoveBy...');
+  moveBy = await this.decideDefaultMoveBy(taskHeaderId);  
+  
+  if (!moveBy) {
+    moveBy = 'manager'; // restrictive default
+  }
+}
+this.moveBy = moveBy;
+
+console.log('✅ ProcessAssignment() final this.moveBy:', this.moveBy);
+//console.log('Does panel have the radios?', panel.querySelector('input[name="move_by"]') !== null);
+//console.log('Is anything checked?', panel.querySelector('input[name="move_by"]:checked') !== null);
 //this was using steps but taskSteps don't have 'move_by'
 // and the user couldn not have clicked the radio buttons as they didn't exist 
 // The task_header table has a move_by column. TaskSteps do not. Default cannot be determined at this line
@@ -267,7 +287,9 @@ console.log('registry createAssignment:',
     'step_id:', stepId,'}',
     'current_step:',3,
     'totalSteps:',totalSteps,
-    'assigned_by:',appState.query.userAuthId);
+    'assigned_by:',appState.query.userAuthId,
+  'moveBy:',this.moveBy
+);
 
       // Save task assignment to database
       const result = await executeIfPermitted(userId, 'createAssignment', { //what about current_step int?
@@ -278,7 +300,7 @@ console.log('registry createAssignment:',
         student_name: this.studentName,
         manager_id: this.managerId,
         assigned_by: appState.query.userAuthId, // Current user doing the assignment
-        move_by: this.defaultMoveBy
+        move_by: this.moveBy //undefined
       });
       
       return result;

@@ -56,6 +56,10 @@ import { windowEventListener } from './listeners/windowEventListener.js';
 import { menuListeners } from './listeners/menuListeners.js';
 import {markMenuButton}  from './listeners/menuListeners.js';
 
+//update to use listnerManagement so can close modules cleanly
+//import { createListenerController, addManagedListener, removeListenersFromModule } from '../../utils/listenerManagement.js';
+
+//registryLoadModule  just called registry
 
 // === GLOBALS
 import { appState } from './state/appState.js'; // modules interact through appState
@@ -102,40 +106,9 @@ function getDisplayArea() {
     return displayArea;
   }
 }
-/*
-function getDisplayArea() {
-console.log('GetDisplayArea()');
 
-const destination = appState.query.petitioner.Destination;
-
-if (destination === 'new-panel') {
-console.log('✅ panelsOnDisplay.length:',panelsOnDisplay.length);
-      // idea is that this is 0 when only the dashboard is on display. BUT the log shows 4 or 5
-  if (panelsOnDisplay.length === 0) {
-    console.log(' DASHBOARD: Injecting into #primary-panel');
-    return document.querySelector('#primary-panel');
-  }
-
-  const isMobile = window.innerWidth < 768; // Tailwind's 'md' breakpoint
-  
-  if (isMobile) {
-    const mobilePanel = document.querySelector('[data-panel="mobile-inject-here"]');
-    // Make the mobile panel visible when we're about to inject into it
-    mobilePanel.classList.remove('hidden');
-     console.log(' Mobile: Injecting into mobile-panel');
-    return mobilePanel;
-  } else {
-    console.log(' Desktop: Injecting into primary-panel');
-    return document.querySelector('[data-panel="inject-here"]');
-  }
-} else {
-  const displayArea = document.querySelector(`[data-section="${destination}"]`);
-  return displayArea;
-}
-
-}
-*/
 function getFrameAroundThePages() {
+  console.log('getFrameAroundThePage');
     return document.getElementById('main-container');
 }
 
@@ -282,7 +255,37 @@ async function loadPageWithData(pageName) { // pageName without .html
 
 
 // === PANEL RENDERING ===
+async function renderNewPanel(stubName, query, registryEntry, selectedModule, displayArea) {
+  console.log('renderNewPanel()');
+  
+  if (registryEntry) { 
+    const panel = document.createElement('div');
+    panel.className = 'page-panel w-full min-w-0 flex-1';
+    panel.dataset.pageName = stubName; 
 
+    displayArea.appendChild(panel);
+
+ // flexmain creates the controller
+  const controller = new AbortController();
+
+  
+
+  panelsOnDisplay.push({ 
+    stubName, 
+    panel, 
+    query,
+    controller: controller  // ✅ Store it in the array
+  });
+
+    try {
+      selectedModule.render(panel, query, controller); 
+    } catch (error) {
+      console.error('Failed to load module:', error);
+    }
+  }
+}
+
+/* replaced 11:25 sept 8 
 async function renderNewPanel(stubName, query, registryEntry,selectedModule, displayArea){// new 10:35 sept 10 2025 Moved from renderPanels- which needs a name change
  console.log('renderNewPanel()');
   if(registryEntry) { 
@@ -307,11 +310,8 @@ selectedModule.render(panel,query); // use the function that was obtained from t
   console.error('Failed to load module:', error);
 //  console.log('Available exports:', Object.keys(selectedModule));
 }
-
 }
-
-
-}
+} */
 
 async function backgroundProcess() {
     
@@ -363,7 +363,7 @@ const selectedModule = await registryEntry(); // Use the pointer to get the func
 //console.log('Loaded module functions:', selectedModule);
 
 //if(true) 
-  await renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); //was a test but never changed the if??
+  await renderNewPanel(stubName,query, registryEntry,selectedModule,displayArea); 
    
 // ✅ FORCE layout recalculation after panel is added. Without this delay the render to the side is erratic. Sometimes 50% width sometimes tiny width
 setTimeout(() => {
@@ -377,6 +377,95 @@ setTimeout(() => {
 
 
 // === CLOSE PANEL ===
+//updating to use the listenerManagement function from utils
+
+// Make this function async so we can await the dynamic import
+//but it had problem of infinite loop seen 10:40 sept 8 when trying to open adminDash
+
+
+// Note: NO 'async' keyword needed anymore!
+function closePanel(stubName) {
+  console.log('ClosePanel(', stubName, ')');
+
+  const entry = panelsOnDisplay.find(p => p.stubName === stubName);
+  
+  if (entry && entry.panel) {
+    
+    // use abort if it exists
+ if (entry.controller) {
+      entry.controller.abort();
+    }
+
+    // ✅ ALWAYS remove from DOM
+    entry.panel.remove();
+    
+    // ✅ ALWAYS remove from array
+    const index = panelsOnDisplay.indexOf(entry);
+    if (index > -1) {
+      panelsOnDisplay.splice(index, 1);
+    }
+    
+    updatePanelLayout();
+    console.log(`✅ Panel ${stubName} closed. Remaining:`, panelsOnDisplay.length);
+  } else {
+    console.warn(`⚠️ closePanel called but no entry found for:`, stubName);
+  }
+}
+
+
+
+/* infinite loop problem...
+async function closePanel(stubName) {
+  console.log('ClosePanel(', stubName, ')');
+
+// 🔍 
+ const duplicates = panelsOnDisplay.filter(p => p.stubName === stubName);
+  console.log('🚨 FOUND', duplicates.length, 'panels named:', stubName);
+  console.log('🚨 All panels currently in array:', panelsOnDisplay.map(p => p.stubName));
+
+
+  const entry = panelsOnDisplay.find(p => p.stubName === stubName);
+  
+  if (entry && entry.panel) {
+    
+    // ✅ NEW: 1. Attempt to call the module's cleanup function first
+    const moduleImportFn = registry[stubName]; 
+    
+    if (moduleImportFn && typeof moduleImportFn === 'function') {
+      try {
+        // Dynamically import the module using the existing registry function
+        const module = await moduleImportFn();
+        
+        // Check if the module exports a cleanup function, and call it
+        if (module && typeof module.cleanup === 'function') {
+          console.log(`✅ Calling cleanup() for module: ${stubName}`);
+          module.cleanup();
+        } else {
+          console.log(`ℹ️ Module ${stubName} loaded, but no cleanup() function found.`);
+        }
+      } catch (err) {
+        console.error(`❌ Error importing or cleaning up module ${stubName}:`, err);
+      }
+    } else {
+      console.warn(`⚠️ No registry entry found for ${stubName}, skipping cleanup.`);
+    }
+
+    // ✅ 2. Proceed with your existing, proven DOM removal logic
+    entry.panel.remove();
+    panelsOnDisplay.splice(panelsOnDisplay.indexOf(entry), 1);
+    updatePanelLayout();
+    
+    console.log(`✅ Panel ${stubName} successfully closed and cleaned up.`);
+
+    // 🔍 
+ const duplicates = panelsOnDisplay.filter(p => p.stubName === stubName);
+  console.log('🚨 FOUND', duplicates.length, 'panels named:', stubName);
+  console.log('🚨 All panels currently in array:', panelsOnDisplay.map(p => p.stubName));
+
+  }
+} */
+
+/*
 function closePanel(stubName) {
   console.log('ClosePanel(', stubName, ')  BUT should let module know so can removed listeners etc');
 
@@ -387,7 +476,7 @@ function closePanel(stubName) {
     updatePanelLayout();
   }
 }
-
+*/
 
 
 // === UPDATE PANEL LAYOUT ===
@@ -447,7 +536,7 @@ console.log('openClosePanelsByRule(stubname)',stubName, 'fromButtonClick', fromB
   
       // Check if this is a 2nd click for an already open page
       const isPageOpen = panelsOnDisplay.some(p => p.stubName === stubName);
- //     console.log('isPageOpen:', isPageOpen);
+      console.log('isPageOpen:', isPageOpen);
   
       // Special case: dashboards
       const isDashboard =stubName === 'adminDash.html' || stubName === 'myDash.html'|| stubName === 'adminDash' || stubName === 'myDash';
