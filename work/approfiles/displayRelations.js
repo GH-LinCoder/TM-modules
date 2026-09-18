@@ -51,6 +51,8 @@ async function init(panel) {
     attachDropdownListener(panel);
     attachClickItemListener(panel);
   }
+attachBundleToggleListener(panel);
+
 
   displayByMode(panel);
 
@@ -180,16 +182,15 @@ const container = panel.querySelector('#relationshipsContainer'); showLoading(co
     case 'noun':
       return renderNoun(panel);
 
-    case 'rule':
-      return renderRules(panel);
-
     case 'verb':
       showToast('Verb mode not implemented yet', 'warning');
       return renderPlaceholder(panel, 'Verb mode not implemented');
 
     case 'work':
-//      showToast('Work mode not implemented yet', 'warning');
        return renderWork(panel);
+
+    case 'rule':
+      return renderRules(panel);
 
     default:
       console.warn('Unknown mode:', state.displayMode);
@@ -268,6 +269,7 @@ try {
     container.innerHTML = emptyMessage(state.subjectName);
     return;
   }
+//console.log('rowsOfRelationData.is',rowsOfRelationData.is);
 
   const groupsIs = putPermissionsDataIntoGroups(rowsOfRelationData.is);
   const groupsOf = putPermissionsDataIntoGroups(rowsOfRelationData.of);
@@ -561,7 +563,7 @@ function putWorkDataIntoGroups(relations) {
 
 
 
-
+//gemini 20:36 Sept 18
 function putPermissionsDataIntoGroups(perms) {
   if (!perms) return [];
   const groups = {};
@@ -570,9 +572,34 @@ function putPermissionsDataIntoGroups(perms) {
     if (rel.is_deleted) return;
 
     const cat = rel.category;
-
     if (!groups[cat]) groups[cat] = [];
-    groups[cat].push(rel);
+
+    const bundleId = rel.assigned_from_bundle;
+
+    if (bundleId) {
+      // Find existing bundle group within the category
+      let bundleGroup = groups[cat].find(
+        item => item.isBundleContainer && item.bundleId === bundleId
+      );
+
+      if (!bundleGroup) {
+        bundleGroup = {
+          isBundleContainer: true,
+          bundleId: bundleId,
+          bundleName: rel.bundle_name || 'Permission Bundle',
+          approfile_is: rel.approfile_is,
+          approfile_is_name: rel.approfile_is_name,
+          of_approfile: rel.of_approfile,
+          of_approfile_name: rel.of_approfile_name,
+          items: []
+        };
+        groups[cat].push(bundleGroup);
+      }
+      bundleGroup.items.push(rel);
+    } else {
+      // Standalone permission
+      groups[cat].push(rel);
+    }
   });
 
   return Object.keys(groups).sort().map(cat => ({
@@ -599,17 +626,73 @@ function getHTMLForPermissionGroups(groups, subjectName, iconMap) {
   `).join('');
 }
 
-function renderRelationshipFlow(rel, subjectName, iconMap) { //rel needs to have the type in it. Does it? NO, it doesn't.
+function renderRelationshipFlow(rel, subjectName, iconMap) {
+  // If this item is a aggregated Bundle Container:
+  if (rel.isBundleContainer) {
+    const leftName = rel.approfile_is_name || rel.approfile_is;
+    const rightName = rel.of_approfile_name || rel.of_approfile;
+    const leftIcon = iconMap?.[rel.approfile_is] || '❔';
+    const rightIcon = iconMap?.[rel.of_approfile] || '❔';
+// between green-300 | bg-emerald-100 or teal-200 teal-300   cyan-200   | blue-200
+    const leftBg = leftName === subjectName ? 'bg-green-100' : 'bg-blue-200';
+    const rightBg = rightName === subjectName ? 'bg-green-100' : 'bg-blue-200';
 
-  console.log('renderRelationshipFlow()');
- // console.log('Left ID:', rel.approfile_is, 'Right ID:', rel.of_approfile);
+    const innerRows = rel.items.map(subRel => `
+      <div class="text-xs text-gray-600 bg-white p-1 rounded border mb-1 flex justify-between">
+        <span>${subRel.relationship || subRel.name}</span>
+        <!--span class="text-gray-400 font-mono">${subRel.relation_id?.slice(0, 8)}...</span-->
+        <span class="text-gray-400 font-mono">${subRel.relation_id}</span>
+      </div>
+    `).join('');
 
+    return `
+      <div class="my-3" data-bundle-id="${rel.bundleId}">
+        <!-- Main Bundle Flow Row -->
+        <div class="flex justify-center items-center -space-x-3">
+                <div class="flow-box mix-blend-multiply px-4 py-2 ${leftBg} border-l-2 border-t-2 border-b-2 border-blue-900 rounded-md font-bold text-blue-900 text-sm">
+            <span class="appro-icon cursor-pointer px-2 py-1 bg-yellow-100 hover:bg-yellow-300 rounded-full"
+                  data-clicked="icon" data-content-id="${rel.approfile_is}" data-content-name="${leftName}">
+              ${leftIcon}
+            </span>
+            <span class="appro-name cursor-pointer bg-gray-100 hover:bg-green-300 px-1 rounded"
+                  data-clicked="name" data-content-id="${rel.approfile_is}" data-content-name="${leftName}">
+              ${leftName}
+            </span>
+          </div>
+
+          <!-- Middle permission name: Bundle Name & Toggle Button -->
+          <button data-toggle="toggle-bundle"  class="mix-blend-multiply px-3 py-1 bg-cyan-100 rounded-md font-bold italic text-indigo-700">
+            📦 ${rel.bundleName}
+            <span class="text-xs bg-indigo-800 text-indigo-200 px-2 py-0.5 rounded-full">${rel.items.length}</span>
+            <span class="bundle-arrow text-xs">▼</span>
+          </button>
+
+ <div class="mix-blend-multiply flow-box px-4 py-2 ${rightBg}  border-t-2 border-b-2 border-r-2 border-purple-700 rounded-md font-bold text-blue-900 text-sm">
+            <span class="appro-name cursor-pointer bg-gray-100 hover:bg-green-300 px-1 rounded"
+                  data-clicked="name" data-content-id="${rel.of_approfile}" data-content-name="${rightName}">
+              ${rightName}
+            </span>
+            <span class="appro-icon cursor-pointer px-2 py-1 bg-yellow-100 hover:bg-yellow-300 rounded-full"
+                  data-clicked="icon" data-content-id="${rel.of_approfile}" data-content-name="${rightName}">
+              ${rightIcon}
+            </span>
+          </div>
+        </div>
+
+        <!-- Hidden Child Permissions Container -->
+        <div class="bundle-details hidden mt-3 pt-2 border-t border-indigo-200 max-h-48 overflow-y-auto px-4">
+          <div class="text-xs font-semibold text-indigo-900 mb-1">Included Permissions:</div>
+          ${innerRows}
+        </div>
+      </div>
+    `;
+  }
+
+  // Tuplet design for single permissions 
   const leftName = rel.approfile_is_name || rel.approfile_is;
   const rightName = rel.of_approfile_name || rel.of_approfile;
-
-  const leftType = rel.approfile_is_type || 'app-human'; //likely to be app-human but not certain Why default to something wrong?
-  const rightType = rel.of_approfile_type || 'app-human'; //?? why default to app-human?
-
+  const leftType = rel.approfile_is_type || 'app-human';
+  const rightType = rel.of_approfile_type || 'app-human';
   const leftIcon = iconMap?.[rel.approfile_is] || '❔';
   const rightIcon = iconMap?.[rel.of_approfile] || '❔';
 
@@ -617,9 +700,9 @@ function renderRelationshipFlow(rel, subjectName, iconMap) { //rel needs to have
   const rightBg = rightName === subjectName ? 'bg-green-100' : 'bg-blue-200';
 
   return `
-    <div class="flex justify-center items-center my-4 gap-1">
-      <div class="flow-box px-5 py-3 ${leftBg} border-4 border-blue-900 rounded-md font-bold text-blue-900">
-        <span class="appro-icon cursor-pointer px-3 py-3 bg-yellow-100 hover:bg-yellow-300 rounded-full"
+    <div class="flex justify-center items-center my-4 -space-x-3">
+      <div class="flow-box mix-blend-multiply px-4 py-2 ${leftBg} border-l-2 border-t-2 border-b-2 border-blue-900 rounded-md font-bold text-blue-900 text-sm">
+        <span class="appro-icon cursor-pointer px-3 py-3 bg-yellow-100 hover:bg-yellow-300 rounded-full "
           data-clicked="icon" data-content-id="${rel.approfile_is}" data-content-name="${leftName}" data-content-type="${leftType}">
           ${leftIcon}
         </span>
@@ -629,11 +712,11 @@ function renderRelationshipFlow(rel, subjectName, iconMap) { //rel needs to have
         </span>
       </div>
 
-      <div class="px-5 py-3 bg-gray-200 border rounded-3xl font-bold italic text-indigo-700">
+      <div class="mix-blend-multiply px-4 py-1 bg-cyan-100 rounded-md font-bold italic text-indigo-700">
         ${rel.relationship}
       </div>
 
-      <div class="flow-box px-5 py-3 ${rightBg} border-2 border-purple-700 rounded-md font-bold text-blue-900">
+      <div class="mix-blend-multiply flow-box px-4 py-2 ${rightBg}  border-t-2 border-b-2 border-r-2 border-purple-700 rounded-md font-bold text-blue-900 text-sm">
         <span class="appro-name cursor-pointer bg-gray-100 hover:bg-green-300"
           data-clicked="name" data-content-id="${rel.of_approfile}" data-content-name="${rightName}" data-content-type="${rightType}">
           ${rightName}
@@ -645,6 +728,29 @@ function renderRelationshipFlow(rel, subjectName, iconMap) { //rel needs to have
       </div>
     </div>
   `;
+}
+
+function attachBundleToggleListener(panel) {
+    console.log('attachBundleToggleListener() called');
+    panel.addEventListener('click', e => {
+    console.log('attachBundleToggleListener CLICKED');
+    const btn = e.target.closest('[data-toggle="toggle-bundle"]');
+    if (!btn) return;
+
+    const bundleCard = btn.closest('[data-bundle-id]');
+    if (!bundleCard) return;
+
+    const details = bundleCard.querySelector('.bundle-details');
+    const arrow = btn.querySelector('.bundle-arrow');
+
+    if (details) {
+      const isHidden = details.classList.contains('hidden');
+      details.classList.toggle('hidden');
+      if (arrow) {
+        arrow.textContent = isHidden ? '▲' : '▼';
+      }
+    }
+  });
 }
 
 function emptyMessage(name) {
