@@ -541,7 +541,7 @@ function putNounDataIntoGroups(relations) {
   }));
 }
 
-
+/*
 function putWorkDataIntoGroups(relations) {
   if (!relations) return [];
   const groups = {};
@@ -558,7 +558,7 @@ function putWorkDataIntoGroups(relations) {
     items: groups[type]
   }));
 }
-
+*/
 
 
 
