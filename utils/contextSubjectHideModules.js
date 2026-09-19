@@ -46,13 +46,13 @@ if(appState.query.userAuthId)
 
   { //avoid throwing error if not found
   const approData  = await executeIfPermitted( null,'readApprofileByAuthUserId', {authUserId: appState.query.userAuthId });
- // console.log('approData',approData);  //ok has name
+ console.log('approData',approData);  //ok has name
   if(approData.data){ 
    // console.log('approData',approData);
     appState.query.userName = approData.data.name || 'Needs to choose a name';   
  //   console.log ('appState.query.userName',appState.query.userName,'approData.data',approData.data), 'approId', approData.data.id;
     appState.query.userId = approData.data.id; //appro id
-//    console.log('approData',approData,'approUserId', approUserId) 
+   console.log('approData',approData,'userAuthId', appState.query.userAuthId) 
    } 
 //   console.log('authUser',appState.query.userAuthId, 'approId',appState.query.userId, 'userName', appState.query.userName);
   }

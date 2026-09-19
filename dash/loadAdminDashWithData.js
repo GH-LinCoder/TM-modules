@@ -65,7 +65,9 @@ readRecentLogs();
 const subject = await resolveSubject();
   let data;
 
-data ='User: '+ appState.query.userName + ' Auth 🆔: ' + appState.query.userId;
+//data ='User: '+ appState.query.userName + ' Auth 🆔: ' + appState.query.userId;  // wrong id
+data ='User: '+ appState.query.userName + ' Auth 🆔: ' + appState.query.userAuthId;
+
 console.log('data',data);
 updateAll('[data-value="user-details"]', data); //user name and appro id of the logged in user
 
