@@ -9,6 +9,8 @@ import { resolveSubject } from '../../utils/contextSubjectHideModules.js';
 import {icons} from '../../registry/iconList.js';
 
 console.log('CreateSurvey.js loaded');
+//const userAuthId = appState.query.userAuthId;
+//const userApproId = appState.query.userId;
 
 export async function render(panel, query = {}) {
     const surv = new CreateSurvey();
@@ -118,14 +120,16 @@ attachCounterListeners(panel){
             saveBtn.style.opacity = '0.5';  
             saveBtn.style.pointerEvents = 'none';
 
-          const auth = appState.query.userAuthId;
-          const  appro = appState.query.userId;
+          //const auth = appState.query.userAuthId;
+          //const  appro = appState.query.userId;
+            const userAuthId = appState.query.userAuthId
+console.log('handleSurveyPublish userAuthId;',userAuthId,'author_id = userId',appState.query.userId  );
 
             try {
-                const result = await executeIfPermitted(auth, 'createSurvey', { // AUTH (auth) goes first, DATA (author_id) goes in the payload
+                const result = await executeIfPermitted(userAuthId, 'createSurvey', { // AUTH (auth) goes first, DATA (author_id) goes in the payload
                     surveyName: name,
                     surveyDescription: description,
-                    author_id: appro 
+                    authorId: appState.query.userId 
                 });
                 this.surveyId = result.id; //suveyId now has a value, so prevent saving it again            
                 

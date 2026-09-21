@@ -11,7 +11,9 @@ export const registry = { // this registry is for loading a new page to the righ
 
 //////////          MENU           /////////
 'adminDash':()=>import('../work/dash/adminDash.js'),
-'myDash':()=>import('../work/dash/myDash.js'),           
+'myDash':()=>import('../work/dash/myDash.js'),
+'runDash' :()=>import('../work/dash/runDash.js'),
+
 'howTo': () => import('../work/how/howTo.js'),
 'bug-report' :()=> import('../notes/notes.js'),
 'selector-dialogue' :()=> import('../work/select/selectRemember.js'),
@@ -86,6 +88,25 @@ export const registry = { // this registry is for loading a new page to the righ
 'move-student-manager': () => import('../work/student/moveStudentManager.js'),//this is the new module for moving students between steps. It is a manager function, not a student function
 'display-students-on-tasks': () => import('../work/student/displayStudentsOnTasks.js'),//this is the new module for displaying pending tasks for managers. It is a manager function, not a student function
 'moveStudent': () => import('../work/student/moveStudent.js'),//legacy?
+
+
+//RUNDASH  MANAGER MODULES
+
+'display-all-connections': () => import('../work/manager/displayAllConnections.js'),//this is the new module for
+
+'display-all-managed': () => import('../work/manager/displayAllManaged.js'),
+
+'display-connected-appros': () => import('../work/manager/displayConnectedAppros.js'),
+
+'display-managed-appros': () => import('../work/manager/displayManagedAppros.js'),
+
+'display-connected-surveys': () => import('../work/manager/displayConnectedSurveys.js'),
+'display-managed-surveys': () => import('../work/manager/displayManagedSurveys.js'),
+
+'display-connected-tasks': () => import('../work/manager/displayConnectedTasks.js'),
+'display-managed-tasks': () => import('../work/manager/displayManagedTasks.js'),
+
+
 
 
 

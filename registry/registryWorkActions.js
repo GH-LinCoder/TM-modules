@@ -726,8 +726,8 @@ createTask: {
     type: 'INSERT',
     requiredArgs: ['taskName', 'taskDescription'] // ← payload fields
   },
-  handler: async (supabase, userId, payload) => {
-    const { taskName, taskDescription, taskUrl, move_by } = payload;
+  handler: async (supabase, userId, payload) => {//this userId is authId 
+    const { taskName, taskDescription, taskUrl, move_by, authorId } = payload;
 
     // Check for duplicate name
     const {  existingTask, error: fetchError } = await supabase
@@ -747,7 +747,7 @@ console.log('userId',userId);
         description: taskDescription,
         external_url: taskUrl || null,
         move_by: move_by,
-        author_id: userId // ← use passed userId
+        author_id: authorId // ← use passed userId but that is authId
         
       })
       .select()
@@ -2719,8 +2719,8 @@ createSurvey: {
     requiredArgs: ['surveyName', 'surveyDescription']
   },
   handler: async (supabase, userId, payload) => {
-    const { surveyName, surveyDescription } = payload;
-console.log('create survey:','userId:',userId, 'payload;', payload);
+    const { surveyName, surveyDescription, authorId } = payload;
+console.log('create survey:','userId:',authorId, 'payload;', payload);
     
     // Check for duplicate name - just check if any records exist
     const { count, error: fetchError } = await supabase
@@ -2737,7 +2737,7 @@ console.log('create survey:','userId:',userId, 'payload;', payload);
       .insert({
         name: surveyName,
         description: surveyDescription,
-        author_id: userId
+        author_id: authorId
       })
       .select()
       .single();
