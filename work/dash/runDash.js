@@ -46,21 +46,21 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <!-- ===================== -->
 
 
- <!-- Connections: All -->
+ <!-- Connections: All 🪪 📜 🔧-->
     <div class=" bg-green-50 border border-orange-400 p-4 cursor-pointer hover:shadow-md" data-action="display-all-connections">
-      <h3 class="text-sm font-medium text-green-700">Connections: All 🪪 📜 🔧 </h3>
-      <p class="text-xs text-gray-600 hidden md:block" >See assignments & relations. These can be your own new connections, plus any new connections for resources you manage.</p>
+      <h3 class="text-sm font-medium text-green-700">Connections: All  </h3>
+      <p class="text-xs text-gray-600 hidden md:block" > NOT YET IMPLEMENTED <br>See assignments & relations. These can be your own new connections, plus any new connections for resources you manage.</p>
     </div>
 
-    <!-- Managed: All -->
+    <!-- Managed: All 🪪 📜 🔧-->
     <div class=" bg-blue-50 border border-orange-400 p-4 cursor-pointer hover:shadow-md" data-action="display-all-managed">
-      <h3 class="text-sm font-medium text-green-700">Managed: All 🪪 📜 🔧</h3>
-      <p class="text-xs text-gray-600 hidden md:block" >Anything that you manage.</p>
+      <h3 class="text-sm font-medium text-green-700">Managed: All </h3>
+      <p class="text-xs text-gray-600 hidden md:block" >NOT YET IMPLEMENTED<br> Anything that you manage.</p>
     </div>
 
-    <!-- future: ??? -->
+    <!-- future: ??? 🪪 📜 🔧-->
     <div class=" bg-orange-50 border border-orange-400 p-4 cursor-pointer hover:shadow-md" data-action="">
-      <h3 class="text-sm font-medium text-green-700">future 🪪 📜 🔧</h3>
+      <h3 class="text-sm font-medium text-green-700">future </h3>
       <p class="text-xs text-gray-600 hidden md:block" >TO BE IMPLEMENTED</p>
     </div>
 
@@ -80,13 +80,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
     <!-- Appro: Managed -->
     <div class="rounded-2xl bg-blue-50 border border-green-400 p-4 cursor-pointer hover:shadow-md" data-action="display-managed-appros">
-      <h3 class="text-sm font-medium text-green-700">Managed: Appros 🪪</h3>
-      <p class="text-xs text-gray-600 hidden md:block" >See any appros you manage (includes your own appro)</p>
+      <h3 class="text-sm font-medium text-green-700">Managed: Appros </h3>
+      <p class="text-xs text-gray-600 hidden md:block" >NOT YET IMPLEMENTED<br>See any appros you manage (includes your own appro)</p>
     </div>
 
     <!-- Appro: ??? -->
     <div class="rounded-2xl bg-orange-50 border border-green-400 p-4 cursor-pointer hover:shadow-md" data-action="">
-      <h3 class="text-sm font-medium text-green-700">future 🪪</h3>
+      <h3 class="text-sm font-medium text-green-700">future </h3>
       <p class="text-xs text-gray-600 hidden md:block" >TO BE IMPLEMENTED</p>
     </div>
 
@@ -105,13 +105,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
     <!-- Survey: Managed -->
     <div class="bg-blue-50 border border-yellow-400 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="display-managed-surveys">
-      <h3 class="text-sm font-medium text-yellow-700">Managed: Surveys 📜</h3>
-      <p class="text-xs text-gray-600 hidden md:block" >See all the surveys you manage</p>
+      <h3 class="text-sm font-medium text-yellow-700">Managed: Surveys </h3>
+      <p class="text-xs text-gray-600 hidden md:block" >NOT YET IMPLEMENTED<br>See all the surveys you manage</p>
     </div>
 
     <!-- Survey: ??? -->
     <div class="bg-orange-50 border border-yellow-400 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="">
-      <h3 class="text-sm font-medium text-yellow-700">future 📜</h3>
+      <h3 class="text-sm font-medium text-yellow-700">future </h3>
       <p class="text-xs text-gray-600 hidden md:block" >TO BE IMPLEMENTED</p>
     </div>
 
@@ -130,13 +130,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
     <!-- Task: Managed -->
     <div class="bg-blue-50 border border-blue-400 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="display-managed-tasks">
-      <h3 class="text-sm font-medium text-blue-700">Managed: Tasks 🔧</h3>
-      <p class="text-xs text-gray-600 hidden md:block" >See all the tasks you manage</p>
+      <h3 class="text-sm font-medium text-blue-700">Managed: Tasks </h3>
+      <p class="text-xs text-gray-600 hidden md:block" >NOT YET IMPLEMENTED<br>See all the tasks you manage</p>
     </div>
 
     <!-- Task: Move students -->
     <div class="bg-orange-50 border border-blue-400 rounded-l-2xl p-3 cursor-pointer hover:shadow-md">
-      <h3 class="text-sm font-medium text-blue-700">Move Students</h3>
+      <h3 class="text-sm font-medium text-blue-700">Move Students  🔧🛼🧑‍🎓</h3>
       <p class="text-xs text-gray-600 
      data-section="pending-manager-tasks"  
      data-action="display-students-on-tasks" 
