@@ -62,7 +62,7 @@ XcreateOrUpdateApprofile: {//this should be separate functions I don't think it 
 // For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
 autoAssignTask: { //how does this get passed the permission system? (It is called on first login by a new user) - after being granted myDash permissions
   metadata: {
-    tables: ['task_assignments'],
+    tables: ['assignments'],
     columns: ['id', 'step_id', 'sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'assigned_by_automation'],
     type: 'INSERT',
     requiredArgs: ['task_header_id', 'step_id', 'student_id', 'assigned_by_automation']
@@ -88,7 +88,7 @@ if (existing && existing.data.length > 0) { //console.log (existing);
 }
 
     const { data, error } = await supabase
-      .from('task_assignments')
+      .from('assignments')
       .insert({
         student_id: student_id,
         manager_id: manager_id, // or derive from context
@@ -1787,6 +1787,60 @@ readStudentAssignments: {
 
 //ASSIGNMENTS-STUDENTS
 // ASSIGNMENTS-STUDENTS
+confirmAssignmentConnection: {
+  metadata: {
+    tables: ['assignments'],
+    columns: ['confirmed_is_at', 'confirmed_of_at'],
+    type: 'UPDATE',
+    requiredArgs: ['assignmentId', 'side']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { assignmentId, side } = payload;
+    const confirmationColumn = side === 'subject' ? 'confirmed_is_at' : side === 'object' ? 'confirmed_of_at' : null;
+
+    if (!assignmentId || !confirmationColumn) {
+      throw new Error('assignmentId and a subject or object side are required');
+    }
+
+    const { data, error } = await supabase
+      .from('assignments')
+      .update({ [confirmationColumn]: new Date().toISOString() })
+      .eq('id', assignmentId)
+      .select()
+      //.single();
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+confirmApproConnection: {
+  metadata: {
+    tables: ['approfile_relations'],
+    columns: ['confirmed_is_at', 'confirmed_of_at'],
+    type: 'UPDATE',
+    requiredArgs: ['relationId', 'side']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { relationId, side } = payload;
+    const confirmationColumn = side === 'subject' ? 'confirmed_is_at' : side === 'object' ? 'confirmed_of_at' : null;
+
+    if (!relationId || !confirmationColumn) {
+      throw new Error('relationId and a subject or object side are required');
+    }
+
+    const { data, error } = await supabase
+      .from('approfile_relations')
+      .update({ [confirmationColumn]: new Date().toISOString() })
+      .eq('id', relationId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+},
+
 managerMoveStudentInAssignment: {
   metadata: {
     tables: ['assignments'],
@@ -1851,6 +1905,24 @@ console.log('readAssignmentsTasks()');
     }
   },
 
+//ASSIGNMENTS-MANAGERS
+readConnectedTaskRows: {
+  metadata: {
+    tables: ['assignments_task_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    const { data, error } = await supabase
+      .from('assignments_task_view')
+      .select('*');
+
+    if (error) throw error;
+    return data || [];
+  }
+},
+
 //ASSIGNMENTS-SURVEYS
 readAssignmentsSurveys: {
   metadata: {
@@ -1860,6 +1932,7 @@ readAssignmentsSurveys: {
     requiredArgs: ['student_id'],
     optionalArgs: ['type'] // Add 'type' as an optional argument
   },
+
   handler: async (supabase, userId, payload) => {
     const { student_id} = payload;
 console.log('readAssignmentsSurveys()');
@@ -1873,6 +1946,24 @@ console.log('readAssignmentsSurveys()');
       if (error){ console.error('Error readStudentAssignments', error.message);throw error;}
       else console.log('survey data', data);
  return data || [];
+  }
+},
+
+//ASSIGNMENTS-MANAGERS
+readConnectedSurveyRows: {
+  metadata: {
+    tables: ['assignments_survey_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    const { data, error } = await supabase
+      .from('assignments_survey_view')
+      .select('*');
+
+    if (error) throw error;
+    return data || [];
   }
 },
 
@@ -2197,6 +2288,28 @@ readApprofile_relations_view:{
     //console.log('approfiel_relations_view data:',data);
       return data; //
     }
+},
+
+//RELATIONS-MANAGERS
+readConnectedApproRows: {
+  metadata: {
+    tables: ['approfile_relations_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfileId } = payload;
+    if (!approfileId) throw new Error('approfileId is required');
+
+    const { data, error } = await supabase
+      .from('approfile_relations_view')
+      .select('*')
+      .or(`approfile_is.eq.${approfileId},of_approfile.eq.${approfileId}`);
+
+    if (error) throw error;
+    return data || [];
+  }
 },
 
 

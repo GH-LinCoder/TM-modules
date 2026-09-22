@@ -13,7 +13,7 @@
 <li>Take sql to supabase and run there</li>
 <li>The molecule_required and the permission_relationships tables will have the needed data</li> 
 <li>The function_table_access view auto reflects the changes</li>
-<li>In permission_molecule_required  add a generic scope appo id</li>
+<li><b>In permission_molecule_required  add a generic scope appo id</b></li>
 </lu>
 
 <textarea id="code" rows="15" cols="100"></textarea>
@@ -54,7 +54,7 @@ function generateSQL(baseName, operationsMap, table) {
     const arrayLiteral = `ARRAY[${escapedAtoms.join(", ")}]`;
     
     sqlOutput += `
-INSERT INTO public.permission_molecule_required (name, molecule, table_name, operation)
+INSERT INTO _internal.permission_molecule_required (name, molecule, table_name, operation)
 VALUES ('${permissionName}', ${arrayLiteral}, '${table}', '${operation}');
 
 INSERT INTO public.permission_relationships(name) 

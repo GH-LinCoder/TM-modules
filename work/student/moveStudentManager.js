@@ -35,7 +35,7 @@ else return false;
 
 
 
-function addDragDropListeners(panel) { // ✅ Removed managerRole parameter
+function addDragDropListeners(panel) { 
   console.log('🖱️ Initializing drag and drop.');
   
   const draggableCards = panel.querySelectorAll('.student-card[draggable="true"]');
@@ -47,7 +47,7 @@ function addDragDropListeners(panel) { // ✅ Removed managerRole parameter
         studentId: card.dataset.studentId,
         assignmentId: card.dataset.assignmentId,
         currentStep: parseInt(card.dataset.currentStep, 10),
-        managerRole: card.dataset.managerRole // ✅ READ FROM THE CARD!
+        managerRole: card.dataset.managerRole 
       };
       e.dataTransfer.setData('application/json', JSON.stringify(dragData));
       e.dataTransfer.effectAllowed = 'move';
@@ -69,7 +69,7 @@ function addDragDropListeners(panel) { // ✅ Removed managerRole parameter
       const data = JSON.parse(dataStr);
       const targetStep = parseInt(zone.dataset.stepOrder, 10);
       
-      // ✅ USE THE ROLE FROM THE DRAG DATA
+      
       console.log('isDropDownAllowed for', data.managerRole, data);
 
       if (isDropAllowed(data.currentStep, targetStep, data.managerRole)) {
@@ -97,7 +97,7 @@ function addDragDropListeners(panel) { // ✅ Removed managerRole parameter
       const data = JSON.parse(dataStr);
       const targetStep = parseInt(zone.dataset.stepOrder, 10);
 
-      // ✅ CHECK PERMISSIONS USING data.managerRole
+      // CHECK PERMISSIONS USING data.managerRole
       if (!isDropAllowed(data.currentStep, targetStep, data.managerRole)) {
         console.warn('⚠️ Drop rejected by permission rules.');
         return;
@@ -345,7 +345,6 @@ function getDelayminutes(moveMeAt, movedAt) {
 }
 
 
-
 function getDelayVisual(minutes) {
   console.log('getDelayVisual(minutes)',minutes);
   if (minutes === null) return '';
@@ -368,7 +367,6 @@ function getDelayVisual(minutes) {
   else if (logminutes < 8.37) return `border-red-900 border-[${borderWidth}px]`;         // < 3 days
   return `border-red-900 border-[${borderWidth}px] animate-pulse`;
 }
-
 
 
 function renderKanbanStyle(data){
