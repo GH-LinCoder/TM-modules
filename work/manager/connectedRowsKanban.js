@@ -3,7 +3,7 @@ import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 
 const CONFIRMATION_TIMEOUT = 10000;
-const DESCRIPTION_LIMIT = 300;
+const DESCRIPTION_LIMIT = 30;
 
 export const connectedCardThemes = {
     task: {
@@ -25,6 +25,7 @@ export const connectedCardThemes = {
 };
 
 function escapeHtml(value) {
+    console.log('escapeHTML');
     return String(value ?? '')
         .replaceAll('&', '&amp;')
         .replaceAll('<', '&lt;')
@@ -34,6 +35,7 @@ function escapeHtml(value) {
 }
 
 function getDelayMinutes(createdAt, confirmedAt) {
+    console.log('getDelayMinutes');
     if (!createdAt || confirmedAt) return null;
     const created = new Date(createdAt);
     if (Number.isNaN(created.getTime())) return null;
@@ -41,6 +43,7 @@ function getDelayMinutes(createdAt, confirmedAt) {
 }
 
 function getDelayVisual(minutes) {
+    console.log('getDelayVisual');
     if (minutes === null) return '';
     const logMinutes = Math.log(minutes + 1);
     let borderWidth = Math.round(logMinutes) - 4;
@@ -60,14 +63,17 @@ function getDelayVisual(minutes) {
 }
 
 function cellId(side, confirmed) {
+    console.log('cellId');
     return `${confirmed ? 'confirmed' : 'unconfirmed'}-${side === 'subject' ? 'left' : 'right'}`;
 }
 
 function cardId(card) {
+    console.log('cardId');
     return `${card.key}-${card.side}`;
 }
 
 function renderDescription(description, className = 'text-xs text-gray-600') {
+    console.log('renderDescription');
     const fullText = String(description ?? '');
     const shortText = fullText.length > DESCRIPTION_LIMIT
         ? `${fullText.substring(0, DESCRIPTION_LIMIT)}...`
@@ -80,6 +86,7 @@ function renderDescription(description, className = 'text-xs text-gray-600') {
 }
 
 function renderCard(card) {
+    console.log('renderCard');
     const confirmed = Boolean(card.confirmed);
     const delayMinutes = getDelayMinutes(card.createdAt, confirmed ? true : card.confirmedAt);
     const delayClass = getDelayVisual(delayMinutes);
@@ -99,9 +106,9 @@ function renderCard(card) {
             data-confirmed="${confirmed ? 'true' : 'false'}"
             ${draggable}
             title="${escapeHtml(`${confirmed ? 'Confirmed' : 'Drag to confirm'}${waitingText ? ` (${waitingText})` : ''}`)}">
-            <div class="font-semibold text-gray-900">${escapeHtml(card.name || card.id || 'Unnamed appro')}</div>
-            <div class="text-[10px] text-gray-500 break-all">${escapeHtml(card.id || '')}</div>
-            ${card.tuplet ? `<div class="mt-1 text-xs font-medium text-gray-700">${escapeHtml(card.tuplet)}</div>` : ''}
+            <div class="font-semibold text-gray-900">${escapeHtml(card.name || card.id || 'Unnamed appro')}
+            <span class="text-[8px] text-gray-500 break-all">${escapeHtml(card.id || '')}</span></div>
+            ${card.tuplet ? `<div class="mt-1 text-xs font-medium text-gray-700 ">${escapeHtml(card.tuplet)}</div>` : ''}
             ${card.relatedName ? `<div class="mt-1 text-xs text-gray-700">${escapeHtml(card.relatedName)}</div>` : ''}
             ${renderDescription(card.description)}
             ${card.relatedDescription !== undefined ? renderDescription(card.relatedDescription, 'text-xs text-gray-600 mt-1') : ''}
@@ -111,6 +118,7 @@ function renderCard(card) {
 }
 
 function renderCell(id, heading, cards, style) {
+    console.log('renderCell');
     return `
         <section id="${id}" class="connected-kanban-cell min-h-[140px] ${style} rounded border border-gray-200 bg-gray-50 p-3" data-cell-id="${id}">
             <h3 class="mb-2 text-sm font-semibold text-gray-700">${heading}</h3>
@@ -122,6 +130,7 @@ function renderCell(id, heading, cards, style) {
 }
 
 function renderBoard(cards, title) {
+    console.log('renderBoard');
     const cells = {
         'unconfirmed-left': [],
         'unconfirmed-right': [],
@@ -152,6 +161,7 @@ function renderBoard(cards, title) {
 }
 
 function restoreCard(card, originCell) {
+    console.log('restoreCard');
     const target = originCell.querySelector('.connected-cards');
     if (card.parentElement) card.parentElement.removeChild(card);
     target.appendChild(card);
@@ -165,6 +175,7 @@ function restoreCard(card, originCell) {
 }
 
 async function confirmCard(card, timeoutId, originCell) {
+    console.log('confirmCard');
     clearTimeout(timeoutId);
     try {
         const action = card.dataset.confirmationAction;
@@ -194,6 +205,7 @@ async function confirmCard(card, timeoutId, originCell) {
 }
 
 function addListeners(panel, controller) {
+    console.log('addListeners');
     const timers = new Set();
     const clearTimers = () => {
         timers.forEach(clearTimeout);
@@ -283,6 +295,7 @@ function addListeners(panel, controller) {
 }
 
 export function renderConnectedKanban(panel, cards, controller, title) {
+    console.log('renderConnectedKanban');
     const activeController = controller || new AbortController();
     panel.innerHTML = renderBoard(cards, title);
     addListeners(panel, activeController);

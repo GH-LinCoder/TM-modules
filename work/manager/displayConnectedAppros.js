@@ -8,10 +8,12 @@ console.log('../work/manager/displayConnectedAppros.js');
 export let approRows = [];
 
 function firstValue(row, names) {
+    console.log('firstValue');
     return names.map(name => row[name]).find(value => value !== undefined && value !== null && value !== '') || '';
 }
 
 function toCards(rows) {
+    console.log('toCards');
     return rows.flatMap(({ row, metadata }) => {
         const cards = [];
         const matches = metadata.typeOfMatch || [];
@@ -64,6 +66,7 @@ function toCards(rows) {
 }
 
 async function loadConnectedApproRows(query = {}) {
+    console.log('loadConnectedApproRows');
     const userId = query.userId || appState.query.userId;
     if (!userId) {
         approRows = [];
