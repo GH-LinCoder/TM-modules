@@ -102,7 +102,8 @@ export async function render(panel, query = {}, controller) {
     try {
         const rows = await loadConnectedApproRows(query);
         if (controller?.signal.aborted || !displayArea.isConnected) return;
-        renderConnectedKanban(displayArea, toCards(rows), controller, 'Connected appros');
+        renderConnectedKanban(displayArea, toCards(rows), controller, 'Connected appros', 'display-connected-appros');
+                // the two strings: first is the title to display, second is for the 'x' close button to create petition (a 2nd click closes the module)
     } catch (error) {
         approRows = [];
         console.error('displayConnectedAppros: failed to load rows', error);

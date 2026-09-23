@@ -98,7 +98,8 @@ export async function render(panel, query = {}, controller) {
     try {
         const rows = await loadConnectedSurveyRows(query);
         if (controller?.signal.aborted || !displayArea.isConnected) return;
-        renderConnectedKanban(displayArea, toCards(rows), controller, 'Connected surveys');
+        renderConnectedKanban(displayArea, toCards(rows), controller, 'Connected surveys', 'display-connected-surveys');
+        // the two strings: first is the title to display, second is for the 'x' close button to create petition (a 2nd click closes the module)
     } catch (error) {
         surveyRows = [];
         console.error('displayConnectedSurveys: failed to load rows', error);

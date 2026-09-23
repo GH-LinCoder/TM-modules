@@ -129,7 +129,7 @@ function renderCell(id, heading, cards, style) {
     `;
 }
 
-function renderBoard(cards, title) {
+function renderBoard(cards, title, closureName) {//closureName is the name of the module that is open. A click on this closes the module via the 2nd click petition system
     console.log('renderBoard');
     const cells = {
         'unconfirmed-left': [],
@@ -144,6 +144,13 @@ function renderBoard(cards, title) {
         <div class="connected-kanban p-2 md:p-4">
             <div class="mb-4 flex items-center justify-between gap-3">
                 <h2 class="text-xl font-bold text-gray-800">${escapeHtml(title)}</h2>
+
+ <button data-action=${closureName} class="text-gray-500 hover:text-gray-700" aria-label="Close">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
+
                 <span class="text-xs text-gray-500">${cards.length} connection${cards.length === 1 ? '' : 's'}</span>
             </div>
             <div class="grid grid-cols-1 items-start gap-4 md:grid-cols-2">
@@ -294,9 +301,9 @@ function addListeners(panel, controller) {
     });
 }
 
-export function renderConnectedKanban(panel, cards, controller, title) {
+export function renderConnectedKanban(panel, cards, controller, title, closureName) {
     console.log('renderConnectedKanban');
     const activeController = controller || new AbortController();
-    panel.innerHTML = renderBoard(cards, title);
+    panel.innerHTML = renderBoard(cards, title, closureName);
     addListeners(panel, activeController);
 }

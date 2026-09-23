@@ -98,7 +98,8 @@ export async function render(panel, query = {}, controller) {
     try {
         const rows = await loadConnectedTaskRows(query);
         if (controller?.signal.aborted || !displayArea.isConnected) return;
-        renderConnectedKanban(displayArea, toCards(rows), controller, 'Connected tasks');
+        renderConnectedKanban(displayArea, toCards(rows), controller, 'Connected tasks', 'display-connected-tasks');
+                // the two strings: first is the title to display, second is for the 'x' close button to create petition (a 2nd click closes the module)
     } catch (error) {
         taskRows = [];
         console.error('displayConnectedTasks: failed to load rows', error);
