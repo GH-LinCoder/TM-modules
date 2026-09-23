@@ -4,8 +4,8 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { appState } from '../../state/appState.js';
 console.log('moveStudentManager.js loaded');
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
-import {showToast} from'../../ui/showToast.js';
-
+//import {showToast} from'../../ui/showToast.js';
+import {getDelayVisual} from '../../utils/getDelayVisual.js';
 
 // ✅ TEMPORARY TEST: Hardcode a known task_header_id from your database
 //const TEST_TASK_ID = '2e8a83a9-90cd-4f98-a586-6bf3c618a6b9'; //
@@ -344,7 +344,7 @@ function getDelayminutes(moveMeAt, movedAt) {
   return minutes;
 }
 
-
+/*
 function getDelayVisual(minutes) {
   console.log('getDelayVisual(minutes)',minutes);
   if (minutes === null) return '';
@@ -367,7 +367,7 @@ function getDelayVisual(minutes) {
   else if (logminutes < 8.37) return `border-red-900 border-[${borderWidth}px]`;         // < 3 days
   return `border-red-900 border-[${borderWidth}px] animate-pulse`;
 }
-
+*/
 
 function renderKanbanStyle(data){
   console.log('Rendering moveStudentManager with data:', data);
@@ -393,7 +393,7 @@ const studentsHTML = step.students.map(student => {
   
   // Calculate delay for border weight (only if has pending request)
   const delayminutes = hasPendingRequest ? getDelayminutes(student.move_me_at, student.moved_at) : null;
-  const delayClass = getDelayVisual(delayminutes);
+  const delayClass = getDelayVisual(delayminutes, 1); //delayFactor is how much time needed to change the display intensity. 1 = 60 mins for first signal
   
   // Only add hover effect for students with pending requests
   //const hoverClass = hasPendingRequest ? 'hover:shadow-md cursor-move' : '';

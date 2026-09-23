@@ -1,9 +1,12 @@
 import { addManagedListener } from '../../utils/listenerManagement.js';
 import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
+import {getDelayVisual} from '../../utils/getDelayVisual.js';
 
 const CONFIRMATION_TIMEOUT = 10000;
 const DESCRIPTION_LIMIT = 30;
+
+let delayFactorChosen = 8; //organisations to determine for themselves how much delay is okay, or too long 
 
 export const connectedCardThemes = {
     task: {
@@ -41,33 +44,34 @@ function getDelayMinutes(createdAt, confirmedAt) {
     if (Number.isNaN(created.getTime())) return null;
     return Math.max(0, (Date.now() - created.getTime()) / 60000);
 }
-
+/*
 function getDelayVisual(minutes) {
     console.log('getDelayVisual');
     if (minutes === null) return '';
-    const logMinutes = Math.log(minutes + 1);
-    let borderWidth = Math.round(logMinutes) - 5;
+    const adjustedMinutes = minutes / delayFactorChosen;
+    const logTime = Math.log(adjustedMinutes + 1);
+    let borderWidth = Math.round(logTime) - 5;
     borderWidth = Math.max(1, Math.min(10, borderWidth));
-
-//    if (logMinutes < 4.09) return `border-green-300 border-[${borderWidth}px]`;//60mins
-//    if (logMinutes < 4.80) return `border-green-400 border-[${borderWidth}px]`; //2hrs
-//    if (logMinutes < 5.19) return `border-green-500 border-[${borderWidth}px]`;//3hrs
-    if (logMinutes < 5.48) return `border-green-300 border-[${borderWidth}px]`;//4 hrs
-    if (logMinutes < 5.70) return `border-green-400 border-[${borderWidth}px]`;//5 hrs
-    if (logMinutes < 5.89) return `border-green-500 border-[${borderWidth}px]`;//6 hrs
-    if (logMinutes < 6.04) return `border-yellow-300 border-[${borderWidth}px]`;//7 hrs
-    if (logMinutes < 6.17) return `border-yellow-400 border-[${borderWidth}px]`;//8hrs
+console.log('logTime',logTime);
+//    if (logTime < 4.09) return `border-green-300 border-[${borderWidth}px]`;//60mins
+//    if (logTime < 4.80) return `border-green-400 border-[${borderWidth}px]`; //2hrs
+//    if (logTime < 5.19) return `border-green-500 border-[${borderWidth}px]`;//3hrs
+    if (logTime < 5.48) return `border-green-300 border-[${borderWidth}px]`;//4 hrs if delayFactorChosen =1
+    if (logTime < 5.70) return `border-green-400 border-[${borderWidth}px]`;//5 hrs
+    if (logTime < 5.89) return `border-green-500 border-[${borderWidth}px]`;//6 hrs
+    if (logTime < 6.04) return `border-yellow-300 border-[${borderWidth}px]`;//7 hrs
+    if (logTime < 6.17) return `border-yellow-400 border-[${borderWidth}px]`;//8hrs
     
-    if (logMinutes < 7.27) return `border-yellow-500 border-[${borderWidth}px]`;//1 day
+    if (logTime < 7.27) return `border-yellow-500 border-[${borderWidth}px]`;//1 day
 
-    if (logMinutes < 8.37) return `border-orange-300 border-[${borderWidth}px]`;// 3 days
-    if (logMinutes < 9.22) return `border-orange-400 border-[${borderWidth}px]`;// 1 week
-    if (logMinutes < 9.91) return `border-orange-500 border-[${borderWidth}px]`;// 2 weeks
+    if (logTime < 8.37) return `border-orange-300 border-[${borderWidth}px]`;// 3 days
+    if (logTime < 9.22) return `border-orange-400 border-[${borderWidth}px]`;// 1 week
+    if (logTime < 9.91) return `border-orange-500 border-[${borderWidth}px]`;// 2 weeks
     
-    if (logMinutes < 10.32) return `border-red-300 border-[${borderWidth}px]`;// 3 weeks
-    if (logMinutes < 10.6) return `border-red-300 border-[${borderWidth}px]`;// 4 weeks
+    if (logTime < 10.32) return `border-red-300 border-[${borderWidth}px]`;// 3 weeks
+    if (logTime < 10.6) return `border-red-300 border-[${borderWidth}px]`;// 4 weeks
     return `border-red-900 border-[${borderWidth}px] animate-pulse`;
-}
+}*/
 
 function cellId(side, confirmed) {
     console.log('cellId');
@@ -96,7 +100,7 @@ function renderCard(card) {
     console.log('renderCard');
     const confirmed = Boolean(card.confirmed);
     const delayMinutes = getDelayMinutes(card.createdAt, confirmed ? true : card.confirmedAt);
-    const delayClass = getDelayVisual(delayMinutes);
+    const delayClass = getDelayVisual(delayMinutes, delayFactorChosen); // delayFactor of 8 means only start signalling at 8 hrs delay
     const draggable = confirmed ? '' : ' draggable="true"';
     const interactionClass = confirmed ? 'opacity-75 cursor-not-allowed' : 'cursor-move hover:shadow-md';
     const waitingText = delayMinutes === null ? '' : `Waiting: ${Math.round(delayMinutes / 60)}h`;

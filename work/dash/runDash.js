@@ -136,13 +136,13 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
     <!-- Task: Move students -->
-    <div class="bg-orange-50 border border-blue-400 rounded-l-2xl p-3 cursor-pointer hover:shadow-md">
-      <h3 class="text-sm font-medium text-blue-700">This is where I manage my students through their tasks. 🔧🛼🧑‍🎓</h3>
-      <p class="text-xs text-gray-600 
+    <div class="bg-orange-50 border border-blue-400 rounded-l-2xl p-3 cursor-pointer hover:shadow-md"  
      data-section="pending-manager-tasks"  
      data-action="display-students-on-tasks" 
      data-destination="display-area" 
      title="View students waiting for your approval to move to the next step">
+      <h3 class="text-sm font-medium text-blue-700">This is where I manage my students through their tasks. 🔧🛼🧑‍🎓</h3>
+      <p class="text-xs text-gray-600">
      Click to see tasks where students are waiting for me to approve their next step.
      <i>Only if I manage a task where there are students who want to move to the next step</i>
      </p>
