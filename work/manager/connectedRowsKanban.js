@@ -46,19 +46,26 @@ function getDelayVisual(minutes) {
     console.log('getDelayVisual');
     if (minutes === null) return '';
     const logMinutes = Math.log(minutes + 1);
-    let borderWidth = Math.round(logMinutes) - 4;
+    let borderWidth = Math.round(logMinutes) - 5;
     borderWidth = Math.max(1, Math.min(10, borderWidth));
 
-    if (logMinutes < 4.09) return `border-green-300 border-[${borderWidth}px]`;
-    if (logMinutes < 4.80) return `border-green-400 border-[${borderWidth}px]`;
-    if (logMinutes < 5.19) return `border-green-500 border-[${borderWidth}px]`;
-    if (logMinutes < 5.48) return `border-yellow-500 border-[${borderWidth}px]`;
-    if (logMinutes < 5.70) return `border-yellow-600 border-[${borderWidth}px]`;
-    if (logMinutes < 5.89) return `border-yellow-700 border-[${borderWidth}px]`;
-    if (logMinutes < 6.04) return `border-orange-700 border-[${borderWidth}px]`;
-    if (logMinutes < 6.17) return `border-orange-800 border-[${borderWidth}px]`;
-    if (logMinutes < 7.27) return `border-orange-900 border-[${borderWidth}px]`;
-    if (logMinutes < 8.37) return `border-red-900 border-[${borderWidth}px]`;
+//    if (logMinutes < 4.09) return `border-green-300 border-[${borderWidth}px]`;//60mins
+//    if (logMinutes < 4.80) return `border-green-400 border-[${borderWidth}px]`; //2hrs
+//    if (logMinutes < 5.19) return `border-green-500 border-[${borderWidth}px]`;//3hrs
+    if (logMinutes < 5.48) return `border-green-300 border-[${borderWidth}px]`;//4 hrs
+    if (logMinutes < 5.70) return `border-green-400 border-[${borderWidth}px]`;//5 hrs
+    if (logMinutes < 5.89) return `border-green-500 border-[${borderWidth}px]`;//6 hrs
+    if (logMinutes < 6.04) return `border-yellow-300 border-[${borderWidth}px]`;//7 hrs
+    if (logMinutes < 6.17) return `border-yellow-400 border-[${borderWidth}px]`;//8hrs
+    
+    if (logMinutes < 7.27) return `border-yellow-500 border-[${borderWidth}px]`;//1 day
+
+    if (logMinutes < 8.37) return `border-orange-300 border-[${borderWidth}px]`;// 3 days
+    if (logMinutes < 9.22) return `border-orange-400 border-[${borderWidth}px]`;// 1 week
+    if (logMinutes < 9.91) return `border-orange-500 border-[${borderWidth}px]`;// 2 weeks
+    
+    if (logMinutes < 10.32) return `border-red-300 border-[${borderWidth}px]`;// 3 weeks
+    if (logMinutes < 10.6) return `border-red-300 border-[${borderWidth}px]`;// 4 weeks
     return `border-red-900 border-[${borderWidth}px] animate-pulse`;
 }
 
