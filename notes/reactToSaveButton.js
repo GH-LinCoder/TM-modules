@@ -5,18 +5,32 @@ import { collectUserChoices } from './collectUserChoices.js';
 import { saveNoteWithTags } from './saveNoteWithTags.js';
 //import { createSupabaseClient } from '../db/client.js';
 
+
+// Basic HTML escaping
+function escapeHtml(text) {
+  if (typeof text !== 'string') return '';
+  return text
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // Get a single instance of the Supabase client.
 //const supabase = createSupabaseClient();
 const userId = appState.query.userId;
 export async function reactToSaveButton() {
   console.log('reactToSaveButton()');
 
-  const noteContent = document.getElementById('note-content')?.value.trim();
+  let noteContent = document.getElementById('note-content')?.value.trim();
   if (!noteContent) {
     console.log('✗ Note content is empty');
     return;
   }
   console.log("content found");
+
+noteContent = escapeHtml(noteContent);
 
   const userChoices = collectUserChoices();
 console.log('userChoices', userChoices);
