@@ -7,8 +7,10 @@ import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils
 export function getClipboardAppros(){
   const allAppros = getClipboardItems({ type: 'app-human' })
   .concat(getClipboardItems({ type: 'app-task' }))
+  .concat(getClipboardItems({ type: 'tasks' }))
   .concat(getClipboardItems({ type: 'app-abstract' }))
-  .concat(getClipboardItems({ type: 'app-survey' })) 
+  .concat(getClipboardItems({ type: 'app-survey' }))
+  .concat(getClipboardItems({ type: 'surveys' }))
 
   .concat(getClipboardItems({ type: 'bundle' })) //
 

@@ -3111,6 +3111,39 @@ console.log('readTaskAutomations;',data);// empty  23:46 Jan 22
   }
 },
 
+readTaskAutomationsByHeader: {
+  metadata: {
+    tables: ['automations'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['taskHeaderId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { taskHeaderId } = payload || {};
+
+    if (!taskHeaderId) {
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from('automations')
+      .select('*')
+      .is('deleted_at', null)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error reading task automations by header:', error.message);
+      throw new Error('Failed to read task automations by header.');
+    }
+
+    console.info('[VerbDebug] task automation reader', {
+      taskHeaderId,
+      totalRows: data?.length || 0
+    });
+    return data || [];
+  }
+},
+
 //AUTOMATIONS
 readSurveyAutomations: {
   metadata: {
@@ -3140,6 +3173,39 @@ console.log('registryReadAutomations-answerId:',answer_id);
   }
 },
 
+readSurveyAutomationsByHeader: {
+  metadata: {
+    tables: ['automations'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['surveyHeaderId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { surveyHeaderId } = payload || {};
+
+    if (!surveyHeaderId) {
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from('automations')
+      .select('*')
+      .is('deleted_at', null)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error reading survey automations by header:', error.message);
+      throw new Error('Failed to read survey automations by header.');
+    }
+
+    console.info('[VerbDebug] survey automation reader', {
+      surveyHeaderId,
+      totalRows: data?.length || 0
+    });
+    return data || [];
+  }
+},
+
 //Newer version with corrected arg check (not using "this.") File 001 has previous versions
 
 //AUTOMATIONS
@@ -3157,9 +3223,9 @@ console.log('auto task by task',source_task_step_id, source_task_header_id,targe
     const { data, error } = await supabase
       .from('automations')
       .insert({
-        source_task_step_id,
-        source_task_header_id,
-        task_step_id:source_task_step_id,
+       // source_task_step_id,
+       // source_task_header_id,
+       // task_step_id:source_task_step_id,
        // current_step:current_step, //no such column-deleted 19:30 sep 1 Now writing to table
         name: name || 'Assign Task Automation',
               //  source_data: { source_task_step_id }, 
@@ -3249,11 +3315,9 @@ createAutomationRelateByTask: {
   },
   handler: async (supabase, userId, payload) => {
     const { source_task_header_id, source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
-  //  for (const arg of this.metadata.requiredArgs) {
-  //    if (payload[arg] === undefined || payload[arg] === null) {
-  //      throw new Error("Missing required argument: " + arg);
-  //    }
-  //  }
+  // appro_is_id is decided when the automation is run. It will be the user's id at that time.  
+  //  (There could be a use for an automation that predetermines the _is )
+  
   const autoRegistryId = '2869b9ae-453e-4c74-badf-22a96e9609c4';//the place to find what kind of function this is
 
     const { data, error } = await supabase

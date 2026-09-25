@@ -60,39 +60,29 @@ if(appState.query.userAuthId)
 
     const clipboardItems = getClipboardItems(); // no type filter
     //console.log('clipboardItems', clipboardItems);
-  
-    /*  21:20 Jan 14  weird... 
-    when logged-in as wed1156 
-      profile ok, but nosurveys, relations or tasks shown 
 
-if then put on clipboard , 
-lose approId,  auth is wrong, lost type, source
-but see tasks, surveys, relations & managed
+    const preferredClipboardItem = (() => {
+      const taskOrSurvey = clipboardItems.find(item => {
+        const type = item?.entity?.type || item?.type;
+        return type === 'app-task' || type === 'app-survey'
+          || type === 'task' || type === 'tasks'
+          || type === 'survey' || type === 'surveys';
+      });
+      return taskOrSurvey || clipboardItems[0] || null;
+    })();
 
-    'auth:', entity.items.id,
-    'appro:',entity.items.approUserId,
-    'name:',entity.items.name,
-    'email:',entity.items.email,
-    'created',entity.items.created_at,
-    'type:',entity.items.type,
-    'source:',entity.items.source);
-  */
+    if (preferredClipboardItem) {
+      const entity = preferredClipboardItem.entity;
+      const item = entity?.item || entity || {};
 
-//Need to send back all three values and let the calling module determine which to use. Or put them in the appState.query together with a timestamp. If time is within 10? seconds don't update
-
-
-    if (clipboardItems.length > 0) { //treat the first item on the clipboard as the subject? (first is most recent?)
-      const entity = clipboardItems[0].entity;
-    //  console.log('entity',entity);
       return {
-        id: entity.item.auth_user_id,
-        approUserId:entity.id,
-        name: entity.item.name,
-        email:entity.item.email,
-        created_at:entity.item.created_at,
-
-        type: entity.type,
-        source:'clipboard'
+        id: item.auth_user_id || item.id || entity.id,
+        approUserId: entity.id,
+        name: item.name || entity.name || 'Selected item',
+        email: item.email || null,
+        created_at: item.created_at || null,
+        type: entity.type || item.type || 'app-human',
+        source: 'clipboard'
       };
     }
   //only here if there was nothing on the clipboard.
