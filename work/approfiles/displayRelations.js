@@ -336,18 +336,43 @@ function isTaskOrSurveyType(type) {
   return normalizedType === 'task' || normalizedType === 'survey';
 }
 
-function getVerbCardClasses(type) {
-  switch (normalizeVerbType(type)) {
-    case 'survey':
-      return 'bg-green-100 border border-yellow-400 rounded-r-2xl p-3';
-    case 'appro':
-      return 'rounded-2xl bg-green-100 border border-green-400 p-4';
-    case 'relation':
-      return 'rounded-tr-2xl rounded-bl-2xl bg-orange-100 border border-orange-400 p-4';
-    case 'task':
-    default:
-      return 'bg-blue-100 border border-blue-400 rounded-l-2xl p-3';
-  }
+function getVerbCardClasses(type, side = 'full') {
+  const normalizedType = normalizeVerbType(type);
+
+  const variants = { //full, left, right are identical. Pointless?
+    task: {
+      full: 'bg-blue-100 border border-blue-400 rounded-l-2xl p-3',
+      left: 'bg-blue-100 border border-blue-400 rounded-l-2xl p-3',
+      right:'bg-blue-100 border border-blue-400 rounded-r-2xl p-3'
+    },
+    survey: {
+      full: 'bg-green-100 border border-yellow-400 rounded-r-2xl p-3',
+      left: 'bg-green-100 border border-yellow-400 rounded-l-2xl p-3',
+      right: 'bg-green-100 border border-yellow-400 rounded-r-2xl p-3'
+    },
+    appro: {
+      full: 'rounded-2xl bg-green-100 border border-green-400 p-4',
+      left: 'rounded-2xl bg-green-100 border border-green-400 p-4',
+      right: 'rounded-2xl bg-green-100 border border-green-400 p-4'
+    },
+    relation: {
+      full: 'rounded-tr-2xl rounded-bl-2xl bg-orange-100 border border-orange-400 p-4',
+      left: 'rounded-tr-2xl rounded-bl-2xl bg-orange-100 border border-orange-400 p-4',
+      right: 'rounded-tr-2xl rounded-bl-2xl bg-orange-100 border border-orange-400 p-4'
+    },
+    human: {
+      full: 'bg-blue-100 border border-blue-400 rounded-l-2xl p-3',
+      left: 'bg-blue-100 border border-blue-400 rounded-l-2xl p-3',
+      right: 'bg-blue-100 border border-blue-400 rounded-r-2xl p-3'
+    }
+  };
+
+  return variants[normalizedType]?.[side] || variants.task[side];
+}
+
+function getOverlapFlowCardClasses(type, side) {
+  const baseClasses = getVerbCardClasses(type, side);
+  return side === 'left' ? `${baseClasses} border-r-0` : `${baseClasses} border-l-0`;
 }
 
 function getVerbTypeLabel(type) {
@@ -778,7 +803,7 @@ async function loadApprofileNameMap() {
   }
 }
 
-//refactor of renderWork  2:40 Feb 22
+//Sept 29 2026 - the styles for tasks are WRONG in this mode. The left end should be rounded and thr right end square
 async function renderWork(panel) {
   console.log('renderWork()');
 
@@ -832,7 +857,7 @@ async function renderWork(panel) {
   //
   // Render a section
   //
-  function renderSection(title, rows) {
+  function renderSection(title, rows) {//when rendering 'Work' the tasks style is wrong sept 29 2026
     if (rows.length === 0) return '';
 
     return `
@@ -847,11 +872,13 @@ async function renderWork(panel) {
   function renderDuplet(duplet) {
     const s = duplet.student;
     const a = duplet.activity;
+    const leftClasses = getVerbCardClasses(s.type, 'left');// verb classes ? Left & right are identical anyway?
+    const rightClasses = getVerbCardClasses(a.type, 'right');
 
     return `
       <div class="flex justify-center items-center my-4 gap-2">
 
-        <div class="flow-box px-5 py-3 bg-blue-100 border-2 border-blue-700 rounded-md font-bold text-blue-900">
+        <div class="flow-box ${leftClasses} font-bold text-gray-900">
           <span class="appro-icon cursor-pointer px-3 py-3 bg-yellow-100 hover:bg-yellow-300 rounded-full"
             data-clicked="icon"
             data-content-id="${s.appro_id}"
@@ -872,7 +899,7 @@ async function renderWork(panel) {
           assigned to
         </div>
 
-        <div class="flow-box px-5 py-3 bg-purple-100 border-2 border-purple-700 rounded-md font-bold text-blue-900">
+        <div class="flow-box ${rightClasses} font-bold text-gray-900">
           <span class="appro-name cursor-pointer bg-gray-100 hover:bg-green-300"
             data-clicked="name"
             data-content-id="${a.appro_id}"
@@ -1021,55 +1048,52 @@ function renderRelationshipFlow(rel, subjectName, iconMap) {
   if (rel.isBundleContainer) {
     const leftName = rel.approfile_is_name || rel.approfile_is;
     const rightName = rel.of_approfile_name || rel.of_approfile;
+    const leftType = rel.approfile_is_type || 'app-human';
+    const rightType = rel.of_approfile_type || 'app-human';
     const leftIcon = iconMap?.[rel.approfile_is] || '❔';
     const rightIcon = iconMap?.[rel.of_approfile] || '❔';
-// between green-300 | bg-emerald-100 or teal-200 teal-300   cyan-200   | blue-200
-    const leftBg = leftName === subjectName ? 'bg-green-100' : 'bg-blue-200';
-    const rightBg = rightName === subjectName ? 'bg-green-100' : 'bg-blue-200';
+    const leftCardClasses = getOverlapFlowCardClasses(leftType, 'left');
+    const rightCardClasses = getOverlapFlowCardClasses(rightType, 'right');
 
     const innerRows = rel.items.map(subRel => `
       <div class="text-xs text-gray-600 bg-white p-1 rounded border mb-1 flex justify-between">
         <span>${subRel.relationship || subRel.name}</span>
-        <!--span class="text-gray-400 font-mono">${subRel.relation_id?.slice(0, 8)}...</span-->
         <span class="text-gray-400 font-mono">${subRel.relation_id}</span>
       </div>
     `).join('');
 
     return `
       <div class="my-3" data-bundle-id="${rel.bundleId}">
-        <!-- Main Bundle Flow Row -->
         <div class="flex justify-center items-center -space-x-3">
-                <div class="flow-box mix-blend-multiply px-4 py-2 ${leftBg} border-l-2 border-t-2 border-b-2 border-blue-900 rounded-md font-bold text-blue-900 text-sm">
+          <div class="flow-box ${leftCardClasses} font-bold text-gray-900 text-sm">
             <span class="appro-icon cursor-pointer px-2 py-1 bg-yellow-100 hover:bg-yellow-300 rounded-full"
-                  data-clicked="icon" data-content-id="${rel.approfile_is}" data-content-name="${leftName}">
+                  data-clicked="icon" data-content-id="${rel.approfile_is}" data-content-name="${leftName}" data-content-type="${leftType}">
               ${leftIcon}
             </span>
             <span class="appro-name cursor-pointer bg-gray-100 hover:bg-green-300 px-1 rounded"
-                  data-clicked="name" data-content-id="${rel.approfile_is}" data-content-name="${leftName}">
+                  data-clicked="name" data-content-id="${rel.approfile_is}" data-content-name="${leftName}" data-content-type="${leftType}">
               ${leftName}
             </span>
           </div>
 
-          <!-- Middle permission name: Bundle Name & Toggle Button -->
-          <button data-toggle="toggle-bundle"  class="mix-blend-multiply px-3 py-1 bg-cyan-100 rounded-md font-bold italic text-indigo-700">
+          <button data-toggle="toggle-bundle" class="mix-blend-multiply px-3 py-1 bg-cyan-100 rounded-md font-bold italic text-indigo-700">
             📦 ${rel.bundleName}
             <span class="text-xs bg-indigo-800 text-indigo-200 px-2 py-0.5 rounded-full">${rel.items.length}</span>
             <span class="bundle-arrow text-xs">▼</span>
           </button>
 
- <div class="mix-blend-multiply flow-box px-4 py-2 ${rightBg}  border-t-2 border-b-2 border-r-2 border-purple-700 rounded-md font-bold text-blue-900 text-sm">
+          <div class="flow-box ${rightCardClasses} font-bold text-gray-900 text-sm">
             <span class="appro-name cursor-pointer bg-gray-100 hover:bg-green-300 px-1 rounded"
-                  data-clicked="name" data-content-id="${rel.of_approfile}" data-content-name="${rightName}">
+                  data-clicked="name" data-content-id="${rel.of_approfile}" data-content-name="${rightName}" data-content-type="${rightType}">
               ${rightName}
             </span>
             <span class="appro-icon cursor-pointer px-2 py-1 bg-yellow-100 hover:bg-yellow-300 rounded-full"
-                  data-clicked="icon" data-content-id="${rel.of_approfile}" data-content-name="${rightName}">
+                  data-clicked="icon" data-content-id="${rel.of_approfile}" data-content-name="${rightName}" data-content-type="${rightType}">
               ${rightIcon}
             </span>
           </div>
         </div>
 
-        <!-- Hidden Child Permissions Container -->
         <div class="bundle-details hidden mt-3 pt-2 border-t border-indigo-200 max-h-48 overflow-y-auto px-4">
           <div class="text-xs font-semibold text-indigo-900 mb-1">Included Permissions:</div>
           ${innerRows}
@@ -1078,20 +1102,19 @@ function renderRelationshipFlow(rel, subjectName, iconMap) {
     `;
   }
 
-  // Tuplet design for single permissions 
   const leftName = rel.approfile_is_name || rel.approfile_is;
   const rightName = rel.of_approfile_name || rel.of_approfile;
   const leftType = rel.approfile_is_type || 'app-human';
   const rightType = rel.of_approfile_type || 'app-human';
   const leftIcon = iconMap?.[rel.approfile_is] || '❔';
   const rightIcon = iconMap?.[rel.of_approfile] || '❔';
-
-  const leftBg = leftName === subjectName ? 'bg-green-100' : 'bg-blue-200';
-  const rightBg = rightName === subjectName ? 'bg-green-100' : 'bg-blue-200';
+  const leftCardClasses = getOverlapFlowCardClasses(leftType, 'left');
+  const rightCardClasses = getOverlapFlowCardClasses(rightType, 'right');
+  const relationCardClasses = getVerbCardClasses('relation', 'full');
 
   return `
     <div class="flex justify-center items-center my-4 -space-x-3">
-      <div class="flow-box mix-blend-multiply px-4 py-2 ${leftBg} border-l-2 border-t-2 border-b-2 border-blue-900 rounded-md font-bold text-blue-900 text-sm">
+      <div class="flow-box ${leftCardClasses} font-bold text-gray-900 text-sm">
         <span class="appro-icon cursor-pointer px-3 py-3 bg-yellow-100 hover:bg-yellow-300 rounded-full "
           data-clicked="icon" data-content-id="${rel.approfile_is}" data-content-name="${leftName}" data-content-type="${leftType}">
           ${leftIcon}
@@ -1102,11 +1125,11 @@ function renderRelationshipFlow(rel, subjectName, iconMap) {
         </span>
       </div>
 
-      <div class="mix-blend-multiply px-4 py-1 bg-cyan-100 rounded-md font-bold italic text-indigo-700">
+      <div class="mix-blend-multiply px-4 py-1 ${relationCardClasses} font-bold italic text-indigo-700">
         ${rel.relationship}
       </div>
 
-      <div class="mix-blend-multiply flow-box px-4 py-2 ${rightBg}  border-t-2 border-b-2 border-r-2 border-purple-700 rounded-md font-bold text-blue-900 text-sm">
+      <div class="flow-box ${rightCardClasses} font-bold text-gray-900 text-sm">
         <span class="appro-name cursor-pointer bg-gray-100 hover:bg-green-300"
           data-clicked="name" data-content-id="${rel.of_approfile}" data-content-name="${rightName}" data-content-type="${rightType}">
           ${rightName}
