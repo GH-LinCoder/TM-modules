@@ -1,35 +1,33 @@
 // ./ui/adminListeners.js
+// listen for clicks. Read data-* to build a 'petition' of what is being requested to be loaded. 
+// store that petiotion in the global  'appState'
+
 console.log('Imported: ui/adminListeners.js');
 
 import { appState } from '../state/appState.js';
 
 console.log('adminListeners.js   loaded');
-function handleCardClick(action, moduleName) {
+/*
+function handleCardClick(action, moduleName) {//does nothing???
   // Just update state - don't call renderPanel directly
   console.log('handleCardClick action:(',action,', name:', moduleName, ')');
-
-/*the panel may already have been closed by the event listener in flexmain.js, 
-  but adminListeners.js does not know that & will react to the same click & reopen the module
-  therefore to prevent that we can check if the module name is in the query. It would only be there
-  if the app had already been asked to load that module
-*/
 
  //if query{} already has the name of the current panel open, do not open again
    const isAlreadyOpen = moduleName===appState.query.petitioner.Module; // 
  
   if (isAlreadyOpen) {
     console.log('Panel already open:', moduleName);
-    return; // Prevent opening the same panel multiple times // fails, panel already been closed
+    return; // Prevent opening the same panel multiple times 
   } 
   
- 
-}
+ // but the function doesn't do anything, so what is the point?
+} */
 
 // Reads the information from the clicked element, its section and the full page
 // so that we know which module (page), which section of that module and the specific action that has been clicked
 //All of this is called the 'petition' and it will be stored in appState.query.petitioner{}
 function readPetition(e){
-console.log('readPetition (', e, ')');  //
+//console.log('readPetition DOM element (', e, ')');  //
 
   const actionEl = e.target.closest('[data-action]');
     if (!actionEl) {    console.log('fails action (', actionEl, ')');  return;}
@@ -48,7 +46,7 @@ console.log('readPetition (', e, ')');  //
     const destination = destinationEl.dataset.destination;
 //13:32 10 sept  destination showing wrong address. It is showing destination = action, but should be =section
 
-    console.log('readPetition(','= Module:',module,' Section:', section,' Action:', action,' Destination:', destination,')');
+//    console.log('readPetition(','= Module:',module,' Section:', section,' Action:', action,' Destination:', destination,')');
     const petition = {'Module':module,'Section': section,'Action': action, 'Destination':destination};
     //console.log('petition (', petition, ')');
 return petition;
@@ -67,7 +65,7 @@ export function adminListeners(container) {
   container.__adminListenersAttached = true;
 
   container.addEventListener('click', (e) => {
-    const tag = e.target.tagName;
+  //  const tag = e.target.tagName;
 
 
     /*
@@ -92,44 +90,50 @@ if (e.target.closest('select, input, textarea')) {
     }
 
     appState.setPetitioner(petition);
-    const action = petition.Action;
-    console.log('adminListeners (', action, ')');
+    //const action = petition.Action;
+    //console.log('adminListeners (', action, ')');
 
+
+    // the following looks out of date. sept 2026
+    
+/*  //removed switch 16:43 Sept 30 2026
     switch (action) {
       case 'create-task-dialogue':
         console.log('case: (', action, ') changing name to createTaskForm.html Then call handleCardClick()');
-        handleCardClick(action, 'createTaskForm.html');
+       // handleCardClick(action, 'createTaskForm.html');  //is this relvant or legacy?
         break;
 
       case 'assign-task-dialogue':
         console.log('case: (', action, ') changing name to asignTaskForm.html Then call handleCardClick()');
-        handleCardClick(action, 'assignTaskForm.html');
+      //  handleCardClick(action, 'assignTaskForm.html');
         break;
 
       case 'move-student-dialogue':
         console.log('case: (', action, ') changing name to moveStudentForm.html Then call handleCardClick()');
-        handleCardClick(action, 'moveStudentForm.html');
+      //  handleCardClick(action, 'moveStudentForm.html');
         break;
 
       case 'relate-approfiles-dialogue':
         console.log('case: (', action, ') changing name to relateApprofilesForm.html Then call handleCardClick()');
-        handleCardClick(action, 'relateApprofilesForm.html');
+      //  handleCardClick(action, 'relateApprofilesForm.html'); //is this relvant or legacy?
         break;
 
       case 'sign-out':
-        signOut();
+      //  signOut();
         break;
 
       default:
+        
         handleCardClick(action, action);
-    }
-  }); // NOTE: no capture flag here
+    }*/
+   // handleCardClick(action, action);
+  });
 }
 
 
-
+/*
 // === ADMIN LISTENERS ===
-function signOut() {
+function signOut() { //does nothing sept 2026
   console.log('signOut()');
 
   // Implement sign-out logic here
@@ -137,8 +141,8 @@ function signOut() {
 //  window.location.href = '/login'; // Redirect to login page after sign-out ?
   
 } 
-
-
+*/
+/*
 function waitForDialogAndInit() {  // for the advance student Class 
 console.log('waitForDialogAndInit()');
 
@@ -173,9 +177,10 @@ console.log('waitForDialogAndInit()');
     childList: true,
     subtree: true
   });
-}
-
+} */
+/*
 function updateTaskSteps(actionType) {
   // Fill in your DB logic here
   console.log(`Updating (needed) task steps for: ${actionType}`);
 }
+*/
