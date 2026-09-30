@@ -146,7 +146,9 @@ async function renderTask(panel) {
             <div class="text-sm text-gray-700">Manager: ${assignment.manager_name || 'Unknown'}</div>
             <div class="text-sm text-gray-700">Student: ${assignment.student_name || 'Unknown'}</div>
         </div>
-        <div class="rounded-lg p-6 bg-white shadow-md border mb-4 whitespace-pre-line">${assignment.task_description || ''}</div>
+        <div class="rounded-lg p-6 bg-white shadow-md border mb-4 whitespace-pre-line">${assignment.task_description || ''}
+        </div>
+        <div> ${assignment.task_external_url} </div> <!-- need show video -->
     `;
 
     card.innerHTML = headerHtml + stepsHtml;
@@ -422,8 +424,12 @@ else //assumes 'BOOKMARK'
         throw error;
     }
 }
-
-function renderStepCard(title, step, color, studentName = null, showCheckmark = false, stepNumber = null, assignmentId = null) {
+//is sent data that isn't used. 
+/* ${renderStepCard('Current Step', 
+{ step_name: currentStepName, step_description: currentStepDescription,external_url: assignedCurrentStepExternalUrl  
+}, stepBeingDisplayed === 1 ? 'red' : stepBeingDisplayed === 2 ? 'green' : 'blue', assignment.student_name, false, stepBeingDisplayed, assignment.assignment_id)}
+*/
+function renderStepCard(title, step, stepNumber = null, assignmentId = null, color, studentName = null, showCheckmark = false) {
     if (!step) return '';
     
     const name = step.step_name || 'Unnamed';
@@ -436,6 +442,7 @@ function renderStepCard(title, step, color, studentName = null, showCheckmark = 
             </div>
             <h4 class="text-lg font-bold">${name}</h4>
             <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">${description}</p>
+            <p>${step.external_url} </p> <!--added 15:44 Sept 30 2026 -->
         </div>
     `;
 }
