@@ -146,7 +146,7 @@ async function renderTask(panel) {
             <div class="text-sm text-gray-700">Manager: ${assignment.manager_name || 'Unknown'}</div>
             <div class="text-sm text-gray-700">Student: ${assignment.student_name || 'Unknown'}</div>
         </div>
-        <div class="rounded-lg p-6 bg-white shadow-md border mb-4">${assignment.task_description || ''}</div>
+        <div class="rounded-lg p-6 bg-white shadow-md border mb-4 whitespace-pre-line">${assignment.task_description || ''}</div>
     `;
 
     card.innerHTML = headerHtml + stepsHtml;
