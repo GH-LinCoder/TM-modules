@@ -4,8 +4,8 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { appState } from '../../state/appState.js';
 console.log('moveStudentManager.js loaded');
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
-import {showToast} from'../../ui/showToast.js';
-
+//import {showToast} from'../../ui/showToast.js';
+import {getDelayVisual} from '../../utils/getDelayVisual.js';
 
 // ✅ TEMPORARY TEST: Hardcode a known task_header_id from your database
 //const TEST_TASK_ID = '2e8a83a9-90cd-4f98-a586-6bf3c618a6b9'; //
@@ -35,7 +35,7 @@ else return false;
 
 
 
-function addDragDropListeners(panel) { // ✅ Removed managerRole parameter
+function addDragDropListeners(panel) { 
   console.log('🖱️ Initializing drag and drop.');
   
   const draggableCards = panel.querySelectorAll('.student-card[draggable="true"]');
@@ -47,7 +47,7 @@ function addDragDropListeners(panel) { // ✅ Removed managerRole parameter
         studentId: card.dataset.studentId,
         assignmentId: card.dataset.assignmentId,
         currentStep: parseInt(card.dataset.currentStep, 10),
-        managerRole: card.dataset.managerRole // ✅ READ FROM THE CARD!
+        managerRole: card.dataset.managerRole 
       };
       e.dataTransfer.setData('application/json', JSON.stringify(dragData));
       e.dataTransfer.effectAllowed = 'move';
@@ -69,7 +69,7 @@ function addDragDropListeners(panel) { // ✅ Removed managerRole parameter
       const data = JSON.parse(dataStr);
       const targetStep = parseInt(zone.dataset.stepOrder, 10);
       
-      // ✅ USE THE ROLE FROM THE DRAG DATA
+      
       console.log('isDropDownAllowed for', data.managerRole, data);
 
       if (isDropAllowed(data.currentStep, targetStep, data.managerRole)) {
@@ -97,7 +97,7 @@ function addDragDropListeners(panel) { // ✅ Removed managerRole parameter
       const data = JSON.parse(dataStr);
       const targetStep = parseInt(zone.dataset.stepOrder, 10);
 
-      // ✅ CHECK PERMISSIONS USING data.managerRole
+      // CHECK PERMISSIONS USING data.managerRole
       if (!isDropAllowed(data.currentStep, targetStep, data.managerRole)) {
         console.warn('⚠️ Drop rejected by permission rules.');
         return;
@@ -344,8 +344,7 @@ function getDelayminutes(moveMeAt, movedAt) {
   return minutes;
 }
 
-
-
+/*
 function getDelayVisual(minutes) {
   console.log('getDelayVisual(minutes)',minutes);
   if (minutes === null) return '';
@@ -368,8 +367,7 @@ function getDelayVisual(minutes) {
   else if (logminutes < 8.37) return `border-red-900 border-[${borderWidth}px]`;         // < 3 days
   return `border-red-900 border-[${borderWidth}px] animate-pulse`;
 }
-
-
+*/
 
 function renderKanbanStyle(data){
   console.log('Rendering moveStudentManager with data:', data);
@@ -395,7 +393,7 @@ const studentsHTML = step.students.map(student => {
   
   // Calculate delay for border weight (only if has pending request)
   const delayminutes = hasPendingRequest ? getDelayminutes(student.move_me_at, student.moved_at) : null;
-  const delayClass = getDelayVisual(delayminutes);
+  const delayClass = getDelayVisual(delayminutes, 1); //delayFactor is how much time needed to change the display intensity. 1 = 60 mins for first signal
   
   // Only add hover effect for students with pending requests
   //const hoverClass = hasPendingRequest ? 'hover:shadow-md cursor-move' : '';

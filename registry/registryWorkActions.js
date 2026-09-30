@@ -62,7 +62,7 @@ XcreateOrUpdateApprofile: {//this should be separate functions I don't think it 
 // For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
 autoAssignTask: { //how does this get passed the permission system? (It is called on first login by a new user) - after being granted myDash permissions
   metadata: {
-    tables: ['task_assignments'],
+    tables: ['assignments'],
     columns: ['id', 'step_id', 'sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'assigned_by_automation'],
     type: 'INSERT',
     requiredArgs: ['task_header_id', 'step_id', 'student_id', 'assigned_by_automation']
@@ -88,7 +88,7 @@ if (existing && existing.data.length > 0) { //console.log (existing);
 }
 
     const { data, error } = await supabase
-      .from('task_assignments')
+      .from('assignments')
       .insert({
         student_id: student_id,
         manager_id: manager_id, // or derive from context
@@ -726,8 +726,8 @@ createTask: {
     type: 'INSERT',
     requiredArgs: ['taskName', 'taskDescription'] // ← payload fields
   },
-  handler: async (supabase, userId, payload) => {
-    const { taskName, taskDescription, taskUrl, move_by } = payload;
+  handler: async (supabase, userId, payload) => {//this userId is authId 
+    const { taskName, taskDescription, taskUrl, move_by, authorId } = payload;
 
     // Check for duplicate name
     const {  existingTask, error: fetchError } = await supabase
@@ -747,7 +747,7 @@ console.log('userId',userId);
         description: taskDescription,
         external_url: taskUrl || null,
         move_by: move_by,
-        author_id: userId // ← use passed userId
+        author_id: authorId // ← use passed userId but that is authId
         
       })
       .select()
@@ -1787,6 +1787,60 @@ readStudentAssignments: {
 
 //ASSIGNMENTS-STUDENTS
 // ASSIGNMENTS-STUDENTS
+confirmAssignmentConnection: {
+  metadata: {
+    tables: ['assignments'],
+    columns: ['confirmed_is_at', 'confirmed_of_at'],
+    type: 'UPDATE',
+    requiredArgs: ['assignmentId', 'side']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { assignmentId, side } = payload;
+    const confirmationColumn = side === 'subject' ? 'confirmed_is_at' : side === 'object' ? 'confirmed_of_at' : null;
+
+    if (!assignmentId || !confirmationColumn) {
+      throw new Error('assignmentId and a subject or object side are required');
+    }
+
+    const { data, error } = await supabase
+      .from('assignments')
+      .update({ [confirmationColumn]: new Date().toISOString() })
+      .eq('id', assignmentId)
+      .select()
+      //.single();
+
+    if (error) throw error;
+    return data;
+  }
+},
+
+confirmApproConnection: {
+  metadata: {
+    tables: ['approfile_relations'],
+    columns: ['confirmed_is_at', 'confirmed_of_at'],
+    type: 'UPDATE',
+    requiredArgs: ['relationId', 'side']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { relationId, side } = payload;
+    const confirmationColumn = side === 'subject' ? 'confirmed_is_at' : side === 'object' ? 'confirmed_of_at' : null;
+
+    if (!relationId || !confirmationColumn) {
+      throw new Error('relationId and a subject or object side are required');
+    }
+
+    const { data, error } = await supabase
+      .from('approfile_relations')
+      .update({ [confirmationColumn]: new Date().toISOString() })
+      .eq('id', relationId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+},
+
 managerMoveStudentInAssignment: {
   metadata: {
     tables: ['assignments'],
@@ -1851,6 +1905,24 @@ console.log('readAssignmentsTasks()');
     }
   },
 
+//ASSIGNMENTS-MANAGERS
+readConnectedTaskRows: {
+  metadata: {
+    tables: ['assignments_task_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    const { data, error } = await supabase
+      .from('assignments_task_view')
+      .select('*');
+
+    if (error) throw error;
+    return data || [];
+  }
+},
+
 //ASSIGNMENTS-SURVEYS
 readAssignmentsSurveys: {
   metadata: {
@@ -1860,6 +1932,7 @@ readAssignmentsSurveys: {
     requiredArgs: ['student_id'],
     optionalArgs: ['type'] // Add 'type' as an optional argument
   },
+
   handler: async (supabase, userId, payload) => {
     const { student_id} = payload;
 console.log('readAssignmentsSurveys()');
@@ -1873,6 +1946,24 @@ console.log('readAssignmentsSurveys()');
       if (error){ console.error('Error readStudentAssignments', error.message);throw error;}
       else console.log('survey data', data);
  return data || [];
+  }
+},
+
+//ASSIGNMENTS-MANAGERS
+readConnectedSurveyRows: {
+  metadata: {
+    tables: ['assignments_survey_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: []
+  },
+  handler: async (supabase, userId, payload) => {
+    const { data, error } = await supabase
+      .from('assignments_survey_view')
+      .select('*');
+
+    if (error) throw error;
+    return data || [];
   }
 },
 
@@ -2197,6 +2288,28 @@ readApprofile_relations_view:{
     //console.log('approfiel_relations_view data:',data);
       return data; //
     }
+},
+
+//RELATIONS-MANAGERS
+readConnectedApproRows: {
+  metadata: {
+    tables: ['approfile_relations_view'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['approfileId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { approfileId } = payload;
+    if (!approfileId) throw new Error('approfileId is required');
+
+    const { data, error } = await supabase
+      .from('approfile_relations_view')
+      .select('*')
+      .or(`approfile_is.eq.${approfileId},of_approfile.eq.${approfileId}`);
+
+    if (error) throw error;
+    return data || [];
+  }
 },
 
 
@@ -2719,8 +2832,8 @@ createSurvey: {
     requiredArgs: ['surveyName', 'surveyDescription']
   },
   handler: async (supabase, userId, payload) => {
-    const { surveyName, surveyDescription } = payload;
-console.log('create survey:','userId:',userId, 'payload;', payload);
+    const { surveyName, surveyDescription, authorId } = payload;
+console.log('create survey:','userId:',authorId, 'payload;', payload);
     
     // Check for duplicate name - just check if any records exist
     const { count, error: fetchError } = await supabase
@@ -2737,7 +2850,7 @@ console.log('create survey:','userId:',userId, 'payload;', payload);
       .insert({
         name: surveyName,
         description: surveyDescription,
-        author_id: userId
+        author_id: authorId
       })
       .select()
       .single();
@@ -2998,6 +3111,39 @@ console.log('readTaskAutomations;',data);// empty  23:46 Jan 22
   }
 },
 
+readTaskAutomationsByHeader: {
+  metadata: {
+    tables: ['automations'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['taskHeaderId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { taskHeaderId } = payload || {};
+
+    if (!taskHeaderId) {
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from('automations')
+      .select('*')
+      .is('deleted_at', null)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error reading task automations by header:', error.message);
+      throw new Error('Failed to read task automations by header.');
+    }
+
+    console.info('[VerbDebug] task automation reader', {
+      taskHeaderId,
+      totalRows: data?.length || 0
+    });
+    return data || [];
+  }
+},
+
 //AUTOMATIONS
 readSurveyAutomations: {
   metadata: {
@@ -3027,6 +3173,39 @@ console.log('registryReadAutomations-answerId:',answer_id);
   }
 },
 
+readSurveyAutomationsByHeader: {
+  metadata: {
+    tables: ['automations'],
+    columns: ['*'],
+    type: 'SELECT',
+    requiredArgs: ['surveyHeaderId']
+  },
+  handler: async (supabase, userId, payload) => {
+    const { surveyHeaderId } = payload || {};
+
+    if (!surveyHeaderId) {
+      return [];
+    }
+
+    const { data, error } = await supabase
+      .from('automations')
+      .select('*')
+      .is('deleted_at', null)
+      .order('created_at', { ascending: true });
+
+    if (error) {
+      console.error('Error reading survey automations by header:', error.message);
+      throw new Error('Failed to read survey automations by header.');
+    }
+
+    console.info('[VerbDebug] survey automation reader', {
+      surveyHeaderId,
+      totalRows: data?.length || 0
+    });
+    return data || [];
+  }
+},
+
 //Newer version with corrected arg check (not using "this.") File 001 has previous versions
 
 //AUTOMATIONS
@@ -3044,9 +3223,9 @@ console.log('auto task by task',source_task_step_id, source_task_header_id,targe
     const { data, error } = await supabase
       .from('automations')
       .insert({
-        source_task_step_id,
-        source_task_header_id,
-        task_step_id:source_task_step_id,
+       // source_task_step_id,
+       // source_task_header_id,
+       // task_step_id:source_task_step_id,
        // current_step:current_step, //no such column-deleted 19:30 sep 1 Now writing to table
         name: name || 'Assign Task Automation',
               //  source_data: { source_task_step_id }, 
@@ -3136,11 +3315,9 @@ createAutomationRelateByTask: {
   },
   handler: async (supabase, userId, payload) => {
     const { source_task_header_id, source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
-  //  for (const arg of this.metadata.requiredArgs) {
-  //    if (payload[arg] === undefined || payload[arg] === null) {
-  //      throw new Error("Missing required argument: " + arg);
-  //    }
-  //  }
+  // appro_is_id is decided when the automation is run. It will be the user's id at that time.  
+  //  (There could be a use for an automation that predetermines the _is )
+  
   const autoRegistryId = '2869b9ae-453e-4c74-badf-22a96e9609c4';//the place to find what kind of function this is
 
     const { data, error } = await supabase

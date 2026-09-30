@@ -103,11 +103,12 @@ console.log('task.task_header_id',task.task_header_id);
             <h4 class="text-sm font-semibold text-blue-800">${task.task_name}</h4>
 
 
-  <button data-action="display-pending-manager-tasks" data-module="pending-manager-tasks" data-section="display-area" data-destination="display-area" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+            <!-- This button does not work because the cards are not opened via petition. There is no 'display-pending-manager-tasks' in load registry -->
+  <!--button data-action="display-pending-manager-tasks" data-module="pending-manager-tasks" data-section="display-area" data-destination="display-area" class="text-gray-500 hover:text-gray-700" aria-label="Close">
     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
     </svg>
-  </button>
+  </button-->
 
             ${roleBadge}
           </div>

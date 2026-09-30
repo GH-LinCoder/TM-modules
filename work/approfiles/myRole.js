@@ -7,7 +7,7 @@ function getTemplateHTML() {
   console.log('getTemplateHTML()');
   return `
     <div class="flex items-center justify-between mb-6 border-b border-gray-200 pb-4">
-      <h2 class="text-2xl font-bold text-gray-900 tracking-tight">The plans of our organisation</h2>
+      <h2 class="text-2xl font-bold text-gray-900 tracking-tight">My role in the organisation</h2>
       <button data-action="my-role" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100" aria-label="Close">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -83,51 +83,40 @@ function observeAnimations(panel) {
 
 
 async function readAppro(panel) {
-  //const aimsApproId = 'fab5776c-d7e9-4d2a-b52e-85b19ba9ae53';
-  panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
-  
-  let aimsAppro;
-  
-  try {
-    aimsAppro = await executeIfPermitted(null, 'readApprofileById', { approfileId: '7fb63f35-b4a0-4e4b-9a51-b3d93b124288' });
-  } catch (error) {
-    console.error('Failed to load aims:', error);
-    panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load aims.</div>';
-    return;
-  }
-  
-  console.log('aimsAppro', aimsAppro);
-
-
-const description = `<p>The inital role of a new user is to determine what you want to do.</p><p>Deciding what you want to do is by working through your initial assigned tasks and answering questions in surveys. 
-</p>
-<p>
-The answers chosen in surveys change what groups you join or what tasks are assigned to you.  
-</p>
-<p>
-The contents of this 'My role' module will change as you move through tasks and surveys.
-</p>
-`;
-
-  const formattedDescription = parseAndRenderDescription(description);
-
-  panel.innerHTML = `
-    <div class="p-6 max-w-3xl mx-auto">
-      ${getTemplateHTML()}
-      ${formattedDescription}
-      <div class="mt-6 rounded-xl p-4 bg-gray-50 border border-gray-200 text-xs text-gray-500 italic leading-normal">
-        If you were using the app to create and manage your own organisation, you would edit this aim by editing the appro that stores this description: "Aims of the Organisation" with id: ada3685a-7f9d-4cfd-b96f-8272e12e468e
-      </div>
-    </div>
-  `;
-
-  // Trigger animations once DOM nodes are rendered
-  observeAnimations(panel);
-}
+  const itemToDisplayId = '7fb63f35-b4a0-4e4b-9a51-b3d93b124288';
+ panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
+   
+     let itemToDisplay;
+   try {
+     itemToDisplay = await executeIfPermitted(null, 'readApprofileById', { approfileId: itemToDisplayId });
+   } catch (error) {
+     console.error('Failed to load aims:', error);
+     panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load aims.</div>';
+     return;
+   }
+   
+   console.log('itemToDisplay', itemToDisplay);
+ 
+   const formattedDescription = parseAndRenderDescription(itemToDisplay.description);
+ 
+   panel.innerHTML = `
+     <div class="p-6 max-w-3xl mx-auto">
+       ${getTemplateHTML()}
+       ${formattedDescription}
+       <div class="mt-6 rounded-xl p-4 bg-gray-50 border border-gray-200 text-xs text-gray-500 italic leading-normal">
+         If you were using the app to create and manage your own organisation, you would edit this aim by editing the appro that stores this description: "Aims of the Organisation" with id: ada3685a-7f9d-4cfd-b96f-8272e12e468e
+       </div>
+     </div>
+   `;
+ 
+   // Trigger animations once DOM nodes are rendered
+   observeAnimations(panel);
+ }
 
 
 
 export function render(panel, petition = {}) {
-  console.log('plans Render(', panel, petition, ')');
+  console.log('aims Render(', panel, petition, ')');
+    console.log('action= ', petition.Action);
   readAppro(panel);
 }

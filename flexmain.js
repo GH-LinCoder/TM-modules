@@ -54,7 +54,7 @@ if (logoImg && faviconUrl) logoImg.src = faviconUrl;
 import { adminListeners } from './listeners/adminListeners.js';
 import { windowEventListener } from './listeners/windowEventListener.js';
 import { menuListeners } from './listeners/menuListeners.js';
-import {markMenuButton}  from './listeners/menuListeners.js';
+//import {markMenuButton}  from './listeners/menuListeners.js';
 
 //update to use listnerManagement so can close modules cleanly
 //import { createListenerController, addManagedListener, removeListenersFromModule } from '../../utils/listenerManagement.js';
@@ -221,8 +221,8 @@ async function onAppLoad() {
 //    const adminBtn = document.querySelector('[data-page="adminDash"]');
 //    if (adminBtn) adminBtn.classList.add('active');
 //below new 15:00 Dec 21
-    const myDashBtn = document.querySelector('[data-page="myDash"]');
-markMenuButton('myDash', myDashBtn);
+   // const myDashBtn = document.querySelector('[data-page="myDash"]');
+//markMenuButton('myDash', myDashBtn);
 
   }
 // changed to external function 10:47 spet 14 2025
@@ -538,8 +538,10 @@ console.log('openClosePanelsByRule(stubname)',stubName, 'fromButtonClick', fromB
       const isPageOpen = panelsOnDisplay.some(p => p.stubName === stubName);
       console.log('isPageOpen:', isPageOpen);
   
-      // Special case: dashboards
-      const isDashboard =stubName === 'adminDash.html' || stubName === 'myDash.html'|| stubName === 'adminDash' || stubName === 'myDash';
+      //DASHBOARDS
+      // Special case: dashboards Dashboards replace the existing dashboard. They also close other open sections or panels.
+      //If a new dashboard is to be added -put the name here
+      const isDashboard =stubName === 'adminDash.html' || stubName === 'myDash.html'|| stubName === 'adminDash' || stubName === 'myDash' || stubName === 'runDash';
  //     console.log('isDashboard:', isDashboard);    
   
       // 2nd Click on open dashboard

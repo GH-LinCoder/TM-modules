@@ -1,14 +1,16 @@
-import { executeIfPermitted } from "./registry/executeIfPermitted";
+import { executeIfPermitted } from "../../registry/executeIfPermitted";
 
 // ./plans.js
 console.log('aims.js loaded');
 
-function getTemplateHTML() {
+let title ='';
+
+function getTemplateHTML(action) {
   console.log('getTemplateHTML()');
   return `
     <div class="flex items-center justify-between mb-6 border-b border-gray-200 pb-4">
-      <h2 class="text-2xl font-bold text-gray-900 tracking-tight">The aims of our organisation</h2>
-      <button data-action="aims" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100" aria-label="Close">
+      <h2 class="text-2xl font-bold text-gray-900 tracking-tight">${title}}</h2>
+      <button data-action=${action} class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100" aria-label="Close">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
         </svg>
@@ -77,26 +79,45 @@ function observeAnimations(panel) {
   panel.querySelectorAll('.aim-block').forEach((el) => observer.observe(el));
 }
 
-async function readAppro(panel) {
-  const aimsApproId = 'ada3685a-7f9d-4cfd-b96f-8272e12e468e';
+async function readAppro(panel, action) {
+let itemToDisplayId='';
+console.log('readAppro - action:',action);
+  switch (action){
+    case 'my-role':{itemToDisplayId = '7fb63f35-b4a0-4e4b-9a51-b3d93b124288';
+      title = 'My role in the organisation';
+    }
+    break;
+    case 'aims':{itemToDisplayId = 'ada3685a-7f9d-4cfd-b96f-8272e12e468e';
+      title = 'The aims of our organisation';
+    }
+    break;
+    case 'plans':{itemToDisplayId = 'fab5776c-d7e9-4d2a-b52e-85b19ba9ae53';
+      title = 'The plans of our organisation';
+    }
+    break;
+    default: console.log('Action not recognised:', action);
+}
+
+
+  
   panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
   
-  let aimsAppro;
+    let itemToDisplay;
   try {
-    aimsAppro = await executeIfPermitted(null, 'readApprofileById', { approfileId: aimsApproId });
+    itemToDisplay = await executeIfPermitted(null, 'readApprofileById', { approfileId: itemToDisplayId });
   } catch (error) {
     console.error('Failed to load aims:', error);
     panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load aims.</div>';
     return;
   }
   
-  console.log('aimsAppro', aimsAppro);
+  console.log('itemToDisplay', itemToDisplay, 'title',title);
 
-  const formattedDescription = parseAndRenderDescription(aimsAppro.description);
+  const formattedDescription = parseAndRenderDescription(itemToDisplay.description);
 
   panel.innerHTML = `
     <div class="p-6 max-w-3xl mx-auto">
-      ${getTemplateHTML()}
+      ${getTemplateHTML(action)}
       ${formattedDescription}
       <div class="mt-6 rounded-xl p-4 bg-gray-50 border border-gray-200 text-xs text-gray-500 italic leading-normal">
         If you were using the app to create and manage your own organisation, you would edit this aim by editing the appro that stores this description: "Aims of the Organisation" with id: ada3685a-7f9d-4cfd-b96f-8272e12e468e
@@ -109,6 +130,7 @@ async function readAppro(panel) {
 }
 
 export function render(panel, petition = {}) {
-  console.log('plans Render(', panel, petition, ')');
-  readAppro(panel);
+  console.log('aims Render', panel, petition);
+  console.log('action= ', petition.Action);
+  readAppro(panel, petition.Action);
 }

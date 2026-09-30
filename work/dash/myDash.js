@@ -105,17 +105,8 @@ function getTemplateHTML() {
 
 
 <!-- temp Manage Students section -->
-<!--div class="bg-blue-50 border border-blue-200 rounded-lg p-1 md:p-4 cursor-pointer" 
-data-section="move-student-manager"  
-data-action="move-student-manager" 
-data-destination="show-task-here" title="Click to open the student movement manager">
-  <h3 class="text-sm font-medium text-gray-700 mb-1">This is where I manage my students through their tasks. 🔧🛼🧑‍🎓</h3>
-  <p class="text-xs text-gray-600">Click to open the Kanban-style student movement manager. Are you a manager yet? If so this is your place</p>
-</div>
-<div data-section="show-task-here" data-destination="show-task-here"></div-->
 
-
-<div class="bg-red-50 border border-red-200 rounded-lg p-4 cursor-pointer" 
+<!--div class="bg-red-50 border border-red-200 rounded-lg p-4 cursor-pointer" 
      data-section="pending-manager-tasks"  
      data-action="display-students-on-tasks" 
      data-destination="display-area" 
@@ -123,7 +114,7 @@ data-destination="show-task-here" title="Click to open the student movement mana
   <h3 class="text-sm font-medium text-red-700 mb-1">This is where I manage my students through their tasks. 🔧🛼🧑‍🎓</h3>
   <p class="text-xs text-red-600">Click to see tasks where students are waiting for me to approve their next step.</p>
 </div>
-<div data-section="display-area" data-destination="display-area"></div>
+<div data-section="display-area" data-destination="display-area"></div-->
 
 
 

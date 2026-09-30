@@ -119,14 +119,20 @@ function attachCounterListeners(panel){
             saveBtn.style.opacity = '0.5';  
             saveBtn.style.pointerEvents = 'none';
 
-          const auth = appState.query.userAuthId;
-          const  appro = appState.query.userId;
+          //const auth = appState.query.userAuthId;
+          //const  appro = appState.query.userId; 
+/** 
+ * const userAuthId = appState.query.userAuthId;
+ * const userApproId = appState.query.userId;   
+ * 
+ */
+
 
             try {
-                const result = await executeIfPermitted(auth, 'createTask', { // AUTH (auth) goes first, DATA (author_id) goes in the payload
+                const result = await executeIfPermitted(userAuthId, 'createTask', { // AUTH (auth) goes first, DATA (author_id) goes in the payload
                     taskName: name,
                     taskDescription: description,
-                    author_id: appro 
+                    authorId: appState.query.userId 
                 });
                 taskId = result.id; //suveyId now has a value, so prevent saving it again            
                 
