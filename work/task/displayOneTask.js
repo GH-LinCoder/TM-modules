@@ -82,6 +82,7 @@ async function renderTask(panel) {
     loadStepAutomations(stepBeingDisplayedData.step_id);
 
     // Calculate previous & next step references
+    //previous step is the one before the current unless we are on step 3 which doesn't have a previous step.
     const previousStep = stepBeingDisplayed === 3
         ? {
             step_name: 'New assignment',
@@ -90,11 +91,17 @@ async function renderTask(panel) {
         : taskSteps.find(s => Number(s.step_order) === stepBeingDisplayed - 1) || null;
 
     const maxStep = Math.max(...taskSteps.map(s => Number(s.step_order)));
+
+    //next step is one more than current unless we are at the end in which case next step is 'completion' which is step 2
+    //but if present step is 1 or 2 there is no next step. Need to code this 17:57 Sept 30 2026
     const nextStep = stepBeingDisplayed >= maxStep
         ? taskSteps.find(s => Number(s.step_order) === 2) // Completion step
         : taskSteps.find(s => Number(s.step_order) === stepBeingDisplayed + 1);
+
+     const currentStep = taskSteps.find(s => Number(s.step_order) === stepBeingDisplayed);
 //nextStep contains the text of the step???
-    const assignedCurrentStepExternalUrl = stepBeingDisplayedData.step_external_url || null;
+  //  const assignedCurrentStepExternalUrl = stepBeingDisplayedData.step_external_url || '';
+
 
     const stepsHtml = `
         <div class="hidden md:block grid grid-cols-1 gap-0 md:gap-6">
@@ -104,21 +111,16 @@ async function renderTask(panel) {
             ${buttonHTML}
         </div>   
         <div class="grid grid-cols-1 gap-0 md:gap-6">
-            ${renderStepCard('Current Step', {
-                step_name: currentStepName,
-                step_description: currentStepDescription,
-                external_url: assignedCurrentStepExternalUrl  
-            }, stepBeingDisplayed === 1 ? 'red' : stepBeingDisplayed === 2 ? 'green' : 'blue', assignment.student_name, false, stepBeingDisplayed, assignment.assignment_id)}
+            ${renderStepCard('Current Step', currentStep, stepBeingDisplayed === 1 ? 'red' : stepBeingDisplayed === 2 ? 'green' : 'blue',
+             assignment.student_name, false, stepBeingDisplayed, assignment.assignment_id)}
         </div>
         <div class="hidden md:block grid grid-cols-1 gap-0 md:gap-6">
-            ${renderStepCard(
-                stepBeingDisplayed === 2 ? 'Completed' :
-                stepBeingDisplayed === 1 ? 'Abandoned' :
-                stepBeingDisplayed === maxStep ? 'Completion Step' : 'Next Step',
+          ${renderStepCard(
+              'Next Step',
                 nextStep,
                 'green',
                 assignment.student_name
-            )}
+            )}  
         </div>
         <div class="mt-4 bg-green-100 rounded-lg p-4 border border-green-200">
             <p class="text-sm font-bold text-green-800">Information:</p>
@@ -140,6 +142,8 @@ async function renderTask(panel) {
     card.classList.add(bgColor, 'rounded-lg', 'shadow-lg', 'p-4', 'mb-6', 'border', 'border-gray-200');
     card.dataset.assignmentId = assignment.assignment_id;
 
+const linkUrl = assignment.task_external_url || '';
+
     const headerHtml = `
         <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-semibold text-gray-900">${assignment.task_name || 'Unnamed Task'}</h3>
@@ -148,7 +152,7 @@ async function renderTask(panel) {
         </div>
         <div class="rounded-lg p-6 bg-white shadow-md border mb-4 whitespace-pre-line">${assignment.task_description || ''}
         </div>
-        <div> ${assignment.task_external_url} </div> <!-- need show video -->
+        <div> ${linkUrl} </div> <!-- need show video or other link -->
     `;
 
     card.innerHTML = headerHtml + stepsHtml;
@@ -161,7 +165,7 @@ async function renderTask(panel) {
 
 function decideButtonsToDisplay(assignment) {
     const currentStep = Number(assignment.stepBeingDisplayed);
-    const dbStep = Number(assignment.current_step);
+   // const dbStep = Number(assignment.current_step);
     const numberOfSteps = Math.max(...assignment._taskSteps.map(step => Number(step.step_order) || 0));
     const moveBy = assignment.move_by || 'student';
     const assignmentId = assignment.assignment_id;
@@ -429,20 +433,25 @@ else //assumes 'BOOKMARK'
 { step_name: currentStepName, step_description: currentStepDescription,external_url: assignedCurrentStepExternalUrl  
 }, stepBeingDisplayed === 1 ? 'red' : stepBeingDisplayed === 2 ? 'green' : 'blue', assignment.student_name, false, stepBeingDisplayed, assignment.assignment_id)}
 */
-function renderStepCard(title, step, stepNumber = null, assignmentId = null, color, studentName = null, showCheckmark = false) {
+function renderStepCard(title, step, color, assignmentId = null, studentName = null, showCheckmark = false) {
     if (!step) return '';
-    
+    console.log('renderStepCard()', title);
+
+    const stepNumber = step.step_order;
     const name = step.step_name || 'Unnamed';
-    const description = step.step_description || '';
-    
-    return `
+    let description = step.step_description || '';
+   if(title === 'Next Step' || title === 'Previous Step') description = ''; //don't display the description of previious & next step, just the title
+ let linkUrl='';
+   if(title==='Current Step') linkUrl = step.step_external_url || '';
+console.log ('step',step);
+   return `
         <div class="bg-white rounded-lg p-6 shadow-md border border-gray-200 relative">
             <div class="text-sm font-semibold text-gray-600 mb-2">
-                ${stepNumber !== null ? `Step ${stepNumber}: ` : ''}${title}
+${title}${stepNumber ? `: ${stepNumber}` : ''}
             </div>
             <h4 class="text-lg font-bold">${name}</h4>
             <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">${description}</p>
-            <p>${step.external_url} </p> <!--added 15:44 Sept 30 2026 -->
+            <p>${linkUrl} </p> <!--added 15:44 Sept 30 2026 -->
         </div>
     `;
 }
