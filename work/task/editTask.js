@@ -1490,9 +1490,13 @@ console.log('order', order);
       if (existingStep) { //edit survey uses isNew & reacts to new first
         // ✅ Update existing step
         console.log('Updating existing step:', order, 'stepName:', stepName, 'stepDescription:', stepDescription);
+        //the resgistry function needs
+        //    const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
+
+        
         await executeIfPermitted(state.user, 'updateTaskStep', {
           taskId: state.currentTaskId,
-          sourceStepOrder: order, // This should be a number-19:20 Nov 25  null. Probably the click on the step isn't setting the relevant value the way the drop down would
+          stepOrder: order, // This should be a number-19:20 Nov 25  null. Probably the click on the step isn't setting the relevant value the way the drop down would
           stepName,
           stepDescription,
           stepUrl
@@ -1503,7 +1507,7 @@ console.log('order', order);
         console.log('Creating new step:', order);
         await executeIfPermitted(state.user, 'createTaskStep', {
           taskId: state.currentTaskId,
-          sourceStepOrder: order, // This should be a number 
+          stepOrder: order, // This should be a number 
           stepName,
           stepDescription,
           stepUrl

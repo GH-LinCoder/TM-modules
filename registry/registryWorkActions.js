@@ -897,7 +897,7 @@ updateTaskStep: {
   },
   handler: async (supabase, userId, payload) => {
     const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
-console.log('updtaeTaskStep:', stepDescription);
+console.log('updateTaskStep:','taskId', taskId, 'stepOrder', stepOrder, 'stepName', stepName, 'stepDescription', stepDescription);
     const {data, error } = await supabase
       .from('task_steps')
       .update({
