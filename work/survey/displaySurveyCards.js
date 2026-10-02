@@ -3,7 +3,7 @@
 
 import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-import { resolveSubject } from '../../utils/contextSubjectHideModules.js';
+import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 
 console.log('displaySurveyCards.js loaded');
 

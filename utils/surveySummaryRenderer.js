@@ -1,7 +1,7 @@
 // utils/surveySummaryRenderer.js
 import { icons } from '../registry/iconList.js';
 //import the knowledge of whether duisplaying in myDash or adminDash.  In adminDash can display (greyaed-out) deleted bits. But don't display them in myDash
-//import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
+//import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/resolveSubjectPlus2.js'
 // detectMyDash(panel) will return true if the dashboard is myDash
 
 /**

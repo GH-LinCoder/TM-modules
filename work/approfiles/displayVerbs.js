@@ -4,7 +4,7 @@ import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
-import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
+import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/resolveSubjectPlus2.js'
 import {getClipboardAppros} from './getClipboardAppros.js';
 
 console.log('displayRelations.js loaded 12:45 Oct 26');

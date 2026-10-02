@@ -3,7 +3,7 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
-import { detectMyDash, resolveSubject, myDashOrAdminDashDisplay } from '../../utils/contextSubjectHideModules.js';
+import { detectMyDash, resolveSubject, myDashOrAdminDashDisplay } from '../../utils/resolveSubjectPlus2.js';
 import { getClipboardAppros } from './getClipboardAppros.js';
 
 console.log('displayRelations.js (refactored) loaded');
@@ -873,7 +873,7 @@ async function renderWork(panel) {
     const s = duplet.student;
     const a = duplet.activity;
     const leftClasses = getVerbCardClasses(s.type, 'left');// verb classes ? Left & right are identical anyway?
-    const rightClasses = getVerbCardClasses(a.type, 'right');
+    const rightClasses = getVerbCardClasses(a.type, 'right'); //these two lines are using wrong styles
 
     return `
       <div class="flex justify-center items-center my-4 gap-2">

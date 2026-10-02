@@ -182,8 +182,8 @@ export const registry = { // this registry is for loading a new page to the righ
 //////////          AUTO-BACKGROUND                  /////////
 'auto-assign-task' :() => import('../work/task/autoAssignTask.js'),  //? not directly loaded?
 'auto-relate-appro': () => import('../work/approfiles/autoRelateAppro.js'), //?not directly loaded
-'auto-execute-automations':() => import('../utils/autoExecuteAutomations.js'), //this imports the above 2
-
+//'auto-execute-automations':() => import('../utils/autoExecuteAutomations.js'), //this imports the above 2
+//commented out 22:34 Sept 30 2026. 
 
 //////////          myDash    - uses same functions a adminDash?               /////////
 "display-profile"  : () => import('../work/approfiles/displayProfile.js'),

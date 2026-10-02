@@ -1,7 +1,7 @@
 // ./work/task/displayTaskChoice.js
 
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
+import {  resolveSubject} from '../../utils/resolveSubjectPlus2.js'
 //import { render as renderOneTask } from './displayOneTask.js';
 
 // Sunday 21:34 April 26. Task_headers do not have any category column or any way to tell if they are self-assignable. This module displays them all.

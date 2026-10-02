@@ -5,7 +5,7 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 import { AssignmentBase } from '../../utils/assignmentBase.js'; // Import base class
-import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
+import {  resolveSubject} from '../../utils/resolveSubjectPlus2.js'
 
 console.log('assignSurvey.js loaded');
 

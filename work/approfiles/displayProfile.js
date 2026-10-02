@@ -3,7 +3,7 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 //import { showToast } from '../../ui/showToast.js';
 //import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { onClipboardUpdate } from '../../utils/clipboardUtils.js';
-import { resolveSubject } from '../../utils/contextSubjectHideModules.js';
+import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 
 
 /*Display profile obtains data from resolveSubject

@@ -249,7 +249,7 @@ async function loadPageWithData(pageName) { // pageName without .html
          // console.warn('loadMyDashWithData() not implemented yet');
           break;
       default:
-          console.warn(`No data loader defined for ${pageName}`);
+          console.warn(`flexmain has no data loader for ${pageName}`);
   }
 }
 

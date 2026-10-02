@@ -36,9 +36,9 @@ async function processTaskAssignment(automation) {
 /*               !!!!!!!!!!!!!!!!!!!!!!!!!     Needs to check if assignment already exists, and only go ahead if adbandoned or completed             !!!!!!!!!!!!!!!!!!!!!!!!!!!!                             */
        /* console log from autoExeceuteAutomations 18;50 Nov 1 2025
        automation ={
-      automationId: "ef7f45af-ad0d-4ae4-afc2-bc4b5903dce1" //correct 
-      stepId: "c83496a0-8c5e-47e5-bcee-19b121191c68"​ //correct 'step 3'
-      studentId: "02077621-4745-449e-891c-f7d6fc2b70bf" //correct  'disable'
+      automationId: "ef7f45af-ad0d-4ae4-afc2-bc4b5903dce1" //correct
+      // stepId: "c83496a0-8c5e-47e5-bcee-19b121191c68"//correct 'step 3' 
+      // studentId: "02077621-4745-449e-891c-f7d6fc2b70bf" //correct  'disable'
       taskId: "72c4250c-956a-4463-9cbf-3b9a09cf08b2" //correct 'default task'
       type: "task" //  correct
         }

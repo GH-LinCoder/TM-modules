@@ -16,7 +16,7 @@ export const registryWorkActions = {
   //AUTH
 getAuthenticatedUser: {
   metadata: { type: 'AUTH', requiredArgs: [] },
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase) => {
     const { data, error } = await supabase.auth.getUser();
     if (error) return { data: null, error };
 
@@ -58,9 +58,14 @@ XcreateOrUpdateApprofile: {//this should be separate functions I don't think it 
       return data; } 
 },
 
-//AUTO
+//AUTO  !!!!!  What are these functions ??? It looks like they are writing tothe DB BUT THIS IS IMPOSSIBLE
+// WE CANNOT HAVE REGISTRY FUNCTIONS DOING THIS !!!! 
+// 'auto' cannot be done in registry functions because they will be stopped by RLS. 
+//WHO CREATED THIS????
+
+
 // For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
-autoAssignTask: { //how does this get passed the permission system? (It is called on first login by a new user) - after being granted myDash permissions
+autoAssignTask: { //how does this get past the permission system? (It is called on first login by a new user) - after being granted myDash permissions
   metadata: {
     tables: ['assignments'],
     columns: ['id', 'step_id', 'sort_int', 'manager_id', 'student_id', 'assigned_at', 'abandoned_at', 'completed_at', 'task_header_id', 'assigned_by_automation'],
@@ -232,7 +237,7 @@ approfilesCount:{
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async  (supabase, userId) =>{
+  handler: async  (supabase) =>{
     console.log('approfilesCount()');
     const { count, error } = await supabase
     .from('app_profiles')
@@ -255,7 +260,7 @@ relationsCount:{
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async  (supabase, userId) =>{
+  handler: async  (supabase) =>{
     console.log('relationsCount()');
     const { count, error } = await supabase
     .from('approfile_relations')
@@ -282,7 +287,7 @@ assignmentsCount:{
     // This could also hold other data like required user roles or permissions
   },
   // The actual function that interacts with the database
-handler: async  (supabase, userId) =>{
+handler: async  (supabase) =>{
   console.log('assignmentsCount()');
   const { count, error } = await supabase
   .from('assignments')
@@ -308,7 +313,7 @@ authorsCount:{
     // This could also hold other data like required user roles or permissions
   },
   // The actual function that interacts with the database
-handler: async  (supabase, userId) =>{
+handler: async  (supabase) =>{
   console.log('authors_count()');
   const { count, error } = await supabase
   .from('unique_authors')
@@ -334,7 +339,7 @@ managersCount:{
     // This could also hold other data like required user roles or permissions
   },
   // The actual function that interacts with the database
-handler: async (supabase, userId) => {
+handler: async (supabase) => {
   console.log('managersCount()');
 
   // Read from the RLS-friendly view
@@ -369,7 +374,7 @@ handler: async (supabase, userId) => {
       // This could also hold other data like required user roles or permissions
     },
     // The actual function that interacts with the database
-  handler: async  (supabase, userId) =>{
+  handler: async  (supabase) =>{
     console.log('membersCount()');
     const { count, error } = await supabase
     .from('app_profiles')
@@ -395,7 +400,7 @@ studentsCount:{
     requiredArgs:['supabase', 'userId']
     // This could also hold other data like required user roles or permissions
   },
-handler: async (supabase, userId) => {
+handler: async (supabase ) => {
   console.log('studentsCount()');
 
   // Read from the RLS-friendly view
@@ -430,7 +435,7 @@ tasksCount:{
     // This could also hold other data like required user roles or permissions
   },
   // The actual function that interacts with the database
-handler: async  (supabase, userId) =>{
+handler: async  (supabase ) =>{
   console.log('tasksCount()');
   const { count, error } = await supabase
   .from('task_headers')
@@ -453,7 +458,7 @@ tempSignupCount:{ //new 13:46 Jan 13 2026
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async  (supabase, userId) =>{
+  handler: async  (supabase ) =>{
     console.log('tempSignupCount()');
     const { count, error } = await supabase
     .from('temp_signups')
@@ -476,10 +481,10 @@ signupCount:{ //new 13:46 Jan 13 2026
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async  (supabase, userId) =>{
+  handler: async  (supabase ) =>{
     console.log('signupCount()');
 
-const { data, count, error } = await supabase //this was showing bizarre behaviour that when no orws, count became an empty array. Added 'data' in hope to prevent this
+const { data, count, error } = await supabase //this was showing bizarre behaviour that when no rows, count became an empty array. Added 'data' in hope to prevent this
 .from('temp_signups') 
 .select('completed_at', { count: 'exact' }) // no head:true 
 .not('completed_at', 'is', null);
@@ -501,7 +506,7 @@ readTempSignup:{ //new 13:46 Jan 13 2026
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async  (supabase, userId) =>{
+  handler: async  (supabase ) =>{
     console.log('readTempSignup()');
     const { data, error } = await supabase
     .from('temp_signups')
@@ -527,7 +532,7 @@ surveysCount:{
     // This could also hold other data like required user roles or permissions
   },
   // The actual function that interacts with the database
-handler: async  (supabase, userId) =>{
+handler: async  (supabase ) =>{
   console.log('surveysCount()');
   const { count, error } = await supabase
   .from('survey_headers')
@@ -553,7 +558,7 @@ respondentsCount:{
     // This could also hold other data like required user roles or permissions
   },
   // The actual function that interacts with the database
-handler: async (supabase, userId) => {
+handler: async (supabase ) => {
   console.log('respondentsCount()');
 
   // Read from the RLS-friendly view
@@ -589,7 +594,7 @@ handler: async (supabase, userId) => {
     type: 'INSERT',
     requiredArgs: ['name', 'description']
   },
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase , payload) => {
     console.log('Create Approfile()');
     const { name, description, authUserId } = payload;
 
@@ -1091,7 +1096,7 @@ readApprofiles: {//need to be able to filter by "task_header_id" or "auth_user_i
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase) => {
     console.log('readApp_profiles()');
     const { data, error } = await supabase
       .from('app_profiles')
@@ -1268,7 +1273,7 @@ readTrustSecurityDefinitions: { //added 21:15 Aug 13 2026
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async (supabase, userId) => {
+  handler: async (supabase ) => {
     console.log('readTrustSecurityDefinitions()');
     const { data, error } = await supabase
       .from('trust_security_definitions')
@@ -1913,7 +1918,7 @@ readConnectedTaskRows: {
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase) => {
     const { data, error } = await supabase
       .from('assignments_task_view')
       .select('*');
@@ -1957,7 +1962,7 @@ readConnectedSurveyRows: {
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase) => {
     const { data, error } = await supabase
       .from('assignments_survey_view')
       .select('*');
@@ -2127,7 +2132,7 @@ readPermissionRelationships: {//HIGH SECURITY ISSUE -- doesn't supply an iconMap
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase) => {
     console.log('readPermissionRelations()');
     const { data, error } = await supabase
       .from('permission_relationships')
@@ -2229,7 +2234,7 @@ readRelationships: {
     type: 'SELECT',
     requiredArgs: []
   },
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase) => {
     console.log('readRelationships()');
     const { data, error } = await supabase
       .from('relationships')
@@ -2513,7 +2518,7 @@ metadata: {
   type: 'SELECT',
   requiredArgs: []
 },
-handler: async(supabase, userId, payload) => {
+handler: async(supabase) => {
 const {data, error} = await supabase 
   .from('notes_categories')
   .select('id, category_name');
@@ -2555,7 +2560,7 @@ metadata: {
   columns:['note_id', 'note_category_id'],
   requiredArgs:['rows']
 },
-handler: async(supabase, userId, payload) => {
+handler: async(supabase) => {
 
 const { data, error } = await supabase
 .from('notes_categorised')
@@ -2703,7 +2708,7 @@ handler: async (supabase, userId, payload) => {
       type: 'SELECT',
       requiredArgs:['supabase', 'userId']
     }, 
-    handler: async (supabase,userId)=>{
+    handler: async (supabase)=>{
   //  console.log('readAllSteps()');
     const { data, error } = await supabase
       .from('task_steps')
@@ -2729,7 +2734,7 @@ readAllStudent:{
     type: 'SELECT',
     requiredArgs:[],
     },
-handler: async(supabase, userId) => {
+handler: async(supabase) => {
  console.log('readAllStudent - need to code');
    const { count, error } = await supabase
       .from('assignments_task_view')
@@ -2752,7 +2757,7 @@ readAllManager:{
     type: 'SELECT',
     requiredArgs:[],
     },
-handler: async(supabase, userId) => {
+handler: async(supabase) => {
   console.log('readAllManagers - need to code');
    const { count, error } = await supabase
       .from('assignments_task_view')
@@ -2774,7 +2779,7 @@ readAllAuthor:{//this is the same as a count of tasks because every task has an 
     type: 'SELECT',
     requiredArgs:[],
     },
-handler: async(supabase, userId) => {
+handler: async(supabase) => {
     console.log('readAllAuthors - need to code');
 
  const { count, error } = await supabase
@@ -3216,8 +3221,8 @@ createAutomationAddTaskByTask: {
     type: 'INSERT',
     requiredArgs: ['source_task_step_id', 'task_header_id', 'task_step_id']
   },
-  handler: async (supabase, userId, payload) => {
-    const { source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, current_step, name, automation_number } = payload;
+  handler: async (supabase, payload) => {
+    const { source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number } = payload;
 const autoRegistryId = '5473de51-a0d7-466f-8cea-ac342bf16d90';//the place to find what kind of function this is
 console.log('auto task by task',source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number);
     const { data, error } = await supabase
@@ -3313,7 +3318,7 @@ createAutomationRelateByTask: {
     type: 'INSERT',
     requiredArgs: ['source_task_step_id', 'appro_is_id', 'relationship', 'of_appro_id']
   },
-  handler: async (supabase, userId, payload) => {
+  handler: async (supabase, payload) => {
     const { source_task_header_id, source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
   // appro_is_id is decided when the automation is run. It will be the user's id at that time.  
   //  (There could be a use for an automation that predetermines the _is )
@@ -3663,8 +3668,23 @@ createSurveyAutomation:{
     type: 'INSERT',
     requiredArgs: [] // ← WRONG  they depend on what is being saved
   },
+
+  /** 
+   * work/survey/surveyBase line 975 sends 
+   *            surveyAnswerId: this.answerId,
+                surveyId: selectedsurveyId,
+                itemName: cleanName,
+                automation_number: this.automationsNumber
+
+   * @param {
+   * } supabase 
+   * @param {*} userId 
+   * @param {*} payload 
+   * @returns 
+   */
   handler: async (supabase, userId, payload) => { // itemName 
-    const { surveyAnswerId, source_task_step_id , taskId, manager_id, student_id, task_step_id, itemName, approfile_is_id, relationship, ofApprofileId, automation_number   } = payload;
+    const { surveyAnswerId, surveyId, itemName, automation_number, source_task_step_id , taskId, manager_id, student_id, 
+      task_step_id,  approfile_is_id, relationship, ofApprofileId} = payload;
 //what is   approfile_is_id  and approfileId at moment of creating an automation in a survey or task???  
 console.log('createSurveyAutomation  source_task_step_id:', source_task_step_id); // 22:40 Oct 14  UNDEFINED    10:58 Oct 15 NULL 
 
@@ -3968,7 +3988,7 @@ readAllActivePaymentPlans:{
   // rpc needs: p_assignment_id uuid,p_step int default null, p_completed boolean default null
 },  
 
-handler: async (supabase, userId, payload) => {
+handler: async (supabase) => {
 //const {approUserId} = payload;
 const {data: plans, error } = await supabase
     .from('payment_plans')

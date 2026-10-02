@@ -700,7 +700,7 @@ this.refreshSurvey(panel);
     }
 }
 
-    addClipboardItemsToDropdown(items, selectElement, type) { 
+    addClipboardItemsToDropdown(items, selectElement) { 
         console.log('addClipboardItemsToDropdown()');
         if (!items || items.length === 0) return;
         
@@ -721,7 +721,7 @@ this.refreshSurvey(panel);
 
 // ========================================
     // SUBCLASS INTERFACE (Database Operations)
-    // Subclasses MUST implement these methods.
+    // Subclasses MUST implement these methods.   WHAT IS THIS ???
     // ========================================
     async handleSurveySubmit(e, panel) { 
         throw new Error("handleSurveySubmit must be implemented in subclass."); 

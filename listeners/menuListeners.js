@@ -31,17 +31,6 @@ console.log('howToContext:',howToContext);
     const petition={'Section':'menu','Action':pageName, 'Destination':'new-panel'};//try without .html 14:56 sep 22 2025    
     appState.setPetitioner(petition); //keeping petitioner in sync with stubName
 
-                    //    const stubName = pageName + '.html'; //????????????????
   })
 })
 }
-
-//commented out completely sept 21 2026
-//removed 22:05 Aug27 trying to do this in openClosePanelsByRules()
-//export function markMenuButton(pageName, btn){
-//is called from somewhere - flexmain.js imports on line 57
-// calls it on line 225 
-//markMenuButton('myDash', myDashBtn);
-//not calling this causes failure, but it doesn't do anything??
-//also called in this file line 20. If not called the buttons do not react
-//} 

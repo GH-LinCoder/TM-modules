@@ -78,7 +78,7 @@ ui:
 breadcrumb.js, notImplementedToast.js, readme.md, selectList.js, showToast.js
 
 utils:
-assignmentBase.js, assignmentBase002.js, autoExecuteAutomations.js, clipboardUtils.js, contextSubjectHideModules.js, displayHelpers.js, escapeHTML.js, executeAutomations.js, moveByRadio.js, surveyCardRenderer.js, surveySummaryRenderer.js, surveySummaryRenderer001.js, surveySummaryRenderer002.js, tableSchema.js
+assignmentBase.js, assignmentBase002.js, autoExecuteAutomations.js, clipboardUtils.js, resolveSubjectPlus2.js, displayHelpers.js, escapeHTML.js, executeAutomations.js, moveByRadio.js, surveyCardRenderer.js, surveySummaryRenderer.js, surveySummaryRenderer001.js, surveySummaryRenderer002.js, tableSchema.js
 
 legal:
 privacy.js

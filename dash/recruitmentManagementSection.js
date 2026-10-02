@@ -1,7 +1,7 @@
 // ./work/dash/recruitmentManagementSection.js
 console.log('recruitmentManagementSection.js loaded');
 import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
-import { resolveSubject } from '../utils/contextSubjectHideModules.js';
+import { resolveSubject } from '../utils/resolveSubjectPlus2.js';
 import { showToast } from '../ui/showToast.js';
 
 /**

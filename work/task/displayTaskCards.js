@@ -7,7 +7,7 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { render as renderOneTask } from './displayOneTask.js';
 
 //need resolve if use the function from loadMyDashWithData
-import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../../utils/contextSubjectHideModules.js'
+import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../../utils/resolveSubjectPlus2.js'
 
 // Import the shared panel tracking
 

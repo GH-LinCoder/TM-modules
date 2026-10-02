@@ -3,7 +3,7 @@ import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../ui/showToast.js';
 //import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
-import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
+import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/resolveSubjectPlus2.js'
 console.log('loadMyDashWithData.js   loaded');
 
 let subject=null;

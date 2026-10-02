@@ -6,7 +6,7 @@ console.log('displayNotes.js');
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { appState } from '../state/appState.js';
 import { collectUserChoices, userChoices } from './collectUserChoices.js';
-import { resolveSubject} from '../utils/contextSubjectHideModules.js'
+import { resolveSubject} from '../utils/resolveSubjectPlus2.js'
 /**
 userChoices = { //amended 12:22 March 16 2026
     userId: null,

@@ -6,7 +6,7 @@ import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../ui/showToast.js';
 import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from './clipboardUtils.js';
-import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
+import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/resolveSubjectPlus2.js'
 import { getMoveByRadioHTML, updateMoveByRadio  } from './moveByRadio.js';
 
 console.log('assignmentBase.js loaded');

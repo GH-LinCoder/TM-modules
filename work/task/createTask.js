@@ -5,7 +5,7 @@ import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import { showToast } from '../../ui/showToast.js';
-import {  resolveSubject} from '../../utils/contextSubjectHideModules.js';
+import {  resolveSubject} from '../../utils/resolveSubjectPlus2.js';
 import {icons} from '../../registry/iconList.js';
 //import { getMoveByRadioHTML, updateMoveByRadio  } from '../../utils/moveByRadio.js';
 

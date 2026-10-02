@@ -3,6 +3,9 @@ import { showToast } from '../ui/showToast.js';
 import { appState } from '../state/appState.js';
 import { createSupabaseClient } from '../db/supabase.js';
 
+//This file only uses executeIfPermitted to read tables.
+//Inserting or updating is done via rpc so that automated actions ignore the permissions of the user.
+
 // The Supabase client is created once and passed to the functions.
 const supabase = createSupabaseClient();
 
