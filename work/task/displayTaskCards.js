@@ -37,7 +37,7 @@ export async function render(panel, petition = {} , renderType='active') { //nor
 console.log('displayTasksCards.render()');
     const userId = petition.student;
     if (!userId) {
-        panel.innerHTML = `<div class="text-red-600 p-4">No user ID provided.</div>`;
+        panel.innerHTML = `<div class="text-red-600 p-4">No user ID provided. Please login.</div>`;
         return;
     }
 
