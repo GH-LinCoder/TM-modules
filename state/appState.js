@@ -1,5 +1,6 @@
 // Single source of truth for application state
 console.log('Imported appState.js');
+
 export const appState = {
     // the query object structure (attached to appState) passed to functions & interigated
 //many modules break the rules by directly assigning values to appState. They should do so via a method such that we always know the structure of appState
@@ -65,6 +66,34 @@ autoPetition: {
 }
 
  },
+//There are arbitrary writes to appState.query.petitioner from various modules. This is a bad practice. It should be done via setPetitioner() or setQuery() methods.
+/** places that write to appState (oct 2 2026)
+ * 1. displayStudentsOnTasks.js - writes assignmentRoles to appState.query.petitioner.assignmentRoles
+ * 2. moveStudentManager.js - reads assignmentRoles from appState.query.petitioner.assignmentRoles
+ * 
+ * displaySurveyCards.js - writes assignmentId, surveyHeader, currentStep to appState.query.petitioner when a card is clicked
+ *      // Assign petition context when clicked; allow event to bubble up to flexmain
+      card.addEventListener('click', () => {
+        appState.query.petitioner.assignmentId = survey.assignment_id;
+        appState.query.petitioner.surveyHeader = card.dataset.surveyHeader;
+        appState.query.petitioner.currentStep = survey.current_step;
+      });
+
+      container.appendChild(card);
+    }
+ * 
+    displayTaskCatrds.js - writes taskHeaderId to appState.query.petitioner when a card is clicked
+     card.addEventListener('click', () => {
+    appState.query.petitioner.assignmentId = task.assignment_id
+  });
+ */
+
+
+
+
+
+
+
  /** 
   * idea to appState. 
   * id of the clipboard chosen subject
@@ -231,7 +260,8 @@ replaced 21:57 sept 10 2025 to use petitionHistory[]*/
   };
   
   // Export a function to initialize with user ID
-  export function initializeState(userId) {
+  //export 
+  function initializeState(userId) { // possible not called from anywhere. I removed 'export' 20:45 Oct 2 2026
 console.log('initializeState with userId:', userId);
     appState.query.userId = userId; //but where is userId coming from?
   }
