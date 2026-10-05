@@ -34,7 +34,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 <!-- Quick Acts -->
 <div class="bg-gray-100 rounded-lg shadow p-6" data-section="quick-acts" data-destination="quick-acts">
-  <h2 class="text-lg font-semibold mb-2">Quick Acts 🌀</h2>
+  <h2 class="text-lg font-semibold mb-2">Run Quick Acts 🌀</h2>
   <p class="text-sm text-gray-500 mb-4">Fast access to common management tasks. They open below. (Click the card again to close)</p>
 
   <!-- Matrix: 4 rows by 3 columns -->

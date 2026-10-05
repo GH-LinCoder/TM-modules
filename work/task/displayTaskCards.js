@@ -35,7 +35,7 @@ render(panel, petition, renderType);
 export async function render(panel, petition = {} , renderType='active') { //normal entry point
     //console.log('displayTasksCards.render(', panel, petition, ')');
 console.log('displayTasksCards.render()');
-    const userId = petition.student;
+    const userId = petition.studentId;
     if (!userId) {
         panel.innerHTML = `<div class="text-red-600 p-4">No user ID provided. Please login.</div>`;
         return;

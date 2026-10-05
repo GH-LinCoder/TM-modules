@@ -57,11 +57,17 @@ Click → Petition → appState → state-change → flexmain → registryLoadMo
 
 ## 007 User interfaces
 
-The landing page is organise.html which is the only page other than the login page in the app. It displays a logo, name of the organisation, and a horizontal menu of buttons. (This is hidden behind a 'hamburger' icon in small screens.) The script that immediately runs (flexmain.js) loads various modules into sections of the page. 
+The landing page is organise.html which is the only page other than the login page in the app. It displays a logo, name of the organisation, and a horizontal menu of buttons. (The menu can be hidden behind a 'hamburger' icon in any size screen.) 
 
-The first menu button, if clicked, closes the 'my Dash' dashboard and loads the 'admin dash' (adminDash) dashboard which gives access to various modules.
+The initial display is the 'Say & Do myDash' dashboard (myDash)
 
-Any visitor can see both dashboards, but to see data or touch the database the visitor needs to be logged-in, authenticated & have been granted specific permissions.
+The script that immediately runs (flexmain.js) loads various modules into sections of the dashboard. 
+
+The first menu button, if clicked, closes the 'Say & Do myDash' dashboard and loads the 'Build admin dash' (adminDash) dashboard which gives access to various modules.
+
+The third menu 'Run manage' which closes whatever dashboard is open and loads a module that gives access to various modules.
+
+Any visitor can see any of the dashboards, but to see data or touch the database the visitor needs to be logged-in, authenticated & have been granted specific permissions.
 
 
 ### 008 **Module Loading & Rendering**
@@ -106,7 +112,7 @@ Modules do NOT communicate directly with each other. All data transfer happens t
   - Typical flow: User selects item in display → item added to clipboard → other modules react and update
 
 ### 014. **Listener Pattern**
-- `listeners/adminListeners.js`: Reads petition from clicked elements
+- `listeners/buildPetitionListener.js`: Reads petition from clicked elements
 - Elements that launch a module have some or all of the following attributes: `data-action`, `data-section`, `data-module`, `data-destination`
 - Click event → `readPetition()` → `appState.setPetitioner()` → state-change event
 
@@ -264,7 +270,7 @@ Never access Supabase directly from UI modules. Always route through executeIfPe
 5. **Test**: Verify operation completes and returns expected data
 
 ### Debugging State Flow
-1. **Check console logs** from `flexmain.js`, `appState.js`, `adminListeners.js` for petition & petitioner values & for which panels are on display
+1. **Check console logs** from `flexmain.js`, `appState.js`, `buildPetitionListener.js` for petition & petitioner values & for which panels are on display
 2. **Inspect `appState.query`** in browser DevTools for current state snapshot
 3. **Trace `panelsOnDisplay` array** in `flexmain.js` to see which panels are rendered
 4. **Check browser Network tab** for Supabase RPC calls
@@ -272,7 +278,7 @@ Never access Supabase directly from UI modules. Always route through executeIfPe
 ### Understanding Petition Flow
 Trace how a click becomes a module load:
 1. User clicks element with `data-action`, `data-section`, `data-module`, `data-destination` attributes
-2. `adminListeners.js:readPetition()` extracts these into petition object
+2. `buildPetitionListener.js:readPetition()` extracts these into petition object
 3. `appState.setPetitioner(petition)` stores it and triggers state-change event
 4. `flexmain.js:openClosePanelsByRule()` receives event, calls `renderPanel()`
 5. `renderPanel()` looks up action in `registryLoadModule.js`
