@@ -2,8 +2,8 @@ import { appState } from '../state/appState.js';
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../ui/showToast.js';
 //import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
-import { getClipboardItems, onClipboardUpdate } from '../utils/clipboardUtils.js';
-import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/resolveSubjectPlus2.js'
+import { onClipboardUpdate } from '../utils/clipboardUtils.js';
+import { detectMyDash,resolveSubject} from '../utils/resolveSubjectPlus2.js'
 console.log('loadMyDashWithData.js   loaded');
 
 let subject=null;
@@ -169,7 +169,7 @@ function  loadSection(sectionName) {
             Section: sectionName,
             Action: `display-${sectionName}`,
             Destination: `${sectionName}-section`,
-            student: subject.id
+            studentId: subject.id
         };
         
         // Signal state change to load module

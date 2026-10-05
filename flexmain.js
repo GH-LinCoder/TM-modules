@@ -2,16 +2,15 @@
 
 /**
  * === FLOW: Panel Management ===
- * (in dev we are loading the admin Dashboard)
  
  * 1. User clicks a button or card
- * 2. Listener extracts intent {Module/Section/Action}
- * 3. appState.query.petitioner = { Module Section Action}
- * 4. appState.query.stubName = 'xxx.html' //legacy to be phased-out
+ * 2. Listener extracts intent {Module/Section/Action/Destination}
+ * 3. appState.query.petitioner = { Module Section Action Destination}
+ * 4. 
  * 5. state-change event → openClosePanelsByRule()
  * 6. → if already open: close
  *    → else: renderPanel()
- * 7. renderPanel() checks registry → loads module // or HTML - legacy to be phased-out
+ * 7. renderPanel() checks registry → loads module 
  * 8. Module takes over (self-contained)
  * 
  * === PRINCIPLES ===
@@ -19,17 +18,20 @@
  * - No direct DOM manipulation
  * - Panels are tracked in panelsOnDisplay
  * - Toggle logic is centralized
- * - Database connections concentrated in databaseCentral()
- * - All databse interactions via the rules in permitted(), but enforced by database functions
+ * - 
+ * - All databse interactions via a signle function executeIfpermitted(), but permissions is_permitted rpc
  */
 
 
 console.log('flexmain.js  loaded');
 
-//on local host the env vars are read from .env.local which can be edited. Netlify reads the values set in the control panel for each instance
+//on local host the env vars are read from .env.local which can be edited. 
+// The hosted site at Netlify reads the values set in the control panel for each instance
+//But the favcion for isnatcnces (if they use a direct link to the HQ Github repo) are stored in that repo public/
+
 document.addEventListener('DOMContentLoaded', () => {
 //this reads the env vars at Netlify (or in env.local on localhost to choose what name to display)
-const envName = import.meta.env.VITE_ENVIRONMENT_NAME; // e.g., the Sandbox or the HQ
+const envName = import.meta.env.VITE_ENVIRONMENT_NAME; // e.g., the customer instance or the HQ
 const labelElement = document.getElementById('env-label');
 
 if (labelElement && envName) {
@@ -51,9 +53,10 @@ const logoImg = document.getElementById('main-logo');
 if (logoImg && faviconUrl) logoImg.src = faviconUrl;
 });
 // === LISTENERS 
-import { adminListeners } from './listeners/adminListeners.js';
-import { windowEventListener } from './listeners/windowEventListener.js';
-import { menuListeners } from './listeners/menuListeners.js';
+import { buildPetitionListener } from './listeners/buildPetitionListener.js';
+import { windowEventPetitionListener } from './listeners/windowEventPetitionListener.js';
+//import { menuListeners } from './listeners/menuListeners.js';
+
 //import {markMenuButton}  from './listeners/menuListeners.js';
 
 //update to use listnerManagement so can close modules cleanly
@@ -90,10 +93,10 @@ function getDisplayArea() {
     // 2. SUBSEQUENT MENU CLICKS: The dashboard is already there. Check screen size.
     const isMobile = window.innerWidth < 768;
     
-    if (isMobile) {
+    if (isMobile) { console.log('✅ MOBILE MENU: Injecting into #mobile-panel (Top)');
       const mobilePanel = document.querySelector('[data-panel="mobile-inject-here"]');
       mobilePanel.classList.remove('hidden', 'md:hidden'); // Ensure it's visible
-      console.log('✅ MOBILE MENU: Injecting into #mobile-panel (Top)');
+      
       return mobilePanel;
     } else {
       console.log('✅ DESKTOP MENU: Injecting into #primary-panel (Side-by-side)');
@@ -109,7 +112,7 @@ function getDisplayArea() {
 
 function getFrameAroundThePages() {
   console.log('getFrameAroundThePage');
-    return document.getElementById('main-container');
+    return document.getElementById('main-container');//main-container excludes the menu buttons
 }
 
 // === GLOBAL STATE ===
@@ -141,8 +144,8 @@ export const panelsOnDisplay = [];
 
       //     userId: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df' // MOCK but in db - not used as at 14:36 7 Sept 2025
 */
-console.log('flexmain sets arbitrary values into petitioner then calls windowEventListener(). Also adds listener to document load');
-console.log('panelsOnDisplay() sets arbitray values in petitioner and then calls setPetitioner and then calls windowEventListener() ');
+console.log('flexmain sets arbitrary values into petitioner then calls windowEventPetitionListener(). Also adds listener to document load');
+console.log('panelsOnDisplay() sets arbitray values in petitioner and then calls setPetitioner and then calls windowEventPetitionListener() ');
 try {
   if (appState) {
   //  console.log('appState has been successfully loaded:', appState);
@@ -160,7 +163,7 @@ try {
 }
 
 
-windowEventListener(); //Listen for change of State
+windowEventPetitionListener(); //Listen for change of State but does nothing???
 
 // === STATE CHANGE HANDLER ===
 /*  trying to use external file in place of this local function 10:15 Sept 14
@@ -217,23 +220,19 @@ async function onAppLoad() {
   //console.log('Calling loadPageWithData(',name,')');
   await loadPageWithData(name.replace('.html','')); //changed 14:49 7 Sept 2025
 
-    // Set active button   //redundant?
-//    const adminBtn = document.querySelector('[data-page="adminDash"]');
-//    if (adminBtn) adminBtn.classList.add('active');
-//below new 15:00 Dec 21
-   // const myDashBtn = document.querySelector('[data-page="myDash"]');
-//markMenuButton('myDash', myDashBtn);
-
   }
-// changed to external function 10:47 spet 14 2025
 
-menuListeners();//add listener to menu buttons, and respond to their being clicked
+//menuListeners();//add listener to menu buttons, and respond to their being clicked
+//replced this to use the buildPetitionListener instead Oct 4 2026
 
 
 //  setupNavigationListeners();//local function
-  const frameAroundThePages = getFrameAroundThePages();
-  adminListeners(frameAroundThePages); //imported function  this may be wrong element. need the frame around the pages
-  console.log('-----------Initialization COMPLETED ------------.');
+ // const frameAroundThePages = getFrameAroundThePages();
+ //the above code excluded the menu buttons. They were handled by menuListeners.
+ //changed to only have 1 listner function to handle cards and menu 'buttons' Oct 4 2026
+buildPetitionListener(document);
+//  buildPetitionListener(frameAroundThePages); //imported function  this may be wrong element. need the frame around the pages
+  console.log('-----------Initialization COMPLETED: now load data ------------.');
 }
 
 // === LOAD PAGE WITH DATA ===
@@ -313,7 +312,7 @@ selectedModule.render(panel,query); // use the function that was obtained from t
 }
 } */
 
-async function backgroundProcess() {
+async function backgroundProcess() { //What is this?  Oct 4 2026?
     
     const action = appState.query.petitioner.Action;
  console.log('background process');

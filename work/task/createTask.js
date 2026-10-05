@@ -12,6 +12,7 @@ import {icons} from '../../registry/iconList.js';
 console.log('createTaskForm.js loaded');
 
 let taskId = null;
+let ratingSelected = null;
 await resolveSubject();// resolve puts the auth and appro values in appState
 const userAuthId = appState.query.userAuthId;
 const userApproId = appState.query.userId;      
@@ -30,8 +31,10 @@ export function render(panel, query = {}) {
   console.log('Render(', panel, query, ')');
   panel.innerHTML = getTemplateHTML();
   populateForm(panel);
+  populateRatingSelect(panel);
   attachSaveButtonListener(panel);
   attachCounterListeners(panel);
+  attachRatingSelectListener(panel)
 }
 
 
@@ -86,6 +89,51 @@ function attachCounterListeners(panel){
 
 })
 }
+
+function attachRatingSelectListener(panel){
+// Listener for change in dropdown 
+panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (val !== '') {
+    ratingSelected = Number(val);
+console.log('ratingSelected:',ratingSelected)  
+}
+});
+}
+ // ========================================
+    // POPULATE RATINGS DROPDOWN 
+  // ========================================
+
+
+async function populateRatingSelect(panel)
+{
+// 1. Fetch definitions via registry
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect) ratingSelect.insertAdjacentHTML('beforebegin', '<div data-rating-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
+const ratingDefinitions = await executeIfPermitted(userAuthId, 'readTrustSecurityDefinitions');
+ratingSelect?.parentElement.querySelector('[data-rating-loading]')?.remove();
+
+//2. load into dropdown
+if (ratingSelect && Array.isArray(ratingDefinitions)) {
+  ratingDefinitions.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.sort_int; // Save numeric rating
+    option.textContent = item.name;
+   // if (Number(item.sort_int) === Number(ratingSelected)) { //ratingSelected??
+     // option.selected = true;
+  //  }
+    ratingSelect.appendChild(option);
+  });
+ }
+}
+
+
+
+
+
+
+
+
  // ========================================
     // DATA OPERATIONS - TASK
     // ========================================
@@ -271,6 +319,14 @@ function getTemplateHTML() {
                 </label>
                 <input id="taskUrl" type="url" placeholder="https://example.com  " class="w-full p-2 border rounded border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
               </div-->
+
+  <!--  Rating Select  -->
+            <div class="space-y-2">
+              <label for="ratingSelect" class="block text-sm font-medium text-gray-700">Every appro, task & survey is rated for trustSecurity. It defaults to the minimum</label>
+              <select id="ratingSelect" data-form="ratingSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Change rating (optional)</option>
+              </select>
+            </div>
 
 
               <button id="saveTaskBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700 transition-colors">

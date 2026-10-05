@@ -1,290 +1,249 @@
-// Single source of truth for application state
+// @ts-check
+// Single source of truth for application state & petition to open and close modules
 console.log('Imported appState.js');
+// when buildPetitionListener OR menuListener send a petition to be stored in appState, 
+// the function here dispatches a window event which is picked up by windowEventPetitionListener
+//which calls openClosePanelsByRule() which opens a new module or closes the existing module
 
-export const appState = {
-    // the query object structure (attached to appState) passed to functions & interigated
-//many modules break the rules by directly assigning values to appState. They should do so via a method such that we always know the structure of appState
-//isDevMode:false,//what happens when false??? It should be false now. Sept 2026
-
-paymentProvider:{
-  platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4',
-  approId:'8f9e5a4d-b9ea-458a-b7a6-843c7022e8d5',
-  name:'Lemon Squeezy',
-} , // store data the customer's chosen payment provider as set in TABLE platform_providers
-
-clipboard:[],
-
-    query: {
-
-userIdentified:null, // added 11:23 Dec 18 2025 changed Jan 5 2026
-userAuthId: null,
-userId :null,
-userName:null,
-userEmail:null,
-userType: 'app-human',
-created_at:'2025-07-28 18:13:47.723148+00',
-
-defaultManagerId:null,
-defaultManagerName:'Lin Coder',
-      
-petitioner:{},  // Module: name, Section: name, Action: name Destination: name  as data-* attributes, 
-      // destination 'a section by name' || 'new-panel' , 
-      // key word: if action begins with 'data' it is treated differently as a db request instead of a module load
-petitionHistory: [], // so howTo can offer context related instructions. The current petition will be dash-menu-howto-new-panel
-      //purpose: null, //not needed? next item covers this
-requestedAction: 'Dont-Panic',   //such as: 'UPDATE_TASK_STEP', <--- standardized actions LEGACY 
-
-payload: [], //varies depending on the module. approfile-is/relationship/of_approfile  or task_id/step_id/ordinal  should {}
-      
-response: [], //contains read from DB & status of permission & other response of query DB
-
-remember: {},// redundant LEGACY ??
-
-
-autoPetition: {
-  user: {
-    authId: null,
-    approId: null
-  },
-
-  existing: {
-    automationId: null,
-    assignmentId: null
-  },
-
-  source: {
-    type: null,        // 'task' | 'survey' | 'relate' | 'unrelate' | 'message' | 'future'
-    header: null,      // task_header_id | survey_header_id | null
-    secondary: null    // task_step_id | survey_question_id | null
-  },
-
-  target: {
-    type: null,        // same enum as above
-    header: null,      // task_header_id | survey_header_id | appro_is | null
-    secondary: null    // task_step_id | survey_question_id | relationship | of_appro | null
-  }
-}
-
- },
-//There are arbitrary writes to appState.query.petitioner from various modules. This is a bad practice. It should be done via setPetitioner() or setQuery() methods.
-/** places that write to appState (oct 2 2026)
- * 1. displayStudentsOnTasks.js - writes assignmentRoles to appState.query.petitioner.assignmentRoles
- * 2. moveStudentManager.js - reads assignmentRoles from appState.query.petitioner.assignmentRoles
+/**
+ * @typedef {Object} Petitioner
+ * @property {string|null} [Module]
+ * @property {string|null} [Section]
+ * @property {string|null} [Action]
+ * @property {string|null} [Destination]
  * 
- * displaySurveyCards.js - writes assignmentId, surveyHeader, currentStep to appState.query.petitioner when a card is clicked
- *      // Assign petition context when clicked; allow event to bubble up to flexmain
-      card.addEventListener('click', () => {
-        appState.query.petitioner.assignmentId = survey.assignment_id;
-        appState.query.petitioner.surveyHeader = card.dataset.surveyHeader;
-        appState.query.petitioner.currentStep = survey.current_step;
-      });
-
-      container.appendChild(card);
-    }
  * 
-    displayTaskCatrds.js - writes taskHeaderId to appState.query.petitioner when a card is clicked
-     card.addEventListener('click', () => {
-    appState.query.petitioner.assignmentId = task.assignment_id
-  });
+ * @property {string|null} [studentId]
+ * @property {string[]|null} [assignmentRoles]
+ * @property {string|null} [assignmentId]
+ * @property {string|null} [surveyHeader]
+ * @property {number|null} [currentStep]
+ * @property {string|null} [taskHeaderId]
  */
 
 
-
-
-
-
-
- /** 
-  * idea to appState. 
-  * id of the clipboard chosen subject
-  * id of auth user
-  * let modules select which they want. (Reduce the mistakes of using clipboard when want auth - happens in Notes & other places.)
-  * 
-  * appState.authUser {
-userAuthId:'e0c6201d-66e0-4b1c-8826-027ec059d523',
-userId :'e0c6201d-66e0-4b1c-8826-027ec059d523',//Huyie T&M vidoes task, member of TestMock,
-userName:'Huyie Evridge',
-userEmail:'huyie@test.com',
-userType: 'app-human',
-created_at:'2026-03-23 18:13:40.755748+00',}
-
-appState.ChosenSubject{
-userChosenAuthId:'e0c6201d-66e0-4b1c-8826-027ec059d523',
-userChosenId :'e0c6201d-66e0-4b1c-8826-027ec059d523',
-userName:'Huyie Evridge',
-userEmail:'huyie@test.com',
-userType: 'app-human',
-created_at:'2026-03-24 22:13:47.723148+00',}
-
-resolveSubject checks the timestamp of the appState.  and only queries the database if regarded as stale. (Updates the userChosen (it is read from clipboard)
- 
-  * */ 
-   
- 
-
-
-
-/* to assign values to autoPetition:
-appState.query.auto_petition = {
-  user: {
-    authId: session.user.id,
-    approId: approId
+export const appState = {
+  // Payment provider metadata
+  paymentProvider: {
+    platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4',
+    approId: '8f9e5a4d-b9ea-458a-b7a6-843c7022e8d5',
+    name: 'Lemon Squeezy',
   },
 
-  existing: {
-    automationId: auto.id,
-    assignmentId: assignment.id
+  // Global clipboard storage
+  clipboard: [],
+
+  // Authenticated user state
+  authUser: {
+    userAuthId: null,
+    userId: null,
+    userName: null,
+    userEmail: null,
+    userType: 'app-human',
+    created_at: null,
   },
 
-  source: {
-    type: 'survey',
-    header: sourceSurveyId,
-    secondary: clickedAnswerId
+  // Currently active/chosen user context
+  chosenSubject: {
+    userChosenAuthId: null,
+    userChosenId: null,
+    userName: null,
+    userEmail: null,
+    userType: 'app-human',
+    created_at: null,
   },
 
-  target: {
-    type: 'survey',
-    header: targetSurveyId,
-    secondary: null
-  }
+  // Active query parameters and context
+  query: {
+    userIdentified: null,
+    userAuthId: null,
+    userId: null,
+    userName: null,
+    userEmail: null,
+    userType: 'app-human',
+    created_at: '2025-07-28 18:13:47.723148+00',
+    defaultManagerId: null,
+    defaultManagerName: 'Lin Coder',
+
+    // Formalized petitioner schema including all module-written fields
+    /** @type {Petitioner} */
+    petitioner: {
+      Module: null,
+      Section:null,          
+      Action: null,
+      Destination:null,
+studentId:null,
+
+      assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
+      assignmentId: null,    // displaySurveyCards.js & displayTaskCards.js
+      surveyHeader: null,    // displaySurveyCards.js
+      currentStep: null,     // displaySurveyCards.js
+      taskHeaderId: null    // displayTaskCards.js
+      
+    },
+
+    petitionHistory: [],
+    requestedAction: 'Dont-Panic',
+    payload: [],
+    response: [],
+    remember: {},
+
+    // Automated petition execution payload
+    autoPetition: {
+      user: {
+        authId: null,
+        approId: null,
+      },
+      existing: {
+        automationId: null,
+        assignmentId: null,
+      },
+      source: {
+        type: null,     // 'task' | 'survey' | 'relate' | 'unrelate' | 'message' | 'future'
+        header: null,   // taskheaderid | surveyheaderid | null
+        secondary: null, // taskstepid | surveyquestionid | null
+      },
+      target: {
+        type: null,     // same enum as above
+        header: null,   // taskheaderid | surveyheaderid | approis | null
+        secondary: null, // taskstepid | surveyquestionid | relationship | ofappro | null
+      },
+    },
+  },
+
+  // --- State Modification Methods ---
+/** 
+   * @this {typeof appState}
+   * @param {Petitioner} petition
+   */
+  setPetitioner(petition) {
+    console.log('setPetitioner()');
+
+    const currentAction = this.query.petitioner.Action;
+
+    // Save to history if action changes meaningfully
+    if (petition.Action && petition.Action !== currentAction) {
+      this.query.petitionHistory.push({ ...this.query.petitioner });
+      if (this.query.petitionHistory.length > 10) {
+        this.query.petitionHistory.shift();
+      }
+    }
+
+    // Update petitioner in-place
+    Object.assign(this.query.petitioner, petition);
+
+    // Identify if action is a database data request
+    let requestType = 'QUERY_UPDATE';
+    if (typeof petition.Action === 'string' && petition.Action.startsWith('data-')) { 
+      // I don't think this is used. It is commented out in windowEventPetitionListener. Probabbly legacy. Oct 4 2026
+      requestType = 'DATA_REQUEST';
+    }
+
+    // Dispatch state change event - which windowListener should pick up - it then opensClosesPanelsByRule()  which then calls the module to load the new module into the panel
+    window.dispatchEvent(
+      new CustomEvent('state-change', {
+        detail: { type: requestType, payload: this.query },
+      })
+    );
+  },
+
+  setQuery(updates) { //is this used?
+    Object.assign(this.query, updates);
+    window.dispatchEvent(
+      new CustomEvent('state-change', {
+        detail: { type: 'QUERY_UPDATE', payload: this.query },
+      })
+    );
+  },
+
+  resetQuery() { //is this used?
+    console.log('appState.resetQuery');
+    const preserveUserId = this.query.userId;
+
+    // Mutate existing query top-level properties in-place (preserves Object.seal)
+    Object.assign(this.query, {
+      userIdentified: null,
+      userAuthId: null,
+      userId: preserveUserId,
+      userName: null,
+      userEmail: null,
+      userType: 'app-human',
+      created_at: null,
+      defaultManagerId: null,
+      defaultManagerName: null,
+      requestedAction: 'Dont-Panic',
+      payload: [],
+      response: [],
+      remember: {},
+    });
+
+    // Mutate petitioner in-place
+    Object.assign(this.query.petitioner, {
+      assignmentRoles: null,
+      assignmentId: null,
+      surveyHeader: null,
+      currentStep: null,
+      taskHeaderId: null,
+      Action: null,
+    });
+
+    // Mutate autoPetition sub-objects in-place
+    Object.assign(this.query.autoPetition.user, { authId: null, approId: null });
+    Object.assign(this.query.autoPetition.existing, { automationId: null, assignmentId: null });
+    Object.assign(this.query.autoPetition.source, { type: null, header: null, secondary: null });
+    Object.assign(this.query.autoPetition.target, { type: null, header: null, secondary: null });
+
+    // Clear history array in-place
+    this.query.petitionHistory = [];
+  },
 };
 
-
-
-
-
-
-*/
-
-
-
-
-
-
-
-    setPetitioner(petition) {
-      console.log('setPetitioner()');
-//console.log('setPetitioner with (',petition,')' );
-//     console.log('setting this.query.petitioner:',this.query.petitioner );//the log shows all the values even at appOnLoad - browser doesn't take the values at this moment, but may fill them in later
-    //  console.log('this.query.petitioner.Action',this.query.petitioner.Action)// the log says undefined at appOnLoad - this is weird browser behaviour as it does take this value at the moment
-      // 👇 SAVE TO HISTORY if action is meaningfully different
-      const currentAction = this.query.petitioner.Action;
-    //  console.log('petition.Action:',petition.Action);
-      if (petition.Action !== currentAction) {
-        // Clone current petitioner and push to history
-        this.query.petitionHistory.push({ ...this.query.petitioner });
-    //    console.log('setPetionioer() History:',this.query.petitionHistory); /////////////
-        // Optional: limit history length
-        if (this.query.petitionHistory.length > 10) {
-          this.query.petitionHistory.shift();
-        }
-      }
-    
-      // 👇 UPDATE current petitioner
-      Object.assign(this.query.petitioner, petition);
-    
-//Parse the .Action to see if it is a request for data. 
-//Assumes all such petitions have Action='data-*'
-// 'data' is now a key word in a petition.Action
-//petitionAction.slice(0,4));
-
-let requestType ='QUERY_UPDATE'; // added 18:54 Sept 12 2025
-//console.log('Parse of first 5 chars of petition.Action:', petition.Action.slice(0,5));// added 19:00 Sept 12 2025
-
-
-if (typeof petition.Action === 'string' && petition.Action.startsWith('data-')) {
-  requestType = 'DATA_REQUEST';
-//  console.log(`Recognized data request: ${petition.Action}`);
-} else {
-//  console.log(`Module data- request is not known: ${petition.Action}`);
-}
-
+// Recursive helper to deeply seal all nested objects
+//I have no idea if this is worth having.
+// It silently failed when there was an item (student)  in a petition that was not in the definition
+//That is a menace. Si I am switching it off
 /*
-if(petition.Action.slice(0,5)==='data-' )
-  { requestType = 'DATA_REQUEST'; console.log('Data request recognised');} //added 18:54 Sept 12 2025
-   else console.log('Load request recognised');
-*/
-//can use if(petition.Action.startsWith('data-') )
-
-      // 👇 Dispatch state change
-      window.dispatchEvent(new CustomEvent('state-change', { 
-//        detail: { type: 'QUERY_UPDATE', payload: this.query } // changed 
-          detail: { type: requestType, payload: this.query }// added 18:54 Sept 12 2025
-
-      }));
-    },
-
-    /*
-    setPetitioner(petition) {
-      console.log('appState.setPetitioner:', petition);
-      Object.assign(this.query.petitioner, petition);
-      this.query.requestedAction = this.query.petitioner.Action;
-
-      window.dispatchEvent(new CustomEvent('state-change', { 
-        detail: { type: 'QUERY_UPDATE', payload: this.query }
-      }));
-    },
-replaced 21:57 sept 10 2025 to use petitionHistory[]*/
-
-
-    // Methods to update state
-    setQuery(updates) {
-//      console.log('appState.setQuery updates:', updates);
-      // Merge updates into the existing query object
-      Object.assign(this.query, updates);
-      // Dispatch event for subscribers
-      window.dispatchEvent(new CustomEvent('state-change', { 
-        detail: { type: 'QUERY_UPDATE', payload: this.query }
-      }));
-    },
-    
-    // Reset to initial state
-    resetQuery() {
- //     console.log('appState.resetQuery');
-      this.query = {
-        userId: this.query.userId, // preserve userId
-        stubName: null,
-        recordId: null,
-
-        
-        petitioner:{},  // moduleName, sectionName, element (card or button) data-* attribute, destination 'a section' || 'new-panel'
-        petitionHistory: [], // so howTo can offer context related instructions. The current petition will be dash-menu-howto-new-panel
-        //purpose: null, //not needed? next item covers this
-        requestedAction: 'Dont-Panic',   //such as: 'UPDATE_TASK_STEP', <--- standardized actions  LEGACY to be phased out
-  
-        payload: [], //varies depending on the module. approfile-is/relationship/of_approfile  or task_id/step_id/ordinal
-        
-        response: [], //contains read from DB & status of permission & other response of query DB
-      };
-    }
-  };
-  
-  // Export a function to initialize with user ID
-  //export 
-  function initializeState(userId) { // possible not called from anywhere. I removed 'export' 20:45 Oct 2 2026
-console.log('initializeState with userId:', userId);
-    appState.query.userId = userId; //but where is userId coming from?
+function deepSeal(obj) {
+  if (obj && typeof obj === 'object') {
+    Object.seal(obj);
+    Object.keys(obj).forEach((key) => {
+      // Traverse sub-objects, skipping arrays/nulls
+      if (
+        typeof obj[key] === 'object' &&
+        obj[key] !== null &&
+        !Array.isArray(obj[key])
+      ) {
+        deepSeal(obj[key]);
+      }
+    });
   }
+  return obj;
+} */
 
-// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
-//const userId : '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df',//profilia  step 3 1 task
-//const userId :'e44dfc8a-1ded-4c39-aa3b-957c15fa2cf7',//hwbdygg  step 3 1 task
-//const userId : '6004dc44-a451-417e-80d4-e9ac53265beb',//cannie step 3 1 task New Welcome
+  /* this function did not display an error
+function deepSealAndTrap(obj, path = 'appState') {
+  if (obj && typeof obj === 'object' && !Array.isArray(obj)) {
+    // Wrap with Proxy to catch silent non-strict mode assignment failures
+    return new Proxy(Object.seal(obj), {
+      set(target, prop, value, receiver) {
+        if (!Object.prototype.hasOwnProperty.call(target, prop)) {
+          const err = new Error(
+            `🚨 UNEXPECTED WRITE BLOCKED: Tried to write unknown property '${String(prop)}' on '${path}' with value: ${JSON.stringify(value)}`
+          );
+          console.error(err.stack);
+          throw err;
+        }
+        return Reflect.set(target, prop, value, receiver);
+      },
+    });
+  }
+  return obj;
+} */
 
-//const userId:'e9b82fd0-067e-43f1-b514-c2dbbfd10cba',//Jubbul  step 3  2 tasks
-//const 
-//default DEV values
-//const userId:'a42c8756-a0ef-41e6-b073-bf20fbd8b7fb',// Tetsi Memoria step 3 2 tasks
+// Deep seal just fails silently if there is a discrepancy. This is not useful.
+// It should warn if a module puts something into appState that isn't explicit in its definition
+//deepSeal(appState);
 
-//const userId : '87a90183-88b6-450a-94d2-7838ffbbf61b',//girdenjeeko dmin dasboard step 3 - completion
-
-//const userId : '51cf02e4-a69c-41f3-bcff-52d0208df529',//Adam Adminium step 3 2 tasks one task has step 4 other next:completed No students
-
-//const userId:'1c8557ab-12a5-4199-81b2-12aa26a61ec5',// noomwild  4 tasks  step 3 of 3, step 3 of 5, step 1 of 5 , step 5 of 8 (+ 1 survey ) 
-
-//const userId : '6518fbf6-bf22-436b-8960-8af94edecb83',//john cartlin no assignments
-    //  userId:'1c8557ab-12a5-4199-81b2-12aa26a61ec5', // noomwild who has lots of task assignments BUT not a manager
-
-      
-      //stubName: null,//obsolescent - phasing-out
-      //recordId: null, //not sure if needed
+// Enable the write trap on appState.query and appState.query.petitioner
+//appState.query.petitioner = deepSealAndTrap(appState.query.petitioner, 'appState.query.petitioner');
+//appState.query = deepSealAndTrap(appState.query, 'appState.query');
