@@ -33,8 +33,11 @@ export const appState = {
   // Global clipboard storage
   clipboard: [],
 
+  // Global record of what panels (modules) are on screen
+  panelsOnDisplay: [],  //added 21:37 Oct 4 2026. Was in flexmain as a global
+
   // Authenticated user state
-  authUser: {
+  authUser: { // looks like not used Oct 6 2026
     userAuthId: null,
     userId: null,
     userName: null,
@@ -44,7 +47,7 @@ export const appState = {
   },
 
   // Currently active/chosen user context
-  chosenSubject: {
+  chosenSubject: { // Global search found no use of this Oct 6 2026
     userChosenAuthId: null,
     userChosenId: null,
     userName: null,
@@ -55,25 +58,26 @@ export const appState = {
 
   // Active query parameters and context
   query: {
-    userIdentified: null,
-    userAuthId: null,
-    userId: null,
-    userName: null,
-    userEmail: null,
-    userType: 'app-human',
+    userIdentified: null,  // not used? Oct 6 2026
+    userAuthId: null, //used
+    userId: null, //used
+    userName: null, //used
+    userEmail: null, //used 
+    userType: 'app-human', //used in resolveSubject
     created_at: '2025-07-28 18:13:47.723148+00',
-    defaultManagerId: null,
-    defaultManagerName: 'Lin Coder',
+    defaultManagerId: null,  //used
+    defaultManagerName: 'Lin Coder', //used
 
     // Formalized petitioner schema including all module-written fields
     /** @type {Petitioner} */
-    petitioner: {
+    petitioner: { //used lots
       Module: null,
       Section:null,          
       Action: null,
       Destination:null,
 studentId:null,
 
+//the following may be better somewhere else in the object
       assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
       assignmentId: null,    // displaySurveyCards.js & displayTaskCards.js
       surveyHeader: null,    // displaySurveyCards.js
@@ -82,14 +86,15 @@ studentId:null,
       
     },
 
-    petitionHistory: [],
+    petitionHistory: [],  //global search finds no use??
+    maxHistoryLength:10,
     requestedAction: 'Dont-Panic',
     payload: [],
     response: [],
     remember: {},
 
     // Automated petition execution payload
-    autoPetition: {
+    autoPetition: { //unknown if this is used Oct 6 2026
       user: {
         authId: null,
         approId: null,
@@ -124,7 +129,7 @@ studentId:null,
     // Save to history if action changes meaningfully
     if (petition.Action && petition.Action !== currentAction) {
       this.query.petitionHistory.push({ ...this.query.petitioner });
-      if (this.query.petitionHistory.length > 10) {
+      if (this.query.petitionHistory.length > this.query.maxHistoryLength) {
         this.query.petitionHistory.shift();
       }
     }

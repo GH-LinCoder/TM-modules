@@ -1,137 +1,280 @@
-//  ./work/how/howTo.js
+// ./work/how/howTo.js
 console.log('howTo.js loaded');
-import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
-import {appState} from '../../state/appState.js';
+import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
+import { appState } from '../../state/appState.js';
 
-function getTemplateHTML() { console.log('getTemplateHTML()');
-  return `<div class="bg-white p-6 rounded-lg shadow">
-  <h2 class="text-xl font-bold text-gray-800 mb-4">How To Use</h2>
+// Track the actively displayed help context and whether the user manually selected it
+let activeHelpContext = null;
+let isManualOverride = false;
 
+/**
+ * Determines the default context when the module opens.
+ * Finds the most recently opened panel that isn't the help module itself.
+ */
+function getDefaultContext(panelsOnDisplay) {
+  if (!panelsOnDisplay || panelsOnDisplay.length === 0) return {};
+  
+  for (let i = panelsOnDisplay.length - 1; i >= 0; i--) {
+    const panel = panelsOnDisplay[i];
+    const query = panel.query || {};
+    const action = query.Action || panel.panelName || 'Unknown';
+    
+    if (action !== 'howTo' && action !== 'howTo.html') {
+      return {
+        Module: query.Module || 'Unknown',
+        Section: query.Section || 'Unknown',
+        Action: action,
+        Destination: query.Destination || panel.panelName || 'Unknown'
+      };
+    }
+  }
+  return {};
+}
 
-  <p class="text-gray-600">Clicking the <em>How?</em> button brings up information.</p>
-  <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
-    <li>The admin or member dashboard is always open on the left, next to the menu.</li>
-    <li>Click the admin/dash menu button to only see the dashboard (closes other pages). Clicking the dasboard button in this way also refreshes the data displayed inside the dashboard by reading from the database. </li>
-    <li>To open any other page <em>click the menu button</em></li>
-    <li>Also click its menu button to close the page</li>
-    <li> Cards (boxes) inside the dashboard offer other information or actions.</li>
-    <li>Single left click will open a new page to the left. A 2nd left click on the same card closes that page. </li>
-    <li>Actions pages (like 'Create a Task') can display data from the database, take your input and write it to the database.</li>
-    <li>Click the <em>X</em> if there is one in the top right corner the page to close it. Or click the card or click the menu for the dashboard</li>
-    <li>Clicking the current dashboard's menu button closes all other buttons, returns the dashboard to full screen and refreshes the data. </li>
+function getHelpContentHTML(petition) {
+  if (!petition || !petition.Action) {
+    return '<p class="text-gray-500 italic">No context selected.</p>';
+  }
+  
+  return `
+    <div class="bg-blue-50 p-5 rounded-lg border border-blue-200 transition-all duration-300">
+      <h3 class="text-lg font-semibold text-blue-800 mb-3 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        Context Help: ${petition.Action}
+      </h3>
+      <ul class="space-y-2 text-sm text-gray-700 mb-4">
+        <li><span class="font-medium text-gray-900 w-24 inline-block">Module:</span> ${petition.Module || 'Unknown'}</li>
+        <li><span class="font-medium text-gray-900 w-24 inline-block">Section:</span> ${petition.Section || 'Unknown'}</li>
+        <li><span class="font-medium text-gray-900 w-24 inline-block">Action:</span> ${petition.Action}</li>
+        <li><span class="font-medium text-gray-900 w-24 inline-block">Location:</span> ${petition.Destination || 'Unknown'}</li>
+      </ul>
+      <div class="p-4 bg-white rounded border border-blue-100 text-sm text-gray-600 shadow-sm">
+        <p class="font-medium text-gray-800 mb-1">How to use this feature:</p>
+        <p><em>(Placeholder: Specific, context-sensitive help content for "${petition.Action}" will be loaded here from the lookup table in the next development stage.)</em></p>
+      </div>
+    </div>
+  `;
+}
 
-    <li>The <em>How?</em> button brings up these instructions</li>
-  </ul>
-</div>`}
+/**
+ * Generates a single, unified list of cards for all open panels.
+ */
+function getContextSelectorHTML(panelsOnDisplay) {
+  if (!panelsOnDisplay || panelsOnDisplay.length === 0) {
+    return '<p class="text-gray-500 italic">No panels are currently open.</p>';
+  }
 
-function getContextHTML(petition) { console.log('getContextHTML()');
-  return `<div bg-blue-100 class="bg-white p-6 rounded-lg shadow">
-  <h2 class="text-xl font-bold text-gray-800 mb-4">Context how to</h2>
+  let cardsHTML = '';
+  const seenActions = new Set(); // Track which actions we've already added
 
-  <button data-action="howTo"  data-section="menu"  class="text-gray-500 hover:text-gray-700" aria-label="Close">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-    </svg>
-  </button>
+  for (let i = panelsOnDisplay.length - 1; i >= 0; i--) {
+    const panel = panelsOnDisplay[i];
+    const query = panel.query || {};
+    const action = panel.panelName || query.Action || 'Unknown';
+    
+    // Skip if we've already added a card for this action
+    if (seenActions.has(action)) continue;
+    seenActions.add(action);
+    
+    const isActive = activeHelpContext && activeHelpContext.Action === action;
 
+    const stateClasses = isActive
+      ? 'ring-2 ring-blue-500 bg-blue-100 border-blue-300'
+      : 'bg-white hover:bg-gray-50 border border-gray-200 hover:border-blue-300';
 
-  <p class="text-gray-600">The information <em>changes</em> when doing different things </p>
-  <ul class="list-disc list-inside mt-2 text-sm text-gray-500">
-    <li>You want context specific help related to</li>
-    <li></li>
-    <li>module:<b>${petition.Module}</b></li>
-<li></li>
-    <li>section:<b>${petition.Section}</b></li>
-  <li></li>
-    <li>for action:<b>${petition.Action}</b></li>
-    <li></li>
-    <li> displayed in:<b>${petition.Destination}</b></li>
-   <li></li>
-   <li></li>
-    <li>As at 23:13 Sept 10 2025 the database system for that has not yet been implemented</li>
-   <li></li> 
+    const icon = isActive ? '★' : '□';
 
-    <li>The <em>How?</em> button brings up these instructions & a 2nd click closes this page.</li>
-  </ul>
-</div>`}
+    cardsHTML += `
+      <button
+        class="context-selector-btn ${stateClasses} text-left px-3 py-2 rounded-md text-sm font-medium text-gray-700 transition-all duration-200 flex items-center gap-2 shadow-sm cursor-pointer"
+        data-module="${query.Module || 'Unknown'}"
+        data-section="${query.Section || 'Unknown'}"
+        data-action="${action}"
+        data-destination="${query.Destination || panel.panelName || 'Unknown'}"
+        aria-pressed="${isActive}"
+      >
+        <span class="${isActive ? 'text-blue-700' : 'text-gray-400'}">${icon}</span>
+        <span>${action}</span>
+      </button>
+    `;
+  }
 
-function getNavigationHTML() { console.log('getTemplateHTML()');
-return `<div class="bg-white rounded-lg shadow p-6 flex-col ">
+  return `
+    <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+      <h3 class="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
+        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+        Select Context for Help
+      </h3>
+      <div class="flex flex-wrap gap-2">
+        ${cardsHTML}
+      </div>
+    </div>
+  `;
+}
 
-        <div class="mb-3 bg-blue-50 p-3 rounded border border-blue-200 text-sm text-blue-700">    
-         <p>Navigation: click menu button at top of screen - new items open to right of dashboard (scroll if needed)</p>
-         <p> May fail on small screens.</p>
-         <p> click a card within the page [rectangles with words in them]. - new item opens in the dashboard (scroll down or up if needed)</p>
-         <p>If you get lost click top menu button [My Dash] - that will close all the extra bits and return you to the dashboard ready for another adventure.</p>
-         <p>The dashboard is on 1 page. The browser back button may return you to the login page.</p>
-         <p>What the displays depends on what you click. </p>
-         <p>When you click a card the new information opens above or below and you may have to scroll to see it.</p> 
-         <p>When you click a menu button it opens to the right and you may have to scroll to the right to see it.</p>
-         <p>The design is easier on a large screen.</p>
+function updateHelpDisplay(panel, newContext) {
+  const helpContainer = panel.querySelector('#help-content-display');
+  if (helpContainer) {
+    helpContainer.innerHTML = getHelpContentHTML(newContext);
+  }
+}
+
+function renderContextSelector(panel, panelsOnDisplay) {
+  const selectorContainer = panel.querySelector('#context-selector-display');
+  if (selectorContainer) {
+    selectorContainer.innerHTML = getContextSelectorHTML(panelsOnDisplay);
+    attachContextListeners(panel);
+  }
+}
+
+function attachContextListeners(panel) {
+  const buttons = panel.querySelectorAll('.context-selector-btn');
+  buttons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      isManualOverride = true; // User explicitly chose a context
+      
+      // Reset all buttons to inactive state
+      buttons.forEach(b => {
+        b.classList.remove('ring-2', 'ring-blue-500', 'bg-blue-100', 'border-blue-300');
+        b.classList.add('bg-white', 'hover:bg-gray-50', 'border', 'border-gray-200');
+        b.setAttribute('aria-pressed', 'false');
+        b.querySelector('span:first-child').classList.replace('text-blue-700', 'text-gray-400');
+        b.querySelector('span:first-child').textContent = '□';
+      });
+      
+      // Set clicked button to active state
+      e.currentTarget.classList.remove('bg-white', 'hover:bg-gray-50', 'border-gray-200');
+      e.currentTarget.classList.add('ring-2', 'ring-blue-500', 'bg-blue-100', 'border-blue-300');
+      e.currentTarget.setAttribute('aria-pressed', 'true');
+      e.currentTarget.querySelector('span:first-child').classList.replace('text-gray-400', 'text-blue-700');
+      e.currentTarget.querySelector('span:first-child').textContent = '★';
+
+      const newContext = {
+        Module: e.currentTarget.dataset.module,
+        Section: e.currentTarget.dataset.section,
+        Action: e.currentTarget.dataset.action,
+        Destination: e.currentTarget.dataset.destination
+      };
+      
+      activeHelpContext = newContext;
+      updateHelpDisplay(panel, newContext);
+    });
+  });
+}
+
+function renderTheHistory(panel) {
+  const maxLines = appState.query?.maxHistoryLength || 6;
+  const historyContainer = panel.querySelector('#history-display');
+  if (!historyContainer) return;
+
+  const history = appState.query.petitionHistory || [];
+  let html = '<h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Petition history</h4><ul class="text-xs text-gray-600 space-y-1 font-mono">';
+  
+  for (let i = maxLines; i > 0; i--) {
+    const item = history[i];
+    if (!item) continue;
+    html += `<li class="truncate">[${i}] ${item.Module || 'Unknown'} - ${item.Section || 'Unknown'} : <span class="text-blue-600">${item.Action}</span> in ${item.Destination || 'Unknown'}</li>`;
+  }
+  html += '</ul>';
+  historyContainer.innerHTML = html;
+}
+
+function scheduleStateRead(panel) {
+  setTimeout(() => {
+    if (!panel.isConnected) return;
+
+    const latestPanels = appState.panelsOnDisplay || [];
+
+    renderTheHistory(panel);
+
+    if (!isManualOverride) {
+      const newContext = getDefaultContext(latestPanels);
+      
+      // Always update the context and display, not just when it changes
+      activeHelpContext = newContext;
+      updateHelpDisplay(panel, activeHelpContext);
+    }
+
+    // Always re-render the selector to update highlights
+    renderContextSelector(panel, latestPanels);
+  }, 100);
+}
+export function render(panel, petition = {}) {
+  console.log('howTo render called with petition:', petition);
+  console.log('panel element:', panel);
+  console.log('panel.isConnected:', panel?.isConnected);
+  
+  isManualOverride = false;
+  
+  panel.innerHTML = `
+    <div class="bg-white p-6 rounded-lg shadow-lg max-w-4xl mx-auto border border-gray-100">
+      <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-3">
+        <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          How To Use
+        </h2>
+        <button data-action="closeHowTo" class="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-100" aria-label="Close Help">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      <div id="help-content-display" class="mb-6">
+        <p class="text-gray-500 italic">Loading context...</p>
+      </div>
+      <div id="context-selector-display" class="mb-6">
+        <div class="animate-pulse flex space-x-4">
+          <div class="flex-1 space-y-4 py-1">
+            <div class="h-4 bg-gray-200 rounded w-3/4"></div>
+            <div class="space-y-2">
+              <div class="h-4 bg-gray-200 rounded"></div>
+              <div class="h-4 bg-gray-200 rounded w-5/6"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <details class="mb-6 group border border-gray-200 rounded-lg space-y-2">
+        <summary class="cursor-pointer text-sm font-semibold text-blue-600 hover:text-blue-800 flex items-center gap-2 p-3 bg-gray-50 rounded-t-lg hover:bg-gray-100 transition-colors">
+          <svg class="w-4 h-4 transition-transform duration-200 group-open:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          General Navigation Tips
+        </summary>
+        <div class="mb-3 bg-blue-50 p-3 rounded border border-blue-200 text-sm text-blue-700 space-y-2">    
+         <p>Clicking top of screen menu - opens the item to right of dashboard on a large screen or just under the menu on small screens.</p>
+         <p>clicking a card within the page [rectangles with words in them] opens the new item in the dashboard (scroll down or up if needed)</p>
+         <p>The browser back button may return you to the login page.</p>
          <p>If it gets messy click [My Dash]</p>
         </div>
+      </details>
+      <div id="history-display" class="border-t border-gray-200 pt-4 text-sm"></div>
+      <div class="mt-6 pt-4 border-t border-gray-100 text-xs text-gray-500">
+        ${petitionBreadcrumbs(petition)}
+      </div>
+    </div>
+  `;
 
-</div>`}
-
-
-
-
-
-function decideContext(petition){
-  console.log('decideContext the petition says:(',petition.Action,')');
-
-  if(petition.Action==='howTo' || petition.Action==='howTo.html') {
-  const { petitionHistory } = appState.query;
+  // CRITICAL: Immediately update the help display with the current context
+  // This ensures the content is shown even if the panel gets recreated
+  const initialPanels = appState.panelsOnDisplay || [];
+  const initialContext = getDefaultContext(initialPanels);
+  if (initialContext) {
+    activeHelpContext = initialContext;
+    updateHelpDisplay(panel, initialContext);
+  }
   
-  if (petitionHistory.length>1){
-    petition = petitionHistory[petitionHistory.length-1];};
-    console.log('change to petitionHistory-1:',petition,')');
-  } else console.log('there is no history');
-  let action = petition.Action ;
-  console.log('decideContext decision is this action:', action);
+  // Also immediately render the context selector
+  renderContextSelector(panel, initialPanels);
+  renderTheHistory(panel);
 
-//  console.log('but action to be recommended is:', action);
-return petition;  
+  scheduleStateRead(panel);
 
+  if (panel._stateChangeListener) {
+    window.removeEventListener('state-change', panel._stateChangeListener);
+  }
+  
+  panel._stateChangeListener = () => {
+    scheduleStateRead(panel);
+  };
+  
+  window.addEventListener('state-change', panel._stateChangeListener);
 }
-
-
-export function render(panel, petition = {}) {
-petition = decideContext(petition);
-console.log('action:',petition.Action);
-const action = petition.Action;
-if(action === 'adminDash' || action === 'adminDash.html') 
-  {console.log('rednering generic menu howto');
-  panel.innerHTML = getTemplateHTML() + getNavigationHTML();
-
-}// generic menu instructions
-else {console.log('rendering context howto');  
-  panel.innerHTML = getNavigationHTML()+getContextHTML(petition);
-}
-panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
-
-window.addEventListener('state-change', (e) => {
-  const action = decideContext(appState.query.petitioner);
-if(action === 'adminDash' || action === 'adminDash.html')  panel.innerHTML = getTemplateHTML(); // generic menu instructions
-else  panel.innerHTML = getContextHTML(appState.query.petitioner);
-panel.innerHTML+=petitionBreadcrumbs();//this reads 'petition' and prints the values at bottom of the render panel
-  
-  
-  });
-}   
-
-
-
-//petitioner
-
-// is passed when the buildPetitionListener() function calls appState.setQuery({callerContext: action});
-//it has to be called prior to passing it in the query{} object when we call this module
-//in buildPetitionListener.js, when we call appState.setQuery(), we need to have added petitioner: petition
-//then we can access it here in the render() function
-//we can also add a default value of 'unknown' if it is not passed
-//so we can see where we are when we open the a new page
-
-//the call here isn't from buildPetitionListener it is from the menu button in the dashboard
-//so we need to also assign petitioner: {Module:'dashboard', Section:'menu', Action:'howTo'} when we call this module from the menu button
-//we can do this in the dashboardListeners.js file
-//we can also add a default value of 'unknown' if it is not passed
