@@ -11,7 +11,7 @@ organise.html
 -> nav button click (data-action="myDash")
 -> menuListeners.js reads .nav-btn
 -> appState.setPetitioner({ Section:'menu', Action:'myDash', Destination:'new-panel' })
--> windowEventListener.js
+-> windowEventPetitionListener.js
 -> openClosePanelsByRule('myDash')
 -> renderPanel()
 -> registryLoadModule.js['myDash']
@@ -22,7 +22,7 @@ organise.html
 -> nav button click (data-action="adminDash")
 -> menuListeners.js
 -> appState.setPetitioner({ Section:'menu', Action:'adminDash', Destination:'new-panel' })
--> windowEventListener.js
+-> windowEventPetitionListener.js
 -> openClosePanelsByRule('adminDash')
 -> renderPanel()
 -> registryLoadModule.js['adminDash']
@@ -31,7 +31,7 @@ organise.html
 
 adminDash.render(...)
 -> card click with data-action="task-management-section"
--> adminListeners.js:readPetition()
+-> buildPetitionListener.js:readPetition()
 -> appState.setPetitioner({ Module:'adminDash', Section:'task-management', Action:'task-management-section', Destination:'task-management' })
 -> openClosePanelsByRule('task-management-section')
 -> registryLoadModule.js['task-management-section']

@@ -71,11 +71,27 @@ Any visitor can see any of the dashboards, but to see data or touch the database
 
 
 ### 008 **Module Loading & Rendering**
+**organise.html** is the landing page with a menu. This page calls
+ **flexmain.js** which calls 
+   **BuildPetitionListener.js**
+   **windowEventPetitionListener** 
+   **loadMyDashWithData()**
+
+**loadMyDashWithData()** reads the database for tasks & surveys related to the logged-in user & displays cards representing those items.
+Clicking on a menu item or one of the cards is responded to by **buildPetitionListener**
+**buildPetitionListner** reads the HTML near the clicked item searching for data-* statements. data-module, data-section, data-action, data-destination and possibly others are read by the listener and placed into the global **appState**
+The BuildPetitionlistener dispatches a windows event.
+**windowEventPetitionListener** responds to the event by looking for an entry in **registryLoadModule** and if found calling
+**openClosePanelsByRule(payload.petitioner.Action)** which either loads the module or, if already loaded, the module is closed.
+
+
 - **Modules**: All Export a `render(panel, query)` function
 - **All modules are lazy-imported from registryLoadModule.js**: `() => import('../path/to/module.js')`
 - **Rendering destination**: Determined by `appState.query.petitioner.Destination`:
   - A section name (e.g., 'task-management') → renders into `[data-section="task-management"]`
   - 'new-panel' → renders into `[data-panel="inject-here"]` (Small screens should always load into the current dashboard area, larger screens sometimes load to the right of the dashboard with flex of widths)
+
+  **appState** is used to store the petition (the collection of data-*) and as a message from one module to the next. Each generated petition is also pushed into a history for later use.
 
 ### 009 **Database Access & permissions**
 - **No direct SQL or API queries from client**: All database access routes for a user go through a single js function`executeIfPermitted(userId, action, payload)` which calls the API. (RLS then calls the rpc is_permitted that determines if the user-table-operation tuplet is permitted).

@@ -18,13 +18,13 @@ organise.html
 -> loads flexmain.js
 -> flexmain.js imports:
 - menuListeners.js
-- adminListeners.js
-- windowEventListener.js
+- buildPetitionListener.js
+- windowEventPetitionListener.js
 - registryLoadModule.js
 - appState.js
 -> menuListeners.js handles nav clicks, sets:
 appState.setPetitioner({ Section:'menu', Action:'myDash', Destination:'new-panel' })
--> windowEventListener.js listens for state-change
+-> windowEventPetitionListener.js listens for state-change
 -> openClosePanelsByRule() in flexmain.js
 -> renderPanel() in flexmain.js
 -> registry[Action] in registryLoadModule.js
@@ -33,8 +33,8 @@ appState.setPetitioner({ Section:'menu', Action:'myDash', Destination:'new-panel
 
 <!--The key interpretation is in: -->
 
-adminListeners.js: readPetition(e) builds {Module, Section, Action, Destination}
+buildPetitionListener.js: readPetition(e) builds {Module, Section, Action, Destination}
 appState.js: setPetitioner() stores the petition and emits the state-change
-windowEventListener.js: calls openClosePanelsByRule(payload.petitioner.Action)
+windowEventPetitionListener.js: calls openClosePanelsByRule(payload.petitioner.Action)
 flexmain.js: resolves the action via registry[...] and calls module.render(panel, query)
 Complete non-excluded workspace inventory

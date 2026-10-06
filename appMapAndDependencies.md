@@ -20,13 +20,13 @@ organise.html
 -> loads flexmain.js
 -> flexmain.js imports:
 - menuListeners.js
-- adminListeners.js
-- windowEventListener.js
+- buildPetitionListener.js
+- windowEventPetitionListener.js
 - registryLoadModule.js
 - appState.js
 -> menuListeners.js handles nav clicks, sets:
 appState.setPetitioner({ Section:'menu', Action:'myDash', Destination:'new-panel' })
--> windowEventListener.js listens for state-change
+-> windowEventPetitionListener.js listens for state-change
 -> openClosePanelsByRule() in flexmain.js
 -> renderPanel() in flexmain.js
 -> registry[Action] in registryLoadModule.js
@@ -35,9 +35,9 @@ appState.setPetitioner({ Section:'menu', Action:'myDash', Destination:'new-panel
 
 <!--The key interpretation is in: -->
 
-adminListeners.js: readPetition(e) builds {Module, Section, Action, Destination}
+buildPetitionListener.js: readPetition(e) builds {Module, Section, Action, Destination}
 appState.js: setPetitioner() stores the petition and emits the state-change
-windowEventListener.js: calls openClosePanelsByRule(payload.petitioner.Action)
+windowEventPetitionListener.js: calls openClosePanelsByRule(payload.petitioner.Action)
 flexmain.js: resolves the action via registry[...] and calls module.render(panel, query)
 Complete non-excluded workspace inventory
 
@@ -60,7 +60,7 @@ db:
 auth.js, auth_how_use.html, databaseCentral.js, fetchNotes.js, readme.md, schema.html, supabase.js
 
 listeners:
-adminListeners.js, menuListeners.js, menuListeners001.js, windowEventListener.js
+buildPetitionListener.js, menuListeners.js, menuListeners001.js, windowEventPetitionListener.js
 
 notes:
 Xnotes.html, XrenderNotes.js, cleanupNoteInput.js, collectUserChoices.js, displayNotes.js, favicon.ico, labNotesToInclude.js, noteListeners.js, notes.js, reactToClearAllButton.js, reactToNoteClick.js, reactToPageButton.js, reactToSaveButton.js, reactToSaveButtonGH.js, rowsFromNotesWithCategories100rows, saveNoteWithTags.js, saveNoteWithTags001.js, tags.js, theLabNotesFork.md
@@ -267,7 +267,7 @@ organise.html
 -> nav button click (data-action="myDash")
 -> menuListeners.js reads .nav-btn
 -> appState.setPetitioner({ Section:'menu', Action:'myDash', Destination:'new-panel' })
--> windowEventListener.js
+-> windowEventPetitionListener.js
 -> openClosePanelsByRule('myDash')
 -> renderPanel()
 -> registryLoadModule.js['myDash']
@@ -278,7 +278,7 @@ organise.html
 -> nav button click (data-action="adminDash")
 -> menuListeners.js
 -> appState.setPetitioner({ Section:'menu', Action:'adminDash', Destination:'new-panel' })
--> windowEventListener.js
+-> windowEventPetitionListener.js
 -> openClosePanelsByRule('adminDash')
 -> renderPanel()
 -> registryLoadModule.js['adminDash']
@@ -287,7 +287,7 @@ organise.html
 
 adminDash.render(...)
 -> card click with data-action="task-management-section"
--> adminListeners.js:readPetition()
+-> buildPetitionListener.js:readPetition()
 -> appState.setPetitioner({ Module:'adminDash', Section:'task-management', Action:'task-management-section', Destination:'task-management' })
 -> openClosePanelsByRule('task-management-section')
 -> registryLoadModule.js['task-management-section']
