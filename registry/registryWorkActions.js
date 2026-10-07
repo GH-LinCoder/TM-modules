@@ -594,7 +594,7 @@ handler: async (supabase ) => {
     type: 'INSERT',
     requiredArgs: ['name', 'description']
   },
-  handler: async (supabase , payload) => {
+  handler: async (supabase , _userId, payload) => {
     console.log('Create Approfile()');
     const { name, description, authUserId } = payload;
 
@@ -2478,6 +2478,38 @@ const fta = ftaRows[0]; //
 
 },
 
+
+fetchHowToNotes: {  // added 12:21 Oct 7 2026 - needs to be added to _permission_molecule_required db table
+metadata: {
+      tables: ['notes_with_categories_array3'],  
+      columns: ['*'],
+      type: 'SELECT',
+      requiredArgs: ['title']
+    },
+    handler: async (supabase, userId, payload) => {
+      const { title } = payload;
+      const category = 43; //this is the category for 'help' in the categories table.
+      console.log("fetchHowToNotes() title", title);
+    
+      const { data, error } = await supabase
+        .from('notes_with_categories_array3')  // changing to read view3 (was view2)  11:43 March 15 //changed from notes to notes_view 22:17 Nov 5  problem of repetitions also id is now called notes_id
+        //change again Jan 7 2026 to notes_with_categories_array Has the tags in an array
+        .select('*') // the ten could all be the same note with 10 tags
+        .eq('title', title)
+        .contains('category_ids', [category]) //category_ids is a column of arrays of int4 categories
+        .order('sort_int', { ascending: false });
+    
+      if (error) {
+        console.error('Error fetching how-to notes:', error);
+        return { notes: [], message: error.message };
+      }
+      return data;
+    }
+},
+
+
+
+
 //NOTES
 fetchNotes: {  // changing to read view3 (was view2)  11:43 March 15
 metadata: {
@@ -3221,7 +3253,7 @@ createAutomationAddTaskByTask: {
     type: 'INSERT',
     requiredArgs: ['source_task_step_id', 'task_header_id', 'task_step_id']
   },
-  handler: async (supabase, payload) => {
+  handler: async (supabase,  _userId, payload) => { //does this need userId to space out the arguments?
     const { source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number } = payload;
 const autoRegistryId = '5473de51-a0d7-466f-8cea-ac342bf16d90';//the place to find what kind of function this is
 console.log('auto task by task',source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number);
@@ -3318,7 +3350,7 @@ createAutomationRelateByTask: {
     type: 'INSERT',
     requiredArgs: ['source_task_step_id', 'appro_is_id', 'relationship', 'of_appro_id']
   },
-  handler: async (supabase, payload) => {
+  handler: async (supabase,  _userId, payload) => {
     const { source_task_header_id, source_task_step_id, appro_is_id, relationship, of_appro_id, name, automation_number } = payload;
   // appro_is_id is decided when the automation is run. It will be the user's id at that time.  
   //  (There could be a use for an automation that predetermines the _is )
