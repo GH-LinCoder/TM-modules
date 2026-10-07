@@ -1,7 +1,7 @@
 // ./work/auth/login-signup.js
 import { createSupabaseClient } from '../db/supabase.js';
-import { executeIfPermitted } from '../registry/executeIfPermitted.js';
-import { showToast } from '../ui/showToast.js';
+//import { executeIfPermitted } from '../registry/executeIfPermitted.js';
+//import { showToast } from '../ui/showToast.js';
 //NOTE: THERE IS A VERSION OF THIS INSIDE INDEX>HTML
 //That may be the version you want to edit.
 
@@ -118,7 +118,7 @@ function showForm(formId) {
 }
 
 
-export async function render(panel, query = {}) {
+export async function render(panel) {
   panel.innerHTML = getTemplateHTML();
 const supabase = createSupabaseClient();
   
