@@ -2,10 +2,24 @@
 console.log('howTo.js loaded');
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 import { appState } from '../../state/appState.js';
+import { executeIfPermitted } from '../../registry/executeIfPermitted.js';  //added 12:49 Oct 7 2026
 
 // Track the actively displayed help context and whether the user manually selected it
 let activeHelpContext = null;
 let isManualOverride = false;
+
+
+
+// Basic XSS sanitization helper (Replace with DOMPurify.sanitize if you use it)
+function sanitizeHTML(str) { //added 12:49 Oct 7 2026
+  if (!str) return '';
+  const div = document.createElement('div');
+  div.textContent = str; // Strips all HTML tags for safety
+  // If notes contain safe, pre-formatted HTML (like <p>, <ul>, <strong>), 
+  // we should use a library like DOMPurify here instead of textContent.
+  return div.innerHTML; 
+}
+
 
 /**
  * Determines the default context when the module opens.
@@ -49,8 +63,8 @@ function getHelpContentHTML(petition) {
         <li><span class="font-medium text-gray-900 w-24 inline-block">Location:</span> ${petition.Destination || 'Unknown'}</li>
       </ul>
       <div class="p-4 bg-white rounded border border-blue-100 text-sm text-gray-600 shadow-sm">
-        <p class="font-medium text-gray-800 mb-1">How to use this feature:</p>
-        <p><em>(Placeholder: Specific, context-sensitive help content for "${petition.Action}" will be loaded here from the lookup table in the next development stage.)</em></p>
+        <p class="font-medium text-gray-800 mb-1">How to use "${petition.Action}":</p>
+        <div id = 'howTo-inject-here' class = "min-h-[3rem]"><em>(Placeholder: Specific, context-sensitive help content for "${petition.Action}" will be loaded here from the lookup table in the next development stage.)</em></div>
       </div>
     </div>
   `;
@@ -112,10 +126,67 @@ function getContextSelectorHTML(panelsOnDisplay) {
   `;
 }
 
+/*
 function updateHelpDisplay(panel, newContext) {
   const helpContainer = panel.querySelector('#help-content-display');
   if (helpContainer) {
     helpContainer.innerHTML = getHelpContentHTML(newContext);
+  }
+} */  //replaced 12:52 Oct 7 2026
+ 
+async function updateHelpDisplay(panel, newContext) {
+  const helpContainer = panel.querySelector('#help-content-display');
+  if (!helpContainer) return;
+
+  // 1. Render the base skeleton immediately
+  helpContainer.innerHTML = getHelpContentHTML(newContext);
+
+ if (!newContext || !newContext.Action) {
+    console.warn('updateHelpDisplay: newContext or newContext.Action is missing', newContext);
+    return;
+  }
+
+  const injectDiv = helpContainer.querySelector('#howTo-inject-here');
+  if (!injectDiv) return;
+
+  try {
+    const userId = appState.query.userAuthId;
+
+     const payload = { title: newContext.Action };
+    console.log('🔍 Preparing to fetch help. Context:', newContext);
+    console.log('📦 Payload being sent to registry:', payload);
+    // 2. Fetch from registry. The registry requires 'title', so we pass the Action as the title.
+    const howToNotes = await executeIfPermitted(userId, 'fetchHowToNotes', payload);
+
+    // 3. Process results based on array length
+    if (!howToNotes || howToNotes.length < 1) {
+      // Case 0: No notes found
+      injectDiv.innerHTML = `<em class="text-gray-500">No specific help content is currently available for "${newContext.Action}".</em>`;
+      
+    } else if (howToNotes.length === 1) {
+      // Case 1: Exactly one note found
+      // NOTE: Adjust 'note_text' below to match the actual column name in your notes table (e.g., 'content', 'body', 'note')
+      const noteContent = howToNotes[0].note_text || howToNotes[0].content || howToNotes[0].text || 'No text content found.';
+      injectDiv.innerHTML = `<div class="prose prose-sm max-w-none text-gray-700  whitespace-pre-wrap">${sanitizeHTML(noteContent)}</div>`;
+      
+    } else {
+      // Case >1: Multiple notes found
+      const firstNoteContent = howToNotes[0].content || 'No text content found.';
+      injectDiv.innerHTML = `
+        <div class="prose prose-sm max-w-none text-gray-700 mb-3">
+          ${sanitizeHTML(firstNoteContent)}
+        </div>
+        <div class="mt-3 pt-3 border-t border-blue-100 flex items-center gap-2">
+          <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <p class="text-xs text-blue-700 font-medium">
+            There are ${howToNotes.length} help notes available for this context. Showing the primary one (sorted highest).
+          </p>
+        </div>
+      `;
+    }
+  } catch (error) {
+    console.error('Error fetching how-to notes:', error);
+    injectDiv.innerHTML = `<em class="text-red-500 text-sm">Failed to load help content. Please try again.</em>`;
   }
 }
 
