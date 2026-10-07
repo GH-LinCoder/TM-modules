@@ -32,6 +32,17 @@ export async function reactToSaveButton() {
 
 noteContent = escapeHtml(noteContent);
 
+  let noteTitle = document.getElementById('note-title')?.value.trim();
+  if (!noteTitle) {
+    console.log('✗ Note content is empty');
+    return;
+  }
+  console.log("content found");
+
+noteTitle = escapeHtml(noteTitle);
+
+
+
   const userChoices = collectUserChoices();
 console.log('userChoices', userChoices);
 /* returned from collectUserChoices.js
@@ -71,6 +82,7 @@ length: 3 */
   console.log(userChoices.categories.length, " tags found", 'userId:', userId);
 
   const result = await saveNoteWithTags(null, {
+    title: noteTitle,
     content: noteContent,
     tags: userChoices.categories,
     author_id: userId,
