@@ -47,14 +47,14 @@ export function render(panel, petition = {}) {
 }
 //petitioner
 
-// is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
+// is passed when the buildPetitionListener() function calls appState.setQuery({callerContext: action});
 //it has to be called prior to passing it in the query{} object when we call this module
-//in adminListeners.js, when we call appState.setQuery(), we need to have added petitioner: petition
+//in buildPetitionListener.js, when we call appState.setQuery(), we need to have added petitioner: petition
 //then we can access it here in the render() function
 //we can also add a default value of 'unknown' if it is not passed
 //so we can see where we are when we open the a new page
 
-//the call here isn't from adminListeners it is from the menu button in the dashboard
+//the call here isn't from buildPetitionListener it is from the menu button in the dashboard
 //so we need to also assign petitioner: {Module:'dashboard', Section:'menu', Action:'howTo'} when we call this module from the menu button
 //we can do this in the dashboardListeners.js file
 //we can also add a default value of 'unknown' if it is not passed
