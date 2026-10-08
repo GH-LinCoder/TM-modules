@@ -5,7 +5,7 @@ import { appState } from '../../state/appState.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import {icons} from '../../registry/iconList.js';
-import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/contextSubjectHideModules.js'
+import {  detectContext,resolveSubject, applyPresentationRules} from '../../utils/resolveSubjectPlus2.js'
 
 //import{readSurveyNormalised} from './readSurveyNormal.js';
 
