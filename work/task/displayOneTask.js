@@ -22,7 +22,7 @@ const autoPetition = {
     automation_id: ''
 };
 
-export async function render(panel, query = {}, controller) {
+export async function render(panel, query = {}, controller) {//the task is going to be appended to the panel
     panelEl = panel;
     subject = await resolveSubject();
     const assignmentId = query.assignmentId || appState.query.petitioner?.assignmentId;
