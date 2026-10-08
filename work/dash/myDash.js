@@ -1,7 +1,7 @@
 // ./work/dash/myDash.js
 //import { appState } from '../../state/appState.js';
 //import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-import { showToast } from '../../ui/showToast.js';
+//import { showToast } from '../../ui/showToast.js';
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 //import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 //import { icons } from '../../registry/iconList.js';
@@ -307,7 +307,7 @@ Therefore use this anchor div instead -->
     `;
 }
 
-export function render(panel, petition = {}) {
+export function render(panel) {
     console.log('adminDash Render()');
     //    console.log('adminDash Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();
