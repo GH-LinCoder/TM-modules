@@ -16,30 +16,37 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 </div>
-<div class="mb-5 p-2 md:p-5 bg-yellow-50 border rounded space-y-2">
+<div class="mb-5 p-2 md:p-5 bg-yellow-50 border rounded">
 
+<ol class="list-decimal space-y-2">
+<li> The website is designed to require the minimum of details about you.</li>
 
-<p>1. The website is designed to require the minimum of details about you.</p>
+<li> It requires an email address. This does not have to be your everyday email. </li>
 
-<p>2. It requires an email address. This does not have to be your everyday email. </p>
+<li> There is no reason to put your name in this website. Choose a user name.</li>
 
-<p>3. There is no reason to put your name in this website. Choose a user name.</p>
+<li> The database only stores additional information about what you do or choose inside the website</li>
 
-<p>4. The database only stores additional information about what you do or choose inside the website</p>
+<li> This additional information is to enable the website to respond to your choices and preferences</li>
 
-<p>5. This additional information is to enable the website to respond to your choices and preferences</p>
+<li> Any data will be stored solely for the functioning of the website service including reacting to your choices and communicating with you.</li>
 
-<p>6. Any data will be stored solely for the functioning of the website service including reacting to your choices and communicating with you.</p>
+<li> If cookies are used by the app or other services they are for essential activities.</li>
 
-<p>7. Cookies are used so that the system can know which data is visible to you. This is used while you are on this website.</p>
+<li> The website is designed such that the user can see data that is stored relevant to the user.</li>
 
-<p>8. The website is designed such that the user can see data that is stored relevant to the user.</p>
+<li> Data is stored for as long as needed to allow you to interact with the website and for however long after as required by law or normal record keeping</li> 
 
-<p>9. Data is stored for as long as needed to allow you to interact with the website and for however long after as required by law or normal record keeping</p> 
+<li> Data is stored on a database service called Supabase. 
+<a href="https://supabase.com/privacy" target="_blank" class="text-blue-500"> Supabase privacy </a>
+and <a href="https://supabase.com/docs/guides/security/gdpr-compliance" target="_blank" class="text-blue-500"> Supabse data protection </a>
+</li>
 
-<p>10.Data is stored on a database service called Supabase. Their data protection policies are available at <a href="https://supabase.com/privacy" target="_blank" class="text-blue-500">supabase.com/privacy</a></p>
-
-</div
+<li> The site is hosted by Netlify. <a href="https://www.netlify.com/privacy" target="_blank" class="text-blue-500"> Netlify privacy policy </a> and 
+<a href="https://www.netlify.com/gdpr-ccpa/" target="_blank" class="text-blue-500"> Netlify data protection </a>
+</li>
+</ol>
+</div>
 
 
 ${petitionBreadcrumbs()} 
@@ -51,7 +58,7 @@ export function render(panel, petition = {}) {
 
      //? query.petitioner : 'unknown';
    // console.log('Petition:', petition);
- //   panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</p>`;
+ //   panel.innerHTML+= `<p class="text-xs text-gray-400 mt-4">Context: ${petition.Module} - ${petition.Section} - ${petition.Action}</ol>`;
 }
 //petitioner
 
