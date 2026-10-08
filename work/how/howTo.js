@@ -11,6 +11,7 @@ let isManualOverride = false;
 
 
 // Basic XSS sanitization helper (Replace with DOMPurify.sanitize if you use it)
+/*
 function sanitizeHTML(str) { //added 12:49 Oct 7 2026
   if (!str) return '';
   const div = document.createElement('div');
@@ -18,7 +19,7 @@ function sanitizeHTML(str) { //added 12:49 Oct 7 2026
   // If notes contain safe, pre-formatted HTML (like <p>, <ul>, <strong>), 
   // we should use a library like DOMPurify here instead of textContent.
   return div.innerHTML; 
-}
+} */
 
 
 /**
@@ -103,7 +104,7 @@ function getContextSelectorHTML(panelsOnDisplay) {
         class="context-selector-btn ${stateClasses} text-left px-3 py-2 rounded-md text-sm font-medium text-gray-700 transition-all duration-200 flex items-center gap-2 shadow-sm cursor-pointer"
         data-module="${query.Module || 'Unknown'}"
         data-section="${query.Section || 'Unknown'}"
-        data-action="${action}"
+        data-card="${action}"
         data-destination="${query.Destination || panel.panelName || 'Unknown'}"
         aria-pressed="${isActive}"
       >
@@ -138,55 +139,48 @@ async function updateHelpDisplay(panel, newContext) {
   const helpContainer = panel.querySelector('#help-content-display');
   if (!helpContainer) return;
 
-  // 1. Render the base skeleton immediately
   helpContainer.innerHTML = getHelpContentHTML(newContext);
 
- if (!newContext || !newContext.Action) {
-    console.warn('updateHelpDisplay: newContext or newContext.Action is missing', newContext);
-    return;
-  }
+  if (!newContext || !newContext.Action) return;
 
   const injectDiv = helpContainer.querySelector('#howTo-inject-here');
   if (!injectDiv) return;
 
   try {
     const userId = appState.query.userAuthId;
-
-     const payload = { title: newContext.Action };
-    console.log('🔍 Preparing to fetch help. Context:', newContext);
-    console.log('📦 Payload being sent to registry:', payload);
-    // 2. Fetch from registry. The registry requires 'title', so we pass the Action as the title.
+    const payload = { title: newContext.Action };
+    
     const howToNotes = await executeIfPermitted(userId, 'fetchHowToNotes', payload);
 
-    // 3. Process results based on array length
     if (!howToNotes || howToNotes.length < 1) {
-      // Case 0: No notes found
-      injectDiv.innerHTML = `<em class="text-gray-500">No specific help content is currently available for "${newContext.Action}".</em>`;
-      
-    } else if (howToNotes.length === 1) {
-      // Case 1: Exactly one note found
-      // NOTE: Adjust 'note_text' below to match the actual column name in your notes table (e.g., 'content', 'body', 'note')
-      const noteContent = howToNotes[0].note_text || howToNotes[0].content || howToNotes[0].text || 'No text content found.';
-      injectDiv.innerHTML = `<div class="prose prose-sm max-w-none text-gray-700  whitespace-pre-wrap">${sanitizeHTML(noteContent)}</div>`;
+      injectDiv.textContent = `No specific help content is currently available for "${newContext.Action}".`;
+      injectDiv.className = "text-gray-500 italic text-sm break-words";
       
     } else {
-      // Case >1: Multiple notes found
-      const firstNoteContent = howToNotes[0].content || 'No text content found.';
-      injectDiv.innerHTML = `
-        <div class="prose prose-sm max-w-none text-gray-700 mb-3">
-          ${sanitizeHTML(firstNoteContent)}
-        </div>
-        <div class="mt-3 pt-3 border-t border-blue-100 flex items-center gap-2">
-          <svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-          <p class="text-xs text-blue-700 font-medium">
-            There are ${howToNotes.length} help notes available for this context. Showing the primary one (sorted highest).
+      const noteContent = howToNotes[0].content || 'No text content found.';
+      
+      // SECURE: textContent prevents ALL XSS. 
+      // whitespace-pre-wrap preserves line breaks and spacing.
+      // break-words forces long unbroken strings to wrap.
+      injectDiv.textContent = noteContent;
+      injectDiv.className = "text-sm text-gray-700 whitespace-pre-wrap break-words";
+
+      if (howToNotes.length > 1) {
+        const infoDiv = document.createElement('div');
+        infoDiv.className = "mt-3 pt-3 border-t border-blue-100 flex items-start gap-2";
+        infoDiv.innerHTML = `
+          <svg class="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+          <p class="text-xs text-blue-700">
+            There are <strong>${howToNotes.length}</strong> help notes available. Showing the primary one.
           </p>
-        </div>
-      `;
+        `;
+        injectDiv.parentNode.appendChild(infoDiv);
+      }
     }
   } catch (error) {
-    console.error('Error fetching how-to notes:', error);
-    injectDiv.innerHTML = `<em class="text-red-500 text-sm">Failed to load help content. Please try again.</em>`;
+    console.error('❌ Error fetching how-to notes:', error);
+    injectDiv.textContent = 'Failed to load help content.';
+    injectDiv.className = "text-red-500 text-sm italic break-words";
   }
 }
 
@@ -202,8 +196,8 @@ function attachContextListeners(panel) {
   const buttons = panel.querySelectorAll('.context-selector-btn');
   buttons.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+     // e.preventDefault();
+     // e.stopPropagation();
       
       isManualOverride = true; // User explicitly chose a context
       
@@ -226,7 +220,7 @@ function attachContextListeners(panel) {
       const newContext = {
         Module: e.currentTarget.dataset.module,
         Section: e.currentTarget.dataset.section,
-        Action: e.currentTarget.dataset.action,
+        Action: e.currentTarget.dataset.card,
         Destination: e.currentTarget.dataset.destination
       };
       
@@ -287,7 +281,7 @@ export function render(panel, petition = {}) {
           <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
           How To Use
         </h2>
-        <button data-action="closeHowTo" class="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-100" aria-label="Close Help">
+        <button data-section="howTo"  data-action="howTo" class="text-gray-400 hover:text-red-500 transition-colors p-1 rounded-full hover:bg-gray-100" aria-label="Close Help">
           <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
