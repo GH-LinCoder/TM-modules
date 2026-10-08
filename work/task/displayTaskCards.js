@@ -4,22 +4,22 @@
 import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 // Add this import
-import { render as renderOneTask } from './displayOneTask.js';
+//import { render as renderOneTask } from './displayOneTask.js';
 
 //need resolve if use the function from loadMyDashWithData
-import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../../utils/resolveSubjectPlus2.js'
+import {resolveSubject} from '../../utils/resolveSubjectPlus2.js'
 
 // Import the shared panel tracking
 
 console.log('displayTasksCards.js loaded');
 
-let itemOnDisplay = null; // to be able to close the item when the button has a 2nd click
+//let itemOnDisplay = null; // to be able to close the item when the button has a 2nd click
 
 let itemCounts = {};
-
+/*
 function clearContainer(container){//trying to empty the display area when subject changes. Failed
 container.innerHTML='';
-}
+} */
 
 export async function renderCompletedAbandonedTasks(panel, petition = {}, renderType) { //21:10 Sept 3: needs new argument userRole = 'student'
 console.log('displayCompletedTaskCards.render()'); // petition is empty
