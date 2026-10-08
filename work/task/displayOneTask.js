@@ -401,7 +401,7 @@ async function handleCompleteTask(button, assignmentId) {
 
 
 function handleMessageManager(button, assignmentId) {
-    showToast('Manager contact initiated');
+    showToast('Manager contact not yet implemented. Use the Messages menu');
     //should put managerId on clipboard, but we don't know that id here.
 }
 
