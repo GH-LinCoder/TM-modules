@@ -96,7 +96,7 @@ await linkNoteToCategories(noteId, tags);
   
 }
     displayNotes(1);//page 1 does it need another param??
-    cleanupNoteInput('Saved');
+    cleanupNoteInput('Saved'); // This changes the display and has a delay in it
     return noteId;
   } catch (error) {
     console.error('Failed to save note:', error);
