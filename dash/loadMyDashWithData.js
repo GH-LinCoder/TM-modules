@@ -94,16 +94,16 @@ console.log('resolveSubject', subject,
             // Get surveys (when implemented)
 
             
-            const surveys = assignments.surveyData;
+  //          const surveys = assignments.surveyData;
   //          console.log('surveys', surveys); //why log just surveys?
-           const availableSurveys = surveys?.length || 0; //why this?
+  //         const availableSurveys = surveys?.length || 0; //why this?
 
             const activeSurveys = assignments.surveyData.filter(a => !a.completed_at && !a.abandoned_at && !a.is_deleted).length;
             const completedSurveys = assignments.surveyData.filter(a => a.completed_at).length;
             const abandonedSurveys = assignments.surveyData.filter(a => a.abandoned_at).length;
 
         console.log('SURVEYS:active,completed, abandoned',activeSurveys,completedSurveys,abandonedSurveys);
-            const relationsCount = await getRelationsCount();
+   //         const relationsCount = await getRelationsCount();
   // const relations = relationsObject.is.length + relationsObject.of.length;
             
             // Update stats display
@@ -136,7 +136,7 @@ console.log('resolveSubject', subject,
     }
 
 
-
+/*
 async function getRelationsCount() {
     console.log('getRelationsCount()');
     try {
@@ -156,9 +156,7 @@ async function getRelationsCount() {
                 console.error('Error getting assigned surveys:', error);
                 return [];
             }
-
-
-}
+}*/
     
 function  loadSection(sectionName) {
         console.log('loadSection()', sectionName);
@@ -180,7 +178,7 @@ function  loadSection(sectionName) {
 
 
 
-
+/*
 function updateAll(selector, value) {
   console.log('updateAll', selector, value);
     const elements = document.querySelectorAll(selector);
@@ -191,4 +189,4 @@ function updateAll(selector, value) {
   elements.forEach(el => {
     el.textContent = value;
   });
-}
+} */
