@@ -414,7 +414,7 @@ function updateMenuHighlights() {
     btn.classList.remove('ring-4', 'ring-blue-500', 'bg-blue-100', 'active');
   });
 
-  // 2. Apply highlights to ALL buttons for currently open panels
+  // 2. Apply highlights to ALL buttons for currently open panels Legacy?
   panelsOnDisplay.forEach(panel => {
     const pageName = panel.panelName.replace('.html', '');
     
