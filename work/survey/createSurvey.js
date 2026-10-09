@@ -5,7 +5,7 @@ import { SurveyBase } from './SurveyBase.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
 import { showToast } from '../../ui/showToast.js'; 
-import { resolveSubject } from '../../utils/contextSubjectHideModules.js';
+import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 import {icons} from '../../registry/iconList.js';
 
 console.log('CreateSurvey.js loaded');
@@ -20,6 +20,7 @@ export async function render(panel, query = {}) {
 class CreateSurvey extends SurveyBase {
     constructor() {
         super('create'); 
+        this.trustSecurityRate = null;
     }
 
 
@@ -32,9 +33,36 @@ class CreateSurvey extends SurveyBase {
     console.log('Render(', panel, query, ')');     
     panel.innerHTML = this.getSurveyTemplateHTML();
     this.populateForm(panel); 
+    this.populateRatingSelect(panel);
+    this.attachTrustSecuritySelectListener(panel);
     this.attachSaveButtonListener(panel);
     this.attachCounterListeners(panel);
     }
+
+
+async  populateRatingSelect(panel)
+{ console.log('populateRatingSelect()');
+      const userId = appState.query.userId;
+const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
+if (ratingSelect) ratingSelect.insertAdjacentHTML('beforebegin', '<div data-rating-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
+// 1. Fetch definitions via registry
+const ratingDefinitions = await executeIfPermitted(userId, 'readTrustSecurityDefinitions');
+ratingSelect?.parentElement.querySelector('[data-rating-loading]')?.remove();
+
+//2. load into dropdown
+if (ratingSelect && Array.isArray(ratingDefinitions)) {
+  ratingDefinitions.forEach(item => {
+    const option = document.createElement('option');
+    option.value = item.sort_int; // Save numeric rating
+    option.textContent = item.name;
+   // if (Number(item.sort_int) === Number(ratingSelected)) { //ratingSelected??
+     // option.selected = true;
+  //  }
+    ratingSelect.appendChild(option);
+  });
+ }
+}
+
 
 
     // ========================================
@@ -87,6 +115,20 @@ attachCounterListeners(panel){
 
 })
 }
+
+
+// Listener for change in dropdown 
+attachTrustSecuritySelectListener(panel) {
+//let ratingSelected = null; //global to hold the selected rating value from the dropdown. Could be set to 7 How make this global to the class?
+panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (val !== '') {
+    this.ratingSelected = Number(val);
+console.log('ratingSelected:',this.ratingSelected)  
+}
+});}
+
+
     // ========================================
     // DATA OPERATIONS - SURVEY
     // ========================================
@@ -225,6 +267,16 @@ getSurveyTemplateHTML() {
 
                             <textarea id="surveyDescription" placeholder="Survey Description" rows="3" maxlength="2000" required class="w-full p-2 min-h-80 border rounded"></textarea>
                             <p id="surveyDescriptionCounter" class="text-xs text-gray-500">0/2000 characters</p>
+
+      <!--  Rating Select  -->
+            <div class="space-y-2">
+              <label for="ratingSelect" class="block text-sm font-medium text-gray-700">Every appro, task & survey is rated for trustSecurity. It defaults to the minimum</label>
+              <select id="ratingSelect" data-form="ratingSelect" class="w-full p-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="">Change rating (optional)</option>
+              </select>
+            </div>
+
+
 
                             <button id="saveSurveyBtn" class="w-full bg-blue-600 text-white py-2 px-4 rounded hover:bg-blue-700">
                                 Click to publish

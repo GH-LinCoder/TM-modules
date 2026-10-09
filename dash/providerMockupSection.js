@@ -1,7 +1,7 @@
 //  ./dash/moneyManagementSection.js
 console.log('moneyManagementSection.js loaded');
 import { petitionBreadcrumbs } from'../ui/breadcrumb.js';
-import { resolveSubject } from'../utils/contextSubjectHideModules.js';
+import { resolveSubject } from'../utils/resolveSubjectPlus2.js';
 
 function getTemplateHTML() { console.log('getTemplateHTML()');
   return `

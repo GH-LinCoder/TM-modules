@@ -4,22 +4,22 @@
 import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 // Add this import
-import { render as renderOneTask } from './displayOneTask.js';
+//import { render as renderOneTask } from './displayOneTask.js';
 
 //need resolve if use the function from loadMyDashWithData
-import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../../utils/contextSubjectHideModules.js'
+import {resolveSubject} from '../../utils/resolveSubjectPlus2.js'
 
 // Import the shared panel tracking
 
 console.log('displayTasksCards.js loaded');
 
-let itemOnDisplay = null; // to be able to close the item when the button has a 2nd click
+//let itemOnDisplay = null; // to be able to close the item when the button has a 2nd click
 
 let itemCounts = {};
-
+/*
 function clearContainer(container){//trying to empty the display area when subject changes. Failed
 container.innerHTML='';
-}
+} */
 
 export async function renderCompletedAbandonedTasks(panel, petition = {}, renderType) { //21:10 Sept 3: needs new argument userRole = 'student'
 console.log('displayCompletedTaskCards.render()'); // petition is empty
@@ -35,9 +35,9 @@ render(panel, petition, renderType);
 export async function render(panel, petition = {} , renderType='active') { //normal entry point
     //console.log('displayTasksCards.render(', panel, petition, ')');
 console.log('displayTasksCards.render()');
-    const userId = petition.student;
+    const userId = petition.studentId;
     if (!userId) {
-        panel.innerHTML = `<div class="text-red-600 p-4">No user ID provided.</div>`;
+        panel.innerHTML = `<div class="text-red-600 p-4">No user ID provided. Please login.</div>`;
         return;
     }
 

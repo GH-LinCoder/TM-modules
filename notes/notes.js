@@ -36,14 +36,72 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
               <p class="text-xs text-gray-500">The recipient can be a person, group, task, or concept.</p>
             </div>
 
-      
-         <!-- Note Content Input -->
-          <div class="mb-6">
-            <textarea   id="note-content" 
-                      placeholder="Enter your notes here & press [Save/send]... (Use the checkboxes to tag your note for later search & retrieval ) The saved notes can be seen by scrolling down. When you look at saved notes you can click them to mark them as pending, completed or abandonded." 
-                      class="w-full h-32 p-3 border border-gray-300 rounded-lg resize:both; focus:ring-2 focus:ring-blue-500 focus:border-transparent"></textarea>
-          </div>
 
+
+
+<!-- ===== Note Input Section ===== -->
+<div class="mb-6 space-y-4">
+
+  <!-- Title + Help Checkbox Group -->
+    <div class="flex items-center gap-2 mb-2">
+      <!--svg class="w-5 h-5 text-amber-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg-->
+      <!--h4 class="text-sm font-bold text-amber-800">HowTo / Help Note</h4-->
+    
+    
+
+    <div class="space-y-3">
+      
+
+      <!-- Help Checkbox -->
+      <div id="TagSection043" class="flex items-center gap-2 px-3 py-2 bg-white border border-amber-200 rounded-md cursor-pointer hover:bg-amber-50 transition-colors">
+        <input
+          type="checkbox"
+          id="tag-main-help"
+          name="main"
+          data-value="help"
+          value="43"
+          class="h-4 w-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500 cursor-pointer"
+        />
+        <label for="tag-main-help" class="text-sm text-gray-700 cursor-pointer select-none">
+          <span class="font-semibold text-amber-700">Create a How to help</span>
+          <span class="text-gray-500"> — Click this if you are creating instructions to display in the <strong>[How?]</strong> module</span>
+    <!--span>To create a help note that appears in the <strong>How?</strong> module, 
+    enter a title that matches the action name (e.g. display-surveys or edit-task-dialogue</span-->
+          </label>
+    
+        </div>
+    </div>
+  </div>
+
+
+<!-- Title Input -->
+      <div>
+        <label for="note-title" class="block text-sm font-semibold text-gray-700 mb-1">
+          Title
+          <span class="text-xs font-normal text-gray-500">(Only required for HowTo notes)</span>
+        </label>
+        <input
+          type="text"
+          id="note-title"
+          name="note-title"
+          placeholder="Optional for normal notes or messages"
+          class="w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-amber-400 focus:border-amber-400 transition-colors"
+        />
+      </div>
+
+  <!-- Note Content Input -->
+  <div>
+    <label for="note-content" class="block text-sm font-semibold text-gray-700 mb-1">Content</label>
+    <textarea
+      id="note-content"
+      placeholder="Enter your notes here and press [Save/Send]...&#10;&#10;Use the checkboxes to tag your note for later search and retrieval. Saved notes appear below — click them to mark as pending, completed, or abandoned."
+      class="w-full h-32 p-3 border border-gray-300 rounded-lg resize-both text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-colors"
+    ></textarea>
+  </div>
+
+</div>
           <div class="mb-6 space-y-2">
             <label for="fromSelect" class="block text-sm font-medium text-gray-700">Show messages from</label>
             <select id="fromSelect" data-form="approSelect" class="w-full p-2 border border-gray-300 rounded text-sm">
@@ -79,11 +137,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
                   <label for="importance-5">5</label>
                 </div>
 
-                <!-- special HELP! tag -->
-               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection043">
-                  <input type="checkbox" id="tag-main-help" name="main" data-value="help" value="43" class="mr-2 text-blue-600">
-                  <label for="tag-main-help">Help!</label>
-                </div>
+                
                 </div>  
             </div> <!--Closes div class="mb-6" -->
 
@@ -308,14 +362,14 @@ function addClipboardItemsToDropdown(items, selectElement, defaultId = null) {
 
 //petitioner
 
-// is passed when the adminListeners() function calls appState.setQuery({callerContext: action});
+// is passed when the buildPetitionListener() function calls appState.setQuery({callerContext: action});
 //it has to be called prior to passing it in the query{} object when we call this module
-//in adminListeners.js, when we call appState.setQuery(), we need to have added petitioner: petition
+//in buildPetitionListener.js, when we call appState.setQuery(), we need to have added petitioner: petition
 //then we can access it here in the render() function
 //we can also add a default value of 'unknown' if it is not passed
 //so we can see where we are when we open the a new page
 
-//the call here isn't from adminListeners it is from the menu button in the dashboard
+//the call here isn't from buildPetitionListener it is from the menu button in the dashboard
 //so we need to also assign petitioner: {Module:'dashboard', Section:'menu', Action:'howTo'} when we call this module from the menu button
 //we can do this in the dashboardListeners.js file
 //we can also add a default value of 'unknown' if it is not passed

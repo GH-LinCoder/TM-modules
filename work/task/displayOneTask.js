@@ -2,7 +2,7 @@
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
-import { resolveSubject } from '../../utils/contextSubjectHideModules.js';
+import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 import {timeStampConversion} from '../../utils/timeStampConversion.js';
 import { executeAutomations } from '../../utils/executeAutomations.js';
 
@@ -22,7 +22,7 @@ const autoPetition = {
     automation_id: ''
 };
 
-export async function render(panel, query = {}, controller) {
+export async function render(panel, query = {}, controller) {//the task is going to be appended to the panel
     panelEl = panel;
     subject = await resolveSubject();
     const assignmentId = query.assignmentId || appState.query.petitioner?.assignmentId;
@@ -75,8 +75,8 @@ async function renderTask(panel) {
     const stepBeingDisplayed = Number(assignment.stepBeingDisplayed);
     const stepBeingDisplayedData = taskSteps.find(s => Number(s.step_order) === stepBeingDisplayed) || taskSteps[0];
 
-    const currentStepName = stepBeingDisplayedData.step_name || 'Unnamed Step';
-    const currentStepDescription = stepBeingDisplayedData.step_description || 'No description available';
+//    const currentStepName = stepBeingDisplayedData.step_name || 'Unnamed Step';
+  //  const currentStepDescription = stepBeingDisplayedData.step_description || 'No description available';
 
     const buttonHTML = decideButtonsToDisplay(assignment);
     loadStepAutomations(stepBeingDisplayedData.step_id);
@@ -401,7 +401,7 @@ async function handleCompleteTask(button, assignmentId) {
 
 
 function handleMessageManager(button, assignmentId) {
-    showToast('Manager contact initiated');
+    showToast('Manager contact not yet implemented. Use the Messages menu');
     //should put managerId on clipboard, but we don't know that id here.
 }
 
@@ -443,7 +443,7 @@ function renderStepCard(title, step, color, assignmentId = null, studentName = n
    if(title === 'Next Step' || title === 'Previous Step') description = ''; //don't display the description of previious & next step, just the title
  let linkUrl='';
    if(title==='Current Step') linkUrl = step.step_external_url || '';
-console.log ('step',step);
+console.log ('step title',title,step);
    return `
         <div class="bg-white rounded-lg p-6 shadow-md border border-gray-200 relative">
             <div class="text-sm font-semibold text-gray-600 mb-2">
@@ -457,11 +457,31 @@ ${title}${stepNumber ? `: ${stepNumber}` : ''}
 }
 
 async function loadStepAutomations(stepId) {
+    console.log('loadStepAutomations()', 'subject',subject);
+    try {
+        const automations = await executeIfPermitted(subject.approUserId, 'readTaskAutomations', {
+            source_task_step_id: stepId
+        });
+        executeAutomations(automations, subject, autoPetition);
+    } catch (error) {
+        console.error('Failed to load automations:', error);
+        showToast('Could not load automations', 'error');
+    }
+}
+
+
+/*
+async function loadStepAutomations(stepId) {
     try {
         await executeIfPermitted(subject.approUserId, 'readTaskAutomations', {
             source_task_step_id: stepId
         });
+
+// MISSING CODE TO EXECUTE THE AUTOMATIONS
+//the older version of this file had this:         executeAutomations(automations, subject, autoPetition);
+//but that calls a regisrty function which will be subject to RLS & often fail as the user is likely to not have sufficient permission
+//
     } catch (err) {
         console.error('Error loading automations:', err);
     }
-}
+} */

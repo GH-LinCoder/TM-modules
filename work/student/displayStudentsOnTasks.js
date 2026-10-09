@@ -1,7 +1,7 @@
 // ./work/tasks/displayPendingManagerTasks.js
 import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-import { resolveSubject } from '../../utils/contextSubjectHideModules.js';
+import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 
 console.log('displayStudentsOnTasks.js loaded');
 

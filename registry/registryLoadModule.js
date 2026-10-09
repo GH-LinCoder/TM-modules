@@ -41,20 +41,20 @@ export const registry = { // this registry is for loading a new page to the righ
 //  connected to Quick-stats, display but no actual data
 'data': () => import('../work/data/dataTables.js'),
 'analytics': () => import('../work/data/analytics.js'),
-'managers-stats':() => import('../work/task/managers-stats.js'),
-'authors-stats':() => import('../work/task/authors-stats.js'),
-'students-stats' :() => import('../work/student/students-stats.js'),
-'assignments-stats':() => import('../work/task/assignments-stats.js'),
-'humans-stats' :() => import('../work/approfiles/humans-stats.js'),
-'approfiles-stats':()=> import('../work/approfiles/appro-stats.js'),
+'managers-stats':() => import('../work/data/managers-stats.js'),
+'authors-stats':() => import('../work/data/authors-stats.js'),
+'students-stats' :() => import('../work/data/students-stats.js'),
+'assignments-stats':() => import('../work/data/assignments-stats.js'),
+'humans-stats' :() => import('../work/data/humans-stats.js'),
+'approfiles-stats':()=> import('../work/data/appro-stats.js'),
 
 'display-task-choice' :()=> import('../work/task/displayTaskChoice.js'), 
 'display-survey-choice' :()=> import('../work/survey/displaySurveyChoice.js'),
 
-'tasks-stats' :() => import('../work/task/tasks-stats.js'),
-'steps-stats' :() => import('../work/task/steps-stats.js'),
+'tasks-stats' :() => import('../work/data/tasks-stats.js'),
+'steps-stats' :() => import('../work/data/steps-stats.js'),
 
-'surveys-stats' :() => import('../work/survey/survey-stats.js'),
+'surveys-stats' :() => import('../work/data/survey-stats.js'),
 
 ///////////          USER MANAGEMENT                  ////////////
 'user-signup-section': ()=> import('../dash/userManagementSection.js'),
@@ -182,8 +182,8 @@ export const registry = { // this registry is for loading a new page to the righ
 //////////          AUTO-BACKGROUND                  /////////
 'auto-assign-task' :() => import('../work/task/autoAssignTask.js'),  //? not directly loaded?
 'auto-relate-appro': () => import('../work/approfiles/autoRelateAppro.js'), //?not directly loaded
-'auto-execute-automations':() => import('../utils/autoExecuteAutomations.js'), //this imports the above 2
-
+//'auto-execute-automations':() => import('../utils/autoExecuteAutomations.js'), //this imports the above 2
+//commented out 22:34 Sept 30 2026. 
 
 //////////          myDash    - uses same functions a adminDash?               /////////
 "display-profile"  : () => import('../work/approfiles/displayProfile.js'),
@@ -236,13 +236,13 @@ export const registry = { // this registry is for loading a new page to the righ
 
 'data.html': () => import('../work/data/dataTables.js'),
 'analytics.html': () => import('../work/data/analytics.js'),
-'managers.html':() => import('../work/task/managers-stats.js'),
-'authors.html':() => import('../work/task/authors-stats.js'),
-'assignments.html':() => import('../work/task/assignments-stats.js'),
+'managers.html':() => import('../work/data/managers-stats.js'),
+'authors.html':() => import('../work/data/authors-stats.js'),
+'assignments.html':() => import('../work/data/assignments-stats.js'),
 //'members.html' :() => import('../work/data/members.js'),
 'plans.html' :() => import('../plans.js'),
-'tasks.html' :() => import('../work/task/tasks-stats.js'),
-'steps.html' :() => import('../work/task/steps-stats.js'),
+'tasks.html' :() => import('../work/data/tasks-stats.js'),
+'steps.html' :() => import('../work/data/steps-stats.js'),
 
 'adminDash.html':()=>import('../work/dash/adminDash.js'),
 'memberDash.html':()=>import('../work/dash/myDash.js'),

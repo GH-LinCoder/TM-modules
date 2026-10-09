@@ -6,7 +6,7 @@ console.log('displayNotes.js');
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { appState } from '../state/appState.js';
 import { collectUserChoices, userChoices } from './collectUserChoices.js';
-import { resolveSubject} from '../utils/contextSubjectHideModules.js'
+import { resolveSubject} from '../utils/resolveSubjectPlus2.js'
 /**
 userChoices = { //amended 12:22 March 16 2026
     userId: null,
@@ -37,15 +37,15 @@ let totalPages = 0;
 let currentPage = 1;
 let pageSize = 10;
 
-
-function escapeHtml(text) {
+/*
+function escapeHtml(text) { // this does not seem to happen
   if (!text || typeof text !== 'string') return '';
   return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
    ;
-}
+} */
 
 
 export function xfilter() {//not called
@@ -315,202 +315,205 @@ export function reRenderNotes() {
 
 
 export async function renderNotes(notes, totalCount, page, pageSize) {
-        console.log('renderNotes()', page );
-const output = document.getElementById('output'); //this spinner doesn't work
-//        output.innerHTML = `<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading notes...</div>`;
+  console.log('renderNotes()', page);
+  const output = document.getElementById('output');
 
-if(page >totalPages) page = totalPages; //safety check
-else if(page < 1) page = 1;
+  if (page > totalPages) page = totalPages;
+  else if (page < 1) page = 1;
 
+  const filteredNotes = filterNotesAccordingToUserChoices(notes);
+  let previousInt = null;
 
-        const filteredNotes = filterNotesAccordingToUserChoices(notes);
-//could do something if no notes - could explain and allow removal of filters or just explain and return-
-        //const output = document.getElementById('output');        
-        let previousInt = null;
+  // Helper to safely escape text specifically for HTML attributes (like data-*)
+  const escapeAttr = (str) => {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;');
+  };
 
-        const notesHtml = filteredNotes
-          .map(note  =>  {
-            // Skip if sort_int is the same as the previous one.  The view had >1 entry for each note because one row for each tag.
-            // although asking for a page of 10, how many notes depends on how may tags each note has. Probably get 3 to 6
-            //BUT Jan 7 2026 this has changed to a view that has the tags in an array in one column
-            if (note.sort_int === previousInt) {
-              return null;
-            }
-            previousInt = note.sort_int;
+  const noteElements = [];
+
+  filteredNotes.forEach(note => {
+    if (note.sort_int === previousInt) return;
+    previousInt = note.sort_int;
+
+    const content = note.content || '';
+    const iconHTML = getIconHTML(note.status); // Safe because you control this function
+    const statusAttr = note.status ?? '';
+    
+    const statusClasses = {
+      'pending': 'bg-yellow-50 border-yellow-200',
+      'completed': 'bg-green-50 border-green-200',
+      'abandoned': 'bg-red-50 border-red-200'
+    };
+    
+    const statusClass = statusClasses[statusAttr] || 'bg-white border-gray-200';
+    const statusText = statusAttr || 'No status';
+
+    // 1. Create a wrapper element for this specific note
+    const wrapper = document.createElement('div');
+    wrapper.className = 'mb-3';
+
+    // 2. Set the static HTML structure with EMPTY placeholders for dynamic text
+    // We use escapeAttr() for data-attributes so quotes in the content don't break the HTML structure
+    wrapper.innerHTML = getHTMLofUserChoices() + `
+      <div class="bg-gray-50 p-4 rounded-lg border hover:shadow-sm transition-all cursor-pointer group">
         
-            const content = escapeHtml(note.content || '');
-        
-            const iconHTML = getIconHTML(note.status);
-            const statusAttr = note.status ?? '';
-        
-          
-          // Use status-based styling like in the knowledge base
-          const statusClasses = {
-            'pending': 'bg-yellow-50 border-yellow-200',
-            'completed': 'bg-green-50 border-green-200',
-            'abandoned': 'bg-red-50 border-red-200'
-          };
-          
-          const statusClass = statusClasses[statusAttr] || 'bg-white border-gray-200';
-          const statusText = statusAttr || 'No status';
-      
-
-
-
-/*
-      console.log('Rendering note:', {
-  note,
-        id: note.note_id,
-        int:note.sort_int,
-        tags: note.category_ids,
-        author:note.author_name, //why was note.name undefined?
-        authorId:note.author_id,
-        audienceId:note.audience_id, //14:47 Jan 10
-        audienceName :note.audience_name,
-        rawStatus: note.status,
-        statusAttr: statusAttr,
-        statusText: statusText
-      });
-  */    
-         
-          return  getHTMLofUserChoices() + `
-              <div class="mb-3"  >
-          <div   class="bg-gray-50 p-4 rounded-lg border  hover:shadow-sm transition-all cursor-pointer group"
-               >
-            
-            <!-- Status bar - top center -->
-
-            <div data-action="change-status" data-note-id="${note.note_id}" ${statusClass} 
-            class=" flex items-center justify-center mb-3 py-1 bg-gray-100 rounded text-xs 
-            font-light text-gray-600 hover:drop-shadow" title="Click to change the status.">
-              
-            <div class="status-bar"  >
-            <span>Status: ${statusText}</span>
-              ${iconHTML ? `<span class="ml-2">${iconHTML}</span>` : ''}
-              <span class="mx-2">•</span>
-              <span>Click anywhere to cycle through status choices</span>
-           </div>
-              
-           </div>
-                
-                <!-- Note meta & content -->
-<div 
-                data-note-int="${note.sort_int}"
-                data-note-id="${note.note_id}-body"
-
-                data-note-name="${note.author_name}"   
-                data-note-author-id="${note.author_id}"
-                data-note-audience-id="${note.audience_id}" 
-                data-note-content= "${content}" 
-
-class="flex mb-5 bg-white border rounded-lg p-2 drop-shadow-xl hover:drop-shadow" title="Click to copy the text & details into a new message.">
-                    <span class="bg-white font-light text-gray-600  text-sm w-20">Content:</span>
-                   <span class="bg-white text-gray-800 font-medium flex-1  whitespace-pre-line">${content}</span>
-                  </div>
-
-
-                <div 
-                data-note-int="${note.sort_int}"
-                data-note-id="${note.note_id}-body"
-
-                data-note-name="${note.author_name}"   
-                data-note-author-id="${note.author_id}"
-                data-note-audience-id="${note.audience_id}" 
-                data-note-content= "${content}" 
-
-            class="space-y-2 bg-gray-100 hover:drop-shadow" title="Click to copy the text & details into a new message.">
-                  <p class="flex items-center">
-                    <span class="bg-gray-100 text-xs font-light text-gray-600 w-15">Number:</span>
-                    <span class="bg-gray-100 text-xs font-light text-gray-600">${note.sort_int} </span>
-                    <span class="bg-gray-100 text-xs font-light text-gray-600 w-10"></span>
-                    <span class="bg-gray-100 text-xs font-light text-gray-600">Id:</span>
-                    <span class="bg-gray-100 text-xs font-light text-gray-600">${note.note_id}<span>
-                  <!--/p-->
-                  <p class="flex items-center text-xs font-light">
-                    <!--span class="font-light w-20">Created:</span-->
-                    <span class="text-gray-600">Created: ${new Date(note.created_at).toLocaleString()}</span>
-                  </p>
-
-                  <!--span class="flex items-center  bg-gray-100 text-xs font-light text-gray-600"-->
-                    <span class="text-blue-600 text-xs font-light w-10">Tags:</span>
-                    <span class="text-blue-600 text-xs font-light"> ${note.category_ids} </span>
-                    <!--span class=" w-1"> </span-->
-                    <span class=" w-1">=</span>
-                    <span class=" w-1"> </span>
-                    <span class="text-blue-600 text-xs font-light"> ${note.category_names} </span>
-                  </p>
-
-
-                  <p class="text-sm font-light">
-                    <span class="font-light text-xs text-gray-800 w-10">From:</span>
-                    <span class="text-green-600 text-sm w-10"> ${note.author_name} </span>
-                    <span class="font-light text-gray-800 text-xs w-10"> => To:</span>
-                    <span class="text-green-600 text-sm w-10"> ${note.audience_name}</span>
-                  </p>
-
-
-                  
-                </div>
-              </div>
-            </div>
-          `;
-        }).join('');
-      
-         totalPages = Math.ceil(totalCount / pageSize);
-        const controls = `
-          <div class="flex items-center justify-between mt-6 pt-4 border-t border-gray-200">
-
-          <button data-page-action="newer10" data-current-page="${page}" data-total-count="${totalCount}"
-                    class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    ${page === 1 ? 'disabled' : ''}>
-               Skip newer by 10 pages ⬆️⬆️
-            </button>
-
-          <button data-page-action="newer" data-current-page="${page}" data-total-count="${totalCount}"
-                    class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    ${page === 1 ? 'disabled' : ''}>
-               Newer ⬆️
-            </button>
-
-
-            <span class="text-sm text-gray-600">
-              Page ${page} of ${totalPages} (${totalCount} total notes)
-            </span>
-            <button data-page-action="older" data-current-page="${page}" data-total-count="${totalCount}"
-                    class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    ${page === totalPages ? 'disabled' : ''}>
-              Older ⬇️
-            </button>
-            <button data-page-action="older10" data-current-page="${page}" data-total-count="${totalCount}"
-                    class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                    ${page === totalPages ? 'disabled' : ''}>
-              Skip Older by 10 pages ⬇️⬇️
-            </button>
-
-
-
+        <!-- Status bar -->
+        <div data-action="change-status" data-note-id="${escapeAttr(note.note_id)}" class="flex items-center justify-center mb-3 py-1 bg-gray-100 rounded text-xs font-light text-gray-600 hover:drop-shadow ${statusClass}" title="Click to change the status.">
+          <div class="status-bar">
+            <span>Status: <span class="status-text-placeholder"></span></span>
+            ${iconHTML ? `<span class="ml-2 icon-placeholder">${iconHTML}</span>` : ''}
+            <span class="mx-2">•</span>
+            <span>Click anywhere to cycle through status choices</span>
           </div>
-        `;
-let advice = '';      
-if(filteredNotes.length === 0 && userChoices?.mode === 'more-clicks-more-notes') advice = `<p class="text-gray-600">In this mode you need to click tags to find notes OR change mode by clicking the Fewer notes button.</p>`
-else if(filteredNotes.length === 0 && userChoices?.mode != 'more-clicks-more-notes') advice = `<p class="text-gray-600">In this mode you need to remove some tags to find notes OR change mode by clicking the More notes button.</p>`
-output.innerHTML = `
-  <div class="mt-6">
-  <button data-action="toggle-note-context" class="bg-yellow-50 cursor-pointer"> ${displayLoggedInUsersNotes ? '🔄 Change to display clipboard item' : '📋 Change to display my notes'}</button>
+        </div>
+          
+        <!-- Note meta & content -->
+        <div class="flex mb-5 bg-white border rounded-lg p-2 drop-shadow-xl hover:drop-shadow" 
+             data-note-int="${escapeAttr(note.sort_int)}"
+             data-note-id="${escapeAttr(note.note_id)}-body"
+             data-note-name="${escapeAttr(note.author_name)}"   
+             data-note-author-id="${escapeAttr(note.author_id)}"
+             data-note-audience-id="${escapeAttr(note.audience_id)}" 
+             data-note-content="${escapeAttr(content)}"
+             title="Click to copy the text & details into a new message.">
+          <span class="bg-white font-light text-gray-600 text-sm w-20">Content:</span>
+<span class="bg-white text-gray-800 font-medium flex-1 min-w-0 whitespace-pre-line break-words content-placeholder"></span>
+        </div>
+
+        <div class="space-y-2 bg-gray-100 hover:drop-shadow" 
+             data-note-int="${escapeAttr(note.sort_int)}"
+             data-note-id="${escapeAttr(note.note_id)}-body"
+             data-note-name="${escapeAttr(note.author_name)}"   
+             data-note-author-id="${escapeAttr(note.author_id)}"
+             data-note-audience-id="${escapeAttr(note.audience_id)}" 
+             data-note-content="${escapeAttr(content)}"
+             title="Click to copy the text & details into a new message.">
+          
+          <p class="flex items-center">
+            <span class="bg-gray-100 text-xs font-light text-gray-600 w-15">Number:</span>
+            <span class="bg-gray-100 text-xs font-light text-gray-600 sort-int-placeholder"></span>
+            <span class="bg-gray-100 text-xs font-light text-gray-600 w-10"></span>
+            <span class="bg-gray-100 text-xs font-light text-gray-600">Id:</span>
+            <span class="bg-gray-100 text-xs font-light text-gray-600 id-placeholder"></span>
+          </p>
+          
+          <p class="flex items-center text-xs font-light">
+            <span class="text-gray-600 created-at-placeholder"></span>
+          </p>
+
+          <p class="flex items-center">
+            <span class="text-blue-600 text-xs font-light w-10">Tags:</span>
+            <span class="text-blue-600 text-xs font-light cat-ids-placeholder"></span>
+            <span class="w-1">=</span>
+            <span class="text-blue-600 text-xs font-light cat-names-placeholder"></span>
+          </p>
+
+          <p class="text-sm font-light">
+            <span class="font-light text-xs text-gray-800 w-10">From:</span>
+            <span class="text-green-600 text-sm w-10 author-name-placeholder"></span>
+            <span class="font-light text-gray-800 text-xs w-10"> => To:</span>
+            <span class="text-green-600 text-sm w-10 audience-name-placeholder"></span>
+          </p>
+        </div>
+      </div>
+    `;
+
+    // 3. THE MAGIC: Safely inject the dynamic text using textContent
+    // This guarantees that HTML tags are displayed as plain text, and quotes/apostrophes are perfect.
+    wrapper.querySelector('.status-text-placeholder').textContent = statusText;
+    wrapper.querySelector('.content-placeholder').textContent = content;
+    wrapper.querySelector('.sort-int-placeholder').textContent = note.sort_int;
+    wrapper.querySelector('.id-placeholder').textContent = note.note_id;
+    wrapper.querySelector('.created-at-placeholder').textContent = `Created: ${new Date(note.created_at).toLocaleString()}`;
+    wrapper.querySelector('.cat-ids-placeholder').textContent = note.category_ids;
+    wrapper.querySelector('.cat-names-placeholder').textContent = note.category_names;
+    wrapper.querySelector('.author-name-placeholder').textContent = note.author_name;
+    wrapper.querySelector('.audience-name-placeholder').textContent = note.audience_name;
+
+    noteElements.push(wrapper);
+  });
+
+  totalPages = Math.ceil(totalCount / pageSize);
+  
+  // Build pagination controls
+  const controlsWrapper = document.createElement('div');
+  controlsWrapper.className = 'flex items-center justify-between mt-6 pt-4 border-t border-gray-200';
+  controlsWrapper.innerHTML = `
+    <button data-page-action="newer10" data-current-page="${page}" data-total-count="${totalCount}"
+              class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              ${page === 1 ? 'disabled' : ''}>
+         Skip newer by 10 pages ⬆️⬆️
+      </button>
+
+    <button data-page-action="newer" data-current-page="${page}" data-total-count="${totalCount}"
+              class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              ${page === 1 ? 'disabled' : ''}>
+         Newer ⬆️
+      </button>
+
+      <span class="text-sm text-gray-600">
+        Page ${page} of ${totalPages} (${totalCount} total notes)
+      </span>
+      
+      <button data-page-action="older" data-current-page="${page}" data-total-count="${totalCount}"
+              class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              ${page === totalPages ? 'disabled' : ''}>
+        Older ⬇️
+      </button>
+      
+      <button data-page-action="older10" data-current-page="${page}" data-total-count="${totalCount}"
+              class="px-3 py-1 text-sm border border-gray-300 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+              ${page === totalPages ? 'disabled' : ''}>
+        Skip Older by 10 pages ⬇️⬇️
+      </button>
+  `;
+
+  let adviceHTML = '';      
+  if (filteredNotes.length === 0 && userChoices?.mode === 'more-clicks-more-notes') {
+    adviceHTML = `<p class="text-gray-600">In this mode you need to click tags to find notes OR change mode by clicking the Fewer notes button.</p>`;
+  } else if (filteredNotes.length === 0 && userChoices?.mode != 'more-clicks-more-notes') {
+    adviceHTML = `<p class="text-gray-600">In this mode you need to remove some tags to find notes OR change mode by clicking the More notes button.</p>`;
+  }
+
+  // Clear output and build the final structure safely
+  output.innerHTML = '';
+  
+  const mainContainer = document.createElement('div');
+  mainContainer.className = 'mt-6';
+  
+  // Header and toggle button
+  const headerDiv = document.createElement('div');
+  headerDiv.innerHTML = `
+    <button data-action="toggle-note-context" class="bg-yellow-50 cursor-pointer mb-4 px-3 py-1 rounded border border-yellow-200"> ${displayLoggedInUsersNotes ? '🔄 Change to display clipboard item' : '📋 Change to display my notes'}</button>
     <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
       <span class="mr-2">📝</span>
-      Notes displaying ${filteredNotes.length} of ${totalCount}
-       total for ${displayLoggedInUsersNotes ? appState.query.userName : (subject.name || 'Clipboard Subject')};
+      <span class="header-text-placeholder"></span>
     </h3>
-    ${
-      filteredNotes.length === 0 
-        ? advice
-        : `
-          ${notesHtml}
-         
-        `
-    }  ${controls}
-  </div>
-`;
+  `;
+  
+  // Safely inject the header text
+  const headerTextPlaceholder = headerDiv.querySelector('.header-text-placeholder');
+  const subjectName = (typeof subject !== 'undefined' && subject?.name) ? subject.name : 'Clipboard Subject';
+  headerTextPlaceholder.textContent = `Notes displaying ${filteredNotes.length} of ${totalCount} total for ${displayLoggedInUsersNotes ? appState.query.userName : subjectName}`;
+  
+  mainContainer.appendChild(headerDiv);
+
+  if (filteredNotes.length === 0) {
+    const adviceDiv = document.createElement('div');
+    adviceDiv.innerHTML = adviceHTML;
+    mainContainer.appendChild(adviceDiv);
+  } else {
+    // Append all safely built note elements
+    noteElements.forEach(el => mainContainer.appendChild(el));
+  }
+
+  mainContainer.appendChild(controlsWrapper);
+  output.appendChild(mainContainer);
 }
 

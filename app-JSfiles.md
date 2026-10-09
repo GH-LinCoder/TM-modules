@@ -13,7 +13,7 @@ db:
 auth.js, auth_how_use.html, databaseCentral.js, fetchNotes.js, readme.md, schema.html, supabase.js
 
 listeners:
-adminListeners.js, menuListeners.js, menuListeners001.js, windowEventListener.js
+buildPetitionListener.js, menuListeners.js, menuListeners001.js, windowEventPetitionListener.js
 
 notes:
 Xnotes.html, XrenderNotes.js, cleanupNoteInput.js, collectUserChoices.js, displayNotes.js, favicon.ico, labNotesToInclude.js, noteListeners.js, notes.js, reactToClearAllButton.js, reactToNoteClick.js, reactToPageButton.js, reactToSaveButton.js, reactToSaveButtonGH.js, rowsFromNotesWithCategories100rows, saveNoteWithTags.js, saveNoteWithTags001.js, tags.js, theLabNotesFork.md
@@ -31,7 +31,7 @@ ui:
 breadcrumb.js, notImplementedToast.js, readme.md, selectList.js, showToast.js
 
 utils:
-assignmentBase.js, assignmentBase002.js, autoExecuteAutomations.js, clipboardUtils.js, contextSubjectHideModules.js, displayHelpers.js, escapeHTML.js, executeAutomations.js, moveByRadio.js, surveyCardRenderer.js, surveySummaryRenderer.js, surveySummaryRenderer001.js, surveySummaryRenderer002.js, tableSchema.js
+assignmentBase.js, assignmentBase002.js, autoExecuteAutomations.js, clipboardUtils.js, resolveSubjectPlus2.js, displayHelpers.js, escapeHTML.js, executeAutomations.js, moveByRadio.js, surveyCardRenderer.js, surveySummaryRenderer.js, surveySummaryRenderer001.js, surveySummaryRenderer002.js, tableSchema.js
 
 legal:
 privacy.js

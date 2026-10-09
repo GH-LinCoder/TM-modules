@@ -1,7 +1,7 @@
 // ./work/dash/myDash.js
 //import { appState } from '../../state/appState.js';
 //import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-import { showToast } from '../../ui/showToast.js';
+//import { showToast } from '../../ui/showToast.js';
 import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 //import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 //import { icons } from '../../registry/iconList.js';
@@ -13,9 +13,6 @@ function getTemplateHTML() {
         <!-- DASHBOARD CONTAINER STRUCTURE -->
         <div class="my-dashboard bg-gray-100 min-h-screen" data-module="myDash" data-destination='new-panel'>
             
-
-
-
             <!-- DASHBOARD HEADER (unchanged) -->
             <div class="px-0 md:px-6 py-4 border-b bg-green-200 flex justify-between items-center">
                 <div class="name" data-value="userName"  title="The logged-in user name. If this isn't you, please login">userName
@@ -28,15 +25,11 @@ function getTemplateHTML() {
             
             <div class="container mx-auto w-full px-0 md:px-4 py-8 flex flex-col gap-8">
                 
-
-
 <!-- data-value is used in some numbers and data-count is used in others. Don't know why. Don't know if it matters  March 7 2026  -->
 
 <!-- 2. THINGS TO DO SECTION (new structure) -->
                 <div class=" bg-gray-100 rounded-lg shadow p-0 md:p-6 border-t border-blue-500">
                     <!--h2 class="text-xl font-bold text-gray-800 mb-4">Doing my bit ✨  <i>Tasks to handle - click the card below 🔧</i></h2-->
-
-
 
                     <!-- Tasks List -->
                     <div class="mb-6">
@@ -56,19 +49,18 @@ function getTemplateHTML() {
                                                 data-action="display-task-choice" 
                                                 data-destination ="tasks-section" 
                                                 title='Shows a list of all available tasks. You can take on any task by clicking it.' >
-                          <i>(If you want extra tasks click here to add tasks) 🔧</i>
-                        
-                        </div>
+                          <i>(If you want extra tasks click here to add tasks) 🔧</i>                        
+                    </div>
+                    
                     </div>
 
                         <!-- Preserved data-list for existing task loader -->
                     <div class="bg-indigo-100 space-y-1" data-list="my-tasks" data-section="tasks-section">
                         <!--div class="mt-3 flex gap-2 "  data-action="display-task-choice" data-destination ="tasks-section" title='Shows a list of all available tasks. You can take on any task by clicking it.' >
                         <p class="text-sm font-sm text-blue-700 mb-2">If you want more tasks click here to add tasks 🔧</p>
-                        
-                        </div-->
+                    </div-->
 
- <!-- Tasks LOAD HERE    removed from button: data-section="tasks-section"  12:30 Aug 16 2026-->
+ <!-- Extra Tasks LOAD HERE    (removed from button: data-section="tasks-section"  12:30 Aug 16 2026) -->
 
                     </div>
 <!--moved the choose more tasks to above the place where they will display-->
@@ -94,7 +86,7 @@ function getTemplateHTML() {
             </span>
         </div>  
 
-<!-- having the task toggle link here means it is pushed to below the long list of tasks so can't easily toggle off. -->
+<!-- if the task toggle link were here it would be pushed to below the long list of tasks so can't easily toggle off. -->
 
         </div>
 
@@ -114,8 +106,11 @@ function getTemplateHTML() {
   <h3 class="text-sm font-medium text-red-700 mb-1">This is where I manage my students through their tasks. 🔧🛼🧑‍🎓</h3>
   <p class="text-xs text-red-600">Click to see tasks where students are waiting for me to approve their next step.</p>
 </div>
-<div data-section="display-area" data-destination="display-area"></div-->
 
+<!-- DISPLAY FULL TASK & SURVEY HERE -->
+<div data-section="display-area" data-destination="display-area">
+    <div id="detail-content" data-panel="inject-here"></div>
+</div>
 
 
 
@@ -145,7 +140,11 @@ function getTemplateHTML() {
                         <i>(If you want to answer more surveys you can add to your list)</i>  📜 
                        </div>
                             </div>
-                        <!-- Preserved data-list for existing survey loader -->
+
+
+
+
+                            <!-- Preserved data-list for existing survey loader -->
                         <div class="bg-orange-100 space-y-1" data-list="my-surveys" data-section="surveys-section">
 
                             <!-- Surveys LOAD HERE  removed from button data-section="surveys-section"  12:31 Aug 16 2026-->
@@ -211,9 +210,6 @@ Therefore use this anchor div instead -->
                     </div>
 
                     <!-- flexmain.getDisplayArea() find this element for new-panel injections -->
-                    <div data-section="display-area">
-    <div id="detail-content" data-panel="inject-here"></div>
-</div>
 
                 <!-- 4. DETAIL DISPLAY AREA (single injection point for expanded content) -->
                 <div class="bg-white rounded-lg shadow px-0 md:px-6 border-t border-blue-500">
@@ -311,7 +307,7 @@ Therefore use this anchor div instead -->
     `;
 }
 
-export function render(panel, petition = {}) {
+export function render(panel) {
     console.log('adminDash Render()');
     //    console.log('adminDash Render(', panel, petition, ')');
     panel.innerHTML = getTemplateHTML();

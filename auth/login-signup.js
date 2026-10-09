@@ -1,7 +1,7 @@
 // ./work/auth/login-signup.js
 import { createSupabaseClient } from '../db/supabase.js';
-import { executeIfPermitted } from '../registry/executeIfPermitted.js';
-import { showToast } from '../ui/showToast.js';
+//import { executeIfPermitted } from '../registry/executeIfPermitted.js';
+//import { showToast } from '../ui/showToast.js';
 //NOTE: THERE IS A VERSION OF THIS INSIDE INDEX>HTML
 //That may be the version you want to edit.
 
@@ -118,7 +118,7 @@ function showForm(formId) {
 }
 
 
-export async function render(panel, query = {}) {
+export async function render(panel) {
   panel.innerHTML = getTemplateHTML();
 const supabase = createSupabaseClient();
   
@@ -243,7 +243,7 @@ document.getElementById('logoutBtn').addEventListener('click', async (e) => {
   });
 }
 
-// 
+ /*
 async function createAppros(userName, description, email, authUserId){
 console.log('createAppros(', userName, email, authUserId,')');
 if(!userName || !email || !authUserId) {console.log('Error'); return};
@@ -253,7 +253,8 @@ try{ //to create an appro to represent the new user (even though not yet authent
 const newAppro = await executeIfPermitted('createApproFromNewAuthUser', {approName:userName, approDescription: description ,email:email, authUserId:authUserId}) // can't use the newUserId as not auth. Need to use a db function
 console.log('created newppro:', newAppro);
 
-relateNewAppro(newAppro); // relat the new appro to whatever categories seem reasonable. First is [a member] of [human]
+//relateNewAppro(newAppro); // relate the new appro to whatever categories seem reasonable. 
+// First is [a member] of [human]  NEED TO USE RPC .  Login-signup never calls this anyway. It is done by index.html which uses the rpc.
 
 } catch (error) { //console.log(error.message);
 console.log('Failed to create appro: ' + error.message);
@@ -268,13 +269,14 @@ console.log('Failed to create appro: ' + error.message);
 // collect new appro id
 // relate new appro_is [memeber] of [Humans]
 
-}
+} 
 
-async function relateNewAppro(newAppro){
+async function relateNewAppro(newAppro){ //THIS IS WRONG. NEEDS TO USE RPC
 console.log('relateNewAppro()', newAppro);
 const humanAppro ='0a025b65-ea1a-419f-ac79-3bb57978486a';// this is the uuid for the category 'human' appro
 try{//func needs  const { approfile_is, relationship, of_approfile, assigned_by_automation } = payload; assigned by is a uuid
-const newRelation = await executeIfPermitted('autoRelateAppro', {approfile_is:newAppro, relationship:'a member', of_approfile:humanAppro, assigned_by_automation:null}) // can't use the newUserId as not auth. Need to use a db function
+const newRelation = await executeIfPermitted('autoRelateAppro', {approfile_is:newAppro, relationship:'a member', of_approfile:humanAppro, assigned_by_automation:null}) 
+// can't use the newUserId as not auth. Need to use a db function
 console.log('related:', newRelation);
 
 
@@ -285,7 +287,7 @@ console.log('Failed to relate appro: ' + error.message);
     }
 
 }
-
+*/
 /*
 function togglePassword(togglePasswordButton, passwordInput) {
   if (passwordInput.type === "password") {

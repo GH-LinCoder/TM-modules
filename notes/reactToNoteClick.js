@@ -4,7 +4,7 @@ console.log('ui/reactToNoteClick.js');
 import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { appState } from '../state/appState.js';
 import { showToast } from '../ui/showToast.js';
-import { resolveSubject} from '../utils/contextSubjectHideModules.js'
+import { resolveSubject} from '../utils/resolveSubjectPlus2.js'
 import { collectUserChoices, messageAddress} from './collectUserChoices.js';
 
 

@@ -2,12 +2,12 @@
 
 
 import { appState } from '../state/appState.js';
-import { executeIfPermitted } from '../registry/executeIfPermitted.js';
+//import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../ui/showToast.js';
 import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from './clipboardUtils.js';
-import { detectMyDash,resolveSubject, myDashOrAdminDashDisplay} from '../utils/contextSubjectHideModules.js'
-import { getMoveByRadioHTML, updateMoveByRadio  } from './moveByRadio.js';
+import { resolveSubject, myDashOrAdminDashDisplay} from '../utils/resolveSubjectPlus2.js'
+import { getMoveByRadioHTML } from './moveByRadio.js';
 
 console.log('assignmentBase.js loaded');
 // need to accept a parameter for type:  'task' || 'survey'
@@ -33,9 +33,10 @@ export class AssignmentBase {
   }
 
   // Detect module context (myDash vs adminDash)
+  /*
   detectContext(panel) {
     return detectContext(panel);
-  }
+  } */
 
   // Apply presentation rules based on context
   myDashOrAdminDashDisplay(panel) {
@@ -231,14 +232,14 @@ const informationFeedback = panel.querySelector('#informationSection');
 
   // Update assign button state based on selections
   updateAssignButton(panel) {
-    const dropdown003 = panel.querySelector('#dropdown003');
+   // const dropdown003 = panel.querySelector('#dropdown003');
     const dropdown002 = panel.querySelector('#dropdown002');
     const dropdown001 = panel.querySelector('#dropdown001');
     const assignBtn = panel.querySelector('#assignBtn');
     
     if (!dropdown002 || !dropdown001 || !assignBtn) return;
     
-    const dropdown003ed = dropdown003.value !== '';
+    //const dropdown003ed = dropdown003.value !== '';
     const dropdown002ed = dropdown002.value !== '';
     const dropdown001ed = dropdown001.value !== '';
     
@@ -277,12 +278,12 @@ const informationFeedback = panel.querySelector('#informationSection');
     console.log('attachCommonListeners()');
     
     // Subject select change
-    panel.querySelector('#dropdown002')?.addEventListener('change', (e) => {
+    panel.querySelector('#dropdown002')?.addEventListener('change', () => {
       this.updateAssignButton(panel);
     });
 
     // Item select change
-    panel.querySelector('#dropdown001')?.addEventListener('change', (e) => {
+    panel.querySelector('#dropdown001')?.addEventListener('change', () => {
       this.updateAssignButton(panel);
     });
 
@@ -345,7 +346,7 @@ const informationFeedback = panel.querySelector('#informationSection');
   }
 
   // Process assignment (to be implemented by subclasses)
-  async processAssignment(panel) {
+  async processAssignment() {
     console.log('AssignmentBase.processAssignment() - Override in subclass');
     throw new Error('processAssignment must be implemented by subclass');
   }

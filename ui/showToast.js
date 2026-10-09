@@ -10,8 +10,8 @@ export function showToast(message, type = 'info', duration = 10000) {
     container.id = 'toast-container';
     Object.assign(container.style, {
       position: 'fixed',
-      top: '140px',
-      left: '250px',
+      top: '150px',
+      left: '160px',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'flex-end',  // Align toasts to right edge

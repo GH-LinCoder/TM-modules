@@ -7,15 +7,17 @@ import { saveNoteWithTags } from './saveNoteWithTags.js';
 
 
 // Basic HTML escaping
+/*
 function escapeHtml(text) {
   if (typeof text !== 'string') return '';
   return text
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
+//    .replace(/"/g, '&quot;')
+//    .replace(/'/g, '&#039;')
+;
+} */
 
 // Get a single instance of the Supabase client.
 //const supabase = createSupabaseClient();
@@ -30,7 +32,18 @@ export async function reactToSaveButton() {
   }
   console.log("content found");
 
-noteContent = escapeHtml(noteContent);
+//noteContent = escapeHtml(noteContent);
+
+  let noteTitle = document.getElementById('note-title')?.value.trim();
+  if (!noteTitle) {
+    console.log('✗ Note title is empty');
+   // return;  // normally title is optional.  Could test for when category 43 (help) and is obligatory
+  }
+//  console.log("content found");
+
+//noteTitle = escapeHtml(noteTitle);
+
+
 
   const userChoices = collectUserChoices();
 console.log('userChoices', userChoices);
@@ -71,6 +84,7 @@ length: 3 */
   console.log(userChoices.categories.length, " tags found", 'userId:', userId);
 
   const result = await saveNoteWithTags(null, {
+    title: noteTitle,
     content: noteContent,
     tags: userChoices.categories,
     author_id: userId,

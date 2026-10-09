@@ -1,6 +1,6 @@
 // ./dash/loadAdminDashWithData.js
 import {executeIfPermitted} from '../registry/executeIfPermitted.js';
-import { resolveSubject } from '../utils/contextSubjectHideModules.js';
+import { resolveSubject } from '../utils/resolveSubjectPlus2.js';
 import { appState } from '../state/appState.js';
 
 console.log('Imported: loadAdminDashWithData.js');
@@ -75,9 +75,6 @@ data = 'Data: '+ subject.name + ' Appro 🆔: ' + subject.approUserId;  // subje
 console.log('data',data);
 updateAll('[data-value="data-details"]', data); //name and appro id of the selected item (from clipboard or default) 
 
-
-
-    
   }
 
 

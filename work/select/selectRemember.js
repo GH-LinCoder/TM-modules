@@ -429,6 +429,7 @@ updated_at: null
       this.informationFeedback.innerHTML = '<div class="text-gray-500">No items stored yet</div>';
       return;
     }
+           console.log('items on clipboard',appState.clipboard);
 
     this.informationFeedback.innerHTML = appState.clipboard.map((item, index) => `
       <div class="my-2 p-3 bg-white border rounded shadow-sm flex items-center justify-between">

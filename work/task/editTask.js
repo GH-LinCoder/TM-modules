@@ -20,7 +20,7 @@ import { getMoveByRadioHTML } from '../../utils/moveByRadio.js';
 */
 console.log('editTask.js loaded');
 
-import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
+import {  resolveSubject} from '../../utils/resolveSubjectPlus2.js'
 
 
 const subject = await resolveSubject();

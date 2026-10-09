@@ -33,7 +33,7 @@ userChoices = { //amended 12:22 March 16 2026
  */ //this doesn't have the essential data of a note
 
 const userId = appState.query.userId;
-const petitionHistory = appState.query.petitionHistory;
+//const petitionHistory = appState.query.petitionHistory;
 
 export async function getUserInputWriteToDb(){
 console.log("getUserInputWriteToDb()");  
@@ -57,9 +57,7 @@ export async function saveNoteWithTags(supabase, params = {}) {
 
 //const enhancedContent = content;  
 
-const formattedMetadata = JSON.stringify({
-  petitionHistory: appState.query.petitionHistory
-}, null, 2); // ← adds indentation and line breaks
+//const formattedMetadata = JSON.stringify({petitionHistory: appState.query.petitionHistory}, null, 2); // ← adds indentation and line breaks
 
 //note.content += `\n\nmetadata:\n${formattedMetadata}`;
 //console.log('meta:', formattedMetadata);
@@ -98,7 +96,7 @@ await linkNoteToCategories(noteId, tags);
   
 }
     displayNotes(1);//page 1 does it need another param??
-    cleanupNoteInput('Saved');
+    cleanupNoteInput('Saved'); // This changes the display and has a delay in it
     return noteId;
   } catch (error) {
     console.error('Failed to save note:', error);
@@ -162,7 +160,7 @@ if (error) {
 
 console.log('Linked note to categories');
 }
-
+/*
 export async function readReverseCategoryMap() {  // never called?
   console.log('readReverseCategoryMap');
   const { data, error } = await supabase
@@ -175,4 +173,4 @@ export async function readReverseCategoryMap() {  // never called?
   }
 
   return new Map(data.map(cat => [cat.id, cat.category_name]));
-}
+} */

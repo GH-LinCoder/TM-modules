@@ -2,7 +2,7 @@
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
-import { resolveSubject } from '../../utils/contextSubjectHideModules.js';
+import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 import { executeAutomations } from '../../utils/executeAutomations.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 

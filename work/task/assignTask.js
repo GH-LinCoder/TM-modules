@@ -6,7 +6,7 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 //import { petitionBreadcrumbs } from '../../ui/breadcrumb.js';
 import { AssignmentBase } from '../../utils/assignmentBase.js'; // base also used by assign survey
 //import { AssignmentBase } from './assignmentBase.js'; //
-import {  resolveSubject} from '../../utils/contextSubjectHideModules.js'
+import {  resolveSubject} from '../../utils/resolveSubjectPlus2.js'
 
 console.log('assignTask.js loaded');
 

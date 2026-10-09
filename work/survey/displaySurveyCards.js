@@ -3,7 +3,7 @@
 
 import { appState } from '../../state/appState.js';
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
-import { resolveSubject } from '../../utils/contextSubjectHideModules.js';
+import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 
 console.log('displaySurveyCards.js loaded');
 
@@ -16,9 +16,9 @@ export async function renderCompletedAbandonedSurveys(panel, petition = {}, rend
 
 export async function render(panel, petition = {}, renderType = 'active') {
   console.log('displaySurveyCards.render()');
-  const userId = petition.student;
+  const userId = petition.studentId;
   if (!userId) {
-    panel.innerHTML = `<div class="text-red-600 p-4">No user ID provided.</div>`;
+    panel.innerHTML = `<div class="text-red-600 p-4">No user ID provided. Please login.</div>`;
     return;
   }
 

@@ -6,7 +6,7 @@ import { executeIfPermitted } from '../registry/executeIfPermitted.js';
 import { showToast } from '../ui/showToast.js';
 import { petitionBreadcrumbs } from '../ui/breadcrumb.js';
 import { getClipboardItems, onClipboardUpdate } from './clipboardUtils.js';
-import { resolveSubject, detectContext, applyPresentationRules } from './contextSubjectHideModules.js';
+import { resolveSubject, detectContext, applyPresentationRules } from './resolveSubjectPlus2.js';
 
 console.log('assignmentBase.js loaded');
 // need to accept a parameter for assignmenttype:  'task' || 'survey'
