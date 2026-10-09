@@ -53,7 +53,7 @@ function canUseSelector() {
 */
 
 export function render(panel, query = {}) {
-  console.log('devDataSelector.render()');
+  console.log('selectRemember.render()');
 
      
 /*
