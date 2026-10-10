@@ -25,7 +25,7 @@ const autoPetition = {
 export async function render(panel, query = {}, controller) {//the task is going to be appended to the panel
     panelEl = panel;
     subject = await resolveSubject();
-    const assignmentId = query.assignmentId || appState.query.petitioner?.assignmentId;
+    const assignmentId = appState.displaySurveysTasks.assignmentId;
 
     autoPetition.auth_id = subject.id;
     autoPetition.appro_id = subject.approUserId;

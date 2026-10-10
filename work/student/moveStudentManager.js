@@ -198,7 +198,7 @@ async function handleStudentMove(data, targetStep, managerRole, card) {
       ...data, // Includes studentId, assignmentId, currentStep
       targetStep: targetStep,
       managerRole: managerRole,
-      task_header_id: appState.query.studentsManagers.taskHeaderId
+      task_header_id: appState.studentsManagers.taskHeaderId
     };
 
     console.log('📦 Payload sent to registry:', payload);
@@ -233,11 +233,11 @@ async function handleStudentMove(data, targetStep, managerRole, card) {
 }
 
 export async function getAssignmentsForKanban(panel) {
-  console.log('🚀 Kanban with real data for task:', appState.query.studentsManagers.taskHeaderId);
+  console.log('🚀 Kanban with real data for task:', appState.studentsManagers.taskHeaderId);
 
   panel.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
 
-  const taskId = appState.query.studentsManagers.taskHeaderId;
+  const taskId = appState.studentsManagers.taskHeaderId;
 
   try {
     const assignments = await executeIfPermitted(appState.query.userId, 'readAssignmentsForTask', {
@@ -293,7 +293,7 @@ console.log('🔍 Full first row:', assignments[0]);
     const stepData = stepsMap.get(stepNum);
     stepData.student_count += 1;
     
- const studentManagerRole = appState.query.studentsManagers.assignmentRoles[row.assignment_id] || 'ERROR';
+ const studentManagerRole = appState.studentsManagers.assignmentRoles[row.assignment_id] || 'ERROR';
 
     stepData.students.push({
       student_id: row.student_id,

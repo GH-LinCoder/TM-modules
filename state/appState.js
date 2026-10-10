@@ -31,30 +31,6 @@ export const appState = {
   // Global record of what panels (modules) are on screen
   panelsOnDisplay: [],  //added 21:37 Oct 4 2026. Was in flexmain as a global
 
-
-
-    // Formalized petitioner schema including all module-written fields
-    /** @type {Petitioner} */
-    petitioner: { //used lots
-      Module: null,
-      Section:null,          
-      Action: null,
-      Destination:null,
-
-      studentId:null, //used sometimes
-
-
-//the following may be better somewhere else in the object
-//STUDENTS & MANAGERS
-      //assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
-      //taskHeaderId: null,    // displayStudentsOnTasks.js / moveStudentManager.js
-//the following may be better somewhere else in the object
-      //assignmentId: null,    // displaySurveyCards.js  / displayOneSurvey / displayTaskCards.js 
-      //surveyHeader: null,    // displaySurveyCards.js  / displayOneSurvey (should be id ?)
-      //currentStep: null      // displaySurveyCards.js  / displayOneSurvey   
-    },
-
-
     studentsManagers:{//STUDENTS & MANAGERS - possible new position
       assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
       taskHeaderId: null,    // displayStudentsOnTasks.js / moveStudentManager.js
@@ -70,6 +46,32 @@ export const appState = {
 
   // Active query parameters and context
   query: {
+
+    // Formalized petitioner schema including all module-written fields
+    /** @type {Petitioner} */
+    petitioner: { //used lots & must stay inside query unless refactor all the calls
+      Module: null,
+      Section:null,          
+      Action: null,
+      Destination:null,
+
+      studentId:null, //used sometimes
+
+//the following were moved somewhere else in the object 23:00 Oct 10 2026
+//STUDENTS & MANAGERS
+      //assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
+      //taskHeaderId: null,    // displayStudentsOnTasks.js / moveStudentManager.js
+//the following were moved somewhere else in the object 23:00 Oct 10 2026
+      //assignmentId: null,    // displaySurveyCards.js  / displayOneSurvey / displayTaskCards.js 
+      //surveyHeader: null,    // displaySurveyCards.js  / displayOneSurvey (should be id ?)
+      //currentStep: null      // displaySurveyCards.js  / displayOneSurvey   
+    },
+
+
+
+
+
+
     userIdentified: null,  // not used? Oct 6 2026
     userAuthId: null, //used
     userId: null, //used
@@ -83,7 +85,7 @@ export const appState = {
     petitionHistory: [], 
     maxHistoryLength:10, //limits how many modules to display in lists
 
-    requestedAction: 'Dont-Panic', //not used? cot 10 2026
+    requestedAction: 'Dont-Panic', //not used? Oct 10 2026
     payload: [],  //autoRelateAppro.js
     response: [], //not used Oct 10 2026
     remember: {}, //not used Oct 10 2026
@@ -135,7 +137,7 @@ export const appState = {
    * @this {typeof appState}
    * @param {Petitioner} petition
    */
-  setPetitioner(petition) {
+  setPetitioner(petition) { //used lots
     console.log('setPetitioner()');
 
     const currentAction = this.query.petitioner.Action;

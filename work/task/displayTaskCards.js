@@ -211,7 +211,7 @@ detailAnchor.scrollIntoView({
 
 ///* this module used to use petition, but that wasa mistake. 2nd click closes panel
  card.addEventListener('click', () => {
-    appState.query.displaySurveysTasks.assignmentId = task.assignment_id
+    appState.displaySurveysTasks.assignmentId = task.assignment_id
   });
 
   //*/ 

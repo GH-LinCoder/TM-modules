@@ -1,7 +1,7 @@
 // ./work/survey/displayOneSurvey.js
 import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
-//import { appState } from '../../state/appState.js';
+import { appState } from '../../state/appState.js';
 import { detectMyDash, resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 import { executeAutomations } from '../../utils/executeAutomations.js';
 import { getSurveyHeaderHTML, renderSurveyQuestion, getInfoFeedbackHTML } from '../../utils/surveySummaryRenderer.js';
@@ -96,9 +96,9 @@ export async function render(panel, query = {}) {
     // This handles both the direct call method and the new flexmain petition method
     const petitioner = query || appState.query.petitioner || {};
     
-    const assignmentId = displaySurveysTasks.assignmentId;
-    const surveyId = petitioner.surveyId || displaySurveysTasks.surveyHeaderId; // ✅ Fixes the naming mismatch!
-    const currentStep = displaySurveysTasks.currentStep || 1; // ✅ Fixes your "where is currentStep set?" comment
+    const assignmentId = appState.displaySurveysTasks.assignmentId;
+    const surveyId = petitioner.surveyId || appState.displaySurveysTasks.surveyHeaderId; // ✅ Fixes the naming mismatch!
+    const currentStep = appState.displaySurveysTasks.currentStep || 1; // ✅ Fixes your "where is currentStep set?" comment
     const entityType = petitioner.entityType;
     
     console.log('displayOneSurvey extracted:', { assignmentId, surveyId, currentStep });
