@@ -5,21 +5,7 @@ console.log('Imported appState.js');
 // the function here dispatches a window event which is picked up by windowEventPetitionListener
 //which calls openClosePanelsByRule() which opens a new module or closes the existing module
 
-/**
- * @typedef {Object} Petitioner
- * @property {string|null} [Module]
- * @property {string|null} [Section]
- * @property {string|null} [Action]
- * @property {string|null} [Destination]
- * 
- * 
- * @property {string|null} [studentId]
- * @property {string[]|null} [assignmentRoles]
- * @property {string|null} [assignmentId]
- * @property {string|null} [surveyHeader]
- * @property {number|null} [currentStep]
- * @property {string|null} [taskHeaderId]
- */
+
 
 
 export const appState = {
@@ -31,11 +17,23 @@ export const appState = {
   // Global record of what panels (modules) are on screen
   panelsOnDisplay: [],  //added 21:37 Oct 4 2026. Was in flexmain as a global
 
+  /**
+ * @typedef {Object} StudentsManagers
+ * @property {string[]|null} assignmentRoles
+ * @property {string|null} taskHeaderId
+**/
+
     studentsManagers:{//STUDENTS & MANAGERS - possible new position
       assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
       taskHeaderId: null,    // displayStudentsOnTasks.js / moveStudentManager.js
     },
 
+/**
+ * @typedef {Object} DisplaySurveysTasks
+ * @property {string|null} assignmentId
+ * @property {string|null} surveyHeaderId
+ * @property {number|null} currentStep
+ */
 
     displaySurveysTasks:{ // - possible new position
       assignmentId: null,    // displaySurveyCards.js  / displayOneSurvey / displayTaskCards.js 
@@ -48,7 +46,15 @@ export const appState = {
   query: {
 
     // Formalized petitioner schema including all module-written fields
-    /** @type {Petitioner} */
+    /**
+ * @typedef {Object} Petitioner
+ * @property {string|null} [Module]
+ * @property {string|null} [Section]
+ * @property {string|null} [Action]
+ * @property {string|null} [Destination]
+ * 
+ * @property {string|null} [studentId]
+ */
     petitioner: { //used lots & must stay inside query unless refactor all the calls
       Module: null,
       Section:null,          
