@@ -96,9 +96,9 @@ export async function render(panel, query = {}) {
     // This handles both the direct call method and the new flexmain petition method
     const petitioner = query || appState.query.petitioner || {};
     
-    const assignmentId = petitioner.assignmentId;
-    const surveyId = petitioner.surveyId || petitioner.surveyHeader; // ✅ Fixes the naming mismatch!
-    const currentStep = petitioner.currentStep || 1; // ✅ Fixes your "where is currentStep set?" comment
+    const assignmentId = displaySurveysTasks.assignmentId;
+    const surveyId = petitioner.surveyId || displaySurveysTasks.surveyHeaderId; // ✅ Fixes the naming mismatch!
+    const currentStep = displaySurveysTasks.currentStep || 1; // ✅ Fixes your "where is currentStep set?" comment
     const entityType = petitioner.entityType;
     
     console.log('displayOneSurvey extracted:', { assignmentId, surveyId, currentStep });

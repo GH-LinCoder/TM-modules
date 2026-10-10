@@ -100,9 +100,9 @@ export async function render(panel, petition = {}, renderType = 'active') {
 
       // Assign petition context when clicked; allow event to bubble up to flexmain
       card.addEventListener('click', () => {
-        appState.query.petitioner.assignmentId = survey.assignment_id;
-        appState.query.petitioner.surveyHeader = card.dataset.surveyHeader;
-        appState.query.petitioner.currentStep = survey.current_step;
+        appState.query.displaySurveysTasks.assignmentId = survey.assignment_id;
+        appState.query.displaySurveysTasks.surveyHeaderId = card.dataset.surveyHeader;
+        appState.query.displaySurveysTasks.currentStep = survey.current_step;
       });
 
       container.appendChild(card);

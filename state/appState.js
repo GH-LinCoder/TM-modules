@@ -23,12 +23,7 @@ console.log('Imported appState.js');
 
 
 export const appState = {
-  // Payment provider metadata
-  paymentProvider: {
-    platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4',
-    approId: '8f9e5a4d-b9ea-458a-b7a6-843c7022e8d5',
-    name: 'Lemon Squeezy',
-  },
+  
 
   // Global clipboard storage
   clipboard: [],
@@ -36,25 +31,42 @@ export const appState = {
   // Global record of what panels (modules) are on screen
   panelsOnDisplay: [],  //added 21:37 Oct 4 2026. Was in flexmain as a global
 
-  // Authenticated user state
-  authUser: { // looks like not used Oct 6 2026
-    userAuthId: null,
-    userId: null,
-    userName: null,
-    userEmail: null,
-    userType: 'app-human',
-    created_at: null,
-  },
 
-  // Currently active/chosen user context
-  chosenSubject: { // Global search found no use of this Oct 6 2026
-    userChosenAuthId: null,
-    userChosenId: null,
-    userName: null,
-    userEmail: null,
-    userType: 'app-human',
-    created_at: null,
-  },
+
+    // Formalized petitioner schema including all module-written fields
+    /** @type {Petitioner} */
+    petitioner: { //used lots
+      Module: null,
+      Section:null,          
+      Action: null,
+      Destination:null,
+
+      studentId:null, //used sometimes
+
+
+//the following may be better somewhere else in the object
+//STUDENTS & MANAGERS
+      //assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
+      //taskHeaderId: null,    // displayStudentsOnTasks.js / moveStudentManager.js
+//the following may be better somewhere else in the object
+      //assignmentId: null,    // displaySurveyCards.js  / displayOneSurvey / displayTaskCards.js 
+      //surveyHeader: null,    // displaySurveyCards.js  / displayOneSurvey (should be id ?)
+      //currentStep: null      // displaySurveyCards.js  / displayOneSurvey   
+    },
+
+
+    studentsManagers:{//STUDENTS & MANAGERS - possible new position
+      assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
+      taskHeaderId: null,    // displayStudentsOnTasks.js / moveStudentManager.js
+    },
+
+
+    displaySurveysTasks:{ // - possible new position
+      assignmentId: null,    // displaySurveyCards.js  / displayOneSurvey / displayTaskCards.js 
+      surveyHeaderId: null,    // displaySurveyCards.js  / displayOneSurvey (should be id ?)
+      currentStep: null      // displaySurveyCards.js  / displayOneSurvey   
+    },
+
 
   // Active query parameters and context
   query: {
@@ -68,33 +80,17 @@ export const appState = {
     defaultManagerId: null,  //used
     defaultManagerName: 'Lin Coder', //used
 
-    // Formalized petitioner schema including all module-written fields
-    /** @type {Petitioner} */
-    petitioner: { //used lots
-      Module: null,
-      Section:null,          
-      Action: null,
-      Destination:null,
-studentId:null,
+    petitionHistory: [], 
+    maxHistoryLength:10, //limits how many modules to display in lists
 
-//the following may be better somewhere else in the object
-      assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
-      assignmentId: null,    // displaySurveyCards.js & displayTaskCards.js
-      surveyHeader: null,    // displaySurveyCards.js
-      currentStep: null,     // displaySurveyCards.js
-      taskHeaderId: null    // displayTaskCards.js
-      
-    },
+    requestedAction: 'Dont-Panic', //not used? cot 10 2026
+    payload: [],  //autoRelateAppro.js
+    response: [], //not used Oct 10 2026
+    remember: {}, //not used Oct 10 2026
 
-    petitionHistory: [],  //global search finds no use??
-    maxHistoryLength:10,
-    requestedAction: 'Dont-Panic',
-    payload: [],
-    response: [],
-    remember: {},
-
+    
     // Automated petition execution payload
-    autoPetition: { //unknown if this is used Oct 6 2026
+    autoPetition: { //not used 10 Oct 2026 ? at least not in JS
       user: {
         authId: null,
         approId: null,
@@ -114,7 +110,25 @@ studentId:null,
         secondary: null, // taskstepid | surveyquestionid | relationship | ofappro | null
       },
     },
+
+
   },
+
+
+
+
+
+
+
+// Payment provider metadata
+  paymentProvider: {
+    platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4',
+    approId: '8f9e5a4d-b9ea-458a-b7a6-843c7022e8d5',
+    name: 'Lemon Squeezy',
+  },
+
+
+
 
   // --- State Modification Methods ---
 /** 
@@ -152,7 +166,42 @@ studentId:null,
     );
   },
 
-  setQuery(updates) { //is this used?
+
+
+
+
+
+
+
+
+
+
+
+
+//NOT USED ???
+
+  // Authenticated user state
+  authUser: { // looks like not used Oct 6 2026
+    userAuthId: null,
+    userId: null,
+    userName: null,
+    userEmail: null,
+    userType: 'app-human',
+    created_at: null,
+  },
+
+  // Currently active/chosen user context
+  chosenSubject: { // Global search found no use of this Oct 6 2026
+    userChosenAuthId: null,
+    userChosenId: null,
+    userName: null,
+    userEmail: null,
+    userType: 'app-human',
+    created_at: null,
+  },
+
+
+  setQuery(updates) { //not used 10 Oct 2026
     Object.assign(this.query, updates);
     window.dispatchEvent(
       new CustomEvent('state-change', {
@@ -161,7 +210,7 @@ studentId:null,
     );
   },
 
-  resetQuery() { //is this used?
+  resetQuery() { // not used 10 Oct 2026
     console.log('appState.resetQuery');
     const preserveUserId = this.query.userId;
 
@@ -192,7 +241,7 @@ studentId:null,
       Action: null,
     });
 
-    // Mutate autoPetition sub-objects in-place
+    // Mutate autoPetition sub-objects in-place  Seems that this is not used 10 Oct 2026
     Object.assign(this.query.autoPetition.user, { authId: null, approId: null });
     Object.assign(this.query.autoPetition.existing, { automationId: null, assignmentId: null });
     Object.assign(this.query.autoPetition.source, { type: null, header: null, secondary: null });
@@ -202,6 +251,13 @@ studentId:null,
     this.query.petitionHistory = [];
   },
 };
+
+
+
+
+
+
+//Deep seal idea
 
 // Recursive helper to deeply seal all nested objects
 //I have no idea if this is worth having.
