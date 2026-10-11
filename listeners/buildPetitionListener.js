@@ -83,7 +83,7 @@ if (e.target.closest('select, input, textarea')) {
 
 
     const petition = readPetition(e);
-    console.log('petition (', petition, ')');
+   // console.log('petition (', petition, ')');
     if (!petition) {
       console.log('No petition found, exiting listener');
       return;
