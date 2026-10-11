@@ -58,10 +58,10 @@ XcreateOrUpdateApprofile: {//this should be separate functions I don't think it 
       return data; } 
 },
 
-//AUTO  !!!!!  What are these functions ??? It looks like they are writing tothe DB BUT THIS IS IMPOSSIBLE
+//AUTO  !!!!!  What are these functions ??? It looks like they are writing to the DB BUT THIS IS IMPOSSIBLE
 // WE CANNOT HAVE REGISTRY FUNCTIONS DOING THIS !!!! 
 // 'auto' cannot be done in registry functions because they will be stopped by RLS. 
-//WHO CREATED THIS????
+//This may be out of date legacy amd no longer used
 
 
 // For auto-assign-task  // this is used because it has an entry in the automations column that is lacking in createAssignment
@@ -74,7 +74,7 @@ autoAssignTask: { //how does this get past the permission system? (It is called 
   },
   handler: async (supabase, userId, payload) => {
     const { task_header_id, step_id, student_id, manager_id, assigned_by_automation } = payload;
-    console.log('autoAssignTASK-registry()', payload);
+    console.log('autoAssignTASK-registry() WARN-should be rpc??', payload);
     
 
 let existing=null;
@@ -120,7 +120,7 @@ autoAssignSurvey: {
   },
   handler: async (supabase, userId, payload) => {
     const { survey_header_id,  student_id, assigned_by_automation } = payload;
-    console.log('autoAssignSURVEY-registry()','survey:', survey_header_id, 'student:',  student_id,'assigned by:', assigned_by_automation );
+    console.log('autoAssignSURVEY-registry() WARN should be rpc','survey:', survey_header_id, 'student:',  student_id,'assigned by:', assigned_by_automation );
     
 let existing=null;
 
@@ -167,7 +167,7 @@ autoRelateAppro: {
   },
   handler: async (supabase, userId, payload) => {
     const { approfile_is, relationship, of_approfile, assigned_by_automation } = payload;
-    console.log('autoRelateAppro()', payload);
+    console.log('autoRelateAppro() WARN should be rpc', payload);
 
 let existing=null;
 
