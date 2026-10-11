@@ -61,15 +61,6 @@ export const appState = {
       Destination:null,
 
       studentId:null, //used sometimes
-
-//the following were moved somewhere else in the object 23:00 Oct 10 2026
-//STUDENTS & MANAGERS
-      //assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
-      //taskHeaderId: null,    // displayStudentsOnTasks.js / moveStudentManager.js
-//the following were moved somewhere else in the object 23:00 Oct 10 2026
-      //assignmentId: null,    // displaySurveyCards.js  / displayOneSurvey / displayTaskCards.js 
-      //surveyHeader: null,    // displaySurveyCards.js  / displayOneSurvey (should be id ?)
-      //currentStep: null      // displaySurveyCards.js  / displayOneSurvey   
     },
 
     petitionHistory: [], 
@@ -120,25 +111,7 @@ export const appState = {
 
 
 
-
-
-
-
-// Payment provider metadata. THIS CANNOT BE ALLOWED. 
-// Cannot be hard coded as each customer of the app would have different account
-// The account has to be read from tables.
-  paymentProvider: {//Not used Oct 11 2026 
-    platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4', //search Not used Oct 11 2026
-    approId: '8f9e5a4d-b9ea-458a-b7a6-843c7022e8d5',
-    name: 'Lemon Squeezy',
-  },
-
-
-
-
   // --- State Modification Methods ---
-  //Probably should have method for studentsManagers and displaySurveysTasks sections
-  //probably without a windows state change
 /** 
    * @this {typeof appState}
    * @param {Petitioner} petition
@@ -181,6 +154,15 @@ if(!petition.Module ||!petition.Section || !petition.Action || !petition.Destina
   },
 
 
+/**
+ * @typedef {Object} StudentsManagersUpdates
+ * @property {string} [taskHeaderId] - UUID, used in displayStudentsOnTasks.js / moveStudentManager.js
+ * @property {Array<string>|Object} [assignmentRoles] - Used in displayStudentsOnTasks.js / moveStudentManager.js
+ */
+/**
+ * @param {StudentsManagersUpdates} updates - Accepts partial updates
+ */
+
 setStudentsManagers(updates) {//not yet used in modules Oct 11 2026
   console.log('setStudentsManagers()');
   Object.assign(this.studentsManagers, updates);
@@ -190,7 +172,15 @@ setStudentsManagers(updates) {//not yet used in modules Oct 11 2026
 
 },
 
-
+/**
+ * @typedef {Object} DisplaySurveysTasksUpdates
+ * @property {string} [assignmentId] - UUID, used in displaySurveyCards.js / displayOneSurvey / displayTaskCards.js
+ * @property {string} [surveyHeaderId] - UUID, used in displaySurveyCards.js / displayOneSurvey
+ * @property {number|string} [currentStep] - Used in displaySurveyCards.js / displayOneSurvey
+ */
+/**
+ * @param {DisplaySurveysTasksUpdates} updates - Accepts partial updates
+ */
 setDisplaySurveysTasks(updates) {//not yet used in modules Oct 11 2026
 console.log('setDisplaySurveysTasks');
 Object.assign(this.displaySurveysTasks, updates);
@@ -202,14 +192,21 @@ Object.assign(this.displaySurveysTasks, updates);
 },
 
 
+///////////////////   below are old sections and methods not currently used Oct 10 2026
 
+//////    SECTIONS of object not currently used in app  10 Oct 2026   /////
 
+/*
+// Payment provider metadata. THIS CANNOT BE ALLOWED. 
+// Cannot be hard coded as each customer of the app would have different account
+// The account has to be read from tables.
+  paymentProvider: {//Not used Oct 11 2026 
+    platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4', //search Not used Oct 11 2026
+    approId: '8f9e5a4d-b9ea-458a-b7a6-843c7022e8d5',
+    name: 'Lemon Squeezy',
+  },
+*/
 
-
-
-
-
-//NOT USED ???
 /*
   // Authenticated user state
   authUser: { // looks like not used Oct 6 2026
@@ -232,6 +229,13 @@ Object.assign(this.displaySurveysTasks, updates);
     created_at: null,
   },
 */
+
+
+
+
+
+
+//////    METHODS not currently used in app  10 Oct 2026   /////
 
   setQuery(updates) { //not used 10 Oct 2026
     Object.assign(this.query, updates);
@@ -284,7 +288,7 @@ Object.assign(this.displaySurveysTasks, updates);
   },
 };
 
-
+//END of methods not currently used
 
 
 
