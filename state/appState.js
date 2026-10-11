@@ -72,13 +72,11 @@ export const appState = {
       //currentStep: null      // displaySurveyCards.js  / displayOneSurvey   
     },
 
-
-
-
-
+    petitionHistory: [], 
+    maxHistoryLength:10, //limits how many modules to display in lists
 
     userIdentified: null,  // not used? Oct 6 2026
-    userAuthId: null, //used
+    userAuthId: null, //used by resolveSubjectPlus2
     userId: null, //used
     userName: null, //used
     userEmail: null, //used 
@@ -87,11 +85,10 @@ export const appState = {
     defaultManagerId: null,  //used
     defaultManagerName: 'Lin Coder', //used
 
-    petitionHistory: [], 
-    maxHistoryLength:10, //limits how many modules to display in lists
-
     requestedAction: 'Dont-Panic', //not used? Oct 10 2026
+
     payload: [],  //autoRelateAppro.js
+
     response: [], //not used Oct 10 2026
     remember: {}, //not used Oct 10 2026
 
@@ -130,8 +127,8 @@ export const appState = {
 // Payment provider metadata. THIS CANNOT BE ALLOWED. 
 // Cannot be hard coded as each customer of the app would have different account
 // The account has to be read from tables.
-  paymentProvider: {
-    platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4',
+  paymentProvider: {//Not used Oct 11 2026 
+    platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4', //search Not used Oct 11 2026
     approId: '8f9e5a4d-b9ea-458a-b7a6-843c7022e8d5',
     name: 'Lemon Squeezy',
   },
@@ -213,7 +210,7 @@ Object.assign(this.displaySurveysTasks, updates);
 
 
 //NOT USED ???
-
+/*
   // Authenticated user state
   authUser: { // looks like not used Oct 6 2026
     userAuthId: null,
@@ -223,7 +220,8 @@ Object.assign(this.displaySurveysTasks, updates);
     userType: 'app-human',
     created_at: null,
   },
-
+*/
+/*
   // Currently active/chosen user context
   chosenSubject: { // Global search found no use of this Oct 6 2026
     userChosenAuthId: null,
@@ -233,7 +231,7 @@ Object.assign(this.displaySurveysTasks, updates);
     userType: 'app-human',
     created_at: null,
   },
-
+*/
 
   setQuery(updates) { //not used 10 Oct 2026
     Object.assign(this.query, updates);
