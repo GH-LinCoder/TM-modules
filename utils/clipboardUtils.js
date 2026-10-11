@@ -21,7 +21,8 @@ export function getClipboardItems({ as = null, type = null, sortBy = 'newest' } 
 }
 
 export function onClipboardUpdate(callback) {
-  console.log('onClipboarUpdated() document=', document);
+  console.log('onClipboarUpdated()');
+//  console.log('document=', document);
   document.addEventListener('clipboard:updated', (e) => {
     callback(e.detail.clipboard);
   });
