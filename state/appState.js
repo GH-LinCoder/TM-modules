@@ -17,12 +17,12 @@ export const appState = {
   // Global record of what panels (modules) are on screen
   panelsOnDisplay: [],  //added 21:37 Oct 4 2026. Was in flexmain as a global
 
-  /**
+
+/**
  * @typedef {Object} StudentsManagers
  * @property {string[]|null} assignmentRoles
  * @property {string|null} taskHeaderId
 **/
-
     studentsManagers:{//STUDENTS & MANAGERS - possible new position
       assignmentRoles: null, // displayStudentsOnTasks.js / moveStudentManager.js
       taskHeaderId: null,    // displayStudentsOnTasks.js / moveStudentManager.js
@@ -34,7 +34,6 @@ export const appState = {
  * @property {string|null} surveyHeaderId
  * @property {number|null} currentStep
  */
-
     displaySurveysTasks:{ // - possible new position
       assignmentId: null,    // displaySurveyCards.js  / displayOneSurvey / displayTaskCards.js 
       surveyHeaderId: null,    // displaySurveyCards.js  / displayOneSurvey (should be id ?)
@@ -128,7 +127,9 @@ export const appState = {
 
 
 
-// Payment provider metadata
+// Payment provider metadata. THIS CANNOT BE ALLOWED. 
+// Cannot be hard coded as each customer of the app would have different account
+// The account has to be read from tables.
   paymentProvider: {
     platformId: 'e056bb4b-791a-49bd-b7ab-8e9c143ab7a4',
     approId: '8f9e5a4d-b9ea-458a-b7a6-843c7022e8d5',
@@ -139,6 +140,8 @@ export const appState = {
 
 
   // --- State Modification Methods ---
+  //Probably should have method for studentsManagers and displaySurveysTasks sections
+  //probably without a windows state change
 /** 
    * @this {typeof appState}
    * @param {Petitioner} petition
@@ -156,15 +159,21 @@ export const appState = {
       }
     }
 
-    // Update petitioner in-place
+if(!petition.Module ||!petition.Section || !petition.Action || !petition.Destination) console.log('WARN petition incomplete', petition);
+    // Update petitioner in-place. Using 'Object.assign, means that a partial petition that has missing bits will be melded with the old petition.
+    //Old:  Module='adminDash' Section='QuickActs' Action='edit-task-dialogue' destination='display-araea'
+  //if the new petition just sends: Action='edit-survey-dialogue' then the module, section and destination stay the same.
+  //This may be why partial petitions work. Or this may be a menace that will cause confusion.
+//Is this wise??
     Object.assign(this.query.petitioner, petition);
 
     // Identify if action is a database data request
     let requestType = 'QUERY_UPDATE';
+    /* //commented out 12:00 Oct 10 2026
     if (typeof petition.Action === 'string' && petition.Action.startsWith('data-')) { 
       // I don't think this is used. It is commented out in windowEventPetitionListener. Probabbly legacy. Oct 4 2026
       requestType = 'DATA_REQUEST';
-    }
+    } */
 
     // Dispatch state change event - which windowListener should pick up - it then opensClosesPanelsByRule()  which then calls the module to load the new module into the panel
     window.dispatchEvent(
@@ -175,8 +184,25 @@ export const appState = {
   },
 
 
+setStudentsManagers(updates) {//not yet used in modules Oct 11 2026
+  console.log('setStudentsManagers()');
+  Object.assign(this.studentsManagers, updates);
+
+//taskHeaderId  used in // displayStudentsOnTasks.js / moveStudentManager.js
+//assignmentRoles used in // displayStudentsOnTasks.js / moveStudentManager.js
+
+},
 
 
+setDisplaySurveysTasks(updates) {//not yet used in modules Oct 11 2026
+console.log('setDisplaySurveysTasks');
+Object.assign(this.displaySurveysTasks, updates);
+
+//assignmentId used in/ displaySurveyCards.js / displayOneSurvey /displayTaskCards.js 
+//surveyHeader used in/ displaySurveyCards.js  / displayOneSurvey (should be id ?)
+//currentStep used in/ displaySurveyCards.js  / displayOneSurvey
+
+},
 
 
 
