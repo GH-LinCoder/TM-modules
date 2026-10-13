@@ -14,7 +14,7 @@ let subject = null;
 let assignedSurveyAsArray =null;
 
 let panelEl = null;
-
+let endedOrActive = null;
 let currentStep = 1; //added 12:58 Aug24  & deleted from render arguments, but log as undefined
 let assignmentRow =[]; //new 15:20 Aug 25
 //let answersArray = []; 
@@ -279,14 +279,6 @@ function renderInfo(card) {
         </div>
     `;
 }
-/*
-<div class="mt-4 bg-gray-100 rounded-lg p-4 border border-green-200">
-            <p class="text-sm font-bold text-green-800">Information:</p>
-            <p class="text-sm text-green-700">There are ${taskSteps.length} steps in this task.</p>
-            <p class="text-sm text-green-700">You are looking at step [${stepBeingDisplayed}] (The database has you bookmarked on step: [${assignment.current_step}])</p>
-            <p class="text-sm text-blue-600">Move mode: ${assignment.move_by}</p> 
-        </div>
-*/
 
 function attachListenersToRadioButtons(container, assignmentId, progress) {
     // Scope the search to the specific container to ensure we find the new buttons
@@ -383,7 +375,7 @@ const assignmentRow = await executeIfPermitted(subject.id, 'readThisSurveyOrTask
 );
 */
 // Determine survey state
-let endedOrActive;
+
 if (assignmentRow.completed_at) { endedOrActive = 'completed';
 } else if (assignmentRow.abandoned_at) { endedOrActive = 'abandoned';
 } else { endedOrActive = 'active';
@@ -474,8 +466,10 @@ renderQuestion(panelEl, progress.nextQuestionId, null, assignmentId)
           
             // Show completion message (appends to information section)
         //    setTimeout(() => {
+            if(endedOrActive === 'active') {
                 markAssignmentComplete(autoPetition.assignment_id);
-                showCompletionMessage(); 
+                showCompletionMessage(); }
+                
            // }, 1500);
         }
 }
@@ -621,13 +615,7 @@ function showCompletionMessage() {
         completionCard.classList.remove('opacity-0');
     }, 50);
 
-    /*
-const card = document.querySelector('#survey-header-container');
-    if (!card) {
-        console.warn('Could not find #survey-header-container');
-        return;
-    }
-*/
+
     // 5. Add close button handler (using 'card' to clear the view)
     const closeBtn = document.getElementById('closeSurveyBtn');
     if (closeBtn) {
@@ -675,75 +663,6 @@ function closeSurveyStaggered() {
     completionCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
-
-/*
-// (appends to information section)
-function showCompletionMessage() {
-    console.log('showCompletionMessage()');
-    const infoSection = document.getElementById('informationSection');
-    if (!infoSection) return;
-    
-    const completionCard = document.createElement('div');
-    completionCard.className = 'bg-green-50 border-l-4 border-green-500 rounded-lg p-1 md:p-4 mt-4';
-    completionCard.innerHTML = `
-        <div class="flex items-start">
-            <div class="text-2xl mr-3">🎉</div>
-            <div>
-                <h3 class="text-lg font-bold text-gray-800">Survey Complete!</h3>
-                <p class="text-gray-600 text-sm mt-1">Thank you for your response. There are no more questions.</p>
-                <p class="text-xs text-gray-500 mt-2">You can close this window or return to your dashboard.</p>
-                <button id="closeSurveyBtn" class="mt-3 px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 text-sm">
-                    Close
-                </button>
-            </div>
-        </div>
-    `;
-    
-    //  Append to existing information (doesn't wipe automation results)
-    infoSection.appendChild(completionCard);
-    
-    //  Add close button handler
-    const closeBtn = document.getElementById('closeSurveyBtn');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            panelEl.innerHTML = ''; // Clear the panel
-        });
-    }
-    
-    //  Optional: Auto-clear after 30 seconds if user doesn't click
-    setTimeout(() => {
-        if (panelEl.querySelector('[data-assignment]')) {
-            panelEl.innerHTML = '';
-        }
-    }, 30000);
-    
-    //  Scroll to bottom so user sees the completion message
-    completionCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-} */
-
-
-
-
-//  Helper: Update assignments table (increment current_question)
-//if set p_bookmark as 1 or 2  may produce 'abandoned' or 'completed'
-async function XupdateAssignmentProgress(assignmentId, nextQuestion) {
-    console.log('updateAssignmentProgress()'); // return;
-    try { // const {assignmentId, completed, step} = payload;
-
-        //FAILS FOR SURVEYS
-
-        await executeIfPermitted(subject.approUserId, 'updateAssignmentSystem', {
-            assignmentId: assignmentId,
-            p_bookmark: nextQuestion
-        });
-
-    
-        console.log('✅ Assignment progress updated to question', nextQuestion);
-    } catch (error) {
-        console.error('Failed to update assignment progress:', error);
-    }
-}
-
 //  Helper: Mark assignment as completed
 async function markAssignmentComplete(assignmentId) {  //not coded this db function 21:00 March 13
    console.log('markAssignmentComplete()'); //this calls the bookmark function. Mark as complete by bookmark=2
@@ -761,13 +680,14 @@ async function markAssignmentComplete(assignmentId) {  //not coded this db funct
     }
 }
 
-//  Helper: HTML escaping
+//  Helper: HTML escaping --- there s a better method in other modules. HowTo
 function escapeHtml(text) {
     if (typeof text !== 'string') return String(text);
     return text
-        .replace(/&/g, '&amp;')
+   //     .replace(/&/g, '&amp;')
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;')
-        .replace(/'/g, '&#039;');
+   //     .replace(/"/g, '&quot;')
+   //     .replace(/'/g, '&#039;')
+   ;
 }
