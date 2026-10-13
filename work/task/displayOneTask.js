@@ -122,10 +122,10 @@ async function renderTask(panel) {
                 assignment.student_name
             )}  
         </div>
-        <div class="mt-4 bg-green-100 rounded-lg p-4 border border-green-200">
+        <div class="mt-4 bg-gray-100 rounded-lg p-4 border border-green-200">
             <p class="text-sm font-bold text-green-800">Information:</p>
             <p class="text-sm text-green-700">There are ${taskSteps.length} steps in this task.</p>
-            <p class="text-sm text-green-700">The current view step is [${stepBeingDisplayed}] (DB Step: [${assignment.current_step}])</p>
+            <p class="text-sm text-green-700">You are looking at step [${stepBeingDisplayed}] (The database has you bookmarked on step: [${assignment.current_step}])</p>
             <p class="text-sm text-blue-600">Move mode: ${assignment.move_by}</p> 
         </div>
     `;
@@ -135,8 +135,8 @@ async function renderTask(panel) {
     autoPetition.step_id = stepBeingDisplayedData.step_id;
 
     let bgColor = 'bg-blue-200';
-    if (Number(assignment.current_step) === 1) bgColor = 'bg-red-400';
-    else if (assignment.completed_at)  bgColor = 'bg-green-400';
+    if (Number(assignment.current_step) === 1) bgColor = 'bg-red-200';
+    else if (assignment.completed_at)  bgColor = 'bg-green-200';
 
     const card = document.createElement('div');
     card.classList.add(bgColor, 'rounded-lg', 'shadow-lg', 'p-4', 'mb-6', 'border', 'border-gray-200');
