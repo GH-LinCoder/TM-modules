@@ -121,6 +121,7 @@ async function renderTask(panel) {
                 'green',
                 assignment.student_name
             )}  
+            <!--but renderStep doesn't use student name or assignment Id. It uses title, step, colorTheme -->
         </div>
         <div class="mt-4 bg-gray-100 rounded-lg p-4 border border-green-200">
             <p class="text-sm font-bold text-green-800">Information:</p>
@@ -162,6 +163,49 @@ const linkUrl = assignment.task_external_url || '';
     // Attach listener cleanly once to panel
     attachPanelEvents(panel);
 }
+
+function renderStepCard(title, step, colorTheme = 'gray', assignmentId = null, studentName = null, showCheckmark = false) {
+    if (!step) return '';
+
+    const stepNumber = step.step_order;
+    const name = step.step_name || 'Unnamed';
+    let description = step.step_description || '';
+    
+    // Keep previous/next step cards compact and description-free
+    if (title === 'Next Step' || title === 'Previous Step') {
+        description = ''; 
+    }
+
+    let linkUrl = '';
+    if (title === 'Current Step') {
+        linkUrl = step.step_external_url ? `<a href="${step.step_external_url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline text-sm inline-flex items-center gap-1 mt-2">🔗 View External Link</a>` : '';
+    }
+
+    // Dynamic badge colors based on theme/title
+    let badgeColor = 'bg-gray-100 text-gray-700';
+    let borderStyle = 'border-gray-200';
+    
+    if (title === 'Current Step') {
+        badgeColor = colorTheme === 'red' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800';
+        borderStyle = colorTheme === 'red' ? 'border-red-300 shadow-lg' : 'border-blue-300 shadow-md';
+    } else if (title === 'Next Step') {
+        badgeColor = 'bg-green-100 text-green-800';
+    }
+
+    return `
+        <div class="bg-white rounded-lg p-5 md:p-6 shadow-sm border ${borderStyle} transition-all">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${badgeColor}">
+                    ${title}${stepNumber ? ` #${stepNumber}` : ''}
+                </span>
+            </div>
+            <h4 class="text-lg font-bold text-gray-900 mt-1">${name}</h4>
+            <p class="text-sm text-gray-600 mt-2 whitespace-pre-line leading-relaxed">${description}</p>
+            <div class="mt-2">${linkUrl}</div>
+        </div>
+    `;
+}
+
 
 function decideButtonsToDisplay(assignment) {
     const currentStep = Number(assignment.stepBeingDisplayed);
@@ -433,47 +477,7 @@ else //assumes 'BOOKMARK'
 { step_name: currentStepName, step_description: currentStepDescription,external_url: assignedCurrentStepExternalUrl  
 }, stepBeingDisplayed === 1 ? 'red' : stepBeingDisplayed === 2 ? 'green' : 'blue', assignment.student_name, false, stepBeingDisplayed, assignment.assignment_id)}
 */
-function renderStepCard(title, step, colorTheme = 'gray', assignmentId = null, studentName = null, showCheckmark = false) {
-    if (!step) return '';
 
-    const stepNumber = step.step_order;
-    const name = step.step_name || 'Unnamed';
-    let description = step.step_description || '';
-    
-    // Keep previous/next step cards compact and description-free
-    if (title === 'Next Step' || title === 'Previous Step') {
-        description = ''; 
-    }
-
-    let linkUrl = '';
-    if (title === 'Current Step') {
-        linkUrl = step.step_external_url ? `<a href="${step.step_external_url}" target="_blank" class="text-blue-600 hover:underline text-sm inline-flex items-center gap-1 mt-2">🔗 View External Link</a>` : '';
-    }
-
-    // Dynamic badge colors based on theme/title
-    let badgeColor = 'bg-gray-100 text-gray-700';
-    let borderStyle = 'border-gray-200';
-    
-    if (title === 'Current Step') {
-        badgeColor = colorTheme === 'red' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800';
-        borderStyle = colorTheme === 'red' ? 'border-red-300 shadow-lg' : 'border-blue-300 shadow-md';
-    } else if (title === 'Next Step') {
-        badgeColor = 'bg-green-100 text-green-800';
-    }
-
-    return `
-        <div class="bg-white rounded-lg p-5 md:p-6 shadow-sm border ${borderStyle} transition-all">
-            <div class="flex justify-between items-center mb-2">
-                <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${badgeColor}">
-                    ${title}${stepNumber ? ` #${stepNumber}` : ''}
-                </span>
-            </div>
-            <h4 class="text-lg font-bold text-gray-900 mt-1">${name}</h4>
-            <p class="text-sm text-gray-600 mt-2 whitespace-pre-line leading-relaxed">${description}</p>
-            <div class="mt-2">${linkUrl}</div>
-        </div>
-    `;
-}
 
 async function loadStepAutomations(stepId) {
     console.log('loadStepAutomations()', 'subject',subject);
