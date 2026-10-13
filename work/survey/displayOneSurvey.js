@@ -176,9 +176,9 @@ function renderHeaderQuestionInfo(panel, nextQuestionId, currentStep = 1, assign
     isSubmitting = false; // Reset submission state
 
     // 1. Determine background color
-    let bgColor = 'bg-orange-300'; 
-    if (assignmentRow?.abandoned_at) bgColor = 'bg-red-400'; 
-    else if (assignmentRow?.completed_at) bgColor = 'bg-green-400';  
+    let bgColor = 'bg-orange-200'; 
+    if (assignmentRow?.abandoned_at) bgColor = 'bg-red-200'; 
+    else if (assignmentRow?.completed_at) bgColor = 'bg-green-200';  
     
     // 2. Create main card with 4 distinct, empty containers
     const card = document.createElement('div');
@@ -271,14 +271,22 @@ function renderInfo(card) {
 
     // This structure stays static; only the inner #informationSection will be updated later
     infoContainer.innerHTML = `
-        <div class="bg-green-100 rounded border flex flex-col md:flex-row justify-center gap-4 pt-4 border-t border-gray-200">
-            <p class="text-lg font-bold">Information:</p>
-            <div id="informationSection" class="w-full">
+        <div class="mt-4 bg-gray-100 rounded-lg border border-green-200 flex flex-col md:flex-row justify-center gap-4 pt-4">
+            <p class="text-sm font-bold text-green-800">Information:</p>
+            <div id="informationSection" class="w-full text-sm text-green-700">
                 New question
             </div>
         </div>
     `;
 }
+/*
+<div class="mt-4 bg-gray-100 rounded-lg p-4 border border-green-200">
+            <p class="text-sm font-bold text-green-800">Information:</p>
+            <p class="text-sm text-green-700">There are ${taskSteps.length} steps in this task.</p>
+            <p class="text-sm text-green-700">You are looking at step [${stepBeingDisplayed}] (The database has you bookmarked on step: [${assignment.current_step}])</p>
+            <p class="text-sm text-blue-600">Move mode: ${assignment.move_by}</p> 
+        </div>
+*/
 
 function attachListenersToRadioButtons(container, assignmentId, progress) {
     // Scope the search to the specific container to ensure we find the new buttons
