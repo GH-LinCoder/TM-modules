@@ -230,18 +230,18 @@ Therefore use this anchor div instead -->
 
                 <div class="flex flex-col md:flex-row p-2 md:p-4" data-section="role-aims-plans" data-destination="rap-display">
 
-                    <div class="flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-purple-400" data-action="my-role">
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-purple-400" data-action="my-role">
                         <h3 class="text-lg font-semibold text-purple-700 mb-2">My Role 👤</h3>
                         <p class="text-sm text-gray-600 mb-3">View permissions, groups, and capabilities. There are <span data-value="available-relations" >?</span> items related to your role</p>
                     </div>
     
-                    <div class="flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-green-400" data-action="aims">
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-green-400" data-action="aims">
                         <h3 class="text-lg font-semibold text-green-700 mb-2">Our Aims 🎯</h3>
                         <p class="text-sm text-gray-600 mb-3">Read our mission and long-term goals.</p>                   
                     </div>
 
-                    <div class="flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-orange-400" data-action="plans">
-                        <h3 class="text-lg font-semibold text-orange-700 mb-2">Our Plans 🗓️</h3>
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-orange-400" data-action="plans">
+                        <h3 text-lg font-semibold text-orange-700 mb-2">Our Plans 🗓️</h3>
                         <p class="text-sm text-gray-600 mb-3">See current priorities and short-term objectives.</p>
                     </div>
                 </div>
@@ -277,23 +277,23 @@ Therefore use this anchor div instead -->
 
                   <div class="grid md:grid-cols-2 lg:grid-cols-4 p-2 md:p-4">
                     
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 md:p-4 cursor-pointer hover:shadow-md" data-action="recruitment-management-section">
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer bg-gray-50 border border-gray-200 rounded-lg p-2 md:p-4" data-action="recruitment-management-section">
                       <h3 class="text-sm font-medium text-gray-800">Invite others to join 📢</h3>
                       <p class="text-xs text-gray-500">You can use a link on social media or email to recruit others to join.</p>
                     </div>
 
 
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 md:p-4 cursor-pointer hover:shadow-md" >
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 md:p-4 cursor-not-allowed" >
                       <h3 class="text-sm font-medium text-gray-800">Rewards</h3>
                       <p class="text-xs text-gray-500">Check reward systems and my achievements</p>
                     </div>
 
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 md:p-4 cursor-pointer hover:shadow-md" >
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 md:p-4 cursor-not-allowed" >
                       <h3 class="text-sm font-medium text-gray-800">Support</h3>
                       <p class="text-xs text-gray-500">Access support tools and documentation</p>
                     </div>
 
-                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 md:p-4 cursor-pointer hover:shadow-md" >
+                    <div class="bg-gray-50 border border-gray-200 rounded-lg p-2 md:p-4 cursor-not-allowed" >
                       <h3 class="text-sm font-medium text-gray-800">Affiliate Links</h3>
                       <p class="text-xs text-gray-500">Ways to buy things where the organisation receives a commission</p>
                     </div>

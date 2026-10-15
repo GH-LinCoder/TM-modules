@@ -81,7 +81,7 @@ export async function render(panel, petition = {}, renderType = 'active') {
   assignments.forEach(survey => {
     if (!survey.is_deleted) {
       const card = document.createElement('div');
-      card.className = `${activeColors} hover:shadow-md flex justify-between items-center`;
+      card.className = `${activeColors} hover:shadow-md hover:bg-yellow-200 flex justify-between items-center`;
 
       // Standard attributes for the event delegation listener in flexmain
       card.dataset.action = 'display-one-survey';

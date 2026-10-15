@@ -129,7 +129,7 @@ assignments.forEach(task => {
          const card = document.createElement('div');
 
          // removed // 'bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-pointer ' +
-  card.className = activeColors +'hover:shadow-md flex justify-between items-center';
+  card.className = activeColors +'hover:shadow-md hover:bg-blue-200 flex justify-between items-center';
 //21:10 Sept 3: the dataset.action is different for 'manager' where it calls the kanban style display module not the student displayOneTask module
   card.dataset.action = 'display-one-task'; //this needs to be listed in the registryLoadModule.
   card.dataset.entityType = 'task';
