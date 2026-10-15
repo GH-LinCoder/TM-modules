@@ -21,7 +21,7 @@ function clearContainer(container){//trying to empty the display area when subje
 container.innerHTML='';
 } */
 
-export async function renderCompletedAbandonedTasks(panel, petition = {}, renderType) { //21:10 Sept 3: needs new argument userRole = 'student'
+export async function renderCompletedAbandonedTasks(panel, petition = {},controller, renderType) { //21:10 Sept 3: needs new argument userRole = 'student'
 console.log('displayCompletedTaskCards.render()'); // petition is empty
 
 //console.log('renderType:',renderType);
@@ -32,7 +32,7 @@ render(panel, petition, renderType);
 
 
 
-export async function render(panel, petition = {} , renderType='active') { //normal entry point
+export async function render(panel, petition = {} , controller, renderType='active') { //normal entry point
     //console.log('displayTasksCards.render(', panel, petition, ')');
 console.log('displayTasksCards.render()');
     const userId = petition.studentId;
