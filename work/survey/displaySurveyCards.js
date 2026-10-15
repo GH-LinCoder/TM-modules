@@ -8,13 +8,15 @@ import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 console.log('displaySurveyCards.js loaded');
 
 let itemCounts = {};
+//flexmain sends panel , petition, controller. In that order. Any function needs to keep to that order.
+//any additional arguments have to come after those 3.
 
-export async function renderCompletedAbandonedSurveys(panel, petition = {}, renderType) {
+export async function renderCompletedAbandonedSurveys(panel, petition = {}, controller, renderType) {
   console.log('displayCompletedSurveyCards.render()');
-  render(panel, petition, renderType);
+  render(panel, petition, controller, renderType);
 }
 
-export async function render(panel, petition = {}, renderType = 'active') {
+export async function render(panel, petition = {}, controller, renderType = 'active') {//flexmain is sending 'controller' as 3rd item
   console.log('displaySurveyCards.render()');
   const userId = petition.studentId;
   if (!userId) {
@@ -69,7 +71,8 @@ export async function render(panel, petition = {}, renderType = 'active') {
         No ${renderType} survey assignments found.
       </div>`;
     return;
-  }
+  }  // renderType can produce odd error messages such as [abort controller] 
+  // if the local functions mix up the order that flexmain sends  panel, petition, controller 
 
   // Render card container
   panel.innerHTML = `
