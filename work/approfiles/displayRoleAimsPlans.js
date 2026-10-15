@@ -1,7 +1,7 @@
 import { executeIfPermitted } from "../../registry/executeIfPermitted";
 
 // ./plans.js
-console.log('aims.js loaded');
+console.log('displayRoleAimsPlans.js loaded');
 
 let title ='';
 
@@ -9,7 +9,7 @@ function getTemplateHTML(action) {
   console.log('getTemplateHTML()');
   return `
     <div class="flex items-center justify-between mb-6 border-b border-gray-200 pb-4">
-      <h2 class="text-2xl font-bold text-gray-900 tracking-tight">${title}}</h2>
+      <h2 class="text-2xl font-bold text-gray-900 tracking-tight">${title}</h2>
       <button data-action=${action} class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-lg hover:bg-gray-100" aria-label="Close">
         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
@@ -95,6 +95,11 @@ console.log('readAppro - action:',action);
       title = 'The plans of our organisation';
     }
     break;
+    case 'emergency':{itemToDisplayId = 'da341889-9a5d-4a08-b86e-4cf15882cc76';
+      title = 'Contact numbers and what to do';
+    }
+    break;
+
     default: console.log('Action not recognised:', action);
 }
 
@@ -107,7 +112,7 @@ console.log('readAppro - action:',action);
     itemToDisplay = await executeIfPermitted(null, 'readApprofileById', { approfileId: itemToDisplayId });
   } catch (error) {
     console.error('Failed to load aims:', error);
-    panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load role.</div>';
+    panel.innerHTML = `<div class="text-red-500 text-center py-8">Failed to load ${action}.</div>`;
     return;
   }
   

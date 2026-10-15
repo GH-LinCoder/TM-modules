@@ -28,7 +28,7 @@ export const registry = { // this registry is for loading a new page to the righ
 "my-role" : () => import('../work/approfiles/displayRoleAimsPlans.js'),
 'aims' :() => import('../work/approfiles/displayRoleAimsPlans.js'),
 'plans' :() => import('../work/approfiles/displayRoleAimsPlans.js'),
-
+'emergency':() => import('../work/approfiles/displayRoleAimsPlans.js'),
 
 
 'login-signup':()=>import('../auth/login-signup.js'),

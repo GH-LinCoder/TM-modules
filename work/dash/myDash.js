@@ -244,6 +244,14 @@ Therefore use this anchor div instead -->
                         <h3 text-lg font-semibold text-orange-700 mb-2">Our Plans 🗓️</h3>
                         <p class="text-sm text-gray-600 mb-3">See current priorities and short-term objectives.</p>
                     </div>
+
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-orange-400" data-action="emergency">
+                        <h3 text-lg font-semibold text-orange-700 mb-2">Emergency </h3>
+                        <p class="text-sm text-gray-600 mb-3">Contact details & information sources.</p>
+                    </div>
+
+
+
                 </div>
 </div>
 
