@@ -24,10 +24,11 @@ container.innerHTML='';
 export async function renderCompletedAbandonedTasks(panel, petition = {},controller, renderType) { //21:10 Sept 3: needs new argument userRole = 'student'
 console.log('displayCompletedTaskCards.render()'); // petition is empty
 
-//console.log('renderType:',renderType);
-render(panel, petition, renderType);
+console.log('renderType:',renderType);
+render(panel, petition,controller, renderType);
 //need to set the param  'completed' and adjust the render to be able to handle type of render
 //but error no user id - not in petition?
+
 }
 
 
