@@ -107,7 +107,7 @@ console.log('readAppro - action:',action);
     itemToDisplay = await executeIfPermitted(null, 'readApprofileById', { approfileId: itemToDisplayId });
   } catch (error) {
     console.error('Failed to load aims:', error);
-    panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load aims.</div>';
+    panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load role.</div>';
     return;
   }
   

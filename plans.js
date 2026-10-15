@@ -86,7 +86,7 @@ async function readAppro(panel) {
     aimsAppro = await executeIfPermitted(null, 'readApprofileById', { approfileId: aimsApproId });
   } catch (error) {
     console.error('Failed to load:', error);
-    panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load aims.</div>';
+    panel.innerHTML = '<div class="text-red-500 text-center py-8">Failed to load plans.</div>';
     return;
   }
   
