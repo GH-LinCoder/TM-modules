@@ -73,7 +73,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <!-- ===================== -->
 
     <!-- Appro: Connections -->
-    <div class="rounded-2xl bg-green-50 border border-green-400 p-4 cursor-pointer hover:shadow-md" data-action="display-connected-appros">
+    <div class="rounded-2xl bg-green-50 hover:bg-green-100 border border-green-400 p-4 cursor-pointer hover:shadow-md" data-action="display-connected-appros">
       <h3 class="text-sm font-medium text-green-700">Connections: Appros 🪪</h3>
       <p class="text-xs text-gray-600 hidden md:block" >You and many other persons and things are represented by an appro. See any new conection of your own appro or any appros you manage.</p>
     </div>
@@ -98,7 +98,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <!-- ====================== -->
 
     <!-- Survey: Connections -->
-    <div class="bg-green-50 border border-yellow-400 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="display-connected-surveys">
+    <div class="bg-green-50 hover:bg-green-100 border border-yellow-400 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="display-connected-surveys">
       <h3 class="text-sm font-medium text-yellow-700">Connections: Surveys 📜</h3>
       <p class="text-xs text-gray-600 hidden md:block" >See any new connections you have with surveys or any surveys you manage that have new connections</p>
     </div>
@@ -123,7 +123,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <!-- ===================== -->
 
     <!-- Task: Connections -->
-    <div class="bg-green-50 border border-blue-400 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="display-connected-tasks">
+    <div class="bg-green-50 hover:bg-green-100 border border-blue-400 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="display-connected-tasks">
       <h3 class="text-sm font-medium text-blue-700">Connections: Tasks 🔧</h3>
       <p class="text-xs text-gray-600 hidden md:block" >See any new connection you have with tasks or any new connections of tasks you manage</p>
     </div>
@@ -136,7 +136,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
     <!-- Task: Move students -->
-    <div class="bg-orange-50 border border-blue-400 rounded-l-2xl p-3 cursor-pointer hover:shadow-md"  
+    <div class="bg-orange-50 hover:bg-orange-100 border border-blue-400 rounded-l-2xl p-3 cursor-pointer hover:shadow-md"  
      data-section="pending-manager-tasks"  
      data-action="display-students-on-tasks" 
      data-destination="display-area" 
