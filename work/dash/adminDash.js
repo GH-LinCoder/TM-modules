@@ -10,8 +10,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
   <!-- dashboard content -->
 <div class="min-h-screen bg-gray-200 text-gray-900">
 
-
-<!-- DASHBOARD HEADER -->   
+   
 <!-- DASHBOARD HEADER -->   
 <div class="px-6 py-4 border-b bg-blue-200 flex justify-between items-center gap-4">
   
@@ -43,25 +42,25 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <!-- ===================== -->
 
     <!-- Appro: Create -->
-    <div class="rounded-2xl bg-green-50 border border-green-200 p-4 cursor-pointer hover:shadow-md" data-action="create-approfile-dialogue">
+    <div class="rounded-2xl bg-green-50 hover:bg-green-100 border border-green-200 p-4 cursor-pointer hover:shadow-md" data-action="create-approfile-dialogue">
       <h3 class="text-sm font-medium text-green-700">Create Appro 🎆🪪</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Create a new approfile, often abstract, representing a concept, aim, or person.</p>
     </div>
 
     <!-- Appro: Edit -->
-    <div class="rounded-2xl bg-green-50 border border-green-200 p-4 cursor-pointer hover:shadow-md" data-action="edit-approfile-dialogue">
+    <div class="rounded-2xl bg-green-50 hover:bg-green-100 border border-green-200 p-4 cursor-pointer hover:shadow-md" data-action="edit-approfile-dialogue">
       <h3 class="text-sm font-medium text-green-700">Edit Appro 🖊️🪪</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Modify an existing approfile’s details, structure, or meaning.</p>
     </div>
 
     <!-- Appro: View -->
-    <div class="rounded-2xl bg-green-50 border border-green-200 p-4 cursor-pointer hover:shadow-md" data-action="display-related-approfiles-dialogue">
+    <div class="rounded-2xl bg-green-50 hover:bg-green-100 border border-green-200 p-4 cursor-pointer hover:shadow-md" data-action="display-related-approfiles-dialogue">
       <h3 class="text-sm font-medium text-green-700">View Appros 👁️🪪🖇️</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Explore how appros relate, connect, and form hierarchy.</p>
     </div>
 
     <!-- Appro: Assign -->
-    <div class="rounded-2xl bg-green-50 p-4 cursor-pointer hover:shadow-md" data-action="relate-approfiles-dialogue">
+    <div class="rounded-2xl bg-green-50 hover:bg-green-100 p-4 cursor-pointer hover:shadow-md" data-action="relate-approfiles-dialogue">
       <h3 class="text-sm font-medium text-green-700">Relate Appro 🪪🖇️</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Relate one appro to another, defining structure and relationships.</p>
     </div>
@@ -72,25 +71,25 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <!-- ====================== -->
 
     <!-- Survey: Create -->
-    <div class="bg-yellow-50 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="create-survey-dialogue">
+    <div class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="create-survey-dialogue">
       <h3 class="text-sm font-medium text-yellow-700">Create Survey 🎆📜</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Author a new survey for onboarding, training, or information gathering.</p>
     </div>
 
     <!-- Survey: Edit -->
-    <div class="bg-yellow-50 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="edit-survey-dialogue">
+    <div class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="edit-survey-dialogue">
       <h3 class="text-sm font-medium text-yellow-700">Edit Survey 🖊️📜</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Modify questions, flow, or branching logic.</p>
     </div>
 
     <!-- Survey: View -->
-    <div class="bg-gray-50 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="view-survey-dialogue">
+    <div class="bg-gray-50 hover:bg-yellow-100 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="view-survey-dialogue">
       <h3 class="text-sm font-medium text-yellow-700">View Survey 👁️📜</h3>
       <p class="text-xs text-gray-600 hidden md:block" >TO BE IMPLEMENTED Preview or inspect survey structure and content.</p>
     </div>
 
     <!-- Survey: Assign -->
-    <div class="bg-yellow-50 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="assign-survey-dialogue">
+    <div class="bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-r-2xl p-3 cursor-pointer hover:shadow-md" data-action="assign-survey-dialogue">
       <h3 class="text-sm font-medium text-yellow-700">Assign Survey 👨‍🔧📜</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Assign a survey to a person or thing for onboarding or training.</p>
     </div>
@@ -101,25 +100,25 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
     <!-- ===================== -->
 
     <!-- Task: Create -->
-    <div class="bg-blue-50 border border-blue-200 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="create-task-dialogue">
+    <div class="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="create-task-dialogue">
       <h3 class="text-sm font-medium text-blue-700">Create Task 🎆🔧</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Author a new task: training course, progress tracker, recipe, or soft production line.</p>
     </div>
 
     <!-- Task: Edit -->
-    <div class="bg-blue-50 border border-blue-200 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="edit-task-dialogue">
+    <div class="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="edit-task-dialogue">
       <h3 class="text-sm font-medium text-blue-700">Edit Task 🖊️🔧</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Modify task steps, instructions, or structure.</p>
     </div>
 
     <!-- Task: View -->
-    <div class="bg-blue-50 border border-blue-200 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="display-task-summary">
+    <div class="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="display-task-summary">
       <h3 class="text-sm font-medium text-blue-700">View Task 👁️🔧</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Inspect task details, steps, and progress logic.</p>
     </div>
 
     <!-- Task: Assign -->
-    <div class="bg-blue-50 border border-blue-200 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="assign-task-dialogue">
+    <div class="bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-l-2xl p-3 cursor-pointer hover:shadow-md" data-action="assign-task-dialogue">
       <h3 class="text-sm font-medium text-blue-700">Assign Task 👨‍🔧🔧</h3>
       <p class="text-xs text-gray-600 hidden md:block" >Assign a person or thing to a task: training, production line, or progress tracker.</p>
     </div>
@@ -319,7 +318,8 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
 
 <!-- permision management section -->
-<div class="bg-red-100 border border-gray-200 rounded-lg  p-4 cursor-pointer"" data-section="permission-management-section" data-action="permission-management-section" data-destination='user-management' 
+<div class="bg-red-100 hover:shadow-md hover:bg-red-200 cursor-pointer border border-gray-200 rounded-lg  p-4" 
+data-section="permission-management-section" data-action="permission-management-section" data-destination="user-management" 
 title="Grant & remove permissions. Create bundles.">
   <h3 class="text-sm font-medium text-gray-800">Permission Management</h3>
   <p class="text-xs text-gray-500">
@@ -351,12 +351,13 @@ title="Grant & remove permissions. Create bundles.">
   <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
 
 
-    <div class="bg-blue-100 border border-gray-200 rounded-lg p-4 cursor-pointer" data-action="modules-market-section">
+    <div class="bg-blue-100 hover:shadow-md hover:bg-blue-200 cursor-pointer border border-gray-200 rounded-lg p-4" 
+    data-action="modules-market-section">
       <h3 class="text-sm font-medium text-gray-800">Upgrades and Developer Market 🏗️</h3>
       <p class="text-xs text-gray-500">Purchase major upgrades or earn by developing upgrades</p>
     </div>
 
-    <div class="bg-green-200 border border-gray-200 rounded-lg p-4 cursor-pointer" data-action="money-management-section">
+    <div class="bg-green-200 hover:shadow-md hover:bg-green-300 cursor-pointer border border-gray-200 rounded-lg p-4 cursor-pointer" data-action="money-management-section">
       <h3 class="text-sm font-medium text-gray-800">Money💷💵💶</h3>
       <p class="text-xs text-gray-500">Setting-up and managing membership fees , subscriptions, donations</p>
     </div>
