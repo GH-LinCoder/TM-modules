@@ -187,7 +187,7 @@ console.log('flexmain-processPanel() panelName:',panelName);
 let registryEntry = await registry[panelName]; //send string to lookup object, get a pointer to a function (don't need await)
 
 if(!registryEntry) { console.log('Registry unknown [', panelName, '] not here');}
-if(registryEntry) { console.log('Registry recognises', panelName, 'push details i panels on display array')  //which array??
+else { console.log('Registry recognises', panelName)  //which array??
   
  // console.log('registryEntry is:', registryEntry);
 
@@ -414,7 +414,7 @@ function updateMenuHighlights() {
     btn.classList.remove('ring-4', 'ring-blue-500', 'bg-blue-100', 'active');
   });
 
-  // 2. Apply highlights to ALL buttons for currently open panels
+  // 2. Apply highlights to ALL buttons for currently open panels Legacy?
   panelsOnDisplay.forEach(panel => {
     const pageName = panel.panelName.replace('.html', '');
     

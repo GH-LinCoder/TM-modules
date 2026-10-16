@@ -21,18 +21,19 @@ function clearContainer(container){//trying to empty the display area when subje
 container.innerHTML='';
 } */
 
-export async function renderCompletedAbandonedTasks(panel, petition = {}, renderType) { //21:10 Sept 3: needs new argument userRole = 'student'
+export async function renderCompletedAbandonedTasks(panel, petition = {},controller, renderType) { //21:10 Sept 3: needs new argument userRole = 'student'
 console.log('displayCompletedTaskCards.render()'); // petition is empty
 
-//console.log('renderType:',renderType);
-render(panel, petition, renderType);
+console.log('renderType:',renderType);
+render(panel, petition,controller, renderType);
 //need to set the param  'completed' and adjust the render to be able to handle type of render
 //but error no user id - not in petition?
+
 }
 
 
 
-export async function render(panel, petition = {} , renderType='active') { //normal entry point
+export async function render(panel, petition = {} , controller, renderType='active') { //normal entry point
     //console.log('displayTasksCards.render(', panel, petition, ')');
 console.log('displayTasksCards.render()');
     const userId = petition.studentId;
@@ -129,7 +130,7 @@ assignments.forEach(task => {
          const card = document.createElement('div');
 
          // removed // 'bg-blue-50 border border-blue-200 rounded-lg p-3 cursor-pointer ' +
-  card.className = activeColors +'hover:shadow-md flex justify-between items-center';
+  card.className = activeColors +'hover:shadow-md hover:bg-blue-200 flex justify-between items-center';
 //21:10 Sept 3: the dataset.action is different for 'manager' where it calls the kanban style display module not the student displayOneTask module
   card.dataset.action = 'display-one-task'; //this needs to be listed in the registryLoadModule.
   card.dataset.entityType = 'task';
@@ -211,7 +212,7 @@ detailAnchor.scrollIntoView({
 
 ///* this module used to use petition, but that wasa mistake. 2nd click closes panel
  card.addEventListener('click', () => {
-    appState.query.petitioner.assignmentId = task.assignment_id
+    appState.displaySurveysTasks.assignmentId = task.assignment_id
   });
 
   //*/ 

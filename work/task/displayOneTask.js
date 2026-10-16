@@ -25,7 +25,7 @@ const autoPetition = {
 export async function render(panel, query = {}, controller) {//the task is going to be appended to the panel
     panelEl = panel;
     subject = await resolveSubject();
-    const assignmentId = query.assignmentId || appState.query.petitioner?.assignmentId;
+    const assignmentId = appState.displaySurveysTasks.assignmentId;
 
     autoPetition.auth_id = subject.id;
     autoPetition.appro_id = subject.approUserId;
@@ -121,11 +121,12 @@ async function renderTask(panel) {
                 'green',
                 assignment.student_name
             )}  
+            <!--but renderStep doesn't use student name or assignment Id. It uses title, step, colorTheme -->
         </div>
-        <div class="mt-4 bg-green-100 rounded-lg p-4 border border-green-200">
+        <div class="mt-4 bg-gray-100 rounded-lg p-4 border border-green-200">
             <p class="text-sm font-bold text-green-800">Information:</p>
             <p class="text-sm text-green-700">There are ${taskSteps.length} steps in this task.</p>
-            <p class="text-sm text-green-700">The current view step is [${stepBeingDisplayed}] (DB Step: [${assignment.current_step}])</p>
+            <p class="text-sm text-green-700">You are looking at step [${stepBeingDisplayed}] (The database has you bookmarked on step: [${assignment.current_step}])</p>
             <p class="text-sm text-blue-600">Move mode: ${assignment.move_by}</p> 
         </div>
     `;
@@ -134,9 +135,9 @@ async function renderTask(panel) {
     autoPetition.task_id = assignment.assignment.task_header;
     autoPetition.step_id = stepBeingDisplayedData.step_id;
 
-    let bgColor = 'bg-blue-400';
-    if (Number(assignment.current_step) === 1) bgColor = 'bg-red-400';
-    else if (assignment.completed_at)  bgColor = 'bg-green-400';
+    let bgColor = 'bg-blue-200';
+    if (Number(assignment.current_step) === 1) bgColor = 'bg-red-200';
+    else if (assignment.completed_at)  bgColor = 'bg-green-200';
 
     const card = document.createElement('div');
     card.classList.add(bgColor, 'rounded-lg', 'shadow-lg', 'p-4', 'mb-6', 'border', 'border-gray-200');
@@ -163,6 +164,49 @@ const linkUrl = assignment.task_external_url || '';
     attachPanelEvents(panel);
 }
 
+function renderStepCard(title, step, colorTheme = 'gray', assignmentId = null, studentName = null, showCheckmark = false) {
+    if (!step) return '';
+
+    const stepNumber = step.step_order;
+    const name = step.step_name || 'Unnamed';
+    let description = step.step_description || '';
+    
+    // Keep previous/next step cards compact and description-free
+    if (title === 'Next Step' || title === 'Previous Step') {
+        description = ''; 
+    }
+
+    let linkUrl = '';
+    if (title === 'Current Step') {
+        linkUrl = step.step_external_url ? `<a href="${step.step_external_url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline text-sm inline-flex items-center gap-1 mt-2">🔗 View External Link</a>` : '';
+    }
+
+    // Dynamic badge colors based on theme/title
+    let badgeColor = 'bg-gray-100 text-gray-700';
+    let borderStyle = 'border-gray-200';
+    
+    if (title === 'Current Step') {
+        badgeColor = colorTheme === 'red' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800';
+        borderStyle = colorTheme === 'red' ? 'border-red-300 shadow-lg' : 'border-blue-300 shadow-md';
+    } else if (title === 'Next Step') {
+        badgeColor = 'bg-green-100 text-green-800';
+    }
+
+    return `
+        <div class="bg-white rounded-lg p-5 md:p-6 shadow-sm border ${borderStyle} transition-all">
+            <div class="flex justify-between items-center mb-2">
+                <span class="text-xs font-bold uppercase tracking-wider px-2.5 py-1 rounded-full ${badgeColor}">
+                    ${title}${stepNumber ? ` #${stepNumber}` : ''}
+                </span>
+            </div>
+            <h4 class="text-lg font-bold text-gray-900 mt-1">${name}</h4>
+            <p class="text-sm text-gray-600 mt-2 whitespace-pre-line leading-relaxed">${description}</p>
+            <div class="mt-2">${linkUrl}</div>
+        </div>
+    `;
+}
+
+
 function decideButtonsToDisplay(assignment) {
     const currentStep = Number(assignment.stepBeingDisplayed);
    // const dbStep = Number(assignment.current_step);
@@ -175,7 +219,7 @@ function decideButtonsToDisplay(assignment) {
     const showAbandon = currentStep > 2 && moveBy === 'student' && !assignment.completed_at;
     const abandonButton = showAbandon ? `
         <button data-button="abandoned" 
-        data-assignment-id="${assignmentId}" class="py-2 px-4 bg-red-600 text-white text-xs rounded-lg hover:bg-red-700">
+        data-assignment-id="${assignmentId}" class="py-2 px-4 bg-red-200 text-black text-xs rounded-lg hover:bg-red-700 hover:text-white">
             Click to abandon task
         </button>` : '';
 
@@ -203,7 +247,7 @@ function decideButtonsToDisplay(assignment) {
     const showMessageManager = assignment.student_name !== assignment.manager_name;
     const messageManagerButton = showMessageManager ? `
         <button data-button="message-manager" data-assignment-id="${assignmentId}" 
-        class="py-2 px-4 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+        class="py-2 px-4 bg-gray-400 text-white rounded-lg hover:bg-gray-700"
         data-action="bug-report">
             Message Manager
         </button>` : '';
@@ -433,28 +477,7 @@ else //assumes 'BOOKMARK'
 { step_name: currentStepName, step_description: currentStepDescription,external_url: assignedCurrentStepExternalUrl  
 }, stepBeingDisplayed === 1 ? 'red' : stepBeingDisplayed === 2 ? 'green' : 'blue', assignment.student_name, false, stepBeingDisplayed, assignment.assignment_id)}
 */
-function renderStepCard(title, step, color, assignmentId = null, studentName = null, showCheckmark = false) {
-    if (!step) return '';
-    console.log('renderStepCard()', title);
 
-    const stepNumber = step.step_order;
-    const name = step.step_name || 'Unnamed';
-    let description = step.step_description || '';
-   if(title === 'Next Step' || title === 'Previous Step') description = ''; //don't display the description of previious & next step, just the title
- let linkUrl='';
-   if(title==='Current Step') linkUrl = step.step_external_url || '';
-console.log ('step title',title,step);
-   return `
-        <div class="bg-white rounded-lg p-6 shadow-md border border-gray-200 relative">
-            <div class="text-sm font-semibold text-gray-600 mb-2">
-${title}${stepNumber ? `: ${stepNumber}` : ''}
-            </div>
-            <h4 class="text-lg font-bold">${name}</h4>
-            <p class="text-sm text-gray-600 mt-1 whitespace-pre-line">${description}</p>
-            <p>${linkUrl} </p> <!--added 15:44 Sept 30 2026 -->
-        </div>
-    `;
-}
 
 async function loadStepAutomations(stepId) {
     console.log('loadStepAutomations()', 'subject',subject);

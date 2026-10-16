@@ -62,7 +62,7 @@ pendingTasks.forEach(row => {
     if (hours > task.max_delay_hours) task.max_delay_hours = hours;
   }
 });
-    appState.query.petitioner.assignmentRoles = assignmentRoles;
+    appState.studentsManagers.assignmentRoles = assignmentRoles;
     const tasksArray = Array.from(taskMap.values());
 
     // ✅ Render the summary cards
@@ -94,7 +94,7 @@ pendingTasks.forEach(row => {
 //or pass via appState?
 console.log('task.task_header_id',task.task_header_id); 
  card.addEventListener('click', () => {
-  appState.query.petitioner.taskHeaderId = task.task_header_id;
+  appState.studentsManagers.taskHeaderId = task.task_header_id;
 });
 
       card.innerHTML = `

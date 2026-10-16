@@ -8,13 +8,15 @@ import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 console.log('displaySurveyCards.js loaded');
 
 let itemCounts = {};
+//flexmain sends panel , petition, controller. In that order. Any function needs to keep to that order.
+//any additional arguments have to come after those 3.
 
-export async function renderCompletedAbandonedSurveys(panel, petition = {}, renderType) {
+export async function renderCompletedAbandonedSurveys(panel, petition = {}, controller, renderType) {
   console.log('displayCompletedSurveyCards.render()');
-  render(panel, petition, renderType);
+  render(panel, petition, controller, renderType);
 }
 
-export async function render(panel, petition = {}, renderType = 'active') {
+export async function render(panel, petition = {}, controller, renderType = 'active') {//flexmain is sending 'controller' as 3rd item
   console.log('displaySurveyCards.render()');
   const userId = petition.studentId;
   if (!userId) {
@@ -69,7 +71,8 @@ export async function render(panel, petition = {}, renderType = 'active') {
         No ${renderType} survey assignments found.
       </div>`;
     return;
-  }
+  }  // renderType can produce odd error messages such as [abort controller] 
+  // if the local functions mix up the order that flexmain sends  panel, petition, controller 
 
   // Render card container
   panel.innerHTML = `
@@ -81,7 +84,7 @@ export async function render(panel, petition = {}, renderType = 'active') {
   assignments.forEach(survey => {
     if (!survey.is_deleted) {
       const card = document.createElement('div');
-      card.className = `${activeColors} hover:shadow-md flex justify-between items-center`;
+      card.className = `${activeColors} hover:shadow-md hover:bg-yellow-200 flex justify-between items-center`;
 
       // Standard attributes for the event delegation listener in flexmain
       card.dataset.action = 'display-one-survey';
@@ -100,9 +103,9 @@ export async function render(panel, petition = {}, renderType = 'active') {
 
       // Assign petition context when clicked; allow event to bubble up to flexmain
       card.addEventListener('click', () => {
-        appState.query.petitioner.assignmentId = survey.assignment_id;
-        appState.query.petitioner.surveyHeader = card.dataset.surveyHeader;
-        appState.query.petitioner.currentStep = survey.current_step;
+        appState.displaySurveysTasks.assignmentId = survey.assignment_id;
+        appState.displaySurveysTasks.surveyHeaderId = card.dataset.surveyHeader;
+        appState.displaySurveysTasks.currentStep = survey.current_step;
       });
 
       container.appendChild(card);

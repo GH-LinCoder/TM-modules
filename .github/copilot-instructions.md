@@ -291,23 +291,28 @@ Never access Supabase directly from UI modules. Always route through executeIfPe
 3. **Trace `panelsOnDisplay` array** in `flexmain.js` to see which panels are rendered
 4. **Check browser Network tab** for Supabase RPC calls
 
-### Understanding Petition Flow
-Trace how a click becomes a module load:
-1. User clicks element with `data-action`, `data-section`, `data-module`, `data-destination` attributes
-2. `buildPetitionListener.js:readPetition()` extracts these into petition object
+### Understanding how modules are loaded via the 'petition'
+The app loads modules when the user clicks on a menu item or card in a dashboard.
+1. User clicks a DOM element that has:  `data-action=`, `data-section=`, `data-module=`, `data-destination=` attributes
+2. `buildPetitionListener.js:readPetition()` extracts these into a 'petition' object and calls setPetitioner in appState.js
 3. `appState.setPetitioner(petition)` stores it and triggers state-change event
 4. `flexmain.js:openClosePanelsByRule()` receives event, calls `renderPanel()`
 5. `renderPanel()` looks up action in `registryLoadModule.js`
 6. Lazy import loads module, calls `module.render(panel, appState.query)` 
 7. Module renders into DOM at `appState.query.petitioner.Destination`
+
 8. NOTE [Modules often add listeners. Many current modules are closed without removing listeners. This is a problem. Even with listener removal added there is a problem with the way modules are closed. The following may help. 
 Modules are injected and removed from the DOM without page reloads, adding event listeners directly to panel or window without cleanup causes memory leaks and duplicate event firing. Sept 8 2026 we are starting to convert to a controller.abort system. The controller is created by flexmain when a module is loaded and flexmain is to use it before closing the module. 
-9. All modules need to
+9. All modules that are called need:
 `import { createListenerController, addManagedListener, removeListenersFromModule } from '../../utils/listenerManagement.js';`
- have as an argument  
-`function whatever(... , controller)` 
-& when adding listeners use 
+10. the module needs the argument to recieve the controller  
+`function whateverName(... , controller)` 
+11. when adding listeners use 
 `addManagedListener(element, event, handler, controller, options)`
+12. Files relevant for the abort system
+./flexmain.js
+./utils/listenerManagement.js
+
 
 ### User information is available in 
 `appState.query`:
