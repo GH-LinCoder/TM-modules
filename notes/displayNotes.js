@@ -35,7 +35,7 @@ let pageOfNotes = [];
 let totalCount = 0;
 let totalPages = 0;
 let currentPage = 1;
-let pageSize = 10;
+let pageSize = 25;
 
 /*
 function escapeHtml(text) { // this does not seem to happen
