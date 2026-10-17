@@ -212,15 +212,18 @@ Therefore use this anchor div instead -->
                     <!-- flexmain.getDisplayArea() find this element for new-panel injections -->
 
                 <!-- 4. DETAIL DISPLAY AREA (single injection point for expanded content) -->
+
                 <div class="bg-white rounded-lg shadow px-0 md:px-6 border-t border-blue-500">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-bold text-gray-800">
-                        <span class="text-purple-700">Roles</span>, <span class="text-green-700">Aims</span> &<span class='text-orange-700'>Plans</span></h2>
+                        <h2 class="text-xl font-bold">
+                         <span class="text-purple-700">Roles</span>, 
+                         <span class="text-green-700">Aims</span>,
+                         <span class='text-orange-700'>Plans</span> & 
+                         <span class='text-red-700'>Emergencies</span>
+                        </h2>
+
+
                     </div>
-
-
-
-
 
                 <!-- 3. ROLE / AIMS / PLANS CARD ROW (clickable cards using normal petitioner method) -->
 
@@ -241,17 +244,51 @@ Therefore use this anchor div instead -->
                     </div>
 
                     <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-orange-400" data-action="plans">
-                        <h3 text-lg font-semibold text-orange-700 mb-2">Our Plans 🗓️</h3>
+                        
+                        <h3 class="text-lg font-semibold text-orange-700 mb-2">Our Plans 🗓️</h3>
                         <p class="text-sm text-gray-600 mb-3">See current priorities and short-term objectives.</p>
                     </div>
 
                     <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-orange-400" data-action="emergency">
-                        <h3 text-lg font-semibold text-orange-700 mb-2">Emergency </h3>
+                        <h3 class="text-lg font-semibold text-red-700 mb-2">Emergency </h3>
                         <p class="text-sm text-gray-600 mb-3">Contact details & information sources.</p>
                     </div>
 
 
 
+                </div>
+</div>
+
+
+<div class="bg-white rounded-lg shadow px-0 md:px-6 border-t border-blue-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold">
+                        <span class="text-purple-700">Decisions</span>, <span class="text-green-700">Workflow</span> & <span class='text-orange-700'>Policies</span></h2>
+                    </div>
+
+
+                <!-- 3. ORG STYLE / DECISIONS / WORKFLOW / POLICIES|    CARD ROW (clickable cards using normal petitioner method) -->
+
+ <div class="mb-3 bg-indigo-50 p-3 rounded border  border-indigo-200 text-sm text-grey-700" data-section="org-style">
+  Click a card once to open the module. <i>Click the card again to close the module</i>
+ </div>
+
+                <div class="flex flex-col md:flex-row p-2 md:p-4" data-section="decisions-workflow-policies" data-destination="org-style">
+
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-purple-400" data-action="decisions">
+                        <h3 class="text-lg font-semibold text-purple-700 mb-2">Decisions </h3>
+                        <p class="text-sm text-gray-600 mb-3">How we make decisions.</p>
+                    </div>
+    
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-green-400" data-action="workflow">
+                        <h3 class="text-lg font-semibold text-green-700 mb-2">Workflow</h3>
+                        <p class="text-sm text-gray-600 mb-3">How we do things</p>                   
+                    </div>
+
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-orange-400" data-action="policies">
+                        <h3 class="text-lg font-semibold text-orange-700 mb-2">Policies</h3>
+                        <p class="text-sm text-gray-600 mb-3">Our organisation rules</p>
+                    </div>
                 </div>
 </div>
 

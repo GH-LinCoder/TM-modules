@@ -100,6 +100,21 @@ console.log('readAppro - action:',action);
     }
     break;
 
+    case 'decisions':{itemToDisplayId = 'a9abd85b-6955-46d2-ad33-1306836eeac8';
+      title = 'What we have decided';
+    }
+    break;
+
+case 'workflow':{itemToDisplayId = '7be2302e-120b-4e1d-9722-e713e7a9aec2';
+      title = 'How we do things';
+    }
+    break;
+case 'policies':{itemToDisplayId = 'b9de9cbb-62f3-4978-8751-9315ad416141';
+      title = 'How we behave & what our rules are';
+    }
+    break;
+
+
     default: console.log('Action not recognised:', action);
 }
 
