@@ -136,6 +136,12 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
                   <input type="radio" id="importance-5" name="importance" data-value="importance-5" value="23" class="mr-2 text-blue-600">
                   <label for="importance-5">5</label>
                 </div>
+<!--importance enabled checkbox added 18:39 Oct 17 2026-->
+                <div class="text-sm flex items-center" id="TagSection023">
+                  <input type="checkbox" id="importanceEnabled" name="importanceEnabled" data-value="importanceEnabled" checked class="mr-2 text-blue-600">
+                  <label for="importanceEnabled">Importance Enabled</label>
+                </div>
+
 
                 
                 </div>  

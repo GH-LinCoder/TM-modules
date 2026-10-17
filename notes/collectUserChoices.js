@@ -15,6 +15,8 @@ export let userChoices = { //amended 12:22 March 16 2026
     categoryNames: [],
 
     importance: null,
+    isImportanceEnabled: false,
+
     mode: 'more-clicks-more-notes',
     
     // Future
@@ -37,10 +39,17 @@ const importanceElement = document.querySelector('input[name="importance"]:check
   const importance = importanceElement ? Number(importanceElement.value) : null;
   console.log('🔍 Importance Value:', importance);
 
+  const importanceEnabled = document.querySelector('input[name="importanceEnabled"]:checked');
+//console.log('importanceEnabled',importanceEnabled);
 
+//  const selected = [...document.querySelectorAll('#notes-panel input[type="checkbox"]:checked')];
+//changed to prevent the name of importanceEnabled being stored. Otherwise it is pronted first before the names & then the names don't allign with their tag numbers
+const selected = [...document.querySelectorAll('#notes-panel input[type="checkbox"]:checked')]
+    .filter(el => el.name !== 'importanceEnabled');
+  
 
-  const selected = [...document.querySelectorAll('#notes-panel input[type="checkbox"]:checked')];
-  const selectedImportance = document.querySelector('#notes-panel input[name="importance"]:checked');
+const selectedImportance = document.querySelector('#notes-panel input[name="importance"]:checked');
+  const isImportanceEnabled = importanceEnabled?.checked || null;  //.value when checked was showing as "on"  .checked true or null
   const toApproId = document.querySelector('#toSelect, #respondentSelect')?.value || null;
   const fromApproId = document.querySelector('#fromSelect')?.value || null;
   const categories = selected
@@ -50,8 +59,17 @@ const importanceElement = document.querySelector('input[name="importance"]:check
   const categoryNames = selected.map(element => element.dataset.value).filter(Boolean);
   if (selectedImportance) {
     const importanceId = Number(selectedImportance.value);
-    if (Number.isInteger(importanceId)) categories.push(importanceId);
-    if (selectedImportance.dataset.value) categoryNames.push(selectedImportance.dataset.value);
+
+//    if (Number.isInteger(importanceId)) categories.push(importanceId);
+if (Number.isInteger(importanceId) && isImportanceEnabled) {
+      categories.push(importanceId);
+    }  
+
+
+// if (selectedImportance.dataset.value ) categoryNames.push(selectedImportance.dataset.value); //changed 18:57 Oct 17 2026. Only filter importance if enabled.
+   console.log('isImportanceEnabled:',isImportanceEnabled);
+ if (selectedImportance.dataset.value && isImportanceEnabled) categoryNames.push(selectedImportance.dataset.value);
+  else console.log('should be here if not enabled');
   }
   const mode = document.querySelector('#notes-panel input[name="clickLogic"]:checked')?.value
     || 'more-clicks-more-notes';
@@ -69,6 +87,7 @@ const importanceElement = document.querySelector('input[name="importance"]:check
     categories,
     categoryNames,
     importance,
+    isImportanceEnabled,
     mode,
     address: 'self'
   };

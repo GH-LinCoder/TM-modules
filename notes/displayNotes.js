@@ -82,8 +82,10 @@ export function xfilter() {//not called
  function filterNotesAccordingToUserChoices() {
     //const notes = pageOfNotes;
     collectUserChoices();//places the values in a global userCoices
-    console.log('🔍 Filtering pageOfNotes with userChoices:', userChoices, 'length',pageOfNotes.notes.length, 'userChoices',userChoices);
-    //why is id null?   It cease to be null later, so why is it null now?  length undefined
+    console.log('🔍 Filtering pageOfNotes with userChoices:', userChoices, 'length',pageOfNotes.notes.length);
+    //17:13 Oct 17.  I don't know why importance is in here when not enabled. 
+    // When isImportanceEnabled != true the filter should leave out importance from the filtering (any importance is accepted.). 
+    // But should filter on importance if isImportanceEnabled. Then show notes that have the set importance.
 
     if (!pageOfNotes.notes?.length) return [];
     
