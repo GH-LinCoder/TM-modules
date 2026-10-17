@@ -340,12 +340,13 @@ async function handleApprofileUpdate(e) {
     state.currentApprofile = updatedApprofile;
     
     // Close after delay
+    /*  //Removed this auto closure. None of the other modules closes after saving.
     setTimeout(() => {
       const dialog = document.querySelector('#editApprofileDialog');
       if (dialog && dialog.parentElement) {
         dialog.parentElement.remove();
       }
-    }, 1500);
+    }, 1500); */
     
   } catch (error) {
     showToast('Failed to update approfile: ' + error.message, 'error');
