@@ -16,7 +16,7 @@ function getTemplateHTML() {
             <!-- DASHBOARD HEADER (unchanged) -->
             <div class="px-0 md:px-6 py-4 border-b bg-green-200 flex justify-between items-center">
                 <div class="name" data-value="userName"  title="The logged-in user name. If this isn't you, please login">userName
-                </div> <i> ~ using the app for creating & managing an organisation</i>
+                </div> <i> ~ using the Operating System for creating & managing an organisation</i>
                 <div>
                     <h1 class="text-2xl font-bold" data-dash-title="admin">My Dashboard</h1>
                     <p class="text-sm text-gray-500" data-dash-sub_title="my">Check my tasks, surveys, messages & settings</p>
