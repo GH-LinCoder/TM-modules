@@ -42,7 +42,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'privacy':()=>import('../legal/privacy.js'),
 
 //////////          QUICK STATS   AdminDash           /////////                 
-'quick-stats-section.html': ()=> import('../dash/quickStatsSection.js'),
+//'quick-stats-section.html': ()=> import('../dash/quickStatsSection.js'),
 
 //  connected to Quick-stats, display but no actual data
 'data': () => import('../work/data/dataTables.js'),
