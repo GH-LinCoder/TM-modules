@@ -43,6 +43,7 @@ import { registry } from './registry/registryLoadModule.js'; // stores page (mod
 // === Data from database
 import { loadAdminDashWithData } from './dash/loadAdminDashWithData.js';
 import { loadMyDashWithData } from './dash/loadMyDashWithData.js';
+import { loadRunDashWithData } from './dash/loadRunDashWithData.js';
 
 // === GLOBAL STATE ===
 const panelsOnDisplay = appState.panelsOnDisplay;
@@ -293,6 +294,11 @@ async function loadPageWithData(pageName) { // pageName without .html
            await loadMyDashWithData(); // Implement this function similarly
          // console.warn('loadMyDashWithData() not implemented yet');
           break;
+      case 'runDash':
+           await loadRunDashWithData(); // Implement this function similarly
+         // console.warn('loadMyDashWithData() not implemented yet');
+          break;    
+
       default:
           console.warn(`flexmain has no data loader for ${pageName}`);
   }
