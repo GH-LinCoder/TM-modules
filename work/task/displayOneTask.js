@@ -6,6 +6,8 @@ import { resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 import {timeStampConversion} from '../../utils/timeStampConversion.js';
 import { executeAutomations } from '../../utils/executeAutomations.js';
 
+import { getSafeLinkHTML } from '../../utils/getSafeLinkHTML.js';
+
 let subject = null;
 let assignment = null;
 let panelEl = null;
@@ -143,7 +145,8 @@ async function renderTask(panel) {
     card.classList.add(bgColor, 'rounded-lg', 'shadow-lg', 'p-4', 'mb-6', 'border', 'border-gray-200');
     card.dataset.assignmentId = assignment.assignment_id;
 
-const linkUrl = assignment.task_external_url || '';
+//const linkUrl = assignment.task_external_url || '';
+ const linkUrl = getSafeLinkHTML(assignment.task_external_url);
 
     const headerHtml = `
         <div class="flex justify-between items-center mb-4">
@@ -152,9 +155,10 @@ const linkUrl = assignment.task_external_url || '';
             <div class="text-sm text-gray-700">Student: ${assignment.student_name || 'Unknown'}</div>
         </div>
         <div class="rounded-lg p-6 bg-white shadow-md border mb-4 whitespace-pre-line">${assignment.task_description || ''}
-        </div>
+        
         <div> ${linkUrl} </div> <!-- need show video or other link -->
-    `;
+    </div>
+        `;
 
     card.innerHTML = headerHtml + stepsHtml;
     panel.innerHTML = '';
@@ -178,9 +182,15 @@ function renderStepCard(title, step, colorTheme = 'gray', assignmentId = null, s
 
     let linkUrl = '';
     if (title === 'Current Step') {
-        linkUrl = step.step_external_url ? `<a href="${step.step_external_url}" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline text-sm inline-flex items-center gap-1 mt-2">🔗 View External Link</a>` : '';
-    }
+//        linkUrl = step.step_external_url ? `<a href="${step.step_external_url}">🔗 View External Link</a>` : '';
+linkUrl = getSafeLinkHTML(step.step_external_url);    
+}
+//header just does 
+// const linkUrl = assignment.task_external_url || '';
 
+
+//that link had this code to prevent bad actions, but what was displayed was just this code
+//" target="_blank" rel="noopener noreferrer" class="text-blue-600 hover:underline text-sm inline-flex items-center gap-1 mt-2"
     // Dynamic badge colors based on theme/title
     let badgeColor = 'bg-gray-100 text-gray-700';
     let borderStyle = 'border-gray-200';
