@@ -31,7 +31,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
               <label for="toSelect" class="block text-sm font-medium text-gray-700">Send to</label>
               <select id="toSelect" data-form="approSelect" class="w-full p-2 border border-gray-300 rounded text-sm">
-                <option value="">Choose an appro</option>
+                <option value="">Your TO list. (You may be able to add to the list using the Select menu)</option>
               </select>
               <p class="text-xs text-gray-500">The recipient can be a person, group, task, or concept.</p>
             </div>
@@ -105,7 +105,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
           <div class="mb-6 space-y-2">
             <label for="fromSelect" class="block text-sm font-medium text-gray-700">Show messages from</label>
             <select id="fromSelect" data-form="approSelect" class="w-full p-2 border border-gray-300 rounded text-sm">
-              <option value="">Choose an appro</option>
+              <option value="">Your FROM list. (You may be able to add to the list using the Select menu)</option>
             </select>
           </div>
 
