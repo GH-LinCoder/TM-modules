@@ -20,8 +20,8 @@ subject = await resolveSubject();
 
   // Load each section via petition system Only do this once !
   loadSection('profile');
-  loadSection('surveys'); //return;
-        loadSection('tasks'); //the tasks that the student is on
+  loadSection('surveys'); //return;//it calls displaySurveyCards
+        loadSection('tasks'); //the tasks that the student is on //it calls displayTaskCards
      //   loadSection('relations');
      //   loadSection('students'); //the tasks that the student manages (these are 'my students')
         
@@ -160,7 +160,7 @@ async function getRelationsCount() {
     
 function  loadSection(sectionName) {
         console.log('loadSection()', sectionName);
-        
+    //action display-surveys, display-tasks  which end up as displaySurveyCards or displayTaskCards or other    
         // Create petition for this section
         const petition = {
             Module: 'myDash',
