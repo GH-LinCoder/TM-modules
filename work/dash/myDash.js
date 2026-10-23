@@ -94,19 +94,6 @@ function getTemplateHTML() {
 
 
 
-
-
-<!-- temp Manage Students section -->
-
-<!--div class="bg-red-50 border border-red-200 rounded-lg p-4 cursor-pointer" 
-     data-section="pending-manager-tasks"  
-     data-action="display-students-on-tasks" 
-     data-destination="display-area" 
-     title="View students waiting for your approval to move to the next step">
-  <h3 class="text-sm font-medium text-red-700 mb-1">This is where I manage my students through their tasks. 🔧🛼🧑‍🎓</h3>
-  <p class="text-xs text-red-600">Click to see tasks where students are waiting for me to approve their next step.</p>
-</div>
-
 <!-- DISPLAY FULL TASK & SURVEY HERE -->
 <div data-section="display-area" data-destination="display-area">
     <div id="detail-content" data-panel="inject-here"></div>
