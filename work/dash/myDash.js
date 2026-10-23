@@ -40,7 +40,7 @@ function getTemplateHTML() {
                                 data-destination ="tasks-section"
                                 title="Click to refresh the tasks displayed as cards. One click closes, 2nd click opens."
                                 >
-                            Click here to refresh display </i>
+                            Click here to refresh task display </i>
                             </span></h2>
                       
                     </div>
@@ -119,7 +119,7 @@ function getTemplateHTML() {
                                 data-section ='surveys-refresh'
                                 data-destination ="surveys-section"
                                 title="Click to refresh the surveys displayed as cards. One click closes, 2nd click opens.">
-                         Click here to refresh display</i>
+                         Click here to refresh survey display</i>
                             </span>
                         </h2>
             
