@@ -28,13 +28,20 @@ function getTemplateHTML() {
 <!-- data-value is used in some numbers and data-count is used in others. Don't know why. Don't know if it matters  March 7 2026  -->
 
 <!-- 2. THINGS TO DO SECTION (new structure) -->
-                <div class=" bg-gray-100 rounded-lg shadow p-0 md:p-6 border-t border-blue-500">
-                    <!--h2 class="text-xl font-bold text-gray-800 mb-4">Doing my bit ✨  <i>Tasks to handle - click the card below 🔧</i></h2-->
+            <div class=" bg-gray-100 rounded-lg shadow p-0 md:p-6 border-t border-blue-500">
 
                     <!-- Tasks List -->
                     <div class="mb-6">
                         <div class="flex items-center justify-between mb-2">
-                            <h2 class="text-xl font-bold text-grey-800">Doing my bit ✨  <i>Tasks to handle - click the card below</i> 🔧</h2>
+                            <h2 class="text-xl font-bold text-grey-800">Doing my bit ✨  <i>Tasks to handle 🔧 - click a card below
+                             <span class="text-blue-300 text-sm cursor-pointer hover:text-indigo-600 hover:underline" 
+                                data-action="display-tasks"
+                                data-section ='tasks-refresh'
+                                data-destination ="tasks-section"
+                                title="Click to refresh the tasks displayed as cards. One click closes, 2nd click opens."
+                                >
+                            Click here to refresh display </i>
+                            </span></h2>
                       
                     </div>
 
@@ -56,11 +63,7 @@ function getTemplateHTML() {
 
                         <!-- Preserved data-list for existing task loader -->
                     <div class="bg-indigo-100 space-y-1" data-list="my-tasks" data-section="tasks-section">
-                        <!--div class="mt-3 flex gap-2 "  data-action="display-task-choice" data-destination ="tasks-section" title='Shows a list of all available tasks. You can take on any task by clicking it.' >
-                        <p class="text-sm font-sm text-blue-700 mb-2">If you want more tasks click here to add tasks 🔧</p>
-                    </div-->
-
- <!-- Extra Tasks LOAD HERE    (removed from button: data-section="tasks-section"  12:30 Aug 16 2026) -->
+                         <!-- Extra Tasks LOAD HERE    (removed from button: data-section="tasks-section"  12:30 Aug 16 2026) -->
 
                     </div>
 <!--moved the choose more tasks to above the place where they will display-->
@@ -110,13 +113,13 @@ function getTemplateHTML() {
                     <div class="mb-6">
                         <div class="flex items-center justify-between mb-2">
                         <h2 class="text-lg font-semibold text-orange-600 class="cursor-pointer hover:text-indigo-600 hover:underline"> 
-                        Having my say - click a card below   
-                                <span class="cursor-pointer hover:text-indigo-600 hover:underline" 
+                        Having my say ✨ <i>surveys to answer 📜 - click a card below   
+                                <span class="text-blue-300 text-sm cursor-pointer hover:text-indigo-600 hover:underline" 
                                 data-action="display-surveys"
                                 data-section ='surveys-refresh'
                                 data-destination ="surveys-section"
                                 title="Click to refresh the surveys displayed as cards. One click closes, 2nd click opens.">
-                        📜 Click here to refresh display
+                         Click here to refresh display</i>
                             </span>
                         </h2>
             
