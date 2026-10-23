@@ -122,8 +122,17 @@ function getTemplateHTML() {
                     <!-- Surveys List -->
                     <div class="mb-6">
                         <div class="flex items-center justify-between mb-2">
-                            <h2 class="text-lg font-semibold text-orange-600">Having my say - click a card below 📜</h2>
-                            
+                        <h2 class="text-lg font-semibold text-orange-600 class="cursor-pointer hover:text-indigo-600 hover:underline"> 
+                        Having my say - click a card below   
+                                <span class="cursor-pointer hover:text-indigo-600 hover:underline" 
+                                data-action="display-surveys"
+                                data-section ='surveys-refresh'
+                                data-destination ="surveys-section"
+                                title="Click to refresh the surveys displayed as cards. One click closes, 2nd click opens.">
+                        📜 Click here to refresh display
+                            </span>
+                        </h2>
+            
                         </div>
 
                         <div class="bg-orange-50 p-3 rounded border border-indigo-200 text-sm text-grey-700">
@@ -147,23 +156,15 @@ function getTemplateHTML() {
                             <!-- Preserved data-list for existing survey loader -->
                         <div class="bg-orange-100 space-y-1" data-list="my-surveys" data-section="surveys-section">
 
-                            <!-- Surveys LOAD HERE  removed from button data-section="surveys-section"  12:31 Aug 16 2026-->
+    <!-- Surveys LOAD HERE  removed from button data-section="surveys-section"  12:31 Aug 16 2026-->
                         
-
-                  <!--div class="mt-3 flex gap-2 "  data-action="display-survey-choice" data-destination ="surveys-section"  >
-                        <h3 class="text-sm font-sm text-blue-700 mb-2">Toggle more surveys you can add to your list  📜</h3>
-                        <p class="text-sm text-gray-600 mb-3">Scroll down & click any survey you can take on. Surveys make choices. </p>
-                    </div-->
-
-
+                       <!-- MORE SURVEYS -->
                        <!--div class="cursor-pointer hover:text-blue-600 hover:underline text-sm font-sm text-blue-700 mb-2"  
                        data-action="display-survey-choice" 
                        data-destination ="surveys-section" 
                        title='Shows a list of all available surveys. You can take on any survey by clicking it.' >
                         <i>If you want to answer more surveys you can add to your list</i>  📜 
                        </div-->
-
-
 
 
                    </div>
