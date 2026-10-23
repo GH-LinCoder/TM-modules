@@ -84,7 +84,7 @@ if(appState.query.userAuthId) //collect some other data about the lgged in user
 if (authUser ) return {
               id:authUser.id, 
               approUserId:appState.query.userId || null, //added  || nul 12:00 Jan 13
-              name:appState.query.userName || 'unknown',
+              name:appState.query.userName || 'Please login',
               email:authUser.email,
               created_at:authUser.created_at,
               type: 'app-human',

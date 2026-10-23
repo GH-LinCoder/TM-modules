@@ -4,7 +4,7 @@ import { showToast } from '../../ui/showToast.js';
 import { appState } from '../../state/appState.js';
 import { detectMyDash, resolveSubject } from '../../utils/resolveSubjectPlus2.js';
 import { executeAutomations } from '../../utils/executeAutomations.js';
-import { getSurveyHeaderHTML, renderSurveyQuestion, getInfoFeedbackHTML } from '../../utils/surveySummaryRenderer.js';
+import { getSurveyHeaderHTML, renderSurveyQuestion} from '../../utils/surveySummaryRenderer.js';
 //import { icons } from '../../registry/iconList.js';
 
 console.log('displayOneSurvey.js loaded');
@@ -15,7 +15,7 @@ let assignedSurveyAsArray =null;
 
 let panelEl = null;
 let endedOrActive = null;
-let currentStep = 1; //added 12:58 Aug24  & deleted from render arguments, but log as undefined
+//let currentStep = 1; //added 12:58 Aug24  & deleted from render arguments, but log as undefined
 let assignmentRow =[]; //new 15:20 Aug 25
 //let answersArray = []; 
 const autoPetition = {
@@ -99,7 +99,7 @@ export async function render(panel, query = {}) {
     const assignmentId = appState.displaySurveysTasks.assignmentId;
     const surveyId = petitioner.surveyId || appState.displaySurveysTasks.surveyHeaderId; // ✅ Fixes the naming mismatch!
     const currentStep = appState.displaySurveysTasks.currentStep || 1; // ✅ Fixes your "where is currentStep set?" comment
-    const entityType = petitioner.entityType;
+    //const entityType = petitioner.entityType;
     
     console.log('displayOneSurvey extracted:', { assignmentId, surveyId, currentStep });
 

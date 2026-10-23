@@ -31,7 +31,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
 
               <label for="toSelect" class="block text-sm font-medium text-gray-700">Send to</label>
               <select id="toSelect" data-form="approSelect" class="w-full p-2 border border-gray-300 rounded text-sm">
-                <option value="">Choose an appro</option>
+                <option value="">Your TO list. (You may be able to add to the list using the Select menu)</option>
               </select>
               <p class="text-xs text-gray-500">The recipient can be a person, group, task, or concept.</p>
             </div>
@@ -65,7 +65,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
           class="h-4 w-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500 cursor-pointer"
         />
         <label for="tag-main-help" class="text-sm text-gray-700 cursor-pointer select-none">
-          <span class="font-semibold text-amber-700">Create a How to help</span>
+          <span class="font-semibold text-amber-700">Create a How? context help</span>
           <span class="text-gray-500"> — Click this if you are creating instructions to display in the <strong>[How?]</strong> module</span>
     <!--span>To create a help note that appears in the <strong>How?</strong> module, 
     enter a title that matches the action name (e.g. display-surveys or edit-task-dialogue</span-->
@@ -105,7 +105,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
           <div class="mb-6 space-y-2">
             <label for="fromSelect" class="block text-sm font-medium text-gray-700">Show messages from</label>
             <select id="fromSelect" data-form="approSelect" class="w-full p-2 border border-gray-300 rounded text-sm">
-              <option value="">Choose an appro</option>
+              <option value="">Your FROM list. (You may be able to add to the list using the Select menu)</option>
             </select>
           </div>
 
@@ -136,6 +136,12 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
                   <input type="radio" id="importance-5" name="importance" data-value="importance-5" value="23" class="mr-2 text-blue-600">
                   <label for="importance-5">5</label>
                 </div>
+<!--importance enabled checkbox added 18:39 Oct 17 2026-->
+                <div class="text-sm flex items-center" id="TagSection023">
+                  <input type="checkbox" id="importanceEnabled" name="importanceEnabled" data-value="importanceEnabled" checked class="mr-2 text-blue-600">
+                  <label for="importanceEnabled">Importance Enabled</label>
+                </div>
+
 
                 
                 </div>  
@@ -214,6 +220,23 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
                 <input type="checkbox" id="tag-business-review" name="business" data-value="review" value="38" class="mr-2 text-blue-600">
                 <label for="tag-business-review">review</label>
               </div>
+
+              <!--added these new 3 categories 22:15 Oct 16 2026-->
+<div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection038">
+                <input type="checkbox" id="tag-business-minutes" name="business" data-value="minutes" value="50" class="mr-2 text-blue-600">
+                <label for="tag-business-minutes">Minutes</label>
+              </div>
+<div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection038">
+                <input type="checkbox" id="tag-business-news" name="business" data-value="news" value="51" class="mr-2 text-blue-600">
+                <label for="tag-business-minutes">News</label>
+              </div>
+
+<div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection038">
+                <input type="checkbox" id="tag-business-staff" name="business" data-value="staff" value="52" class="mr-2 text-blue-600">
+                <label for="tag-business-minutes">Staff</label>
+              </div>
+
+
             </div>
           </div>
           <!-- Resource Tags -->
@@ -229,7 +252,7 @@ function getTemplateHTML() { console.log('getTemplateHTML()');
               </div>
               <div class="px-2 py-1 border rounded cursor-pointer text-sm flex items-center" id="TagSection013">
                 <input type="checkbox" id="tag-resource-howto" name="resource" data-value="how-to" value="13" class="mr-2 text-blue-600">
-                <label for="tag-resource-howto">how to</label>
+                <label for="tag-resource-howto">instruction</label>
               </div>
             </div>
           </div>

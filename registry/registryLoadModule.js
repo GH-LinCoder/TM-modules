@@ -25,10 +25,16 @@ export const registry = { // this registry is for loading a new page to the righ
 'plans' :() => import('../plans.js'),
 */
 
-"my-role" : () => import('../work/approfiles/displayRoleAimsPlans.js'),
+'my-role' : () => import('../work/approfiles/displayRoleAimsPlans.js'),
 'aims' :() => import('../work/approfiles/displayRoleAimsPlans.js'),
 'plans' :() => import('../work/approfiles/displayRoleAimsPlans.js'),
 'emergency':() => import('../work/approfiles/displayRoleAimsPlans.js'),
+
+//added 15:55 Oct 17 2026
+'decisions': () => import('../work/approfiles/displayRoleAimsPlans.js'), 
+'workflow': () => import('../work/approfiles/displayRoleAimsPlans.js'), 
+'policies': () => import('../work/approfiles/displayRoleAimsPlans.js'),
+
 
 
 'login-signup':()=>import('../auth/login-signup.js'),
@@ -36,7 +42,7 @@ export const registry = { // this registry is for loading a new page to the righ
 'privacy':()=>import('../legal/privacy.js'),
 
 //////////          QUICK STATS   AdminDash           /////////                 
-'quick-stats-section.html': ()=> import('../dash/quickStatsSection.js'),
+//'quick-stats-section.html': ()=> import('../dash/quickStatsSection.js'),
 
 //  connected to Quick-stats, display but no actual data
 'data': () => import('../work/data/dataTables.js'),

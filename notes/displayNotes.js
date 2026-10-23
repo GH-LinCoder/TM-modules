@@ -35,7 +35,7 @@ let pageOfNotes = [];
 let totalCount = 0;
 let totalPages = 0;
 let currentPage = 1;
-let pageSize = 10;
+let pageSize = 25;
 
 /*
 function escapeHtml(text) { // this does not seem to happen
@@ -82,8 +82,10 @@ export function xfilter() {//not called
  function filterNotesAccordingToUserChoices() {
     //const notes = pageOfNotes;
     collectUserChoices();//places the values in a global userCoices
-    console.log('🔍 Filtering pageOfNotes with userChoices:', userChoices, 'length',pageOfNotes.notes.length, 'userChoices',userChoices);
-    //why is id null?   It cease to be null later, so why is it null now?  length undefined
+    console.log('🔍 Filtering pageOfNotes with userChoices:', userChoices, 'length',pageOfNotes.notes.length);
+    //17:13 Oct 17.  I don't know why importance is in here when not enabled. 
+    // When isImportanceEnabled != true the filter should leave out importance from the filtering (any importance is accepted.). 
+    // But should filter on importance if isImportanceEnabled. Then show notes that have the set importance.
 
     if (!pageOfNotes.notes?.length) return [];
     
@@ -186,14 +188,14 @@ function getHTMLofUserChoices(){ // turn the object into text to show the user w
  <span class="text-blue-600 w-20 text-xs">
      TAGS  (  ${categories.length ? categories.join(', ') : 'none'} 
  </span>
- <span class="font-light w-5">=</span>
+ <span class="font-light w-5"> = </span>
  <span class="text-blue-600 text-xs w-20">
          ${userChoices.categoryNames.length ? userChoices.categoryNames.join(', ')
     : 'none'
 } ) </span>
 <span class="font-medium w-20"></span>
 <span class="text-red-600 text-xs w-20">
-  : importance ${importance || 'none'}
+  : importance tag number: ${importance || 'none'}
   </span>   
   <span class="font-light w-20"></span>
 <span class="text-green-600 text-xs w-20">
@@ -410,7 +412,7 @@ export async function renderNotes(notes, totalCount, page, pageSize) {
           <p class="flex items-center">
             <span class="text-blue-600 text-xs font-light w-10">Tags:</span>
             <span class="text-blue-600 text-xs font-light cat-ids-placeholder"></span>
-            <span class="w-1">=</span>
+            <span class="text-blue-600 text-xs font-light"> :=: </span>
             <span class="text-blue-600 text-xs font-light cat-names-placeholder"></span>
           </p>
 

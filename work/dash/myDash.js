@@ -16,7 +16,7 @@ function getTemplateHTML() {
             <!-- DASHBOARD HEADER (unchanged) -->
             <div class="px-0 md:px-6 py-4 border-b bg-green-200 flex justify-between items-center">
                 <div class="name" data-value="userName"  title="The logged-in user name. If this isn't you, please login">userName
-                </div> <i> ~ using the app for creating & managing an organisation</i>
+                </div> <i> ~ using the Operating System for creating & managing an organisation</i>
                 <div>
                     <h1 class="text-2xl font-bold" data-dash-title="admin">My Dashboard</h1>
                     <p class="text-sm text-gray-500" data-dash-sub_title="my">Check my tasks, surveys, messages & settings</p>
@@ -28,13 +28,20 @@ function getTemplateHTML() {
 <!-- data-value is used in some numbers and data-count is used in others. Don't know why. Don't know if it matters  March 7 2026  -->
 
 <!-- 2. THINGS TO DO SECTION (new structure) -->
-                <div class=" bg-gray-100 rounded-lg shadow p-0 md:p-6 border-t border-blue-500">
-                    <!--h2 class="text-xl font-bold text-gray-800 mb-4">Doing my bit ✨  <i>Tasks to handle - click the card below 🔧</i></h2-->
+            <div class=" bg-gray-100 rounded-lg shadow p-0 md:p-6 border-t border-blue-500">
 
                     <!-- Tasks List -->
                     <div class="mb-6">
                         <div class="flex items-center justify-between mb-2">
-                            <h2 class="text-xl font-bold text-grey-800">Doing my bit ✨  <i>Tasks to handle - click the card below</i> 🔧</h2>
+                            <h2 class="text-xl font-bold text-grey-800">Doing my bit ✨  <i>Tasks to handle 🔧 - click a card below
+                             <span class="text-blue-300 text-sm cursor-pointer hover:text-indigo-600 hover:underline" 
+                                data-action="display-tasks"
+                                data-section ='tasks-refresh'
+                                data-destination ="tasks-section"
+                                title="Click to refresh the tasks displayed as cards. One click closes, 2nd click opens."
+                                >
+                            Click here to refresh task display </i>
+                            </span></h2>
                       
                     </div>
 
@@ -56,11 +63,7 @@ function getTemplateHTML() {
 
                         <!-- Preserved data-list for existing task loader -->
                     <div class="bg-indigo-100 space-y-1" data-list="my-tasks" data-section="tasks-section">
-                        <!--div class="mt-3 flex gap-2 "  data-action="display-task-choice" data-destination ="tasks-section" title='Shows a list of all available tasks. You can take on any task by clicking it.' >
-                        <p class="text-sm font-sm text-blue-700 mb-2">If you want more tasks click here to add tasks 🔧</p>
-                    </div-->
-
- <!-- Extra Tasks LOAD HERE    (removed from button: data-section="tasks-section"  12:30 Aug 16 2026) -->
+                         <!-- Extra Tasks LOAD HERE    (removed from button: data-section="tasks-section"  12:30 Aug 16 2026) -->
 
                     </div>
 <!--moved the choose more tasks to above the place where they will display-->
@@ -94,19 +97,6 @@ function getTemplateHTML() {
 
 
 
-
-
-<!-- temp Manage Students section -->
-
-<!--div class="bg-red-50 border border-red-200 rounded-lg p-4 cursor-pointer" 
-     data-section="pending-manager-tasks"  
-     data-action="display-students-on-tasks" 
-     data-destination="display-area" 
-     title="View students waiting for your approval to move to the next step">
-  <h3 class="text-sm font-medium text-red-700 mb-1">This is where I manage my students through their tasks. 🔧🛼🧑‍🎓</h3>
-  <p class="text-xs text-red-600">Click to see tasks where students are waiting for me to approve their next step.</p>
-</div>
-
 <!-- DISPLAY FULL TASK & SURVEY HERE -->
 <div data-section="display-area" data-destination="display-area">
     <div id="detail-content" data-panel="inject-here"></div>
@@ -122,8 +112,17 @@ function getTemplateHTML() {
                     <!-- Surveys List -->
                     <div class="mb-6">
                         <div class="flex items-center justify-between mb-2">
-                            <h2 class="text-lg font-semibold text-orange-600">Having my say - click a card below 📜</h2>
-                            
+                        <h2 class="text-lg font-semibold text-orange-600 class="cursor-pointer hover:text-indigo-600 hover:underline"> 
+                        Having my say ✨ <i>surveys to answer 📜 - click a card below   
+                                <span class="text-blue-300 text-sm cursor-pointer hover:text-indigo-600 hover:underline" 
+                                data-action="display-surveys"
+                                data-section ='surveys-refresh'
+                                data-destination ="surveys-section"
+                                title="Click to refresh the surveys displayed as cards. One click closes, 2nd click opens.">
+                         Click here to refresh survey display</i>
+                            </span>
+                        </h2>
+            
                         </div>
 
                         <div class="bg-orange-50 p-3 rounded border border-indigo-200 text-sm text-grey-700">
@@ -147,23 +146,15 @@ function getTemplateHTML() {
                             <!-- Preserved data-list for existing survey loader -->
                         <div class="bg-orange-100 space-y-1" data-list="my-surveys" data-section="surveys-section">
 
-                            <!-- Surveys LOAD HERE  removed from button data-section="surveys-section"  12:31 Aug 16 2026-->
+    <!-- Surveys LOAD HERE  removed from button data-section="surveys-section"  12:31 Aug 16 2026-->
                         
-
-                  <!--div class="mt-3 flex gap-2 "  data-action="display-survey-choice" data-destination ="surveys-section"  >
-                        <h3 class="text-sm font-sm text-blue-700 mb-2">Toggle more surveys you can add to your list  📜</h3>
-                        <p class="text-sm text-gray-600 mb-3">Scroll down & click any survey you can take on. Surveys make choices. </p>
-                    </div-->
-
-
+                       <!-- MORE SURVEYS -->
                        <!--div class="cursor-pointer hover:text-blue-600 hover:underline text-sm font-sm text-blue-700 mb-2"  
                        data-action="display-survey-choice" 
                        data-destination ="surveys-section" 
                        title='Shows a list of all available surveys. You can take on any survey by clicking it.' >
                         <i>If you want to answer more surveys you can add to your list</i>  📜 
                        </div-->
-
-
 
 
                    </div>
@@ -212,15 +203,18 @@ Therefore use this anchor div instead -->
                     <!-- flexmain.getDisplayArea() find this element for new-panel injections -->
 
                 <!-- 4. DETAIL DISPLAY AREA (single injection point for expanded content) -->
+
                 <div class="bg-white rounded-lg shadow px-0 md:px-6 border-t border-blue-500">
                     <div class="flex items-center justify-between mb-4">
-                        <h2 class="text-xl font-bold text-gray-800">
-                        <span class="text-purple-700">Roles</span>, <span class="text-green-700">Aims</span> &<span class='text-orange-700'>Plans</span></h2>
+                        <h2 class="text-xl font-bold">
+                         <span class="text-purple-700">Roles</span>, 
+                         <span class="text-green-700">Aims</span>,
+                         <span class='text-orange-700'>Plans</span> & 
+                         <span class='text-red-700'>Emergencies</span>
+                        </h2>
+
+
                     </div>
-
-
-
-
 
                 <!-- 3. ROLE / AIMS / PLANS CARD ROW (clickable cards using normal petitioner method) -->
 
@@ -241,17 +235,51 @@ Therefore use this anchor div instead -->
                     </div>
 
                     <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-orange-400" data-action="plans">
-                        <h3 text-lg font-semibold text-orange-700 mb-2">Our Plans 🗓️</h3>
+                        
+                        <h3 class="text-lg font-semibold text-orange-700 mb-2">Our Plans 🗓️</h3>
                         <p class="text-sm text-gray-600 mb-3">See current priorities and short-term objectives.</p>
                     </div>
 
                     <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-orange-400" data-action="emergency">
-                        <h3 text-lg font-semibold text-orange-700 mb-2">Emergency </h3>
+                        <h3 class="text-lg font-semibold text-red-700 mb-2">Emergency </h3>
                         <p class="text-sm text-gray-600 mb-3">Contact details & information sources.</p>
                     </div>
 
 
 
+                </div>
+</div>
+
+
+<div class="bg-white rounded-lg shadow px-0 md:px-6 border-t border-blue-500">
+                    <div class="flex items-center justify-between mb-4">
+                        <h2 class="text-xl font-bold">
+                        <span class="text-purple-700">Decisions</span>, <span class="text-green-700">Workflow</span> & <span class='text-orange-700'>Policies</span></h2>
+                    </div>
+
+
+                <!-- 3. ORG STYLE / DECISIONS / WORKFLOW / POLICIES|    CARD ROW (clickable cards using normal petitioner method) -->
+
+ <div class="mb-3 bg-indigo-50 p-3 rounded border  border-indigo-200 text-sm text-grey-700" data-section="org-style">
+  Click a card once to open the module. <i>Click the card again to close the module</i>
+ </div>
+
+                <div class="flex flex-col md:flex-row p-2 md:p-4" data-section="decisions-workflow-policies" data-destination="org-style">
+
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-purple-400" data-action="decisions">
+                        <h3 class="text-lg font-semibold text-purple-700 mb-2">Decisions </h3>
+                        <p class="text-sm text-gray-600 mb-3">How we make decisions.</p>
+                    </div>
+    
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-green-400" data-action="workflow">
+                        <h3 class="text-lg font-semibold text-green-700 mb-2">Workflow</h3>
+                        <p class="text-sm text-gray-600 mb-3">How we do things</p>                   
+                    </div>
+
+                    <div class="hover:shadow-md hover:bg-green-200 cursor-pointer flex-1 bg-white rounded-lg shadow p-2 md:p-4 border-l-4 border-orange-400" data-action="policies">
+                        <h3 class="text-lg font-semibold text-orange-700 mb-2">Policies</h3>
+                        <p class="text-sm text-gray-600 mb-3">Our organisation rules</p>
+                    </div>
                 </div>
 </div>
 

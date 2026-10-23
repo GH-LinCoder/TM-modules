@@ -13,8 +13,37 @@ export async function loadAdminDashWithData() {
     // completed 21:19  took 70 mins
 
     //19:13 Sept 19 2025 deleted all the old diret calls & the loading of functions from dataReaders 
-    let count; // this was done line by line to test each one. Could be done in a loop
+     // this was done line by line to test each one. Could be done in a loop
 
+
+
+     //The adminDash could have "Quick Stats 🧮"  and "Recent Activity 🫣" as cards or buttons that call the functions
+//in same way that myDash calls displayTaskCards and displaySurveyCards
+//This means making the two functions into modules intsead of functions here
+
+await displayQuickStats(); //could make this only update on a click - reduces db calls
+
+await readRecentLogs(); //could make this only update on a click - reduces db calls
+
+
+//This is the  same as used in runDash. Could be a shared file:
+const subject = await resolveSubject();
+  let data;
+
+//data ='User: '+ appState.query.userName + ' Auth 🆔: ' + appState.query.userId;  // wrong id
+data ='User: '+ appState.query.userName + ' Auth 🆔: ' + appState.query.userAuthId;
+
+console.log('data',data);
+updateAll('[data-value="user-details"]', data); //user name and appro id of the logged in user
+
+data = 'Data: '+ subject.name + ' Appro 🆔: ' + subject.approUserId;  // subjet.id is auth id
+console.log('data',data);
+updateAll('[data-value="data-details"]', data); //name and appro id of the selected item (from clipboard or default) 
+
+  }
+
+async function displayQuickStats(){
+let count;  
     //signups  new 13:26 Jan 13 2026
 count = await executeIfPermitted(null, 'tempSignupCount', null); 
 console.log('loadAdmin..:temp count',count);    
@@ -58,24 +87,8 @@ console.log('manager count',count);
     count = await executeIfPermitted(null, 'respondentsCount', null);
     updateAll('[data-value="respondents-count-unique"]', count); //need change html students-count-unique
   console.log('respondent count',count);
-    
 
-readRecentLogs();
-
-const subject = await resolveSubject();
-  let data;
-
-//data ='User: '+ appState.query.userName + ' Auth 🆔: ' + appState.query.userId;  // wrong id
-data ='User: '+ appState.query.userName + ' Auth 🆔: ' + appState.query.userAuthId;
-
-console.log('data',data);
-updateAll('[data-value="user-details"]', data); //user name and appro id of the logged in user
-
-data = 'Data: '+ subject.name + ' Appro 🆔: ' + subject.approUserId;  // subjet.id is auth id
-console.log('data',data);
-updateAll('[data-value="data-details"]', data); //name and appro id of the selected item (from clipboard or default) 
-
-  }
+}
 
 
 function updateAll(selector, value) {

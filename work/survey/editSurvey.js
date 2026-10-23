@@ -62,6 +62,7 @@ if (summary) summary.innerHTML = '<div class="p-4 text-gray-600 flex items-cente
 const rows = await executeIfPermitted(userId, 'readSurveyView', { survey_id: surveyId});
 state.currentSurveyView = rows; //turn the survey into a global for this module 
 //console.log('readSurveyView', state.currentSurveyView);
+summary.innerHTML =''; //remove spinner
 return rows;
 
 }

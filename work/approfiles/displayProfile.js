@@ -56,7 +56,7 @@ subject = await resolveSubject(); //resolveSubject now puts the values in appSta
 //subject may return the contents of the clipboard, but it also loads the auth user details in appState
 //How should we handle this?  
 //subject.name = appState.query.userName || subject.name || 'unknown'; //appState query name should override the authUser name. This is because approfiles can choose a different display name from the auth name. And if no authUser (eg clipboard only) then use the subject name if available, otherwise 'unknown'
-
+//console.log('subject',subject);
 
 if(!subject) {console.log('Error - no subject returned'); return}
 
@@ -114,7 +114,9 @@ const activePlans = await executeIfPermitted(subject.id,'readActivePaymentPlans'
             if (approIdEl) approIdEl.textContent = subject.approUserId;
             
     const myDashUserName = document.querySelector('[data-value="userName"]');       
-            
+
+//    if(!subject.name) myDashUserName.textContent = 'Please login'; 
+//    else
 if(myDashUserName) myDashUserName.textContent = subject.name; //new 12:00 August 21 2026
 
 // After your existing element selections:

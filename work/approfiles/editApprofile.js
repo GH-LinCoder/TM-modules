@@ -276,6 +276,7 @@ function attachListeners(panel) {
   const saveBtn = panel.querySelector('#saveApprofileBtn');
   const cancelBtn = panel.querySelector('#cancelBtn');
 
+  //allow update if anything changes
   nameInput?.addEventListener('input', e => {
     nameCounter.textContent = `${e.target.value.length}/64 characters`;
     nameError.classList.add('hidden');
@@ -285,6 +286,8 @@ function attachListeners(panel) {
 
   descriptionInput?.addEventListener('input', e => {
     descriptionCounter.textContent = `${e.target.value.length}/2000 characters`;
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Update Approfile';
   });
 
   saveBtn?.addEventListener('click', handleApprofileUpdate);
@@ -340,12 +343,15 @@ async function handleApprofileUpdate(e) {
     state.currentApprofile = updatedApprofile;
     
     // Close after delay
+    /*  //Removed this auto closure. None of the other modules closes after saving.
     setTimeout(() => {
       const dialog = document.querySelector('#editApprofileDialog');
       if (dialog && dialog.parentElement) {
         dialog.parentElement.remove();
       }
-    }, 1500);
+    }, 1500); */
+
+    //need to reset so that it is possible to save any further changes.  Currently the state stays as 'updated'.
     
   } catch (error) {
     showToast('Failed to update approfile: ' + error.message, 'error');

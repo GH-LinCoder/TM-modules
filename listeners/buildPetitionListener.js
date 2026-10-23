@@ -7,21 +7,6 @@
 import { appState } from '../state/appState.js';
 
 console.log('buildPetitionListener.js   loaded');
-/*
-function handleCardClick(action, moduleName) {//does nothing???
-  // Just update state - don't call renderPanel directly
-  console.log('handleCardClick action:(',action,', name:', moduleName, ')');
-
- //if query{} already has the name of the current panel open, do not open again
-   const isAlreadyOpen = moduleName===appState.query.petitioner.Module; // 
- 
-  if (isAlreadyOpen) {
-    console.log('Panel already open:', moduleName);
-    return; // Prevent opening the same panel multiple times 
-  } 
-  
- // but the function doesn't do anything, so what is the point?
-} */
 
 // Reads the information from the clicked element, its section and the full page
 // so that we know which module (page), which section of that module and the specific action that has been clicked
@@ -53,8 +38,6 @@ return petition;
 }
 
 
-
-
 /**
  * Sets up event listeners for the admin dashboard
  * @param {Element} container - The container element of the admin dashboard
@@ -65,22 +48,12 @@ export function buildPetitionListener(container) {
   container.__buildPetitionListenerAttached = true;
 
   container.addEventListener('click', (e) => {
-  //  const tag = e.target.tagName;
 
-
-    /*
-    // Let native form controls behave normally - this failed to solve the problem
-    if (['SELECT', 'OPTION', 'INPUT', 'TEXTAREA'].includes(tag)) {
-      console.log('buildPetitionListener: native form element clicked, skipping admin logic');
-      return; // IMPORTANT: no preventDefault / no stopPropagation
-    }
-*/
-// Trying this instead: Check if click is on or inside a form element
+// Check if click is on or inside a form element
 if (e.target.closest('select, input, textarea')) {
   console.log('buildPetitionListener: native form element clicked, skipping admin logic');
   return;
 }
-
 
     const petition = readPetition(e);
    // console.log('petition (', petition, ')');
@@ -88,99 +61,6 @@ if (e.target.closest('select, input, textarea')) {
       console.log('No petition found, exiting listener');
       return;
     }
-
     appState.setPetitioner(petition);
-    //const action = petition.Action;
-    //console.log('buildPetitionListener (', action, ')');
-
-
-    // the following looks out of date. sept 2026
-    
-/*  //removed switch 16:43 Sept 30 2026
-    switch (action) {
-      case 'create-task-dialogue':
-        console.log('case: (', action, ') changing name to createTaskForm.html Then call handleCardClick()');
-       // handleCardClick(action, 'createTaskForm.html');  //is this relvant or legacy?
-        break;
-
-      case 'assign-task-dialogue':
-        console.log('case: (', action, ') changing name to asignTaskForm.html Then call handleCardClick()');
-      //  handleCardClick(action, 'assignTaskForm.html');
-        break;
-
-      case 'move-student-dialogue':
-        console.log('case: (', action, ') changing name to moveStudentForm.html Then call handleCardClick()');
-      //  handleCardClick(action, 'moveStudentForm.html');
-        break;
-
-      case 'relate-approfiles-dialogue':
-        console.log('case: (', action, ') changing name to relateApprofilesForm.html Then call handleCardClick()');
-      //  handleCardClick(action, 'relateApprofilesForm.html'); //is this relvant or legacy?
-        break;
-
-      case 'sign-out':
-      //  signOut();
-        break;
-
-      default:
-        
-        handleCardClick(action, action);
-    }*/
-   // handleCardClick(action, action);
   });
 }
-
-
-/*
-// === ADMIN LISTENERS ===
-function signOut() { //does nothing sept 2026
-  console.log('signOut()');
-
-  // Implement sign-out logic here
-  //signOutUser(); // Example function to sign out user
-//  window.location.href = '/login'; // Redirect to login page after sign-out ?
-  
-} 
-*/
-/*
-function waitForDialogAndInit() {  // for the advance student Class 
-console.log('waitForDialogAndInit()');
-
-  // Use MutationObserver to watch for the dialog element
-  const observer = new MutationObserver((mutations, obs) => {
-    const dialogEl = document.getElementById('advanceTaskDialog');
-    if (dialogEl) {
-      obs.disconnect(); // Stop observing once found
-
-      const dialog = new AdvanceTaskDialog({
-        onAdvance: () => {
-          console.log('Advance confirmed');
-          updateTaskSteps('advance'); //<<<<<<<<<<<<<<<<<<<<need to code this
-        },
-        onReverse: () => {
-          console.log('Advance reversed');
-          updateTaskSteps('reverse');  //<<<<<<<<<<<<<<<<<<<<need to code this
-        },
-        onClose: () => {
-          console.log('Dialog closed');
-        },
-        onAction: (action) => {
-          console.log(`Action triggered: ${action}`);
-        }
-      });
-
-      dialog.show(); // Optional: show the dialog immediately  ???????????
-    }
-  });
-
-  observer.observe(document.getElementById('main-container'), {
-    childList: true,
-    subtree: true
-  });
-} */
-/*
-function updateTaskSteps(actionType) {
-  // Fill in your DB logic here
-  console.log(`Updating (needed) task steps for: ${actionType}`);
-}
-*/
