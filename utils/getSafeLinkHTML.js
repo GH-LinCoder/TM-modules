@@ -58,7 +58,7 @@ export function getSafeLinkHTML(externalUrl) {
 
     let videoId = '';
 
-    // 4. Handle YouTube
+    // 4. Handle YouTube   // treats shorts as simple links https://youtube.com/shorts/TAOXrsGujLA?feature=share
     if (isYouTube) {
         console.log('is YouTube', isYouTube);
         if (hostname === 'youtu.be') {
@@ -68,7 +68,7 @@ export function getSafeLinkHTML(externalUrl) {
             if (!/^[A-Za-z0-9_-]{11}$/.test(videoId)) { 
                 return ''; 
             }
-        } else if (pathname.startsWith('/embed/') || pathname.startsWith('/v/')) {
+        } else if  ( pathname.startsWith('/shorts/') || pathname.startsWith('/embed/') || pathname.startsWith('/v/')) {
             // Handles embed links
             videoId = pathname.split('/')[2];
         } else {
