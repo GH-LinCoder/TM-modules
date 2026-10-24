@@ -793,8 +793,8 @@ createTaskStep: {
     requiredArgs: ['taskId', 'stepOrder', 'stepName', 'stepDescription']
   },
   handler: async (supabase, userId, payload) => {
-    const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
-
+    const { taskId, stepOrder, stepName, stepDescription, stepUrl, approUserId } = payload;
+console.log('REGISTRY createTaskStep:', payload);
     const { data, error } = await supabase
       .from('task_steps')
       .insert({
@@ -803,7 +803,7 @@ createTaskStep: {
         external_url: stepUrl || null,
         step_order: stepOrder,
         task_header_id: taskId,
-        author_id: userId
+        author_id: approUserId
       })
       .select()  // Returns the inserted record
       .single(); // Returns single object, not array
