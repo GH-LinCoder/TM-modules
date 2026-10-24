@@ -1512,7 +1512,7 @@ console.log('order', order);
           stepName,
           stepDescription,
           stepUrl,
-          approUserId:appState.query.userId  // added 15:37 Oct 24 2026  BUT changed 15:46
+          approUserId:appState.query.userId  // added 15:46  Oct 24 2026  BUT changed from the 15:37 addition which ws the wrong appro ID 
         });
         showToast('New step created!', 'success');
       }
@@ -1571,7 +1571,7 @@ const step = state.steps.find(s => s.id === clickedsourceStepId); //extract this
 
 
 async function handleDeleteAutomationButton(panel, automationId){
-  const deletedBy = state.authUserID;  //WRONG
+  const deletedBy = state.approUserId;  //Changed to approUserID from authUserId which was WRONG needs to be the user appro  id
   console.log('handleDelete  button of', automationId, 'by', deletedBy);
   try {
     await executeIfPermitted(state.authUserID, 'softDeleteAutomation', { automationId, deletedBy });
