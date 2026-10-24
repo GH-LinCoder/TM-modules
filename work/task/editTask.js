@@ -28,6 +28,7 @@ console.log('subject:',subject);
 // if source:'authUser' then the id is the auth user, else it could be almost anything
 const state = { //This user is not correct should it be approUserId// subject.id is auth
  authUserId: subject.id, //this is auth id
+ approUserId:subject.approUserId, //added 15:33 Oct 24 2026
   currentTask: null,
   currentTaskId: null, //different to editSurvey
   
@@ -1510,7 +1511,8 @@ console.log('order', order);
           stepOrder: order, // This should be a number 
           stepName,
           stepDescription,
-          stepUrl
+          stepUrl,
+          approUserId:appState.query.userId  // added 15:37 Oct 24 2026  BUT changed 15:46
         });
         showToast('New step created!', 'success');
       }
