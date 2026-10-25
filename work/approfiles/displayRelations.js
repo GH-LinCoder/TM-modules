@@ -59,8 +59,14 @@ attachBundleToggleListener(panel);
 
   displayByMode(panel);
 
-  onClipboardUpdate(() => resolveSubjectAgain(panel));
+  onClipboardUpdate(() => {
+   
+      populateApprofileSelect(panel);  //added 21:21 Oct 25 2026. (The dropdown was not adding the new items on clipboard)    
+    resolveSubjectAgain(panel)});
+  
 }
+
+
 
 async function resolveSubjectAgain(panel) {
   const resolved = await resolveSubject();
