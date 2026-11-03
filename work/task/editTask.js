@@ -745,6 +745,13 @@ ${getMoveByRadioHTML()}
   `;
 }
 
+
+
+
+
+
+
+
 function attachListeners(panel) {
     console.log('attachListeners()');
   const nameInput = panel.querySelector('#taskName');
@@ -798,7 +805,8 @@ console.log('ratingSelected:',ratingSelected)
 
   // Step selection listener
   // In attachListeners, update the stepSelect change handler:
-stepSelect?.addEventListener('change', (e) => {
+/*
+  stepSelect?.addEventListener('change', (e) => {
     const sourceStepOrder = parseInt(e.target.value); // sourceStepOrder is read from the summary (wheras in edit survey finds questionId)
 console.log('L803 sourceStepOrder from stepSelect:',sourceStepOrder);    
     if (!sourceStepOrder) return;
@@ -810,11 +818,11 @@ console.log('L803 sourceStepOrder from stepSelect:',sourceStepOrder);
   //  console.log('Found step:', step);
     
     if (step) {
-      state.sourceCurrentsourceStepId = step.id; //where does step.id decalred line 30 as null. Never assigned
+      state.sourceCurrentsourceStepId = step.id; 
       // Fill form with step data
       panel.querySelector('#stepName').value = step.name || '';
       panel.querySelector('#stepDescription').value = step.description || '';
-      panel.querySelector('#stepUrl').innerHTML = step.external_url || '';
+      panel.querySelector('#stepUrl').value = step.external_url || '';
       panel.querySelector('#sourceStepOrder').value = sourceStepOrder; 
   //    console.log('Form filled with step data');
 
@@ -827,6 +835,19 @@ console.log('L803 sourceStepOrder from stepSelect:',sourceStepOrder);
   // console.log('Form cleared for new step');
     }
   });
+*/
+
+stepSelect?.addEventListener('change', (e) => {
+  const sourceStepOrder = parseInt(e.target.value, 10); 
+  if (!sourceStepOrder) return;
+
+  // Find step with this order
+  const step = state.steps.find(s => parseInt(s.step_order, 10) === sourceStepOrder);
+  
+  // Delegate the UI update to our new function
+  loadStepIntoEditor(step, panel, sourceStepOrder);
+});
+
 
   // Button listeners - are these redunant?
   saveTaskBtn?.addEventListener('click', (e) => handleTaskUpdate(e, panel));
@@ -1545,7 +1566,7 @@ enableAutomationControls(panel);
     });
   }
   
-
+/*
 function loadStepIntoEditor(panel,clickedsourceStepId){//clicked is the id uuid
  // console.log('loadStepIntoEditor() clickedsourceStepId:', clickedsourceStepId, 'typeof:', typeof clickedsourceStepId);
   //console.log('steps length:', Array.isArray(state.steps) ? state.steps.length : 'not array');
@@ -1567,6 +1588,29 @@ const step = state.steps.find(s => s.id === clickedsourceStepId); //extract this
     panel.querySelector('#sourceStepOrder').value = sourceStepOrder; // Ensure this is set
   //  console.log('Form filled with step data');
 } else{console.log('Was it the header that was clicked?'); }
+} */
+
+/**
+ * Loads a step's data into the edit form, or clears the form if no step is provided.
+ * @param {Object|null} step - The step object to load, or null to clear.
+ * @param {HTMLElement} panel - The DOM element containing the form inputs.
+ * @param {string|number} [fallbackOrder=''] - The order to set if clearing the form.
+ */
+function loadStepIntoEditor(step, panel, fallbackOrder = '') { //fallback order?  instead of clickedsourceStepId
+  if (step) {
+    // Update state and fill form with step data
+    state.sourceCurrentsourceStepId = step.id;
+    panel.querySelector('#stepName').value = step.name || '';
+    panel.querySelector('#stepDescription').value = step.description || '';
+    panel.querySelector('#stepUrl').value = step.external_url || '';
+    panel.querySelector('#sourceStepOrder').value = step.step_order;
+  } else {
+    // Clear form for new/empty step
+    panel.querySelector('#stepName').value = '';
+    panel.querySelector('#stepDescription').value = '';
+    panel.querySelector('#stepUrl').value = '';
+    panel.querySelector('#sourceStepOrder').value = fallbackOrder;
+  }
 }
 
 
@@ -1600,6 +1644,27 @@ function attachStepsListeners(panel) {
 
     if (target.classList.contains('clickable-step')) {
       
+      // 1. Get the ID from the clicked card's data attribute
+      const clickedsourceStepId = target.dataset.sourceStepId; 
+      state.sourceCurrentsourceStepId = clickedsourceStepId;
+      
+      // 2. Update UI labels (keep your existing good code)
+      if (saveBtn) { saveBtn.textContent = 'Edit step'; saveBtn.disabled = false; }
+      if (sectionToEditEl) sectionToEditEl.textContent = 'step';
+      
+      // 3. Find the actual step object in the state array
+      const stepFromCard = state.steps.find(s => s.id === clickedsourceStepId);
+      
+      // 4. Call the function with the CORRECT argument order: (stepObject, panel)
+      loadStepIntoEditor(stepFromCard, panel);
+      
+      markActiveStepInSummary(panel);
+      // hideAutomationsUI(panel); // Uncomment if you need this
+    
+
+    /*
+    if (target.classList.contains('clickable-step')) {
+      
       const clickedsourceStepId = target.dataset.sourceStepId; // is this an id or a DOM element?
       state.sourceCurrentsourceStepId = clickedsourceStepId;
       
@@ -1611,6 +1676,7 @@ function attachStepsListeners(panel) {
       loadStepIntoEditor(panel, clickedsourceStepId); //  
       markActiveStepInSummary(panel);
     //  hideAutomationsUI(panel);
+    */
 
     } else if (target.classList.contains('clickable-automation')) {
       const clickedsourceStepId = target.dataset.sourceStepId;
