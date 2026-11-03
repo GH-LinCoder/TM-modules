@@ -357,6 +357,13 @@ async function handleApprofileUpdate(e) {
     //need to reset so that it is possible to save any further changes.  Currently the state stays as 'updated'.
     
   } catch (error) {
+  console.error('Approfile update failed:', {
+    message: error.message,
+    code: error.code,
+    details: error.details,
+    hint: error.hint,
+    error
+});
     showToast('Failed to update approfile: ' + error.message, 'error');
     saveBtn.disabled = false;
     saveBtn.textContent = 'Update Approfile';
