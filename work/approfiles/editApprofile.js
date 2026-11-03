@@ -3,14 +3,16 @@ import { executeIfPermitted } from '../../registry/executeIfPermitted.js';
 import { showToast } from '../../ui/showToast.js';
 import { getClipboardItems, onClipboardUpdate } from '../../utils/clipboardUtils.js';
 import { petitionBreadcrumbs } from'../../ui/breadcrumb.js';
+import { appState } from '../../state/appState.js'; // modules interact through appState
 console.log('editApprofileForm.js loaded');
 
 import {getClipboardAppros} from './getClipboardAppros.js';
 let currentSelection = null;
 let ratingSelected = null; //global to hold the selected rating value from the dropdown. Could be set to 7
 
+const userId = appState.query.userId;// first use of the global userId 15:15 sept 16
 const state = {
-  user: '06e0a6e6-c5b3-4b11-a9ec-3e1c1268f3df', // Replace with dynamic user ID
+
   currentApprofile: null
 };
 
@@ -39,20 +41,17 @@ function initClipboardIntegration(panel) {
 }
 
 async function populateApprofileSelect(panel) {
-console.log('populateApprofileSelect()');   
-  const approfiles = getClipboardAppros();//replaced 19:45 Nov 27 2025
+
+  const approfiles = getClipboardAppros();//replaced 19:45 Nov 27
  
 console.log('length:',approfiles.length);
 
-if (approfiles.length === 0) {
-    clearApprofileSelection(panel);
-    return;
-}
-
   const select = panel.querySelector('#approfile1Select');
-  if (!select) {currentSelection = 'Not selected' } // previously return    changed 12:00 Oct 27 2025
+  if (!select) {currentSelection = 'Not selected' } // previously return    changed 12:00 Oct 27
 else  currentSelection = select.value;
 
+ // Save current selection
+  
   // Rebuild options
   select.innerHTML = '<option value="">Select an approfile from clipboard...</option>';
   
@@ -63,22 +62,17 @@ else  currentSelection = select.value;
     select.appendChild(option);
   });
   
-const approIsInDropdown = approfiles.some(item => item.entity.id === currentSelection)
-
   // Restore selection if still valid
   if (currentSelection && approfiles.some(item => item.entity.id === currentSelection)) {
     select.value = currentSelection;
-  } else 
-    { select.value=''; state.currentApprofile=null;//need make id null.. Still updates
-        if (approfiles.length === 1) { //change to approLength=approfiles.length; if approLength >0 select.value = approfiles[approLength-1] //select newest entry
+  } else if (approfiles.length === 1) { //change to approLength=approfiles.length; if approLength >0 select.value = approfiles[approLength-1] //select newest entry
     // Auto-select if only one option
     select.value = approfiles[0].entity.id;
     //await loadAndRenderRelationships(panel, approfiles[0].entity.id, approfiles[0].entity.name);
-     } 
-    }
+  }
   attachDropdownListener(panel);
 
-  return approfiles.length
+  return approfiles.length //? not used?
 
 }
 
@@ -87,7 +81,7 @@ async function populateRatingSelect(panel)
 // 1. Fetch definitions via registry
 const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
 if (ratingSelect) ratingSelect.insertAdjacentHTML('beforebegin', '<div data-rating-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
-const ratingDefinitions = await executeIfPermitted(state.user, 'readTrustSecurityDefinitions');
+const ratingDefinitions = await executeIfPermitted(userId, 'readTrustSecurityDefinitions');
 ratingSelect?.parentElement.querySelector('[data-rating-loading]')?.remove();
 
 //2. load into dropdown
@@ -104,63 +98,58 @@ if (ratingSelect && Array.isArray(ratingDefinitions)) {
  }
 }
 
-  function clearApprofileSelection(panel) {
-    const select = panel.querySelector('#approfile1Select');
-    if (select) {
-      select.value = '';
-    }
-    state.currentApprofile = null;
-    panel.querySelector('#approfileName').value = '';
-    panel.querySelector('#approfileDescription').value = '';
-    panel.querySelector('#approfileNameCounter').textContent = '0/64 characters';
-    panel.querySelector('#approfileDescriptionCounter').textContent = '0/2000 characters';
-    console.log('Selection and state cleared');
-  }
 
 
 function attachDropdownListener(panel) {
-  const select = panel.querySelector('#approfile1Select');
-  if (!select) return;
+  const select = panel.querySelector('#approfile1Select'); //change 16:17 Oct 27
 
-  if (select.dataset.listenerAttached === 'true') return;
+if (!select) return;
 
-
-
-  select.addEventListener('change', async (e) => {
-    const approfileId = e.target.value;
-
-    if (!approfileId) {
-      clearApprofileSelection(panel);
-
-      return;
-    }
-
-    console.log('Selected approfileId:', approfileId);
-
-    const approfile = getClipboardAppros().find(
-      item => item.entity.id === approfileId
-    );
-
-    if (approfile) {
-      state.currentApprofile = approfile.entity.item || approfile.entity;
-      loadApprofileIntoForm(panel, state.currentApprofile);
-    } else {
-      clearApprofileSelection(panel);
-    }
-  });
-
-  // Rating listener
-  panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
-    const val = e.target.value;
-    if (val !== '') {
-      ratingSelected = Number(val);
-      console.log('ratingSelected:', ratingSelected);
-    }
-  });
-
-  select.dataset.listenerAttached = 'true';
+// Check if listener already attached
+if (select.dataset.listenerAttached === 'true') {
+  console.log('Listener already attached, skipping');
+  return;
 }
 
+// Add the listener
+select.addEventListener('change', async (e) => {
+ //console.log(' CHANGE EVENT FIRED! New value:', e.target.value);
+  const approfileId = e.target.value; 
+if (approfileId === '') {
+      //User manually chose "Select..." from the dropdown. Clear everything. Doesn't happen
+      console.log('User manually chose "Select..." from the dropdown. Clearing everything.');
+      clearApprofileSelection(panel);
+    }
+
+ // const selectedName = e.target.options[e.target.selectedIndex].textContent;
+
+  if (approfileId) {
+    console.log('Selected approfileId:', approfileId);
+
+    // Find the approfile object from the clipboard list
+    const approfiles = getClipboardAppros();
+    const selectedApprofile = approfiles.find(item => item.entity.id === approfileId);
+
+    if (selectedApprofile) {
+      state.currentApprofile = selectedApprofile.entity.item || selectedApprofile.entity;
+
+      // Populate the form fields
+      loadApprofileIntoForm(panel, state.currentApprofile);
+    }
+  }
+});
+
+select.dataset.listenerAttached = 'true'; // so it won't be attached more than once
+
+// Listener for change in dropdown 
+panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
+  const val = e.target.value;
+  if (val !== '') {
+    ratingSelected = Number(val);
+console.log('ratingSelected:',ratingSelected)  
+}
+});
+}
 
 function loadApprofileIntoForm(panel, approfile) {
   const nameInput = panel.querySelector('#approfileName');
@@ -188,7 +177,9 @@ function populateFromClipboard(panel) {
     .concat(getClipboardItems({ type: 'app-task' }))
     .concat(getClipboardItems({ type: 'app-abstract' }));
   
-  if (approfiles.length === 0) return;
+  if (approfiles.length === 0)  //should this also empty the form? Not sure.
+    {state.currentApprofile = null;  //15:13 Nov 3 2026 - if something had been selected but is no longer on the dropdown don't update it
+        return};
   
   // Use the most recent one
   const item = approfiles[0];
@@ -313,42 +304,53 @@ function attachListeners(panel) {
     saveBtn.textContent = 'Update Approfile';
   });
 
-  saveBtn?.addEventListener('click', handleApprofileUpdate);
+  saveBtn?.addEventListener('click', (e) => handleApprofileUpdate(e, panel));
   cancelBtn?.addEventListener('click', () => panel.remove());
   panel.querySelector('[data-action="close-dialog"]')?.addEventListener('click', () => panel.remove());
 }
 
-async function handleApprofileUpdate(e) {
+  function clearApprofileSelection(panel) {
+    
+    state.currentApprofile = null;
+    state.approfileId = null;
+    panel.querySelector('#approfileName').value = '';
+    panel.querySelector('#approfileDescription').value = '';
+    panel.querySelector('#approfileNameCounter').textContent = '0/64 characters';
+    panel.querySelector('#approfileDescriptionCounter').textContent = '0/2000 characters';
+    console.log('Selection and state cleared');
+  }
+
+
+
+
+async function handleApprofileUpdate(e, panel) {
   e.preventDefault();
   console.log('handleApprofileUpdate');
-const saveBtn = document.querySelector('#saveApprofileBtn');
 
-if (!state.currentApprofile?.id) {
-    showToast('There is no approfile recognised as selected.', 'error');
-    saveBtn.disabled = false;  // has not yet been declared
-    saveBtn.textContent = 'Update Approfile';
-    return;
-}
-
-
-  const name = document.querySelector('#approfileName')?.value.trim();
+  const name = panel.querySelector('#approfileName')?.value.trim();
   console.log('name:',name);
-  const description = document.querySelector('#approfileDescription')?.value.trim();
-  
-  const nameError = document.querySelector('#nameError');
+  const description = panel.querySelector('#approfileDescription')?.value.trim();
+  const saveBtn = panel.querySelector('#saveApprofileBtn');
+  const nameError = panel.querySelector('#nameError');
 
   if (!name || !description) {
     showToast('Name and description are required', 'error');
     return;
   }
-
+if (!state.currentApprofile) 
+  { showToast('There is no selected appro', 'error');
+    clearApprofileSelection(panel);
+   return};  
   saveBtn.disabled = true;
   saveBtn.textContent = 'Checking for duplicates...';
+  
 
-  try {
+try { //there could be !currentApprofile if that appro was deleted from the clipboard & is nmo longer in the dropdown (see line 175)
     // Check for duplicates only if name has changed
-    if (!state.currentApprofile || state.currentApprofile.name !== name) {
-      const existing = await executeIfPermitted(state.user, 'readApprofileByName', { approfileName: name });
+   //    if (!state.currentApprofile || state.currentApprofile.name !== name) {treat separately
+    if (state.currentApprofile.name !== name) {
+
+        const existing = await executeIfPermitted(userId, 'readApprofileByName', { approfileName: name });
       console.log('checkIfExists:', existing);
       
       if (existing && existing.length > 0) {
@@ -362,7 +364,7 @@ if (!state.currentApprofile?.id) {
 
     saveBtn.textContent = 'Updating Approfile...';
 
-    const updatedApprofile = await executeIfPermitted(state.user, 'updateApprofile', {
+    const updatedApprofile = await executeIfPermitted(userId, 'updateApprofile', {
       id: state.currentApprofile?.id,
       name,
       description
