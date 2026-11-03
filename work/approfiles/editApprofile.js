@@ -98,49 +98,56 @@ if (ratingSelect && Array.isArray(ratingDefinitions)) {
 
 
 
+
 function attachDropdownListener(panel) {
-  const select = panel.querySelector('#approfile1Select'); //change 16:17 Oct 27
+  const select = panel.querySelector('#approfile1Select');
+  if (!select) return;
 
-if (!select) return;
+  if (select.dataset.listenerAttached === 'true') return;
 
-// Check if listener already attached
-if (select.dataset.listenerAttached === 'true') {
-  console.log('Listener already attached, skipping');
-  return;
-}
+  function clearApprofileSelection() {
+    state.currentApprofile = null;
+    panel.querySelector('#approfileName').value = '';
+    panel.querySelector('#approfileDescription').value = '';
+    panel.querySelector('#approfileNameCounter').textContent = '0/64 characters';
+    panel.querySelector('#approfileDescriptionCounter').textContent = '0/2000 characters';
+    console.log('Selection and state cleared');
+  }
 
-// Add the listener
-select.addEventListener('change', async (e) => {
-  const approfileId = e.target.value;
-  const selectedName = e.target.options[e.target.selectedIndex].textContent;
+  select.addEventListener('change', async (e) => {
+    const approfileId = e.target.value;
 
-  if (approfileId) {
+    if (!approfileId) {
+      clearApprofileSelection();
+      return;
+    }
+
     console.log('Selected approfileId:', approfileId);
 
-    // Find the approfile object from the clipboard list
-    const approfiles = getClipboardAppros();
-    const selectedApprofile = approfiles.find(item => item.entity.id === approfileId);
+    const approfile = getClipboardAppros().find(
+      item => item.entity.id === approfileId
+    );
 
-    if (selectedApprofile) {
-      state.currentApprofile = selectedApprofile.entity.item || selectedApprofile.entity;
-
-      // Populate the form fields
+    if (approfile) {
+      state.currentApprofile = approfile.entity.item || approfile.entity;
       loadApprofileIntoForm(panel, state.currentApprofile);
+    } else {
+      clearApprofileSelection();
     }
-  }
-});
+  });
 
-select.dataset.listenerAttached = 'true'; // so it won't be attached more than once
+  // Rating listener
+  panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
+    const val = e.target.value;
+    if (val !== '') {
+      ratingSelected = Number(val);
+      console.log('ratingSelected:', ratingSelected);
+    }
+  });
 
-// Listener for change in dropdown 
-panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
-  const val = e.target.value;
-  if (val !== '') {
-    ratingSelected = Number(val);
-console.log('ratingSelected:',ratingSelected)  
+  select.dataset.listenerAttached = 'true';
 }
-});
-}
+
 
 function loadApprofileIntoForm(panel, approfile) {
   const nameInput = panel.querySelector('#approfileName');
@@ -301,6 +308,14 @@ function attachListeners(panel) {
 async function handleApprofileUpdate(e) {
   e.preventDefault();
   console.log('handleApprofileUpdate');
+
+if (!state.currentApprofile?.id) {
+    showToast('There is no approfile recognised as selected.', 'error');
+    saveBtn.disabled = false;
+    saveBtn.textContent = 'Update Approfile';
+    return;
+}
+
 
   const name = document.querySelector('#approfileName')?.value.trim();
   console.log('name:',name);
