@@ -308,10 +308,11 @@ function attachListeners(panel) {
 async function handleApprofileUpdate(e) {
   e.preventDefault();
   console.log('handleApprofileUpdate');
+const saveBtn = document.querySelector('#saveApprofileBtn');
 
 if (!state.currentApprofile?.id) {
     showToast('There is no approfile recognised as selected.', 'error');
-    saveBtn.disabled = false;
+    saveBtn.disabled = false;  // has not yet been declared
     saveBtn.textContent = 'Update Approfile';
     return;
 }
@@ -320,7 +321,7 @@ if (!state.currentApprofile?.id) {
   const name = document.querySelector('#approfileName')?.value.trim();
   console.log('name:',name);
   const description = document.querySelector('#approfileDescription')?.value.trim();
-  const saveBtn = document.querySelector('#saveApprofileBtn');
+  
   const nameError = document.querySelector('#nameError');
 
   if (!name || !description) {
