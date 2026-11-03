@@ -1152,7 +1152,7 @@ handler: async (supabase, userId, payload) => {
   const { data, error } = await supabase
     .from('app_profiles')
     .select('id, name, email, notes, phone, sort_int, avatar_url, created_at, updated_at, description, auth_user_id, external_url, task_header_id')
-    .eq('name',encodeURIComponent(approfileName));
+    .eq('name', approfileName);
     if (error) throw error;
   return data;
  }
