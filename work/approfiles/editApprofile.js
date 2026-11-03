@@ -39,17 +39,20 @@ function initClipboardIntegration(panel) {
 }
 
 async function populateApprofileSelect(panel) {
-
-  const approfiles = getClipboardAppros();//replaced 19:45 Nov 27
+console.log('populateApprofileSelect()');   
+  const approfiles = getClipboardAppros();//replaced 19:45 Nov 27 2025
  
 console.log('length:',approfiles.length);
 
+if (approfiles.length === 0) {
+    clearApprofileSelection(panel);
+    return;
+}
+
   const select = panel.querySelector('#approfile1Select');
-  if (!select) {currentSelection = 'Not selected' } // previously return    changed 12:00 Oct 27
+  if (!select) {currentSelection = 'Not selected' } // previously return    changed 12:00 Oct 27 2025
 else  currentSelection = select.value;
 
- // Save current selection
-  
   // Rebuild options
   select.innerHTML = '<option value="">Select an approfile from clipboard...</option>';
   
@@ -60,14 +63,19 @@ else  currentSelection = select.value;
     select.appendChild(option);
   });
   
+const approIsInDropdown = approfiles.some(item => item.entity.id === currentSelection)
+
   // Restore selection if still valid
   if (currentSelection && approfiles.some(item => item.entity.id === currentSelection)) {
     select.value = currentSelection;
-  } else if (approfiles.length === 1) { //change to approLength=approfiles.length; if approLength >0 select.value = approfiles[approLength-1] //select newest entry
+  } else 
+    { select.value=''; state.currentApprofile=null;//need make id null.. Still updates
+        if (approfiles.length === 1) { //change to approLength=approfiles.length; if approLength >0 select.value = approfiles[approLength-1] //select newest entry
     // Auto-select if only one option
     select.value = approfiles[0].entity.id;
     //await loadAndRenderRelationships(panel, approfiles[0].entity.id, approfiles[0].entity.name);
-  }
+     } 
+    }
   attachDropdownListener(panel);
 
   return approfiles.length
@@ -96,16 +104,11 @@ if (ratingSelect && Array.isArray(ratingDefinitions)) {
  }
 }
 
-
-
-
-function attachDropdownListener(panel) {
-  const select = panel.querySelector('#approfile1Select');
-  if (!select) return;
-
-  if (select.dataset.listenerAttached === 'true') return;
-
-  function clearApprofileSelection() {
+  function clearApprofileSelection(panel) {
+    const select = panel.querySelector('#approfile1Select');
+    if (select) {
+      select.value = '';
+    }
     state.currentApprofile = null;
     panel.querySelector('#approfileName').value = '';
     panel.querySelector('#approfileDescription').value = '';
@@ -114,11 +117,21 @@ function attachDropdownListener(panel) {
     console.log('Selection and state cleared');
   }
 
+
+function attachDropdownListener(panel) {
+  const select = panel.querySelector('#approfile1Select');
+  if (!select) return;
+
+  if (select.dataset.listenerAttached === 'true') return;
+
+
+
   select.addEventListener('change', async (e) => {
     const approfileId = e.target.value;
 
     if (!approfileId) {
-      clearApprofileSelection();
+      clearApprofileSelection(panel);
+
       return;
     }
 
@@ -132,7 +145,7 @@ function attachDropdownListener(panel) {
       state.currentApprofile = approfile.entity.item || approfile.entity;
       loadApprofileIntoForm(panel, state.currentApprofile);
     } else {
-      clearApprofileSelection();
+      clearApprofileSelection(panel);
     }
   });
 
