@@ -129,6 +129,9 @@ select.addEventListener('change', async (e) => {
     }
   }
 });
+
+select.dataset.listenerAttached = 'true'; // so it won't be attached more than once
+
 // Listener for change in dropdown 
 panel.querySelector('[data-form="ratingSelect"]')?.addEventListener('change', (e) => {
   const val = e.target.value;
