@@ -35,7 +35,7 @@ function getTemplateHTML() {
             </svg>
           </button>
 </div>        
-        <p class="mb-2">  No account? <a href="/index.html" class="text-blue-600 underline hover:text-blue-800">Create an account</a> </p>
+        <p class=" mb-2">  No account? <a href="/index.html" class="text-blue-600 underline hover:text-blue-800">Create an account</a> </p>
 
 
 
