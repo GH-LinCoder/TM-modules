@@ -160,8 +160,8 @@ export async function render(panel, petition = {}) {
     const linkInput = document.getElementById('referral-link-input');
     const copyBtn = document.getElementById('copy-referral-btn');
     const copyStatus = document.getElementById('copy-status');
-    const recruitedCount = document.getElementById('recruited-count');
-    const activatedCount = document.getElementById('activated-count');
+    //const recruitedCount = document.getElementById('recruited-count');
+    //const activatedCount = document.getElementById('activated-count');
     
     // Generate and display the referral link
     try {
@@ -173,7 +173,7 @@ export async function render(panel, petition = {}) {
         console.error('Failed to generate referral link:', error);
         linkInput.value = 'Error generating link';
         copyBtn.disabled = true;
-        copyStatus.textContent = 'Unable to generate link';
+        copyStatus.textContent = 'Unable to generate link. Are you logged in?';
         copyStatus.className = 'mt-2 text-xs text-red-500 h-4';
     }
     
