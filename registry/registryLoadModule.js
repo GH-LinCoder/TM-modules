@@ -37,7 +37,7 @@ export const registry = { // this registry is for loading a new page to the righ
 
 
 
-'login-signup':()=>import('../auth/login-signup.js'),
+'login-logout':()=>import('../auth/login-logout.js'),
 'login':()=>import('../auth/login.js'),
 'privacy':()=>import('../legal/privacy.js'),
 
