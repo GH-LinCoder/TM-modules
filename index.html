@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T&M index</title>
+    <title>Signup to organize</title>
+
+    <meta name="description" content="Organize a new club, community, or pressure group. Or convert your existing audience to activists. Auto-onboarding, recruitment, surveys, tasks, messages,fees">
+
     <!-- Inter font from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS CDN -->
@@ -48,7 +51,7 @@ login uses rpc to award myDash permissions, notes permissions & assign initial t
 <div id="splash-modal" class="absolute transition-opacity duration-2000 ease-in-out opacity-0">
     <div class="bg-grey p-8 rounded-xl border border-slate-200 shadow-xl 
                 flex flex-col items-center justify-center w-60 h-60">
-        <span class="text-5xl font-bold text-sky-800 tracking-widest">T&M</span>
+        <span class="text-5xl font-bold text-sky-800 tracking-widest">myOrg</span>
         <span class="text-s text-gray-400 mt-2 text-center">
             <i>powering organisation</i>
         </span>
@@ -179,7 +182,7 @@ import { executeIfPermitted } from './registry/executeIfPermitted.js';
 import { showToast } from './ui/showToast.js';
 import { appState } from './state/appState.js';
 
-const fadeTime = 700; //ms delay for fading from login to dashboard used in 2 places
+const fadeTime = 500; //ms delay for fading from login to dashboard used in 2 places
 
 
 function escapeHtml(text) {
@@ -579,7 +582,7 @@ console.log('Failed to assign: ' + error.message);
             setTimeout(() => {
               console.log('Redirecting to app...');
               window.location.href = '/organise.html'; 
-            }, fadeTime); // 1 second delay for smooth UI transition
+            }, fadeTime); // delay for smooth UI transition
           }
         }
       }
@@ -607,8 +610,8 @@ console.log('Failed to assign: ' + error.message);
           displayArea?.classList.replace('opacity-0', 'opacity-100');
           displayArea?.classList.remove('pointer-events-none');
           render(); // attach other buttons
-        }, 2000);
-      }, 3000);
+        }, 1500);
+      }, 2500);
     };
 
     if (!window.location.hash.includes('access_token')) {
