@@ -3,11 +3,51 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Organise</title>
+  <title>Organization Operating System - Build and manage your organization</title>
+
+  <meta name="description" content="Handle tasks, aims, plans, decisions, policies, surveys,fees & recruit others. Build & view the organization structure.">
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://myorg.netlify.app/#website",
+      "url": "https://myorg.netlify.app/",
+      "description": "A platform for creating and managing independent organisations.",
+      "about": {
+        "@id": "https://myorg.netlify.app/#software"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://myorg.netlify.app/#software",
+      "description": "A platform to build and manage organizations. It provides membership management, organisational structures, task management, surveys, automated onboarding, recruitment tools, display of organisational information, internal messaging, automated workflows, payment processing and activity-based access permissions. It has integrated, context-sensitive help.",
+      "featureList": [
+        "Memberships",
+        "Organisational structure management",
+        "Task assignment and tracking",
+        "Surveys and feedback",
+        "Automated funnels connecting tasks and surveys",
+        "Referral links for recruitment & marketing tracking",
+        "Display of aims, plans, decisions and policies",
+        "Payment processing",
+        "Activity-based access permissions",
+        "Integrated context-sensitive help"
+      ]
+    }
+  ]
+}
+</script>
+
+
+
   <!-- Use Tailwind CDN properly -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!--script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script-->
-     <link id="app-favicon" rel="icon" href="favicon.ico" type="image/x-icon">
+  <link id="app-favicon" rel="icon" href="favicon.ico" type="image/x-icon">
   <link rel="stylesheet" href="styles.css" id="main-styles">
   <script type="module" src="flexmain.js" id="main-script"></script>
   
@@ -55,7 +95,7 @@
       <div class="nav-btn hover:shadow-md hover:bg-green-200 cursor-pointer" data-page="howTo" title="This is where context related help is to be made available when implemented" data-action="howTo">How?</div>
       <div class="nav-btn hover:shadow-md hover:bg-green-200 cursor-pointer" data-page="selector-dialogue" title="Choose the items you need to load into admin modules" data-action="selector-dialogue">Select</div>
       <div class="nav-btn hover:shadow-md hover:bg-green-200 cursor-pointer" data-page="bug-report" title="Send messages, make notes for yourself, or report bugs" data-action="bug-report">Messages <span class="text-xs italic" >Bug Report</span></div>
-      <div class="nav-btn hover:shadow-md hover:bg-green-200 cursor-pointer" data-page="login-signup" title="If data doesn't load you may need to login again using this module." data-action="login-signup">Login</div>
+      <div class="nav-btn hover:shadow-md hover:bg-green-200 cursor-pointer" data-page="login-signup" title="If data doesn't load you may need to login again using this module." data-action="login-logout">Login <span class="text-xs italic">refresh</span> </div>
 
       <div class="nav-btn hover:shadow-md hover:bg-green-200 cursor-pointer" data-page="privacy" title="The apps statement on data protection" data-action="privacy"><span class="text-xs italic">Privacy</span></div>
 
@@ -83,7 +123,31 @@
 
         <!-- Dynamic content will be injected here -->
       </section>
-    </main>
+   </main>
+
+<div id="footer" class="bg-gray-100 border-t border-gray-200 p-2 md:p-4 text-left text-sm italic text-gray-600">
+<p>This system is designed to build and manage a new organisation of any kind such as a club or community movement. (If you already have a following you can even use it to turn that audience into activists)  
+</p>
+<p>Membership stored in a database. Assign and track tasks. Get feedback from surveys. 
+Build and view organisation structure. Create referral links for recruitment. Internal messaging. Context based help.
+Publish your aims, plans, decision & policies. Accept payments through a Merchant of Account. 
+All controlled by a permission system. 
+</p>
+<p>Apply for your own independent system website at <a href="https://myorg.netlify.app" class="text-blue-600 hover:underline">myorg.netlify.app</a>
+</p>
+<p>The system is under test.
+</p>
+<p>  
+      &copy; All rights reserved.
+</p>
+</div>
+
+
+
+
+
+
+
 
   </div>
 

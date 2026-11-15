@@ -127,7 +127,7 @@ case 'policies':{itemToDisplayId = 'b9de9cbb-62f3-4978-8751-9315ad416141';
     itemToDisplay = await executeIfPermitted(null, 'readApprofileById', { approfileId: itemToDisplayId });
   } catch (error) {
     console.error('Failed to load aims:', error);
-    panel.innerHTML = `<div class="text-red-500 text-center py-8">Failed to load ${action}.</div>`;
+    panel.innerHTML = `<div class="text-red-500 text-center py-8">Failed to load ${action}. Are you logged in? The permission system protects data.</div>`;
     return;
   }
   

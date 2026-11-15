@@ -27,19 +27,23 @@ function getTemplateHTML() {
 
       <!-- Login Form -->
         <div id="loginForm" class="auth-form bg-white p-6 rounded-lg shadow">
-          <h2 class="text-xl font-bold text-center mb-4">Log In</h2>
-
-<button data-action="login-signup" data-section="menu" class="text-gray-500 hover:text-gray-700" aria-label="Close">
+ <div class="flex items-center justify-between mb-4">
+          <h2 class="text-xl font-bold text-center mb-4">Refresh your Log In</h2>
+<button data-action="login-logout" data-section="menu" class="text-gray-500 hover:text-gray-700" aria-label="Close">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
+</div>        
+        <p class=" mb-2">  No account? <a href="/index.html" class="text-blue-600 underline hover:text-blue-800">Create an account</a> </p>
+
+
 
 
           <div id="login-error" class="text-red-500 text-lg hidden"></div>
           <form class="space-y-3">
 
-            <label for="email">Email:</label>
+            <label for="email">Refresh existing login with Email:</label>
             <input type="email" name='email' id="login-email" placeholder="Click to autoload" class="w-full p-2 border rounded" required autocomplete='email'/>
 
             <label for="current-password">Password:</label><button id="toggle-login-password" type="button" aria-label="Show password as plain text. Warning: this will display your password on the screen."> [ 👁️ Show ] </button>

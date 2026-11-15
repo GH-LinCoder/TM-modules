@@ -68,7 +68,7 @@ export const appState = {
 
     userIdentified: null,  // not used? Oct 6 2026
     userAuthId: null, //used by resolveSubjectPlus2
-    userId: null, //used
+    userId: null, //used but should be bulk change to be called  userApproId
     userName: null, //used
     userEmail: null, //used 
     userType: 'app-human', //used in resolveSubject

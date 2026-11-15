@@ -19,7 +19,7 @@ An organizational OS focused on tasks, surveys and relationship management. A pl
 Key features include task creation/assignment (with code branching), survey-driven workflows, relationship/hierarchy visualization, and member subscriptions. All access to the database is subject to two permission systems.
 
 ### 004 Three Core Domain Workflows details
-1. **Tasks & Steps** — Create tasks with multiple steps. Each step can branch execution based on decisions (manually or via surveys). Tasks can be educational courses, to-do lists where each step represents what to do next, or progress registers where eachstep is a passive record of how far something has progressed. Each step can trigger any number of predetermined code executions. As at Sept 16th 2026 there are only 3 predetermined code 'automations': Assign a task to the user, assign a survey to the user, relate the user to a specific appro. Other are to bedeveloped.
+1. **Tasks & Steps** — Create tasks with multiple steps. Each step can spawn execution based on admin decisions or via surveys. Tasks can be educational courses, to-do lists where each step represents what to do next, or progress registers where each step is a passive record of how far something has progressed. Each step can trigger any number of predetermined code executions. As at Nov 9th 2026 there are only 3 predetermined code 'automations': Assign a task to the user, assign a survey to the user, relate the user to a specific appro. Other are to be developed.
 2. **Surveys** — Survey responses can also trigger code execution dependent on which answer the user clicks. This enables surveys to be used to create funnels or decision points. A user can be related to another appro that represents that decision such as an appro that represents a group. Also spawning tasks or surveys allow for the creation of funnels, driving conditional workflows
 3. **Relations & Hierarchy** — Define and visualize relationships between persons, creating organizational hierarchies and structures. Appros can represent anything of importance to the organization, and relationships can be established between any appro, enabling complex organizational structures to be recorded and visualized.
 
@@ -207,6 +207,7 @@ vite.config.js
      });
    }
    ```
+[Note: this method of attaching listeners is legacy & is being refactored to use the abort controller system. See utils/listenerManagement.js]
 
 2. **Register module** in `registry/registryLoadModule.js`:
    ```javascript
@@ -305,7 +306,7 @@ The app loads modules when the user clicks on a menu item or card in a dashboard
 Modules are injected and removed from the DOM without page reloads, adding event listeners directly to panel or window without cleanup causes memory leaks and duplicate event firing. Sept 8 2026 we are starting to convert to a controller.abort system. The controller is created by flexmain when a module is loaded and flexmain is to use it before closing the module. 
 9. All modules that are called need:
 `import { createListenerController, addManagedListener, removeListenersFromModule } from '../../utils/listenerManagement.js';`
-10. the module needs the argument to recieve the controller  
+10. the module needs the argument to receive the controller  
 `function whateverName(... , controller)` 
 11. when adding listeners use 
 `addManagedListener(element, event, handler, controller, options)`
@@ -383,7 +384,7 @@ DevMode defaults to hardcoded test users for development. Change in `state/appSt
 5. Close buttons use the same petition system. Flexmain checks if the module/page/panel is already on display & if true, flexmain closes the module. (No local listener, no local handleClose function)
 
 ## 018 Payment processors
-The app has integrated connetions to two Merchant of Record payment processors
+The app has integrated connections to two Merchant of Record payment processors
 1. Lemon Squeezy
 2. Whop
 Others are listed as potential payment processors, but have not been integrated.
@@ -397,13 +398,10 @@ The edit task and edit survey modules currently cannot delete items or change th
 
 
 
-**devMode default**
-could be causing unseen problems. Probably needs to be set to false. We need to examine where it is used. There may be other hard coded or defaulted items for development that still linger and may need hunting down and removal.
+**devMode default** This legacy may have been deleted.
 
-- **Legacy HTML stubs** (`htmlStubs/`) have been phased out in favor of `.js` module imports
- `executeIfPermitted()`
+- **Legacy HTML stubs** (`htmlStubs/`) This legacy may have been deleted.
 
-- **DevMode default**: `appState.isDevMode = true` and defaults to hardcoded user IDs for testing
 
 - **eventListeners**
 should be added and removed via an abort controller instead of legacy added locally and often not removed.
@@ -422,14 +420,14 @@ There are redundant lines in registryLoadModules.js
 - **executeIfPermitted.sql trust - security** 
 needs to be edited to include checking the 'trust-security' ratings of the user trying to touch a table and the rating of the row being touched. Permit if user rating >= resource rating.
 
-- **Conext help**
-The `How` module reads the appState petition history to determine what the user was most recently looking at. The module should offer context specific help. The store and retrieval of that help has not yet been implemented. The module does ot differentiate between the user who has recently opened a module and a user who has recently closed a module. `How` should read the panl open data to know the difference. 
+- **Context help**
+The `How` module reads the appState petition history to determine what the user was most recently looking at. The module offers context specific help. The store and retrieval of that help has been implemented using the 'Notes' module. 
 
 - **Bundles of permissions** 
-the display of permissions needs to be refactored to read the bundle column of the table & to display the bundle appro instead of all the constituent permissions.
+the display of permissions reads the bundle column of the table & displays the bundle appro instead of all the constituent permissions.
 
 - **Click proagation**
-Many modules handle local clicks this but don't prevent propagation of their local clicks. They need to stop propagation of their locally handled clicks.
+Some modules handle local clicks, but don't prevent propagation of their local clicks. They need to stop propagation of their locally handled clicks.
 
 
 - **metadata**
@@ -448,7 +446,7 @@ The app needs to intecept the back button click. It could issue a toast: "Please
 ## 020 Future additions
 
 - **400 char indicator**
-When a user creates a task or survey it would be useuful to be reminded of the amount of text that can be easily displayed on a small screen. A 4oo character marker could be added to the task & survey editor for guide to size for mobile reading.
+When a user creates a task or survey it would be useful to be reminded of the amount of text that can be easily displayed on a small screen. A 4oo character marker could be added to the task & survey editor for guide to size for mobile reading.
 
 
 - **admin version of kanban**
@@ -464,7 +462,7 @@ implement this by adding code to use this within the `is_permitted`  rpc
 There is an existing `versions` table into which many database changes are stored. This can already be used for audit, but the revert system is to allow admin to see diffs and to choose to revert the row to its previous condition prior to changes.
 
 - **The 4 eyes system**
-This is a supervisory system where everything that happens is flagged to someone other than the user who made the change. A person with the role of supervisor can then use the revert system to view diffs and decide to allow or revert the system.
+This is a supervisory system where everything that happens is flagged to someone other than the user who made the change. A person with the a supervisory role can then use the revert system to view diffs and decide to allow or revert the system. This needs to be tied-in with the 'Manage' dashboard and the 'Revert' system.
 
 - **Publish - Review - Revert?**
 This is how the system is to work. Anyone with permission can make changes. All changes are subject to the `4 eyes` system of review. The default is permission. The intervention can remove and rollabck to the previous satete (revert).
@@ -486,14 +484,15 @@ formal rules: up to you - read the manual [How controled are methods?]
 systems: ad hoc - formally enforced [Can anyone set things up or is it by strict rules?]
 Ownership:  Everyone - Founders [Is it a coop/partnership or does it belog to one or more specific elite?]
 -----------------------------------
-If regarded as valie parameters then the unknown is how to implement them suh that the app can steer the founders into creating the revelvant parst that work according to those parameters.
+If regarded as valid parameters then the unknown is how to implement them suh that the app can steer the founders into creating the revelvant parts that work according to those parameters.
 
-- **Cloning**
+- **Cloning of entire instance**
 The app is available to customers as a single tenant semi-independent instance. The customer would have a copy of the database run within Supbase under ownership of the customer. The website would be hosted by Netlify in an account under customer ownership. Netlify would deploy automatically when the HQ repo main is updated. The customer would have the option of a copy of the source code held in their own repo if they prefer.
 
 We need to devlop scripts to automate this process of generating a 'clone' 
 
-
+- **Cloning of a task or survey**
+We need to be able to duplicate a task or survey for editing. Also need to be able to produce SQL to migrate a task or survey from one instace to another.
 
 ## 021 Glossary
 

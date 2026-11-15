@@ -1155,7 +1155,7 @@ let nextAutoNumber = findNumberInSurvey('auto_number');
     }
     
     if (!selectedRelationship) {
-        showToast('Please select a relationship type', 'error');
+        showToast('Please select a relationship', 'error');
         return;
     }
     

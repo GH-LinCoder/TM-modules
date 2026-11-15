@@ -3,9 +3,73 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T&M index</title>
+    <title>Signup to organize</title>
+
+    <meta name="description" content="Sign-up to organize a new club, community, or pressure group. Or convert your existing audience to activists. Auto-onboarding, recruitment, surveys, tasks, messages,fees">
+
+<!-- added ld+JSON description 15:00 Nov 15 2026-->
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://myorg.netlify.app/#website",
+      "url": "https://myorg.netlify.app/",
+      "description": "A platform for creating and managing independent organisations.",
+      "about": {
+        "@id": "https://myorg.netlify.app/#software"
+      }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "@id": "https://myorg.netlify.app/#software",
+      "description": "A platform to build and manage organizations. It provides membership management, organisational structures, task management, surveys, automated onboarding, recruitment tools, display of organisational information, internal messaging, automated workflows, payment processing and activity-based access permissions. It has integrated, context-sensitive help.",
+      "featureList": [
+        "Memberships",
+        "Organisational structure management",
+        "Task assignment and tracking",
+        "Surveys and feedback",
+        "Automated funnels connecting tasks and surveys",
+        "Referral links for recruitment & marketing tracking",
+        "Display of aims, plans, decisions and policies",
+        "Payment processing",
+        "Activity-based access permissions",
+        "Integrated context-sensitive help"
+      ]
+    }
+  ]
+}
+</script>
+
+
+
+
+<!-- Open Graph Meta Tags added 15:00 Nov 11 2026  can not test until deployed-->
+ <meta property="og:title"
+          content="Organise">
+
+    <meta property="og:description"
+          content="Build an organisation from scratch or turn an audience into activists.">
+
+    <meta property="og:image"
+          content="https://myorg.netlify.app/images/images/myOrg-palace002.jpg">
+          <!-- the above image may be wrong size-->
+
+    <meta property="og:url"
+          content="https://myorg.netlify.app/index.html">
+
+    <meta property="og:type"
+          content="website">
+
+
+<!-- This is the url that should be quoted in links -->
+<link rel="canonical" href="https://myorg.netlify.app/">
+
     <!-- Inter font from Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <!-- Tailwind CSS CDN -->
      <link rel="icon" href="favicon.ico" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -48,7 +112,7 @@ login uses rpc to award myDash permissions, notes permissions & assign initial t
 <div id="splash-modal" class="absolute transition-opacity duration-2000 ease-in-out opacity-0">
     <div class="bg-grey p-8 rounded-xl border border-slate-200 shadow-xl 
                 flex flex-col items-center justify-center w-60 h-60">
-        <span class="text-5xl font-bold text-sky-800 tracking-widest">T&M</span>
+        <span class="text-5xl font-bold text-sky-800 tracking-widest">myOrg</span>
         <span class="text-s text-gray-400 mt-2 text-center">
             <i>powering organisation</i>
         </span>
@@ -96,6 +160,11 @@ login uses rpc to award myDash permissions, notes permissions & assign initial t
           <p class="text-center mt-2">
             <button id="showSignup" class="text-lg text-green-600 hover:underline">Signup to create account</button>
           </p>
+
+          <div class="text-white text-xs mt-2"> Or <a href="/organise.html" class="text-blue-600 underline hover:text-blue-800">take a peek</a> 
+          at the site then come back here to sign-up.
+        </div>
+
         </div>
     
     
@@ -126,10 +195,16 @@ login uses rpc to award myDash permissions, notes permissions & assign initial t
             <p class="text-center mt-2">
           <button id="logoutBtn" class="text-lg text-green-600 hover:underline">Log out</button>
           </p>
+        
+          <div class="text-white text-xs mt-2"> Or <a href="/organise.html" class="text-blue-600 underline hover:text-blue-800">take a peek</a> 
+          at the site then come back here to sign-up.
+          </div>
+          
 
         <div id="signup-error" class="text-red-500 text-xl hidden">
+
         </div>
-         
+      
 
         </div>
 
@@ -168,7 +243,7 @@ import { executeIfPermitted } from './registry/executeIfPermitted.js';
 import { showToast } from './ui/showToast.js';
 import { appState } from './state/appState.js';
 
-const fadeTime = 700; //ms delay for fading from login to dashboard used in 2 places
+const fadeTime = 500; //ms delay for fading from login to dashboard used in 2 places
 
 
 function escapeHtml(text) {
@@ -568,7 +643,7 @@ console.log('Failed to assign: ' + error.message);
             setTimeout(() => {
               console.log('Redirecting to app...');
               window.location.href = '/organise.html'; 
-            }, fadeTime); // 1 second delay for smooth UI transition
+            }, fadeTime); // delay for smooth UI transition
           }
         }
       }
@@ -596,8 +671,8 @@ console.log('Failed to assign: ' + error.message);
           displayArea?.classList.replace('opacity-0', 'opacity-100');
           displayArea?.classList.remove('pointer-events-none');
           render(); // attach other buttons
-        }, 2000);
-      }, 3000);
+        }, 1500);
+      }, 2500);
     };
 
     if (!window.location.hash.includes('access_token')) {

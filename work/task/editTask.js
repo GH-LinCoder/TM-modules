@@ -27,7 +27,8 @@ const subject = await resolveSubject();
 console.log('subject:',subject);
 // if source:'authUser' then the id is the auth user, else it could be almost anything
 const state = { //This user is not correct should it be approUserId// subject.id is auth
-  user: subject.id,
+ authUserId: subject.id, //this is auth id
+ approUserId:subject.approUserId, //added 15:33 Oct 24 2026
   currentTask: null,
   currentTaskId: null, //different to editSurvey
   
@@ -186,7 +187,7 @@ async function populateRatingSelect(panel)
 // 1. Fetch definitions via registry
 const ratingSelect = panel.querySelector('[data-form="ratingSelect"]');
 if (ratingSelect) ratingSelect.insertAdjacentHTML('beforebegin', '<div data-rating-loading class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>');
-const ratingDefinitions = await executeIfPermitted(state.user, 'readTrustSecurityDefinitions');
+const ratingDefinitions = await executeIfPermitted(state.authUserID, 'readTrustSecurityDefinitions');
 ratingSelect?.parentElement.querySelector('[data-rating-loading]')?.remove();
 
 //2. load into dropdown
@@ -396,7 +397,7 @@ async function loadTaskSteps(panel, taskId) { //readTaskSteps 'id, name, descrip
   const stepsSection = panel.querySelector('#stepsSection');
   //if (stepsSection) stepsSection.innerHTML = '<div class="p-4 text-gray-600 flex items-center gap-2"><span class="animate-spin">⏳</span> Loading...</div>';
  // that spinner deletes the entire dispaly after 'change rating' That's what GH-copilot did
-  const steps = await executeIfPermitted(state.user, 'readTaskSteps', { taskId });
+  const steps = await executeIfPermitted(state.authUserID, 'readTaskSteps', { taskId });
       state.steps = steps || [];
       
     //  console.log('Loaded steps:', state.steps);
@@ -465,8 +466,8 @@ async function populatePaymentPlansDropdown(panel) {
   
   try {
     // Use your EXISTING registry function (no new code needed) also done again line 800?
-//    const plans = await registry.readAllActivePaymentPlans(supabase, state.user, {});
-  const plans = await executeIfPermitted(state.user, 'readAllActivePaymentPlans', {});  
+//    const plans = await registry.readAllActivePaymentPlans(supabase, state.authUserID, {});
+  const plans = await executeIfPermitted(state.authUserID, 'readAllActivePaymentPlans', {});  
     if (plans?.length) {
       // Clear and add options
       dropdown.innerHTML = '<option value="">Select a plan...</option>';
@@ -744,6 +745,13 @@ ${getMoveByRadioHTML()}
   `;
 }
 
+
+
+
+
+
+
+
 function attachListeners(panel) {
     console.log('attachListeners()');
   const nameInput = panel.querySelector('#taskName');
@@ -797,7 +805,8 @@ console.log('ratingSelected:',ratingSelected)
 
   // Step selection listener
   // In attachListeners, update the stepSelect change handler:
-stepSelect?.addEventListener('change', (e) => {
+/*
+  stepSelect?.addEventListener('change', (e) => {
     const sourceStepOrder = parseInt(e.target.value); // sourceStepOrder is read from the summary (wheras in edit survey finds questionId)
 console.log('L803 sourceStepOrder from stepSelect:',sourceStepOrder);    
     if (!sourceStepOrder) return;
@@ -809,11 +818,11 @@ console.log('L803 sourceStepOrder from stepSelect:',sourceStepOrder);
   //  console.log('Found step:', step);
     
     if (step) {
-      state.sourceCurrentsourceStepId = step.id; //where does step.id decalred line 30 as null. Never assigned
+      state.sourceCurrentsourceStepId = step.id; 
       // Fill form with step data
       panel.querySelector('#stepName').value = step.name || '';
       panel.querySelector('#stepDescription').value = step.description || '';
-      panel.querySelector('#stepUrl').innerHTML = step.external_url || '';
+      panel.querySelector('#stepUrl').value = step.external_url || '';
       panel.querySelector('#sourceStepOrder').value = sourceStepOrder; 
   //    console.log('Form filled with step data');
 
@@ -826,6 +835,19 @@ console.log('L803 sourceStepOrder from stepSelect:',sourceStepOrder);
   // console.log('Form cleared for new step');
     }
   });
+*/
+
+stepSelect?.addEventListener('change', (e) => {
+  const sourceStepOrder = parseInt(e.target.value, 10); 
+  if (!sourceStepOrder) return;
+
+  // Find step with this order
+  const step = state.steps.find(s => parseInt(s.step_order, 10) === sourceStepOrder);
+  
+  // Delegate the UI update to our new function
+  loadStepIntoEditor(step, panel, sourceStepOrder);
+});
+
 
   // Button listeners - are these redunant?
   saveTaskBtn?.addEventListener('click', (e) => handleTaskUpdate(e, panel));
@@ -1001,7 +1023,7 @@ addInformationCard({
     try { 
         // LOOK UP ALL STEPS FOR THIS TASK
         console.log('Looking up steps for task:', selectedTaskId);
-        const steps = await executeIfPermitted(state.user, 'readTaskSteps', {
+        const steps = await executeIfPermitted(state.authUserID, 'readTaskSteps', {
             taskId: selectedTaskId
         });
         
@@ -1018,7 +1040,7 @@ addInformationCard({
         console.log(
           'source_task_header_id:', state.currentTaskId,
           'state.targetInitialStep,:', state.targetInitialStep,
-          'state.user:', state.user, //should be null because usually this is a future unknown person
+          'state.authUserID:', state.authUserID, //should be null because usually this is a future unknown person
           'managerData.managerId:', managerData.managerId,     
           'selectedTaskId:', selectedTaskId,
           'taskCleanName:', taskCleanName,
@@ -1028,7 +1050,7 @@ addInformationCard({
 // we don't know the sourceCurrentsourceStepId !!! Where is source_task_header ?
 
 //registry needs     const { source_task_step_id, source_task_header_id,target_task_header_id, target_task_step_id, name, automation_number } = payload;
-const result = await executeIfPermitted(state.user, 'createAutomationAddTaskByTask', { 
+const result = await executeIfPermitted(state.authUserID, 'createAutomationAddTaskByTask', { 
        source_task_header_id: state.currentTaskId,
        source_task_step_id : state.sourceCurrentsourceStepId, //works, but in survey it is undefined  12:18 Nov 30
        manager_id: managerData.managerId, // needs to be from the dropdown    
@@ -1100,7 +1122,7 @@ async function handlePaymentAttachmentSubmit(e, panel) {
   
   try {
     // Get the selected plan details (for display) - also done on line 320?
-    const plans = await executeIfPermitted(state.user, 'readAllActivePaymentPlans', {});
+    const plans = await executeIfPermitted(state.authUserID, 'readAllActivePaymentPlans', {});
     const selectedPlan = plans.find(p => p.id === selectedPlanId);
     const planName = selectedPlan?.name || 'Unknown Plan';
     
@@ -1111,7 +1133,7 @@ async function handlePaymentAttachmentSubmit(e, panel) {
     // Call registry function with hardcoded registry ID for the type 'payment button' 
     //BUT the registry function is written for tasks only. This means we need a different function for surveys or we change the params to be dual use
     // source_header, source_secondary. soure_tertiary instead of task_header and task_step  (tertiary is for answers)
-    const result = await executeIfPermitted(state.user, 'createAttachmentPaymentButton', {//state.user wrong id
+    const result = await executeIfPermitted(state.authUserID, 'createAttachmentPaymentButton', {//state.authUserID wrong id
       auto_registry_id: 'd1f2028e-95fa-4a9b-ae6f-ff4753d5913d',  
       payment_plan_id: selectedPlanId,
       planName:planName,
@@ -1265,7 +1287,7 @@ console.log('state?',state,  'state.currentTask.id',state.currentTask.id,
 //function needs: const { source_task_header_id, source_task_step_id, target_survey_header_id, name, automation_number } = payload;
 //table needs: source_task_step_id, survey_header_id, name, automation_number
 
-const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyByTask', { 
+const result = await executeIfPermitted(state.authUserID, 'createAutomationAddSurveyByTask', { 
             source_task_header_id:state.currentTaskId,
             source_task_step_id : state.sourceCurrentsourceStepId, //need this --Jan 23 seems correct? <-------------------------  
             target_survey_header_id : selectedSurveyId, //<-------------becomes undefined. was missing 'target' prefix
@@ -1335,7 +1357,7 @@ const result = await executeIfPermitted(state.user, 'createAutomationAddSurveyBy
   console.log('source_task_header_id:',state.currentTaskId, 'state.sourceCurrentsourceStepId',state.sourceCurrentsourceStepId, 'selectedApproId:', selectedApproId); //
   if(!state.currentTaskId) console.log('missing the header id:',state.currentTaskId); 
   
-  const result = await executeIfPermitted(state.user, 'createAutomationRelateByTask', { 
+  const result = await executeIfPermitted(state.authUserID, 'createAutomationRelateByTask', { 
             source_task_header_id:state.currentTaskId,
             source_task_step_id:  state.sourceCurrentsourceStepId,    // NULL
 
@@ -1401,7 +1423,7 @@ async function handleTaskUpdate(e, panel) {
     try {
       // Check for duplicates only if name has changed
       if (!state.currentTask || state.currentTask.name !== name) {
-        const existing = await executeIfPermitted(state.user, 'readTaskHeaders', { taskName: name });
+        const existing = await executeIfPermitted(state.authUserID, 'readTaskHeaders', { taskName: name });
        // console.log('checkIfExists:', existing);
         if (existing && existing.length > 0) {
           nameError.classList.remove('hidden');
@@ -1418,7 +1440,7 @@ async function handleTaskUpdate(e, panel) {
 
       console.log('update task moveby:', moveBy);
 
-      const updatedTask = await executeIfPermitted(state.user, 'updateTask', {
+      const updatedTask = await executeIfPermitted(state.authUserID, 'updateTask', {
         id: state.currentTaskId,
         name,
         description,
@@ -1449,8 +1471,8 @@ async function handleTaskUpdate(e, panel) {
   async function handleStepUpdate(e, panel) {
     e.preventDefault();
     console.log('handleStepUpdate');
-//    if (!state.currentTaskId || !state.user) { //<---- the sandbox deploy is failing here. why is userId undefined?
-//removed the test for state.user  (The save of task_header doesnt have this test)
+//    if (!state.currentTaskId || !state.authUserID) { //<---- the sandbox deploy is failing here. why is userId undefined?
+//removed the test for state.authUserID  (The save of task_header doesnt have this test)
     if (!state.currentTaskId) { //<---- 
           showToast('Task not loaded', 'error');
       console.log('state',state);
@@ -1494,7 +1516,7 @@ console.log('order', order);
         //    const { taskId, stepOrder, stepName, stepDescription, stepUrl } = payload;
 
         
-        await executeIfPermitted(state.user, 'updateTaskStep', {
+        await executeIfPermitted(state.authUserID, 'updateTaskStep', {
           taskId: state.currentTaskId,
           stepOrder: order, // This should be a number-19:20 Nov 25  null. Probably the click on the step isn't setting the relevant value the way the drop down would
           stepName,
@@ -1505,12 +1527,13 @@ console.log('order', order);
       } else {
         // ✅ Create new step
         console.log('Creating new step:', order);
-        await executeIfPermitted(state.user, 'createTaskStep', {
+        await executeIfPermitted(state.authUserID, 'createTaskStep', { // need to send appro id for user as author_id
           taskId: state.currentTaskId,
           stepOrder: order, // This should be a number 
           stepName,
           stepDescription,
-          stepUrl
+          stepUrl,
+          approUserId:appState.query.userId  // added 15:46  Oct 24 2026  BUT changed from the 15:37 addition which ws the wrong appro ID 
         });
         showToast('New step created!', 'success');
       }
@@ -1543,7 +1566,7 @@ enableAutomationControls(panel);
     });
   }
   
-
+/*
 function loadStepIntoEditor(panel,clickedsourceStepId){//clicked is the id uuid
  // console.log('loadStepIntoEditor() clickedsourceStepId:', clickedsourceStepId, 'typeof:', typeof clickedsourceStepId);
   //console.log('steps length:', Array.isArray(state.steps) ? state.steps.length : 'not array');
@@ -1565,14 +1588,37 @@ const step = state.steps.find(s => s.id === clickedsourceStepId); //extract this
     panel.querySelector('#sourceStepOrder').value = sourceStepOrder; // Ensure this is set
   //  console.log('Form filled with step data');
 } else{console.log('Was it the header that was clicked?'); }
+} */
+
+/**
+ * Loads a step's data into the edit form, or clears the form if no step is provided.
+ * @param {Object|null} step - The step object to load, or null to clear.
+ * @param {HTMLElement} panel - The DOM element containing the form inputs.
+ * @param {string|number} [fallbackOrder=''] - The order to set if clearing the form.
+ */
+function loadStepIntoEditor(step, panel, fallbackOrder = '') { //fallback order?  instead of clickedsourceStepId
+  if (step) {
+    // Update state and fill form with step data
+    state.sourceCurrentsourceStepId = step.id;
+    panel.querySelector('#stepName').value = step.name || '';
+    panel.querySelector('#stepDescription').value = step.description || '';
+    panel.querySelector('#stepUrl').value = step.external_url || '';
+    panel.querySelector('#sourceStepOrder').value = step.step_order;
+  } else {
+    // Clear form for new/empty step
+    panel.querySelector('#stepName').value = '';
+    panel.querySelector('#stepDescription').value = '';
+    panel.querySelector('#stepUrl').value = '';
+    panel.querySelector('#sourceStepOrder').value = fallbackOrder;
+  }
 }
 
 
 async function handleDeleteAutomationButton(panel, automationId){
-  const deletedBy = state.user;  //WRONG
+  const deletedBy = state.approUserId;  //Changed to approUserID from authUserId which was WRONG needs to be the user appro  id
   console.log('handleDelete  button of', automationId, 'by', deletedBy);
   try {
-    await executeIfPermitted(state.user, 'softDeleteAutomation', { automationId, deletedBy });
+    await executeIfPermitted(state.authUserID, 'softDeleteAutomation', { automationId, deletedBy });
     showToast('Automation deleted');
     
 reloadTaskData(panel);
@@ -1598,6 +1644,27 @@ function attachStepsListeners(panel) {
 
     if (target.classList.contains('clickable-step')) {
       
+      // 1. Get the ID from the clicked card's data attribute
+      const clickedsourceStepId = target.dataset.sourceStepId; 
+      state.sourceCurrentsourceStepId = clickedsourceStepId;
+      
+      // 2. Update UI labels (keep your existing good code)
+      if (saveBtn) { saveBtn.textContent = 'Edit step'; saveBtn.disabled = false; }
+      if (sectionToEditEl) sectionToEditEl.textContent = 'step';
+      
+      // 3. Find the actual step object in the state array
+      const stepFromCard = state.steps.find(s => s.id === clickedsourceStepId);
+      
+      // 4. Call the function with the CORRECT argument order: (stepObject, panel)
+      loadStepIntoEditor(stepFromCard, panel);
+      
+      markActiveStepInSummary(panel);
+      // hideAutomationsUI(panel); // Uncomment if you need this
+    
+
+    /*
+    if (target.classList.contains('clickable-step')) {
+      
       const clickedsourceStepId = target.dataset.sourceStepId; // is this an id or a DOM element?
       state.sourceCurrentsourceStepId = clickedsourceStepId;
       
@@ -1609,6 +1676,7 @@ function attachStepsListeners(panel) {
       loadStepIntoEditor(panel, clickedsourceStepId); //  
       markActiveStepInSummary(panel);
     //  hideAutomationsUI(panel);
+    */
 
     } else if (target.classList.contains('clickable-automation')) {
       const clickedsourceStepId = target.dataset.sourceStepId;
@@ -1726,7 +1794,7 @@ const stepCard = document.createElement('p');
 
 async function loadStepAutomations(container, sourceStepId) {
   try {console.log('loadStepAutomations for sourceStepId',sourceStepId); // after clicking stap3 the code seems to be using step5   23:53 Jan 22
-    const automations = await executeIfPermitted(state.user, 'readTaskAutomations', {
+    const automations = await executeIfPermitted(state.authUserID, 'readTaskAutomations', {
       source_task_step_id: sourceStepId
     });
     renderAutomationCards(container, automations);
@@ -1862,7 +1930,7 @@ async function populateRelationshipsDropdown(panel) {
   
   try {
     // ✅ Use existing registry function:
-    const relationships = await executeIfPermitted(state.user, 'readRelationships', {});
+    const relationships = await executeIfPermitted(state.authUserID, 'readRelationships', {});
     
     if (relationships?.length) {
       dropdown.innerHTML = '<option value="">Select relationship...</option>';
@@ -1894,7 +1962,7 @@ async function resolvePaymentButtonUrls(container) {
   if (!buttons.length) return;
   
   // Fetch all plans once
-  const plans = await executeIfPermitted(state.user, 'readAllActivePaymentPlans', {});
+  const plans = await executeIfPermitted(state.authUserID, 'readAllActivePaymentPlans', {});
   
   buttons.forEach(btn => {
     const planId = btn.dataset.planId;
@@ -1902,7 +1970,7 @@ async function resolvePaymentButtonUrls(container) {
     
     if (plan?.provider_plan_id) {
       const variantId = plan.provider_plan_id;
-      const approId = state.user;  // Runtime user ID
+      const approId = state.authUserID;  // Runtime user ID
       const checkoutUrl = `https://myorg.lemonsqueezy.com/checkout/buy/${variantId}?embed=1&checkout[custom][appro_id]=${approId}`;
       btn.href = checkoutUrl;
       

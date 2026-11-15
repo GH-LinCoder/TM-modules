@@ -172,7 +172,7 @@ console.log('LoadAdminDash... logs');
 //would be useful to be able to click to display another batch
 
     if (!events || events.length === 0) {
-      activityList.innerHTML = '<p class="text-gray-500 text-sm">No recent activity</p>';
+      activityList.innerHTML = '<p class="text-gray-500 text-sm">No recent activity (Are you logged in? The permission system protects data.)</p>';
       return;
     }
 

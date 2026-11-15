@@ -275,6 +275,13 @@ saveBtn.disabled = true;
     saveBtn.textContent = 'You can create another by editing the name';
    // panel.remove(); // Optionally close the dialog
   } catch (error) {
+    console.error('Approfile creation failed:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+      error
+    });
     showToast('Failed to create approfile: ' + error.message, 'error');
     saveBtn.disabled = false;
     saveBtn.textContent = 'Save Approfile';
