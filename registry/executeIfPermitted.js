@@ -9,6 +9,14 @@ import { createSupabaseClient } from '../db/supabase.js';
 const supabase = createSupabaseClient();
 
 
+/**
+ * Executes a registered work action after the exported gateway has validated the action name.
+ * @param {string} userId Authenticated user's UUID
+ * @param {keyof typeof registryWorkActions} action Exact registry action name
+ * @param {object} [payload={}] Action-specific payload
+ * @returns {Promise<*>} The registered handler's return value
+ * @throws {Error} When the action handler or Supabase operation fails
+ */
 async function execute(userId, action, payload) {
   const funcEntry = registryWorkActions[action];
  console.log(`Execute( '${action}'...`);
@@ -28,6 +36,16 @@ if (Array.isArray(result) && result.length === 0) {
 }
 
 
+/**
+ * Public database gateway. Callers must provide an exact registered action name
+ * and the action-specific payload fields required by that registry handler.
+ *
+ * @param {string} userId Authenticated user's UUID
+ * @param {keyof typeof registryWorkActions} action Exact registered action name
+ * @param {object} [payload={}] Action-specific payload
+ * @returns {Promise<*>} The registered handler's return value
+ * @throws {Error} When the action name is not registered or the handler fails
+ */
 export async function executeIfPermitted(userId, action, payload={}) {
  console.log('executIfPermitted()userId,action,-payload:',userId ,action, payload);
 

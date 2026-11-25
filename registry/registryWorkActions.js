@@ -588,6 +588,20 @@ handler: async (supabase ) => {
 /////////////////////////////////////   CREATE  INSERT    ///////////////////
 //APPRO
  createApprofile:{ //simple approfile not suitbale for permissions
+  /**
+   * Creates a new simple app_profile in the database.
+   * Note: This creates a basic profile and is not suitable for handling permissions.
+   *
+   * @async
+   * @param {object} supabase - The initialized Supabase client instance.
+   * @param {string} _userId - The UUID of the user invoking the function (currently unused in this handler).
+   * @param {object} payload - The data object containing the new profile details.
+   * @param {string} payload.name - The name of the approfile.
+   * @param {string} payload.description - The description of the approfile.
+   * @param {string} payload.authUserId - The UUID of the associated auth user (maps to auth_user_id).
+   * @returns {Promise<object>} The newly created app_profiles row as a single object.
+   * @throws {Error} Throws the Supabase error if the insert operation fails.
+   */
   metadata: {
     tables: ['app_profiles'],
     columns: ['id', 'name', 'email', 'notes', 'phone', 'sort_int', 'avatar_url', 'created_at','updated_at','description',  'auth_user_id', 'external_url', 'task_header_url',],
@@ -604,7 +618,7 @@ handler: async (supabase ) => {
       .select() //Return the inserted row
       .single(); //Return single object
     if (error) throw error;
-    return data; // ✅ Return the array of task headers
+    return data; // Return the new row
   }
  },
 
@@ -642,6 +656,31 @@ console.log ('Received:', appro_name, appro_description, appro_email, auth_id);
 
 
 //ASSIGNMENT
+/**
+ * Creates a row in the assignments table for a student, for either a task or a survey.
+ * Checks for existing assignments to prevent duplicates.
+ *
+ * @async
+ * @param {object} payload - The data object containing the assignment details.
+ * @param {string} payload.student_id - The UUID of the student to whom the assignment is being made.
+ * @param {string} [payload.student_name] - The name of the student (stored in the assignment record).
+ * @param {string} [payload.manager_id] - The UUID of the manager overseeing the assignment.
+ * @param {string} [payload.assigned_by] - The UUID of the user who created this assignment.
+ * 
+ * // Task-specific parameters (Required if assigning a task)
+ * @param {string} [payload.task_header_id] - The UUID of the task header.
+ * @param {string} [payload.step_id] - The UUID of the specific step within the task.
+ * @param {number} [payload.current_step] - The current step index/number for the task.
+ * @param {number} [payload.move_by] - The step increment/decrement value.
+ * 
+ * // Survey-specific parameters (Required if assigning a survey)
+ * @param {string} [payload.survey_header_id] - The UUID of the survey header.
+ * @param {string} [payload.survey_question_id] - The UUID of the specific survey question.
+ * 
+ * @returns {Promise<string>} The ID of the newly created assignment.
+ * @throws {Error} Throws an error if an assignment already exists for this student/target, or if the insert fails.
+ * @throws {Error} Throws/Returns undefined implicitly if neither task_header_id nor survey_header_id is provided.
+ */
 createAssignment:{
   metadata: {
   tables: ['assignments'],
@@ -725,6 +764,22 @@ if (existing && existing.data.length > 0) { //console.log (existing);
 
 //TASK
 createTask: {
+    /**
+   * Creates a new task header in the database after checking for duplicate names.
+   *
+   * @async
+   * @param {object} supabase - The initialized Supabase client instance.
+   * @param {string} userId - The UUID of the authenticated user invoking the function. 
+   *                          (Note: Currently unused in the insert logic; `authorId` from payload is used instead).
+   * @param {object} payload - The data object containing the new task details.
+   * @param {string} payload.taskName - The name of the task (must be unique).
+   * @param {string} payload.taskDescription - The description of the task.
+   * @param {string} [payload.taskUrl] - An optional external URL associated with the task.
+   * @param {number|string} [payload.move_by] - An optional step increment/decrement value.
+   * @param {string} [payload.authorId] - The UUID of the task author.
+   * @returns {Promise<object>} The newly created task_header row as a single object.
+   * @throws {Error} Throws an error if a task with the same name already exists, or if the insert operation fails.
+   */
   metadata: {
     tables: ['task_headers'],
     columns: ['name', 'description', 'external_url', 'author_id'],
@@ -735,15 +790,15 @@ createTask: {
     const { taskName, taskDescription, taskUrl, move_by, authorId } = payload;
 
     // Check for duplicate name
-    const {  existingTask, error: fetchError } = await supabase
+    const { data: existingTask, error: fetchError } = await supabase
       .from('task_headers')
       .select('id')
       .eq('name', taskName) // encodeURIComponent(value) was removed 22:22 oct 17  for .eq() & .like()
     //  .single();  // throws error if a single row not found
 
-    if (existingTask) {
-      throw new Error('A task with that name exists. Your task needs a different name.');
-    }
+if (existingTask && existingTask.length > 0) { // Check if array has items
+  throw new Error('A task with that name exists. Your task needs a different name.');
+}
 console.log('userId',userId);
     const { data, error } = await supabase
       .from('task_headers')
@@ -752,7 +807,7 @@ console.log('userId',userId);
         description: taskDescription,
         external_url: taskUrl || null,
         move_by: move_by,
-        author_id: authorId // ← use passed userId but that is authId
+        author_id: authorId // ← used to use the passed userId but that is authId
         
       })
       .select()
