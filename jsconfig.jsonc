@@ -44,7 +44,10 @@
     // This project currently uses baseUrl + paths for IntelliSense.
     // Future migration: move to import maps in index.html.
     // ----------------------------------------------------------
-    "baseUrl": ".",
+    //"baseUrl": ".",
+
+"moduleResolution": "bundler"
+
 
     // ----------------------------------------------------------
     // Path Aliases
@@ -60,18 +63,22 @@
     // Works in VS Code for IntelliSense. For browser support,
     // import maps will eventually replace this.
     // ----------------------------------------------------------
-    "paths": {
-      "@/*": ["./js/*"]
-    }
+//    "paths": {
+//      "@/*": ["./js/*"]
+ //   }
   },
 
   // ------------------------------------------------------------
   // Included Files
   // ------------------------------------------------------------
-  // Only include JS files inside /js. This keeps IntelliSense fast
+  // Only include JS files. This keeps IntelliSense fast
   // and prevents VS Code from indexing unrelated folders.
   // ------------------------------------------------------------
   "include": [
-    "js/**/*.js"
+    "**/*.js"
+  ],
+  "exclude": [
+    "**/node_modules/**",
+    "**/dist/**"
   ]
 }
